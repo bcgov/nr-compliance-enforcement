@@ -891,6 +891,7 @@ export class PartyService {
   private async _createBusinessContact(tx: any, businessGuid: string, contact: BusinessPersonXrefInput): Promise<void> {
     const xref = await tx.business_person_xref.create({
       data: {
+        ...(contact.businessPersonXrefGuid ? { business_person_xref_guid: contact.businessPersonXrefGuid } : {}),
         business: { connect: { business_guid: businessGuid } },
         business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code: {
           connect: { business_person_xref_code: "CONT" },
@@ -916,16 +917,7 @@ export class PartyService {
                 ...(contact.contactMethods?.length
                   ? {
                       contact_method: {
-                        create: contact.contactMethods.map((cm) => ({
-                          contact_method_type_code: {
-                            connect: { contact_method_type_code: cm.typeCode },
-                          },
-                          contact_value: cm.value,
-                          is_primary: cm.isPrimary,
-                          active_ind: true,
-                          create_user_id: this.user.getIdirUsername(),
-                          create_utc_timestamp: new Date(),
-                        })),
+                        create: contact.contactMethods.map((cm) => this._contactMethodCreateData(cm)),
                       },
                     }
                   : {}),
@@ -984,8 +976,13 @@ export class PartyService {
     incomingXrefs: BusinessPersonXrefInput[],
     existingXrefs: BusinessPersonXref[],
   ): any {
-    const xrefsToCreate = incomingXrefs.filter((bpx) => !bpx.businessPersonXrefGuid);
-    const xrefsToUpdate = incomingXrefs.filter((bpx) => bpx.businessPersonXrefGuid);
+    const existingGuids = new Set(existingXrefs?.map((bpx) => bpx.businessPersonXrefGuid));
+    const xrefsToCreate = incomingXrefs.filter(
+      (bpx) => !bpx.businessPersonXrefGuid || !existingGuids.has(bpx.businessPersonXrefGuid),
+    );
+    const xrefsToUpdate = incomingXrefs.filter(
+      (bpx) => bpx.businessPersonXrefGuid && existingGuids.has(bpx.businessPersonXrefGuid),
+    );
     const xrefsToDelete = existingXrefs?.filter(
       (bpx) => !new Set(incomingXrefs.map((ei) => ei.businessPersonXrefGuid)).has(bpx.businessPersonXrefGuid),
     );
@@ -993,6 +990,7 @@ export class PartyService {
 
     if (xrefsToCreate.length) {
       operations.create = xrefsToCreate.map((bpx) => ({
+        ...(bpx.businessPersonXrefGuid ? { business_person_xref_guid: bpx.businessPersonXrefGuid } : {}),
         business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code: {
           connect: {
             business_person_xref_code: "CONT",
@@ -1302,7 +1300,10 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingXrefs) {
-      if (incoming.businessPersonXrefGuid) {
+      const existing = incoming.businessPersonXrefGuid
+        ? existingXrefs.find((x) => x.businessPersonXrefGuid === incoming.businessPersonXrefGuid)
+        : undefined;
+      if (existing) {
         this._diffExistingContact(existingXrefs, incoming, addEvent);
       } else {
         this._diffNewContact(incoming, addEvent);
@@ -1568,8 +1569,13 @@ export class PartyService {
     const newAddresses = isBusiness
       ? (input.addresses ?? []).filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid))
       : [];
+    const existingXrefGuids = new Set(
+      (existingPartyDto.business?.contactPeople ?? []).map((c) => c.businessPersonXrefGuid),
+    );
     const newContacts = isBusiness
-      ? (input.business?.contactPeople ?? []).filter((c) => !c.businessPersonXrefGuid)
+      ? (input.business?.contactPeople ?? []).filter(
+          (c) => !c.businessPersonXrefGuid || !existingXrefGuids.has(c.businessPersonXrefGuid),
+        )
       : [];
     const builderInput = isBusiness
       ? {
@@ -1578,7 +1584,9 @@ export class PartyService {
           business: input.business
             ? {
                 ...input.business,
-                contactPeople: (input.business.contactPeople ?? []).filter((c) => c.businessPersonXrefGuid),
+                contactPeople: (input.business.contactPeople ?? []).filter(
+                  (c) => c.businessPersonXrefGuid && existingXrefGuids.has(c.businessPersonXrefGuid),
+                ),
               }
             : input.business,
         }
@@ -1613,7 +1621,9 @@ export class PartyService {
             await this._createBusinessContact(tx, updated.business.business_guid, contact);
           }
 
-          for (const contact of (input.business?.contactPeople ?? []).filter((c) => c.businessPersonXrefGuid)) {
+          for (const contact of (input.business?.contactPeople ?? []).filter(
+            (c) => c.businessPersonXrefGuid && existingXrefGuids.has(c.businessPersonXrefGuid),
+          )) {
             if (contact.officeAddressGuids === undefined) continue;
             const existingXref = existingPartyDto.business?.contactPeople?.find(
               (x) => x.businessPersonXrefGuid === contact.businessPersonXrefGuid,

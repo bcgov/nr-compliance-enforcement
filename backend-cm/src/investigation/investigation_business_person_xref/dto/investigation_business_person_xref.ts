@@ -73,6 +73,9 @@ export class UpdateInvestigationBusinessContactInput {
 
   @Field(() => [String], { nullable: true })
   officeAddressGuids?: string[];
+
+  @Field(() => String, { nullable: true })
+  businessPersonXrefReference?: string;
 }
 
 export const mapPrismaInvestigationBusinessPersonXrefToInvestigationBusinessPersonXref = (mapper: Mapper) => {

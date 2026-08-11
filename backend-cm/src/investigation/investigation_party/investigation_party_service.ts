@@ -627,13 +627,6 @@ export class InvestigationPartyService {
     const findAddressReference = (addressGuid?: string) =>
       (input.addresses ?? []).find((a) => a.addressGuid === addressGuid)?.addressReference;
 
-    const findContactMethodReference = (contactMethodGuid?: string) =>
-      existingParty.contactMethods?.find((c) => c.contactMethodGuid === contactMethodGuid)?.contactMethodReference;
-
-    const findBusinessPersonXrefReference = (businessPersonXrefGuid?: string) =>
-      existingParty.business?.contactPeople?.find((c) => c.businessPersonXrefGuid === businessPersonXrefGuid)
-        ?.businessPersonXrefReference;
-
     const addresses: AddressInput[] = (input.addresses ?? []).map((a) => ({
       addressGuid: findAddressReference(a.addressGuid) ?? "",
       addressName: a.addressName,
@@ -716,7 +709,7 @@ export class InvestigationPartyService {
             identifierValue: bi.identifierValue,
           })),
           contactPeople: (input.business.contactPeople ?? []).map((c) => ({
-            businessPersonXrefGuid: findBusinessPersonXrefReference(c.businessPersonXrefGuid),
+            businessPersonXrefGuid: c.businessPersonXrefReference,
             title: c.title,
             displayInInvestigation: c.displayInInvestigation,
             isPrimary: c.isPrimary,
@@ -726,7 +719,7 @@ export class InvestigationPartyService {
               lastName: c.person?.lastName ?? "",
             },
             contactMethods: (c.contactMethods ?? []).map((cm) => ({
-              contactMethodGuid: findContactMethodReference(cm.contactMethodGuid),
+              contactMethodGuid: cm.contactMethodReference,
               typeCode: cm.typeCode,
               value: cm.value ?? "",
               isPrimary: cm.isPrimary,
@@ -802,6 +795,21 @@ export class InvestigationPartyService {
       identifier.businessIdentifierReference =
         existing?.businessIdentifierReference ?? identifier.businessIdentifierReference ?? randomUUID();
     }
+
+    for (const contact of input.business?.contactPeople ?? []) {
+      const existingContact = (existingParty.business?.contactPeople ?? []).find(
+        (c) => c.businessPersonXrefGuid === contact.businessPersonXrefGuid,
+      );
+      contact.businessPersonXrefReference =
+        existingContact?.businessPersonXrefReference ?? contact.businessPersonXrefReference ?? randomUUID();
+
+      const existingContactMethods: InvestigationContactMethod[] = existingContact?.contactMethods ?? [];
+      for (const contactMethod of contact.contactMethods ?? []) {
+        const existing = existingContactMethods.find((c) => c.contactMethodGuid === contactMethod.contactMethodGuid);
+        contactMethod.contactMethodReference =
+          existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
+      }
+    }
   }
 
   async update(investigationGuid: string, input: UpdateInvestigationPartyInput): Promise<Investigation> {
@@ -815,8 +823,6 @@ export class InvestigationPartyService {
     if (input.business) {
       this._validateBusinessInput(input.business);
     }
-
-    let sharedPartyChangeEvents: EventCreateInput[] = [];
 
     this._resolveSharedReferences(existingParty, input);
 
