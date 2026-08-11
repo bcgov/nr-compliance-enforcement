@@ -144,6 +144,7 @@ export const caseFileQueryFields: string = `
       longDescription
       activeIndicator
     }
+    comments
   }
   isReviewRequired
   reviewComplete {

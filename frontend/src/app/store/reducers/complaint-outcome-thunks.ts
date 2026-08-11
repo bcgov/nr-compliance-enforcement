@@ -190,6 +190,7 @@ const addAssessment =
               };
             })
           : [],
+        comments: assessment.comments,
       },
     } as CreateAssessmentInput;
 
@@ -302,6 +303,7 @@ const updateAssessment =
               };
             })
           : [],
+        comments: assessment.comments,
       },
     } as UpdateAssessmentInput;
     let {
@@ -401,6 +403,7 @@ const parseAssessmentResponse = async (res: ComplaintOutcomeDto, officers: AppUs
         .map((action) => {
           return { key: action.longDescription, value: action.actionCode };
         }),
+      comments: assessment.comments,
     } as unknown as Assessment;
     for (let action of assessment.actions) {
       if (action.activeIndicator) {
