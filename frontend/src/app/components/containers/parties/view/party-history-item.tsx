@@ -116,30 +116,28 @@ const useEventDescription = (event: Event): string => {
     return [phone, content?.emailAddress];
   };
 
+  // Address and business contact events carry extra detail in the event content, so they render
+  // as "<verb> <field> <name>: <details>" rather than the plain field/value form.
+  const describeDetailedChange = (verbLabel: string, value: string | null | undefined): string | undefined => {
+    if (field === "address") {
+      const details = formatAddressDetails();
+      return details ? `${verbLabel} address ${value}: ${details}` : `${verbLabel} address: ${value}`;
+    }
+    if (field === "business contact") {
+      const details = contactDetails().filter(Boolean).join(", ");
+      return details
+        ? `${verbLabel} business contact ${value}: ${details}`
+        : `${verbLabel} business contact: ${value}`;
+    }
+    return undefined;
+  };
+
   const describeChange = (): string => {
     switch (verb) {
-      case "ADDED": {
-        if (field === "address") {
-          const details = formatAddressDetails();
-          return details ? `added address ${newValue}: ${details}` : `added address: ${newValue}`;
-        }
-        if (field === "business contact") {
-          const details = contactDetails().filter(Boolean).join(", ");
-          return details ? `added business contact ${newValue}: ${details}` : `added business contact: ${newValue}`;
-        }
-        return `added ${fieldLabel}: ${formatValue(newValue)}`;
-      }
-      case "REMOVED": {
-        if (field === "address") {
-          const details = formatAddressDetails();
-          return details ? `removed address ${oldValue}: ${details}` : `removed address: ${oldValue}`;
-        }
-        if (field === "business contact") {
-          const details = contactDetails().filter(Boolean).join(", ");
-          return details ? `removed business contact ${oldValue}: ${details}` : `removed business contact: ${oldValue}`;
-        }
-        return `removed ${fieldLabel}: ${formatValue(oldValue)}`;
-      }
+      case "ADDED":
+        return describeDetailedChange("added", newValue) ?? `added ${fieldLabel}: ${formatValue(newValue)}`;
+      case "REMOVED":
+        return describeDetailedChange("removed", oldValue) ?? `removed ${fieldLabel}: ${formatValue(oldValue)}`;
       case "EDITED": {
         if (oldValue === newValue) {
           return `updated ${fieldLabel} "${formatValue(oldValue)}"`;
@@ -150,10 +148,6 @@ const useEventDescription = (event: Event): string => {
         return `performed ${verb.toLowerCase()} on ${fieldLabel}`;
     }
   };
-
-  const description = describeChange();
-  return content?.investigationContext ? `${description} ${content.investigationContext}` : description;
-};
 
 export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers }) => {
   const eventDescription = useEventDescription(event);
