@@ -28,7 +28,6 @@ export const TaskFilterBar: FC<Props> = ({
   const { searchValues, clearValues } = useTaskSearch();
 
   const taskCategories = useAppSelector(selectTaskCategory);
-  const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const officers = useAppSelector(selectOfficers);
 

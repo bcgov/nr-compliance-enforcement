@@ -24,7 +24,6 @@ const GET_TASK = gql`
       taskIdentifier
       investigationIdentifier
       investigationLabel
-      taskTypeCode
       taskStatusCode
       assignedUserIdentifier
       createdByUserIdentifier
