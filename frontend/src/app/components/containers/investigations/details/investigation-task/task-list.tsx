@@ -4,7 +4,7 @@ import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { Task } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { applyStatusClass } from "@/app/common/methods";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -19,7 +19,6 @@ type Props = {
 
 export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = false }) => {
   const taskCategories = useAppSelector(selectTaskCategory);
-  const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const officers = useAppSelector(selectOfficers);
 
@@ -46,17 +45,6 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       isSortable: true,
       getValue: (task) => taskCategories.find((c) => c.value === task.taskCategoryTypeCode)?.label ?? "",
       renderCell: (task) => taskCategories.find((c) => c.value === task.taskCategoryTypeCode)?.label ?? "-",
-    },
-    {
-      label: "Sub-category",
-      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      isSortable: true,
-      getValue: (task) => taskSubCategories.find((sc) => sc.value === task.taskTypeCode)?.label ?? "",
-      renderCell: (task) => {
-        const subCategory = taskSubCategories.find((sc) => sc.value === task.taskTypeCode);
-        return subCategory?.label && subCategory.label !== "None" ? subCategory.label : "-";
-      },
     },
     {
       label: "Remarks",

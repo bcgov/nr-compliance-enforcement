@@ -45,7 +45,6 @@ export const CODE_TABLE_TYPES = {
   PARTY_TYPE: "party-type",
   PARTY_ASSOCIATION_ROLE: "party-association-role",
   TASK_STATUS_TYPE: "task-status-type",
-  TASK_TYPE: "task-type",
   TASK_CATEGORY_TYPE: "task-category-type",
   INVESTIGATION_SOURCE_CODE: "investigation-source-code",
   LEGISLATION_TYPE: "legislation-type",

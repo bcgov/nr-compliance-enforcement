@@ -48,10 +48,6 @@ test.describe("Investigation Task Form", () => {
 
     await selectItemById("task-detail-edit-category", "Admin", page);
 
-    const subCategory = page.locator("#task-detail-edit-subcategory");
-    await expect(subCategory).toBeVisible();
-    await selectItemById("task-detail-edit-subcategory", "Email", page);
-
     const remarksInput = page.locator("#task-detail-edit-remarks");
     await remarksInput.fill("Remark test");
 
