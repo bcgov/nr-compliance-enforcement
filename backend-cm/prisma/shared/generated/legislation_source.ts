@@ -1,5 +1,5 @@
-import { legislation } from "./legislation";
 import { agency_code } from "./agency_code";
+import { legislation_version } from "./legislation_version";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class legislation_source {
@@ -12,20 +12,14 @@ export class legislation_source {
   @ApiPropertyOptional({ type: String })
   long_description?: string;
 
-  @ApiProperty({ type: String })
-  source_url: string;
+  @ApiPropertyOptional({ type: String })
+  source_url?: string;
 
   @ApiProperty({ type: String })
   agency_code: string;
 
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
-
-  @ApiProperty({ type: Boolean })
-  imported_ind: boolean;
-
-  @ApiPropertyOptional({ type: Date })
-  last_import_timestamp?: Date;
 
   @ApiProperty({ type: String })
   create_user_id: string;
@@ -40,20 +34,26 @@ export class legislation_source {
   update_utc_timestamp?: Date;
 
   @ApiPropertyOptional({ type: String })
-  import_status?: string = "PENDING";
-
-  @ApiPropertyOptional({ type: String })
-  last_import_log?: string;
-
-  @ApiPropertyOptional({ type: String })
   regulations_source_url?: string;
 
   @ApiProperty({ type: String })
   source_type: string = "BCLAWS";
 
-  @ApiProperty({ isArray: true, type: () => legislation })
-  legislation: legislation[];
+  @ApiPropertyOptional({ type: String })
+  parent_legislation_source_guid?: string;
+
+  @ApiPropertyOptional({ type: String })
+  external_key?: string;
 
   @ApiProperty({ type: () => agency_code })
   agency_code_legislation_source_agency_codeToagency_code: agency_code;
+
+  @ApiPropertyOptional({ type: () => legislation_source })
+  legislation_source?: legislation_source;
+
+  @ApiProperty({ isArray: true, type: () => legislation_source })
+  other_legislation_source: legislation_source[];
+
+  @ApiProperty({ isArray: true, type: () => legislation_version })
+  legislation_version: legislation_version[];
 }

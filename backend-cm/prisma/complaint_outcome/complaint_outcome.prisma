@@ -130,6 +130,7 @@ model assessment {
   case_location_code                                                         String?                @db.VarChar(10)
   case_conflict_history_code                                                 String?                @db.VarChar(10)
   case_threat_level_code                                                     String?                @db.VarChar(10)
+  comments                                                                   String?                @db.VarChar(4000)
   create_user_id                                                             String                 @db.VarChar(32)
   create_utc_timestamp                                                       DateTime               @db.Timestamp(6)
   update_user_id                                                             String?                @db.VarChar(32)

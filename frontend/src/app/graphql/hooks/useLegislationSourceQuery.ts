@@ -2,21 +2,17 @@ import { useGraphQLQuery } from "@/app/graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { gql } from "graphql-request";
 
-export type ImportStatus = "PENDING" | "SUCCESS" | "FAILED";
-
 export interface LegislationSource {
   legislationSourceGuid: string;
+  parentLegislationSourceGuid: string | null;
+  externalKey: string | null;
   shortDescription: string;
   longDescription: string | null;
-  sourceUrl: string;
+  sourceUrl: string | null;
   regulationsSourceUrl: string | null;
   agencyCode: string;
   sourceType: string;
   activeInd: boolean;
-  importedInd: boolean;
-  importStatus: ImportStatus | null;
-  lastImportTimestamp: string | null;
-  lastImportLog: string | null;
   createUserId?: string;
   createUtcTimestamp?: string;
 }
@@ -28,6 +24,7 @@ export interface CreateLegislationSourceInput {
   regulationsSourceUrl?: string;
   agencyCode: string;
   sourceType?: string;
+  effectiveDate?: string;
 }
 
 export interface UpdateLegislationSourceInput {
@@ -38,13 +35,14 @@ export interface UpdateLegislationSourceInput {
   regulationsSourceUrl?: string;
   agencyCode?: string;
   activeInd?: boolean;
-  importedInd?: boolean;
 }
 
 const GET_LEGISLATION_SOURCES = gql`
   query LegislationSources {
     legislationSources {
       legislationSourceGuid
+      parentLegislationSourceGuid
+      externalKey
       shortDescription
       longDescription
       sourceUrl
@@ -52,10 +50,6 @@ const GET_LEGISLATION_SOURCES = gql`
       agencyCode
       sourceType
       activeInd
-      importedInd
-      importStatus
-      lastImportTimestamp
-      lastImportLog
       createUserId
     }
   }
@@ -65,6 +59,8 @@ const GET_LEGISLATION_SOURCE = gql`
   query LegislationSource($legislationSourceGuid: String!) {
     legislationSource(legislationSourceGuid: $legislationSourceGuid) {
       legislationSourceGuid
+      parentLegislationSourceGuid
+      externalKey
       shortDescription
       longDescription
       sourceUrl
@@ -72,10 +68,6 @@ const GET_LEGISLATION_SOURCE = gql`
       agencyCode
       sourceType
       activeInd
-      importedInd
-      importStatus
-      lastImportTimestamp
-      lastImportLog
     }
   }
 `;
@@ -91,7 +83,6 @@ const CREATE_LEGISLATION_SOURCE = gql`
       agencyCode
       sourceType
       activeInd
-      importedInd
     }
   }
 `;
@@ -107,7 +98,6 @@ const UPDATE_LEGISLATION_SOURCE = gql`
       agencyCode
       sourceType
       activeInd
-      importedInd
     }
   }
 `;
@@ -115,12 +105,6 @@ const UPDATE_LEGISLATION_SOURCE = gql`
 const DELETE_LEGISLATION_SOURCE = gql`
   mutation DeleteLegislationSource($legislationSourceGuid: String!) {
     deleteLegislationSource(legislationSourceGuid: $legislationSourceGuid)
-  }
-`;
-
-const RESET_LEGISLATION_SOURCE = gql`
-  mutation ResetLegislationSource($legislationSourceGuid: String!) {
-    resetLegislationSource(legislationSourceGuid: $legislationSourceGuid)
   }
 `;
 
@@ -177,19 +161,6 @@ export const useDeleteLegislationSource = (options?: {
 }) => {
   return useGraphQLMutation<{ deleteLegislationSource: boolean }, Error, { legislationSourceGuid: string }>(
     DELETE_LEGISLATION_SOURCE,
-    {
-      invalidateQueries: ["legislationSources"],
-      ...options,
-    },
-  );
-};
-
-export const useResetLegislationSource = (options?: {
-  onSuccess?: (data: any) => void;
-  onError?: (error: any) => void;
-}) => {
-  return useGraphQLMutation<{ resetLegislationSource: boolean }, Error, { legislationSourceGuid: string }>(
-    RESET_LEGISLATION_SOURCE,
     {
       invalidateQueries: ["legislationSources"],
       ...options,

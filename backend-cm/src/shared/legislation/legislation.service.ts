@@ -2,42 +2,25 @@ import { Injectable, Logger } from "@nestjs/common";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
+import { Prisma } from ".prisma/shared"; // NOSONAR
 import { legislation } from "../../../prisma/shared/generated/legislation";
 import { Legislation } from "./dto/legislation";
 
-export interface LegislationRow {
-  legislation_guid: string;
-  legislation_type_code: string;
-  parent_legislation_guid: string | null;
-  legislation_source_guid: string | null;
-  citation: string | null;
-  full_citation: string | null;
-  section_title: string | null;
-  legislation_text: string | null;
-  alternate_text: string | null;
-  display_order: number;
-  effective_date: Date | null;
-  expiry_date: Date | null;
-  create_user_id: string;
-  create_utc_timestamp: Date;
-  update_user_id: string | null;
-  update_utc_timestamp: Date | null;
-}
+const getCurrentDatePacific = (): string =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver" }).format(new Date());
 
 export interface CreateLegislationInput {
   legislationTypeCode: string;
+  legislationVersionGuid: string;
   parentLegislationGuid?: string | null;
-  legislationSourceGuid?: string | null;
   citation?: string | null;
   fullCitation?: string | null;
   sectionTitle?: string | null;
   legislationText?: string | null;
   alternateText?: string | null;
   displayOrder: number;
-  effectiveDate?: Date | null;
-  expiryDate?: Date | null;
   createUserId: string;
-  agencyCode?: string | null;
+  agencyCode: string;
 }
 
 @Injectable()
@@ -49,16 +32,27 @@ export class LegislationService {
 
   private readonly logger = new Logger(LegislationService.name);
 
-  async findMany(
-    agencyCode: string,
-    onlyActive: boolean = true,
-    legislationTypeCodes?: string[],
-    ancestorGuid?: string,
-    excludeRegulations?: boolean,
-    legislationSourceGuid?: string,
-    offenseDate?: string,
-  ) {
-    const filterDate = offenseDate ?? new Date().toISOString().split("T")[0];
+  async findMany(args: {
+    agencyCode: string;
+    onlyActive?: boolean;
+    legislationTypeCodes?: string[];
+    ancestorGuid?: string;
+    excludeRegulations?: boolean;
+    legislationSourceGuid?: string;
+    offenseDate?: string;
+    legislationVersionGuid?: string;
+  }) {
+    const {
+      agencyCode,
+      onlyActive = true,
+      legislationTypeCodes,
+      ancestorGuid,
+      excludeRegulations,
+      legislationSourceGuid,
+      offenseDate,
+      legislationVersionGuid,
+    } = args;
+    const filterDate = offenseDate ?? getCurrentDatePacific();
 
     const prismaLegislation = await this.prisma.$queryRaw<legislation[]>`
       WITH RECURSIVE descendants AS (
@@ -70,28 +64,41 @@ export class LegislationService {
           LPAD(l.display_order::text, 4, '0') AS sort_path, -- Sort by display_order (document order)
           FALSE AS has_reg_ancestor -- Track if any ancestor is a REG
         FROM legislation l
-        -- Join to legislation_source when finding root nodes (no ancestorGuid)
-        -- When ancestorGuid is provided, the parent was already filtered by agency at the parent level
-        LEFT JOIN legislation_source ls ON l.legislation_source_guid = ls.legislation_source_guid
+        INNER JOIN legislation_version lv
+          ON l.legislation_version_guid = lv.legislation_version_guid AND lv.import_status = 'SUCCESS'
+        INNER JOIN legislation_source ls ON lv.legislation_source_guid = ls.legislation_source_guid
         WHERE
           (
-            -- When ancestorGuid is provided, match it directly (ignore legislationSourceGuid)
+            -- When ancestorGuid is provided, match it directly (ignore source/version/date)
             (COALESCE(${ancestorGuid}, '') <> '' AND l.legislation_guid = ${ancestorGuid}::uuid)
           OR
-            -- When legislationSourceGuid is provided (no ancestorGuid), find that specific source's root
+            -- When legislationVersionGuid is provided, take that version's root regardless of date
             (
               COALESCE(${ancestorGuid}, '') = ''
-              AND COALESCE(${legislationSourceGuid}, '') <> ''
+              AND COALESCE(${legislationVersionGuid}, '') <> ''
               AND l.parent_legislation_guid IS NULL
-              AND l.legislation_source_guid = ${legislationSourceGuid}::uuid
+              AND l.legislation_version_guid = ${legislationVersionGuid}::uuid
             )
           OR
-            -- When neither is provided, find all root nodes for the agency
+            -- Otherwise resolve the version in force by filterDate, for the given source or the agency
             (
-              COALESCE(${ancestorGuid}, '') = '' 
-              AND COALESCE(${legislationSourceGuid}, '') = ''
-              AND l.parent_legislation_guid IS NULL 
-              AND ls.agency_code = ${agencyCode}
+              COALESCE(${ancestorGuid}, '') = ''
+              AND COALESCE(${legislationVersionGuid}, '') = ''
+              AND l.parent_legislation_guid IS NULL
+              AND lv.effective_date <= ${filterDate}::date
+              AND NOT EXISTS (
+                SELECT 1
+                FROM legislation_version newer
+                WHERE newer.legislation_source_guid = lv.legislation_source_guid
+                  AND newer.import_status = 'SUCCESS'
+                  AND newer.effective_date <= ${filterDate}::date
+                  AND newer.effective_date > lv.effective_date
+              )
+              AND (
+                (COALESCE(${legislationSourceGuid}, '') <> ''
+                  AND lv.legislation_source_guid = ${legislationSourceGuid}::uuid)
+                OR (COALESCE(${legislationSourceGuid}, '') = '' AND ls.agency_code = ${agencyCode})
+              )
             )
           )
         UNION ALL
@@ -111,27 +118,32 @@ export class LegislationService {
         l.legislation_guid,
         l.legislation_type_code,
         l.parent_legislation_guid,
-        l.legislation_source_guid,
+        l.legislation_version_guid,
         l.citation,
         l.full_citation,
         l.section_title,
         l.legislation_text,
         l.alternate_text,
         l.display_order,
-        lc.enabled_ind
+        lv.legislation_source_guid,
+        lv.effective_date AS version_effective_date,
+        lv.source_url,
+        COALESCE(lc.enabled_ind, true) AS enabled_ind
       FROM legislation l
       INNER JOIN descendants d ON l.legislation_guid = d.legislation_guid
-      LEFT JOIN legislation_configuration lc ON l.legislation_guid = lc.legislation_guid
+      INNER JOIN legislation_version lv
+        ON l.legislation_version_guid = lv.legislation_version_guid AND lv.import_status = 'SUCCESS'
+      -- Join to config by agency
+      LEFT JOIN legislation_configuration lc
+        ON lc.legislation_guid = l.legislation_guid AND lc.agency_code = ${agencyCode}
       WHERE
         (
           ${legislationTypeCodes ?? []} = '{}'::text[]
           OR l.legislation_type_code = ANY(${legislationTypeCodes ?? []}::text[])
         )
-        AND (l.effective_date IS NULL OR l.effective_date <= ${filterDate}::date)
-        AND (l.expiry_date IS NULL OR l.expiry_date > ${filterDate}::date)
         -- When excludeRegulations is true, exclude nodes that have a REG ancestor
         AND (NOT ${excludeRegulations ?? false} OR NOT d.has_reg_ancestor)
-        AND (${onlyActive} = false OR lc.enabled_ind = true)
+        AND (${onlyActive} = false OR COALESCE(lc.enabled_ind, true) = true)
       ORDER BY d.sort_path;
       `;
 
@@ -144,10 +156,10 @@ export class LegislationService {
 
   async findOne(legislationGuid: string, includeAncestors: boolean = false) {
     if (!includeAncestors) {
-      // Simple case - just return the legislation
-      const prismaLegislation = await this.prisma.legislation.findUnique({
-        where: {
-          legislation_guid: legislationGuid,
+      const prismaLegislation = await this.prisma.legislation.findFirst({
+        where: { legislation_guid: legislationGuid, legislation_version: { import_status: "SUCCESS" } },
+        include: {
+          legislation_version: { select: { legislation_source_guid: true, effective_date: true, source_url: true } },
         },
       });
 
@@ -155,9 +167,17 @@ export class LegislationService {
         return null;
       }
 
+      const { legislation_version, ...node } = prismaLegislation;
+
       try {
         return this.mapper.map<legislation, Legislation>(
-          prismaLegislation as legislation,
+          {
+            ...node,
+            legislation_source_guid: legislation_version.legislation_source_guid,
+            version_effective_date: legislation_version.effective_date,
+            source_url: legislation_version.source_url,
+            enabled_ind: true,
+          } as unknown as legislation,
           "legislation",
           "Legislation",
         );
@@ -170,18 +190,20 @@ export class LegislationService {
     const result = await this.prisma.$queryRaw<legislation[]>`
     WITH RECURSIVE ancestors AS (
       -- Start with the target legislation
-      SELECT 
-        legislation_guid,
-        parent_legislation_guid,
-        legislation_type_code,
+      SELECT
+        l.legislation_guid,
+        l.parent_legislation_guid,
+        l.legislation_type_code,
         1 as depth
-      FROM legislation
-      WHERE legislation_guid = ${legislationGuid}::uuid
-      
+      FROM legislation l
+      INNER JOIN legislation_version lv
+        ON l.legislation_version_guid = lv.legislation_version_guid AND lv.import_status = 'SUCCESS'
+      WHERE l.legislation_guid = ${legislationGuid}::uuid
+
       UNION ALL
-      
+
       -- Recursively get parent nodes
-      SELECT 
+      SELECT
         l.legislation_guid,
         l.parent_legislation_guid,
         l.legislation_type_code,
@@ -189,20 +211,26 @@ export class LegislationService {
       FROM legislation l
       INNER JOIN ancestors a ON l.legislation_guid = a.parent_legislation_guid
     )
-    SELECT 
+    SELECT
       l.legislation_guid,
       l.legislation_type_code,
       l.parent_legislation_guid,
-      l.legislation_source_guid,
+      l.legislation_version_guid,
       l.citation,
       l.full_citation,
       l.section_title,
       l.legislation_text,
       l.alternate_text,
       l.display_order,
+      lv.legislation_source_guid,
+      lv.effective_date AS version_effective_date,
+      lv.source_url,
+      true AS enabled_ind,
       COALESCE(a.depth, 1) as depth
     FROM legislation l
     INNER JOIN ancestors a ON l.legislation_guid = a.legislation_guid
+    INNER JOIN legislation_version lv
+      ON l.legislation_version_guid = lv.legislation_version_guid AND lv.import_status = 'SUCCESS'
     ORDER BY a.depth ASC;
   `;
 
@@ -233,20 +261,18 @@ export class LegislationService {
   /**
    * Creates a new legislation record
    */
-  async create(input: CreateLegislationInput): Promise<LegislationRow> {
+  async create(input: CreateLegislationInput) {
     return this.prisma.legislation.create({
       data: {
         legislation_type_code: input.legislationTypeCode,
+        legislation_version_guid: input.legislationVersionGuid,
         parent_legislation_guid: input.parentLegislationGuid ?? null,
-        legislation_source_guid: input.legislationSourceGuid ?? null,
         citation: input.citation ?? null,
         full_citation: input.fullCitation ?? null,
         section_title: input.sectionTitle ?? null,
         legislation_text: input.legislationText ?? null,
         alternate_text: input.alternateText ?? null,
         display_order: input.displayOrder,
-        effective_date: input.effectiveDate ?? null,
-        expiry_date: input.expiryDate ?? null,
         create_user_id: input.createUserId,
         create_utc_timestamp: new Date(),
         legislation_configuration: {
@@ -261,78 +287,40 @@ export class LegislationService {
     });
   }
 
-  /**
-   * Finds legislation by type code, citation, parent GUID, and optionally section title
-   * Definitions have null citation, section_title is used as additional key
-   * For root nodes legislationSourceGuid is used to distinguish between
-   * the same act imported for different agencies
-   */
-  private async _findByTypeAndCitation(
-    legislationTypeCode: string,
-    citation: string | null,
-    parentLegislationGuid: string | null,
-    sectionTitle: string | null = null,
-    displayOrder: number | null = null,
-    legislationSourceGuid: string | null = null,
-  ): Promise<LegislationRow | null> {
-    const where: any = {
-      legislation_type_code: legislationTypeCode,
-      citation: citation,
-      parent_legislation_guid: parentLegislationGuid,
-    };
-
-    // DEF nodes have null citation so use sectionTitle to identify
-    if (citation === null && sectionTitle !== null) {
-      where.section_title = sectionTitle;
+  async deleteByVersion(versionGuids: string[], tx?: Prisma.TransactionClient): Promise<void> {
+    if (versionGuids.length === 0) {
+      return;
     }
 
-    // TEXT nodes have null citation AND null sectionTitle so use displayOrder to identify
-    if (legislationTypeCode === "TEXT" && displayOrder !== null) {
-      where.display_order = displayOrder;
+    if (tx) {
+      await this.deleteNodesByVersion(tx, versionGuids);
+      return;
     }
 
-    if (parentLegislationGuid === null && legislationSourceGuid !== null) {
-      where.legislation_source_guid = legislationSourceGuid;
-    }
-
-    return this.prisma.legislation.findFirst({ where });
+    await this.prisma.$transaction(async (transaction) => this.deleteNodesByVersion(transaction, versionGuids));
   }
 
-  /**
-   * Upserts legislation based on type code, citation, parent GUID, title, displayOrder,
-   * and legislationSourceGuid
-   */
-  async upsert(input: CreateLegislationInput): Promise<LegislationRow> {
-    const existing = await this._findByTypeAndCitation(
-      input.legislationTypeCode,
-      input.citation ?? null,
-      input.parentLegislationGuid ?? null,
-      input.sectionTitle ?? null,
-      input.displayOrder,
-      input.legislationSourceGuid ?? null,
-    );
+  private async deleteNodesByVersion(tx: Prisma.TransactionClient, versionGuids: string[]): Promise<void> {
+    const descendants = Prisma.sql`
+      descendants AS (
+        SELECT l.legislation_guid
+        FROM legislation l
+        WHERE l.legislation_version_guid = ANY(${versionGuids}::uuid[])
+        UNION
+        SELECT l.legislation_guid
+        FROM legislation l
+        INNER JOIN descendants d ON l.parent_legislation_guid = d.legislation_guid
+      )`;
 
-    if (existing) {
-      return this.prisma.legislation.update({
-        where: {
-          legislation_guid: existing.legislation_guid,
-        },
-        data: {
-          legislation_source_guid: input.legislationSourceGuid ?? existing.legislation_source_guid,
-          full_citation: input.fullCitation ?? existing.full_citation,
-          section_title: input.sectionTitle ?? existing.section_title,
-          legislation_text: input.legislationText ?? existing.legislation_text,
-          alternate_text: input.alternateText ?? existing.alternate_text,
-          display_order: input.displayOrder,
-          effective_date: input.effectiveDate ?? existing.effective_date,
-          expiry_date: input.expiryDate ?? existing.expiry_date,
-          update_user_id: input.createUserId,
-          update_utc_timestamp: new Date(),
-        },
-      });
-    }
+    await tx.$executeRaw`
+      WITH RECURSIVE ${descendants}
+      DELETE FROM legislation_configuration
+      WHERE legislation_guid IN (SELECT legislation_guid FROM descendants);`;
 
-    return this.create(input);
+    await tx.$executeRaw`
+      WITH RECURSIVE ${descendants}
+      DELETE FROM legislation
+      WHERE legislation_guid IN (SELECT legislation_guid FROM descendants);`;
   }
 
   /**

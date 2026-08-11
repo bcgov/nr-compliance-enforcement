@@ -135,6 +135,7 @@ const ContraventionReadOnlyPanel = ({ contravention }: ContraventionReadOnlyPane
     agencyCode: userAgency,
     legislationTypeCodes: [LegislationType.REGULATION],
     ancestorGuid: actGuid || "",
+    offenseDate: formattedContraventionDate,
     enabled: !!actGuid,
   });
 
@@ -148,6 +149,7 @@ const ContraventionReadOnlyPanel = ({ contravention }: ContraventionReadOnlyPane
     ],
     ancestorGuid: regGuid || actGuid,
     excludeRegulations: !!actGuid && !regGuid,
+    offenseDate: formattedContraventionDate,
     enabled: !!regGuid || !!actGuid,
   });
 

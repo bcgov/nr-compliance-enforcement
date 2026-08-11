@@ -7,5 +7,4 @@ type Mutation {
   createLegislationSource(input: CreateLegislationSourceInput!): LegislationSource!
   updateLegislationSource(input: UpdateLegislationSourceInput!): LegislationSource!
   deleteLegislationSource(legislationSourceGuid: String!): Boolean!
-  resetLegislationSource(legislationSourceGuid: String!): Boolean!
 }

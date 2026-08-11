@@ -15,6 +15,7 @@ export const CompTable = <T,>({
   columns,
   getRowKey,
   renderExpandedContent,
+  fullWidthExpandedRow,
   isLoading = false,
   error = null,
   pageSize = DEFAULT_PAGE_SIZE,
@@ -209,6 +210,7 @@ export const CompTable = <T,>({
           isExpanded={expandedRows.has(rowKey)}
           onToggleExpand={handleToggleExpand}
           renderExpandedContent={renderExpandedContent}
+          fullWidthExpandedRow={fullWidthExpandedRow}
         />
       );
     });

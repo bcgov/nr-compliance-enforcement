@@ -16,6 +16,8 @@ import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
 import { getComplaintType } from "@/app/common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { FeatureFlag } from "@components/common/feature-flag";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 type Props = {
   assessment: Assessment;
@@ -212,6 +214,18 @@ export const ComplaintAssessmentItem: FC<Props> = ({ assessment, handleEdit }) =
                   })}
                 </dd>
               </div>
+
+              {/* Comments - view state */}
+              <FeatureFlag feature={FEATURE_TYPES.ASSESSMENT_COMMENTS}>
+                {assessment.comments && (
+                  <div id="assessment-comments-div">
+                    <dt>Comments</dt>
+                    <dd>
+                      <span>{assessment.comments}</span>
+                    </dd>
+                  </div>
+                )}
+              </FeatureFlag>
             </dl>
           </div>
           <div className="comp-outcome-item-header-actions">

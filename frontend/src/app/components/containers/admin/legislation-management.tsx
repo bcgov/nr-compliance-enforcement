@@ -1,14 +1,18 @@
-import { FC, useState, useMemo, useEffect } from "react";
+import { FC, memo, useCallback, useState, useMemo, useEffect, startTransition } from "react";
 import { useLegislationSearchQuery } from "@/app/graphql/hooks/useLegislationSearchQuery";
+import { useLegislationVersions, useReferencedLegislationGuids } from "@/app/graphql/hooks/useLegislationVersionQuery";
 import { getUserAgency } from "@/app/service/user-service";
 import { Legislation } from "@/generated/graphql";
 import { LegislationTable } from "@/app/components/common/legislation-table";
 import { indentByType, LegislationType } from "@/app/types/app/legislation";
-import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Button } from "react-bootstrap";
+import { CompSelect } from "@components/common/comp-select";
+import Option from "@apptypes/app/option";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { toggleLoading } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
@@ -20,20 +24,145 @@ const UPDATE_LEGISLATION = gql`
   }
 `;
 
+// Handle SECHEAD guids
+const getActualGuid = (guid: string) => guid.replace("_header", "");
+
+type SectionRowProps = {
+  section: Legislation;
+  isChecked: boolean;
+  isDisableBlocked: boolean;
+  onToggle: (guid: string, checked: boolean) => void;
+};
+
+// Memoized for performance to reduce rerenders
+const SectionRow = memo(({ section, isChecked, isDisableBlocked, onToggle }: SectionRowProps) => {
+  const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType] || "ms-0";
+
+  const baseWrapper = (content: React.ReactNode) => (
+    <div className="d-flex align-items-start py-2 border-bottom">
+      <div
+        className="d-flex justify-content-center leg-admin-checkbox-column"
+        title={
+          isDisableBlocked
+            ? "This section is referenced by a recorded contravention and cannot be disabled."
+            : undefined
+        }
+      >
+        <input
+          type="checkbox"
+          className="form-check-input"
+          checked={isChecked}
+          disabled={isDisableBlocked}
+          onChange={(e) => onToggle(section.legislationGuid!, e.target.checked)}
+        />
+      </div>
+
+      <div>{content}</div>
+    </div>
+  );
+
+  if (
+    section.legislationTypeCode === LegislationType.SCHEDULE ||
+    section.legislationTypeCode === LegislationType.DIVISION ||
+    section.legislationTypeCode === LegislationType.PART
+  ) {
+    let typeLabel = "Part";
+    if (section.legislationTypeCode === LegislationType.SCHEDULE) {
+      typeLabel = "Schedule";
+    } else if (section.legislationTypeCode === LegislationType.DIVISION) {
+      typeLabel = "Division";
+    }
+
+    return baseWrapper(
+      <p className={`mb-2 ${indentClass}`}>
+        <strong>
+          {typeLabel} {section.citation} {section.sectionTitle}
+        </strong>
+      </p>,
+    );
+  }
+
+  if (section.legislationTypeCode === LegislationType.TEXT) {
+    return baseWrapper(
+      <p className={`mb-2 ${indentClass}`}>
+        <LegislationText>{section.legislationText}</LegislationText>
+      </p>,
+    );
+  }
+
+  if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
+    return baseWrapper(
+      <div className={indentClass}>
+        {section.sectionTitle && (
+          <p className="mb-1">
+            <strong>{section.sectionTitle}</strong>
+          </p>
+        )}
+        <LegislationTable html={section.legislationText} />
+      </div>,
+    );
+  }
+
+  if (section.legislationTypeCode === LegislationType.SECTION) {
+    if (section.legislationText) {
+      // SEC with text - just show the text
+      return baseWrapper(
+        <p className={`mb-2 ${indentClass}`}>
+          <LegislationText>{section.legislationText}</LegislationText>
+        </p>,
+      );
+    } else {
+      // SEC with only title, show as header
+      return baseWrapper(
+        <p className={`mb-2 ${indentClass}`}>
+          <strong>
+            {section.citation} {section.sectionTitle}
+          </strong>
+        </p>,
+      );
+    }
+  }
+
+  const displayCitation = section.citation || (section.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
+
+  return baseWrapper(
+    <p className={`mb-2 ${indentClass}`}>
+      {section.legislationTypeCode === "SECHEAD" ? (
+        <strong>
+          {section.citation} <LegislationText>{section.legislationText}</LegislationText>
+        </strong>
+      ) : (
+        <>
+          {section.legislationTypeCode !== LegislationType.SECTION && displayCitation && <>({displayCitation}) </>}
+          <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
+        </>
+      )}
+    </p>,
+  );
+});
+
 export const LegislationManagement: FC = () => {
   // Hooks
   const { legislationSourceGuid } = useParams<{ legislationSourceGuid: string }>();
   const [searchParams] = useSearchParams();
   const legislationAgency = searchParams.get("agencyCode") ?? "";
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const { data, isLoading } = useLegislationSearchQuery({
+  const [selectedVersionGuid, setSelectedVersionGuid] = useState<string | undefined>(
+    searchParams.get("versionGuid") ?? undefined,
+  );
+
+  const { data: versions } = useLegislationVersions(legislationSourceGuid);
+
+  const { data, isLoading, isFetching } = useLegislationSearchQuery({
     agencyCode: legislationAgency,
     onlyActive: false,
     legislationTypeCodes: [], // Get all types now
     excludeRegulations: false,
     legislationSourceGuid: legislationSourceGuid,
-    enabled: !!legislationSourceGuid,
+    legislationVersionGuid: selectedVersionGuid,
+    enabled: !!legislationSourceGuid && !!selectedVersionGuid,
   });
 
   const updateLegislation = useGraphQLMutation(UPDATE_LEGISLATION, {
@@ -53,6 +182,35 @@ export const LegislationManagement: FC = () => {
 
   // Data
   const userAgency = getUserAgency();
+
+  const importedVersions = useMemo(
+    () =>
+      (versions ?? [])
+        .filter((version) => version.importStatus === "SUCCESS")
+        .toSorted((a, b) => b.effectiveDate.localeCompare(a.effectiveDate)),
+    [versions],
+  );
+
+  const today = new Date();
+  const versionInEffect = importedVersions.find(
+    (version) => parseUTCDateToLocal(version.effectiveDate, null)! <= today,
+  );
+
+  const versionOptions: Option[] = importedVersions.map((version) => {
+    const effectiveDate = formatDateObjectAsString(parseUTCDateToLocal(version.effectiveDate, null), {
+      format: "date",
+    });
+    return {
+      value: version.legislationVersionGuid,
+      label:
+        version.legislationVersionGuid === versionInEffect?.legislationVersionGuid
+          ? `${effectiveDate} (Current)`
+          : effectiveDate,
+    };
+  });
+
+  const { data: referencedGuids } = useReferencedLegislationGuids(selectedVersionGuid);
+  const referencedNodes = useMemo(() => new Set(referencedGuids ?? []), [referencedGuids]);
 
   const rootNode = useMemo(() => {
     return data?.legislations?.find((item) => item.parentGuid === null);
@@ -186,70 +344,94 @@ export const LegislationManagement: FC = () => {
 
   // Use Effects
 
-  // Initialize tracking arrays
   useEffect(() => {
-    if (data?.legislations) {
-      const enabledNodes = new Set<string>();
-      data.legislations.forEach((item) => {
-        if (item.legislationGuid && item.isEnabled) {
-          enabledNodes.add(item.legislationGuid);
-        }
-      });
-      setContraventionNodes(enabledNodes);
-      setOriginalContraventionNodes(new Set(enabledNodes)); // Save original state
-    }
+    dispatch(toggleLoading(isFetching));
+    return () => {
+      dispatch(toggleLoading(false));
+    };
+  }, [isFetching, dispatch]);
+
+  // Default to the version in force today, falling back to the newest if they are all future dated
+  useEffect(() => {
+    if (selectedVersionGuid || importedVersions.length === 0) return;
+    setSelectedVersionGuid((versionInEffect ?? importedVersions.at(-1))?.legislationVersionGuid);
+  }, [importedVersions, versionInEffect, selectedVersionGuid]);
+
+  // Initialize in the same render that new tree data arrives to avoid a re-render
+  const [initializedData, setInitializedData] = useState<typeof data>();
+  if (data?.legislations && data !== initializedData) {
+    setInitializedData(data);
+    const enabledNodes = new Set<string>();
+    data.legislations.forEach((item) => {
+      if (item.legislationGuid && item.isEnabled) {
+        enabledNodes.add(item.legislationGuid);
+      }
+    });
+    setContraventionNodes(enabledNodes);
+    setOriginalContraventionNodes(new Set(enabledNodes)); // Save original state
+  }
+
+  // Child guids indexed by parent to avoid rescanning the whole tree
+  const childrenByParent = useMemo(() => {
+    const map = new Map<string, string[]>();
+    data?.legislations?.forEach((item) => {
+      if (!item.legislationGuid || !item.parentGuid) return;
+      const siblings = map.get(item.parentGuid);
+      if (siblings) {
+        siblings.push(item.legislationGuid);
+      } else {
+        map.set(item.parentGuid, [item.legislationGuid]);
+      }
+    });
+    return map;
   }, [data]);
 
-  // Helper function to get all descendants recursively
-  const getAllDescendants = (parentGuid: string): string[] => {
-    if (!data?.legislations) return [];
-
-    const children = data.legislations.filter((item) => item.parentGuid === parentGuid);
-    const descendants: string[] = [];
-
-    for (const child of children) {
-      if (!child.legislationGuid) continue;
-
-      descendants.push(child.legislationGuid);
-      const childDescendants = getAllDescendants(child.legislationGuid);
-      descendants.push(...childDescendants);
-    }
-
-    return descendants;
-  };
-
-  // Helper function that enables/disables either a single node or the node + children (if it's a parent)
-  const updateContraventionSet = (targetSet: Set<string>, guids: string[], checked: boolean) => {
-    guids.forEach((guid) => {
-      // Handle SECHEAD guids
-      const actualGuid = getActualGuid(guid);
-
-      // Update the item
-      if (checked) {
-        targetSet.add(actualGuid);
-      } else {
-        targetSet.delete(actualGuid);
+  const getAllDescendants = useCallback(
+    (parentGuid: string): string[] => {
+      const descendants: string[] = [];
+      const stack = [...(childrenByParent.get(parentGuid) ?? [])];
+      while (stack.length > 0) {
+        const guid = stack.pop()!;
+        descendants.push(guid);
+        stack.push(...(childrenByParent.get(guid) ?? []));
       }
+      return descendants;
+    },
+    [childrenByParent],
+  );
 
-      // Update descendants
-      getAllDescendants(actualGuid).forEach((descendantGuid) => {
-        if (checked) {
-          targetSet.add(descendantGuid);
-        } else {
-          targetSet.delete(descendantGuid);
-        }
+  // Helper function that enables/disables either a single node or the node + children
+  const updateContraventionSet = useCallback(
+    (targetSet: Set<string>, guids: string[], checked: boolean) => {
+      guids.forEach((guid) => {
+        // Handle SECHEAD guids
+        const actualGuid = getActualGuid(guid);
+
+        // Update the item and its descendants
+        [actualGuid, ...getAllDescendants(actualGuid)].forEach((nodeGuid) => {
+          if (checked) {
+            targetSet.add(nodeGuid);
+          } else if (!referencedNodes.has(nodeGuid)) {
+            // Sections a contravention was recorded against stay enabled
+            targetSet.delete(nodeGuid);
+          }
+        });
       });
-    });
-  };
+    },
+    [getAllDescendants, referencedNodes],
+  );
 
   // Toggles a single item + descendants
-  const handleToggleContravention = (guid: string, checked: boolean) => {
-    setContraventionNodes((prev) => {
-      const next = new Set(prev);
-      updateContraventionSet(next, [guid], checked);
-      return next;
-    });
-  };
+  const handleToggleContravention = useCallback(
+    (guid: string, checked: boolean) => {
+      setContraventionNodes((prev) => {
+        const next = new Set(prev);
+        updateContraventionSet(next, [guid], checked);
+        return next;
+      });
+    },
+    [updateContraventionSet],
+  );
 
   // Helper to check if an item has any enabled descendants
   const hasEnabledDescendants = (guid: string): boolean => {
@@ -358,8 +540,6 @@ export const LegislationManagement: FC = () => {
     });
   };
 
-  const getActualGuid = (guid: string) => guid.replace("_header", "");
-
   // Helper function that determines if an Act or Regulation is enabled
   const areAllEnabled = (sectionId: string, recursive: boolean): boolean => {
     if (sectionId === LegislationType.ACT) {
@@ -396,113 +576,16 @@ export const LegislationManagement: FC = () => {
 
   // Helper function that renders a legislation row
   const renderSectionRow = (section: Legislation) => {
-    const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType] || "ms-0";
-
-    // For SECHEAD, check if the actual SEC is checked
-    let checkGuid = section.legislationGuid!;
-    if (section.legislationTypeCode === "SECHEAD" && checkGuid.endsWith("_header")) {
-      checkGuid = checkGuid.replace("_header", "");
-    }
-
+    const checkGuid = getActualGuid(section.legislationGuid!);
     const isChecked = contraventionNodes.has(checkGuid);
-
-    // This helper wraps the row layout (checkbox + content)
-    const baseWrapper = (content: React.ReactNode) => (
-      <div
+    return (
+      <SectionRow
         key={section.legislationGuid}
-        className="d-flex align-items-start py-2 border-bottom"
-      >
-        <div className="d-flex justify-content-center leg-admin-checkbox-column">
-          <input
-            type="checkbox"
-            className="form-check-input"
-            checked={isChecked}
-            onChange={(e) => handleToggleContravention(section.legislationGuid!, e.target.checked)}
-          />
-        </div>
-
-        <div>{content}</div>
-      </div>
-    );
-
-    if (
-      section.legislationTypeCode === LegislationType.SCHEDULE ||
-      section.legislationTypeCode === LegislationType.DIVISION ||
-      section.legislationTypeCode === LegislationType.PART
-    ) {
-      let typeLabel = "Part";
-      if (section.legislationTypeCode === LegislationType.SCHEDULE) {
-        typeLabel = "Schedule";
-      } else if (section.legislationTypeCode === LegislationType.DIVISION) {
-        typeLabel = "Division";
-      }
-
-      return baseWrapper(
-        <p className={`mb-2 ${indentClass}`}>
-          <strong>
-            {typeLabel} {section.citation} {section.sectionTitle}
-          </strong>
-        </p>,
-      );
-    }
-
-    if (section.legislationTypeCode === LegislationType.TEXT) {
-      return baseWrapper(
-        <p className={`mb-2 ${indentClass}`}>
-          <LegislationText>{section.legislationText}</LegislationText>
-        </p>,
-      );
-    }
-
-    if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
-      return baseWrapper(
-        <div className={indentClass}>
-          {section.sectionTitle && (
-            <p className="mb-1">
-              <strong>{section.sectionTitle}</strong>
-            </p>
-          )}
-          <LegislationTable html={section.legislationText} />
-        </div>,
-      );
-    }
-
-    if (section.legislationTypeCode === LegislationType.SECTION) {
-      if (section.legislationText) {
-        // SEC with text - just show the text (header was already shown via SECHEAD)
-        return baseWrapper(
-          <p className={`mb-2 ${indentClass}`}>
-            <LegislationText>{section.legislationText}</LegislationText>
-          </p>,
-        );
-      } else {
-        // SEC with only title - show as header
-        return baseWrapper(
-          <p className={`mb-2 ${indentClass}`}>
-            <strong>
-              {section.citation} {section.sectionTitle}
-            </strong>
-          </p>,
-        );
-      }
-    }
-
-    const displayCitation =
-      section.citation || (section.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
-
-    return baseWrapper(
-      <p className={`mb-2 ${indentClass}`}>
-        {section.legislationTypeCode === "SECHEAD" ? (
-          <strong>
-            {section.citation} <LegislationText>{section.legislationText}</LegislationText>
-          </strong>
-        ) : (
-          <>
-            {section.legislationTypeCode !== LegislationType.SECTION && displayCitation && <>({displayCitation}) </>}
-            <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
-          </>
-        )}
-      </p>,
+        section={section}
+        isChecked={isChecked}
+        isDisableBlocked={isChecked && referencedNodes.has(checkGuid)}
+        onToggle={handleToggleContravention}
+      />
     );
   };
 
@@ -531,21 +614,58 @@ export const LegislationManagement: FC = () => {
                 </ol>
               </nav>
             </div>
-            <div className="comp-header-actions">
-              <Button
-                id="details-screen-update-status-button"
-                title="Update status"
-                variant="outline-light"
-                onClick={handleSave}
-              >
-                <i className="bi bi-check-circle"></i>
-                <span>Save</span>
-              </Button>
+            <div className="comp-details-title-container">
+              <div className="comp-details-title-info d-flex align-items-center gap-2">
+                <h1 className="comp-box-complaint-id mb-0 pb-1">
+                  <span>Configure legislation</span>
+                </h1>
+              </div>
+              <div className="comp-header-actions">
+                <Button
+                  id="legislation-configure-back-button"
+                  title="Back to legislation sources"
+                  variant="outline-light"
+                  onClick={() => navigate("/admin/laws")}
+                >
+                  <i className="bi bi-arrow-left"></i>
+                  <span>Back</span>
+                </Button>
+                <Button
+                  id="details-screen-update-status-button"
+                  title="Save"
+                  variant="outline-light"
+                  onClick={handleSave}
+                >
+                  <i className="bi bi-check-circle"></i>
+                  <span>Save</span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="comp-container">
+          <div className="d-flex align-items-center gap-2 mb-4 comp-filter-input">
+            <label
+              htmlFor="legislation-version-select"
+              className="text-nowrap"
+            >
+              Version
+            </label>
+            <CompSelect
+              id="legislation-version-select"
+              className="flex-grow-1"
+              classNamePrefix="comp-select"
+              options={versionOptions}
+              value={versionOptions.find((option) => option.value === selectedVersionGuid) ?? null}
+              onChange={(option: Option | null) => startTransition(() => setSelectedVersionGuid(option?.value))}
+              placeholder="Select a version..."
+              showInactive={false}
+              enableValidation={false}
+              isClearable={false}
+            />
+          </div>
+
           {isLoading ? (
             <div>Loading...</div>
           ) : (

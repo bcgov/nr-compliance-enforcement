@@ -4,6 +4,7 @@ type Query {
     legislationTypeCodes: [String]
     ancestorGuid: String
     legislationSourceGuid: String
+    legislationVersionGuid: String
     excludeRegulations: Boolean
     onlyActive: Boolean
     offenseDate: String
