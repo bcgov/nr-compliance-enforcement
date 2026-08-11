@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { openModal } from "@store/reducers/app";
-import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { CANCEL_CONFIRM, SAVE_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { InvestigationAttachmentReference, InvestigationParty, Party } from "@/generated/graphql";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -265,6 +265,23 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   }, [isEditMode, editParty]);
 
   const saveButtonClick = () => {
+    if (isEditMode && isLinkedParty) {
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: SAVE_CONFIRM,
+          data: {
+            title: "Save party",
+            description:
+              "Saving this party will update its details for all NatSuite users and will be available for use in future investigations.",
+          },
+          callback: () => {
+            form.handleSubmit();
+          },
+        }),
+      );
+      return;
+    }
     form.handleSubmit();
   };
 
