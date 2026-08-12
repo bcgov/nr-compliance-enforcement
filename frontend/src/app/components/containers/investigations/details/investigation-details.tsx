@@ -155,7 +155,7 @@ export const GET_INVESTIGATION = gql`
         description
         activeIndicator
         taskCategoryTypeCode
-        remarks
+        subject
         dueDate
       }
       contraventions {

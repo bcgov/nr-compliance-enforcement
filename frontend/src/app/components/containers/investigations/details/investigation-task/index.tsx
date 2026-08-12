@@ -114,8 +114,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
       const headers = [
         "Task #",
         "Category",
-        "Sub-category",
-        "Remarks",
+        "Subject",
         "Status",
         "Officer assigned",
         "Due date",
@@ -131,7 +130,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
         return [
           `Task ${t.taskNumber ?? ""}`,
           category,
-          t.remarks ?? "",
+          t.subject ?? "",
           status,
           officerName,
           formatDateObjectAsString(parseUTCTimestampToLocal(t.dueDate ?? undefined), { format: "date" }),

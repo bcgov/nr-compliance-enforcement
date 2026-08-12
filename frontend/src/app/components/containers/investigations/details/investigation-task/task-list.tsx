@@ -47,12 +47,12 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       renderCell: (task) => taskCategories.find((c) => c.value === task.taskCategoryTypeCode)?.label ?? "-",
     },
     {
-      label: "Remarks",
+      label: "Subject",
       headerClassName: "comp-cell-width-160",
       cellClassName: "comp-cell-width-160",
       isSortable: true,
-      getValue: (task) => task.remarks ?? "",
-      renderCell: (task) => task.remarks ?? "-",
+      getValue: (task) => task.subject ?? "",
+      renderCell: (task) => task.subject ?? "-",
     },
     {
       label: "Status",
