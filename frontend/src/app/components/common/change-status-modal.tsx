@@ -77,7 +77,6 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ show, onHide, on
         const input: CreateUpdateTaskInput = {
           taskIdentifier: (data as Task)?.taskIdentifier,
           investigationIdentifier: (data as Task)?.investigationIdentifier,
-          taskTypeCode: (data as Task)?.taskTypeCode ?? undefined,
           taskStatusCode: selectedStatus || undefined,
           assignedUserIdentifier: (data as Task)?.assignedUserIdentifier ?? undefined,
           appUserIdentifier: (data as Task)?.createdByUserIdentifier ?? undefined,

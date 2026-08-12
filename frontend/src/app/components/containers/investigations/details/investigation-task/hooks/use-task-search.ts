@@ -3,14 +3,12 @@ import { useCallback, useMemo } from "react";
 
 export interface TaskSearchParams {
   categoryFilter: string | null;
-  subCategoryFilter: string | null;
   statusFilter: string | null;
   officerFilter: string | null;
 }
 
 const DEFAULT_SEARCH_VALUES: TaskSearchParams = {
   categoryFilter: null,
-  subCategoryFilter: null,
   statusFilter: null,
   officerFilter: null,
 };
@@ -33,7 +31,6 @@ export const useTaskSearch = () => {
   const searchValues: TaskSearchParams = useMemo(
     () => ({
       categoryFilter: searchParams.get("categoryFilter"),
-      subCategoryFilter: searchParams.get("subCategoryFilter"),
       statusFilter: searchParams.get("statusFilter"),
       officerFilter: searchParams.get("officerFilter"),
     }),

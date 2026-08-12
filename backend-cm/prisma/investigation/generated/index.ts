@@ -41,7 +41,6 @@ import { task as _task } from "./task";
 import { task_category_type_code as _task_category_type_code } from "./task_category_type_code";
 import { task_h as _task_h } from "./task_h";
 import { task_status_code as _task_status_code } from "./task_status_code";
-import { task_type_code as _task_type_code } from "./task_type_code";
 import { ticket as _ticket } from "./ticket";
 import { ticket_h as _ticket_h } from "./ticket_h";
 import { ticket_outcome_code as _ticket_outcome_code } from "./ticket_outcome_code";
@@ -91,7 +90,6 @@ export namespace PrismaModel {
   export class task_category_type_code extends _task_category_type_code {}
   export class task_h extends _task_h {}
   export class task_status_code extends _task_status_code {}
-  export class task_type_code extends _task_type_code {}
   export class ticket extends _ticket {}
   export class ticket_h extends _ticket_h {}
   export class ticket_outcome_code extends _ticket_outcome_code {}
@@ -141,7 +139,6 @@ export namespace PrismaModel {
     task_category_type_code,
     task_h,
     task_status_code,
-    task_type_code,
     ticket,
     ticket_h,
     ticket_outcome_code,

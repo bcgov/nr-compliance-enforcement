@@ -48,7 +48,6 @@ import {
   fetchPartyAssociationRoles,
   fetchTaskStatusTypes,
   fetchTaskCategoryTypes,
-  fetchTaskTypes,
   fetchInvestigationSourceCodes,
   fetchLegislationTypes,
   fetchEnforcementActionTypes,
@@ -117,7 +116,6 @@ const initialState: CodeTableState = {
   "party-association-role": [],
   "task-status-type": [],
   "task-category-type": [],
-  "task-type": [],
   "investigation-source-code": [],
   "legislation-type": [],
   "enforcement-action-type": [],
@@ -204,7 +202,6 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "party-type": partyType,
       "task-status-type": taskStatusType,
       "task-category-type": taskCategoryType,
-      "task-type": taskType,
       "investigation-source-code": investigationSourceCode,
       "legislation-type": legislationType,
       "enforcement-action-type": enforcementActionType,
@@ -371,9 +368,6 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(taskCategoryType).any()) {
       dispatch(fetchTaskCategoryTypes());
     }
-    if (!from(taskType).any()) {
-      dispatch(fetchTaskTypes());
-    }
     if (!from(investigationSourceCode).any()) {
       dispatch(fetchInvestigationSourceCodes());
     }
@@ -476,7 +470,6 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchPartyAssociationRoles());
     dispatch(fetchTaskStatusTypes());
     dispatch(fetchTaskCategoryTypes());
-    dispatch(fetchTaskTypes());
     dispatch(fetchLegislationTypes());
     dispatch(fetchEnforcementActionTypes());
     dispatch(fetchTicketOutcomeTypes());

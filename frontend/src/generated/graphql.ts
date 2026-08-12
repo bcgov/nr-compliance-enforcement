@@ -820,7 +820,6 @@ export type CreateUpdateTaskInput = {
   taskCategoryTypeCode?: InputMaybe<Scalars['String']['input']>;
   taskIdentifier?: InputMaybe<Scalars['String']['input']>;
   taskStatusCode?: InputMaybe<Scalars['String']['input']>;
-  taskTypeCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateWildlifeInput = {
@@ -2612,9 +2611,8 @@ export type Query = {
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
   task?: Maybe<Task>;
-  taskCategoryTypeCodes: Array<Maybe<TaskTypeCode>>;
+  taskCategoryTypeCodes: Array<Maybe<TaskCategoryTypeCode>>;
   taskStatusCodes: Array<Maybe<TaskStatusCode>>;
-  taskTypeCodes: Array<Maybe<TaskTypeCode>>;
   tasks: Array<Maybe<Task>>;
   team?: Maybe<Team>;
   teamCodes: Array<Maybe<TeamCode>>;
@@ -3108,7 +3106,6 @@ export type Task = {
   taskIdentifier: Scalars['String']['output'];
   taskNumber: Scalars['Int']['output'];
   taskStatusCode: Scalars['String']['output'];
-  taskTypeCode?: Maybe<Scalars['String']['output']>;
   updatedDate?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -3128,16 +3125,6 @@ export type TaskStatusCode = {
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
   taskStatusCode?: Maybe<Scalars['String']['output']>;
-};
-
-export type TaskTypeCode = {
-  __typename?: 'TaskTypeCode';
-  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  displayOrder?: Maybe<Scalars['Int']['output']>;
-  longDescription?: Maybe<Scalars['String']['output']>;
-  shortDescription?: Maybe<Scalars['String']['output']>;
-  taskCategoryTypeCode?: Maybe<Scalars['String']['output']>;
-  taskTypeCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type Team = {

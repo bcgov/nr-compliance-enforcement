@@ -148,7 +148,6 @@ export const GET_INVESTIGATION = gql`
       }
       tasks {
         taskIdentifier
-        taskTypeCode
         taskStatusCode
         assignedUserIdentifier
         createdByUserIdentifier
