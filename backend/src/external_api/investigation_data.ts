@@ -73,10 +73,10 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
   const _resolveUser = (guid: string) => userMap.get(guid) ?? { firstName: "Unknown", lastName: "User" };
 
   // Task Categories
-  const categoryMap = new Map(
-    taskCategoryTypeCodes.map((tc) => [tc.taskCategoryTypeCode, { longDescription: tc.longDescription }]),
+  const categoryMap = new Map<string, string>(
+    taskCategoryTypeCodes.map((tc) => [tc.taskCategoryTypeCode, tc.longDescription]),
   );
-  const _resolveTaskCategory = (categoryCode: string) => categoryMap.get(categoryCode) ?? { longDescription: "" };
+  const _resolveTaskCategory = (categoryCode: string): string => categoryMap.get(categoryCode) ?? "";
 
   // Property types
   const _resolvePropertyTypeLabel = (code: string): string => {
@@ -117,6 +117,7 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
   return {
     ...task,
     assignedUser: _resolveUser(task.assignedUserIdentifier),
+    taskCategory: _resolveTaskCategory(task.taskCategoryTypeCode),
     dueDate: formatDate(task.dueDate),
     exhibits: getExhibitsByTask
       .sort((a, b) => a.exhibitDisplayNumber.localeCompare(b.exhibitDisplayNumber))
