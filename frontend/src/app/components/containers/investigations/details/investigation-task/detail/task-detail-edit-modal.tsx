@@ -44,8 +44,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const officers = useAppSelector(selectOfficers);
   const officersInAgencyList = useAppSelector((state) => selectOfficersByAgency(state, agency));
 
-  const [selectedCategory, setSelectedCategory] = useState("");
-
   const taskCategoryOptions = taskCategories.map((c) => ({
     value: String(c.value ?? ""),
     label: String(c.label ?? ""),
@@ -115,7 +113,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
 
   useEffect(() => {
     if (show && task) {
-      setSelectedCategory(task.taskCategoryTypeCode ?? "");
       form.setFieldValue("taskCategory", task.taskCategoryTypeCode ?? "");
       form.setFieldValue("officerAssigned", task.assignedUserIdentifier ?? currentUserGuid);
       form.setFieldValue("description", task.description ?? "");
@@ -126,7 +123,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       return () => globalThis.clearTimeout(timeout);
     }
     if (show && !task) {
-      setSelectedCategory("");
       form.reset();
       form.setFieldValue("officerAssigned", primaryInvestigatorGuid ?? currentUserGuid);
     }
@@ -193,7 +189,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 onChange={(option) => {
                   const value = option?.value ?? "";
                   field.handleChange(value);
-                  setSelectedCategory(value);
                 }}
                 placeholder="Select category"
                 isClearable
