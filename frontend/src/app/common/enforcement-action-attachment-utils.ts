@@ -72,7 +72,9 @@ export const computeSequenceNumbers = async (
   const baseSequence = await fetchHighestSequenceNumber(investigationGuid, fileType);
 
   return files.map((file, i) => {
-    const existing = existingAttachments.find((a) => getDisplayFilename(a.name) === file.name)?.sequenceNumber;
+    const existing = existingAttachments.find(
+      (a) => getDisplayFilename(a.name) === file.name && a.fileType === fileType,
+    )?.sequenceNumber;
     return existing ?? String(baseSequence + i + 1).padStart(4, "0");
   });
 };

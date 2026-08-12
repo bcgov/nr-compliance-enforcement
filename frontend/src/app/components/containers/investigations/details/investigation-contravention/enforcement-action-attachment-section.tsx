@@ -107,7 +107,16 @@ export const EnforcementActionAttachmentSection = forwardRef<
           closeButton: false,
           draggable: false,
         });
-        const sequences = await computeSequenceNumbers(investigationGuid, current, fieldValues.fileType, filesToAdd);
+
+        let sequences: string[];
+
+        try {
+          sequences = await computeSequenceNumbers(investigationGuid, current, fieldValues.fileType, filesToAdd);
+        } catch (error) {
+          DismissToast(toastId);
+          throw error;
+        }
+
         await uploadAttachmentsWithProgress({
           dispatch,
           files: filesToAdd,

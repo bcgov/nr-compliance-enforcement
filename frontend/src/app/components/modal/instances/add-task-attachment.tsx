@@ -197,11 +197,18 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
     // Pre-calculate sequence numbers for each file. The base is investigation-wide (all tasks
     // and enforcement actions), fetched at upload time so it reflects the current state.
-    const baseSequence = await fetchHighestSequenceNumber(investigationIdentifier, value.fileType);
+    let baseSequence: number;
+    try {
+      baseSequence = await fetchHighestSequenceNumber(investigationIdentifier, value.fileType);
+    } catch {
+      DismissToast(toastId);
+      ToggleError("Unable to determine the attachment number. The files were not uploaded, please try again.");
+      return;
+    }
 
     const fileSequences = files.map((file, i) => {
       const existingSequence = existingAttachments.find(
-        (a: Attachment) => getDisplayFilename(a.name) === file.name,
+        (a: Attachment) => getDisplayFilename(a.name) === file.name && a.fileType === value.fileType,
       )?.sequenceNumber;
 
       return existingSequence ?? String(baseSequence + i + 1).padStart(4, "0");
