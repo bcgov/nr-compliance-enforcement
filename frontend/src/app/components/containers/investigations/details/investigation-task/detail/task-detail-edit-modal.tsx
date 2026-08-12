@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -9,7 +9,7 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
-import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { CompInput } from "@/app/components/common/comp-input";
@@ -40,20 +40,14 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const currentUserGuid = useAppSelector(selectAppUserGuid);
   const taskCategories = useAppSelector(selectTaskCategory);
-  const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const agency = useAppSelector(selectOfficerAgency);
   const officers = useAppSelector(selectOfficers);
   const officersInAgencyList = useAppSelector((state) => selectOfficersByAgency(state, agency));
-
-  const [selectedCategory, setSelectedCategory] = useState("");
 
   const taskCategoryOptions = taskCategories.map((c) => ({
     value: String(c.value ?? ""),
     label: String(c.label ?? ""),
   }));
-  const taskSubCategoryOptions = taskSubCategories
-    .filter((s) => s.taskCategory === selectedCategory)
-    .map((s) => ({ value: String(s.value ?? ""), label: String(s.label ?? "") }));
   const assignedOfficer =
     task && officers ? (officers.find((o) => o.app_user_guid === task.assignedUserIdentifier) ?? null) : null;
 
@@ -78,7 +72,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const form = useForm({
     defaultValues: {
       taskCategory: "",
-      taskSubCategory: "",
       officerAssigned: primaryInvestigatorGuid ?? currentUserGuid,
       description: "",
       remarks: "",
@@ -88,7 +81,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       const input: CreateUpdateTaskInput = {
         taskIdentifier: task?.taskIdentifier,
         investigationIdentifier: investigationGuid,
-        taskTypeCode: value.taskSubCategory || null,
         taskStatusCode: task ? undefined : "OPEN", // default to open for new tasks
         assignedUserIdentifier: value.officerAssigned || undefined,
         appUserIdentifier: currentUserGuid,
@@ -114,18 +106,14 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   }, [isFormDirty, markDirty]);
 
   const clearFieldMeta = () => {
-    (["taskCategory", "taskSubCategory", "officerAssigned", "description", "dueDate", "remarks"] as const).forEach(
-      (name) => {
-        form.setFieldMeta(name, (meta) => ({ ...meta, isDirty: false, isTouched: false }));
-      },
-    );
+    (["taskCategory", "officerAssigned", "description", "dueDate", "remarks"] as const).forEach((name) => {
+      form.setFieldMeta(name, (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    });
   };
 
   useEffect(() => {
     if (show && task) {
-      setSelectedCategory(task.taskCategoryTypeCode ?? "");
       form.setFieldValue("taskCategory", task.taskCategoryTypeCode ?? "");
-      form.setFieldValue("taskSubCategory", task.taskTypeCode ?? "");
       form.setFieldValue("officerAssigned", task.assignedUserIdentifier ?? currentUserGuid);
       form.setFieldValue("description", task.description ?? "");
       form.setFieldValue("dueDate", task?.dueDate ? task.dueDate : new Date());
@@ -135,7 +123,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       return () => globalThis.clearTimeout(timeout);
     }
     if (show && !task) {
-      setSelectedCategory("");
       form.reset();
       form.setFieldValue("officerAssigned", primaryInvestigatorGuid ?? currentUserGuid);
     }
@@ -202,8 +189,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 onChange={(option) => {
                   const value = option?.value ?? "";
                   field.handleChange(value);
-                  setSelectedCategory(value);
-                  form.setFieldValue("taskSubCategory", ""); // reset sub-category when category changes
                 }}
                 placeholder="Select category"
                 isClearable
@@ -214,30 +199,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
               />
             )}
           />
-          {selectedCategory && (
-            <FormField
-              form={form}
-              name="taskSubCategory"
-              label="Task sub-category"
-              render={(field) => (
-                <CompSelect
-                  key={selectedCategory}
-                  id="task-detail-edit-subcategory"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={taskSubCategoryOptions}
-                  value={taskSubCategoryOptions.find((opt) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value ?? "")}
-                  placeholder={taskSubCategoryOptions[0].label === "None" ? "" : "Select sub-category"}
-                  isClearable
-                  showInactive={false}
-                  enableValidation
-                  errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                  isDisabled={taskSubCategoryOptions[0].label === "None"}
-                />
-              )}
-            />
-          )}
           <FormField
             form={form}
             name="remarks"

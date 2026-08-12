@@ -1,5 +1,4 @@
 import { task } from "./task";
-import { task_type_code } from "./task_type_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class task_category_type_code {
@@ -32,7 +31,4 @@ export class task_category_type_code {
 
   @ApiProperty({ isArray: true, type: () => task })
   task_task_task_category_type_codeTotask_category_type_code: task[];
-
-  @ApiProperty({ isArray: true, type: () => task_type_code })
-  task_type_code_task_type_code_task_category_type_codeTotask_category_type_code: task_type_code[];
 }
