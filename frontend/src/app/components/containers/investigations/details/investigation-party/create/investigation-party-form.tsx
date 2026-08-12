@@ -421,12 +421,11 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       }
     };
 
-    try {
-      void copyParty();
-    } catch {
+    void copyParty().catch((error) => {
+      console.error("Error copying party:", error);
       copyInFlightRef.current = false;
       setCopyPending(false);
-    }
+    });
   }, [addMatchGuid, matchPartyData, investigationGuid]);
 
   const resolveThumbnailPin = async (
