@@ -12,6 +12,7 @@ import {
   PersonFacialHairStyleCode,
   PersonInput,
   PersonUpdateInput,
+  UpdateInvestigationBusinessIdentifierInput,
 } from "@/generated/graphql";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { ContactMethods } from "@/app/constants/contact-methods";
@@ -386,8 +387,8 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, inc
       ...(includeGuid && businessNumber.businessIdentifierGuid
         ? { businessIdentifierGuid: businessNumber.businessIdentifierGuid }
         : {}),
-      ...(businessNumber.businessIdentifierGuid
-        ? { businessIdentifierReference: businessNumber.businessIdentifierGuid }
+      ...(businessNumber.businessIdentifierReference
+        ? { businessIdentifierReference: businessNumber.businessIdentifierReference }
         : {}),
       identifierCode: BusinessIdentifiers.BUSINESS_NUMBER,
       identifierValue: businessNumber.identifierValue,
@@ -399,8 +400,8 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, inc
       ...(includeGuid && worksafeBCNumber.businessIdentifierGuid
         ? { businessIdentifierGuid: worksafeBCNumber.businessIdentifierGuid }
         : {}),
-      ...(worksafeBCNumber.businessIdentifierGuid
-        ? { businessIdentifierReference: worksafeBCNumber.businessIdentifierGuid }
+      ...(worksafeBCNumber.businessIdentifierReference
+        ? { businessIdentifierReference: worksafeBCNumber.businessIdentifierReference }
         : {}),
       identifierCode: BusinessIdentifiers.WSBC_NUMBER,
       identifierValue: worksafeBCNumber.identifierValue,
@@ -409,6 +410,7 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, inc
 
   return identifiers.length ? identifiers : undefined;
 };
+
 // Helper to validate business form fields
 export const validateBusinessForm = async (value: any): Promise<string | null> => {
   if (!value.businessName?.trim()) {
@@ -629,19 +631,27 @@ export const mapInvestigationPartyToDefaultValues = (
   businessName: editParty.business?.name || "",
   businessNumber: (() => {
     const found = (editParty.business?.businessIdentifiers ?? [])
-      .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
+      .filter((bi): bi is UpdateInvestigationBusinessIdentifierInput => bi != null)
       .find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
     return found
-      ? { businessIdentifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
+      ? {
+          businessIdentifierGuid: found.businessIdentifierGuid,
+          businessIdentifierReference: found.businessIdentifierReference,
+          identifierValue: found.identifierValue,
+        }
       : { identifierValue: "" };
   })(),
   worksafeBCNumber: (() => {
     const found = (editParty.business?.businessIdentifiers ?? [])
-      .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
+      .filter((bi): bi is UpdateInvestigationBusinessIdentifierInput => bi != null)
       .find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER);
     return found
-      ? { businessIdentifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
-      : {};
+      ? {
+          businessIdentifierGuid: found.businessIdentifierGuid,
+          businessIdentifierReference: found.businessIdentifierReference,
+          identifierValue: found.identifierValue,
+        }
+      : { identifierValue: "" };
   })(),
   aliases: mapAliasesFromPartyData(editParty.aliases),
   phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
@@ -758,11 +768,11 @@ const buildBusinessCopy = (party: Party, copiedAddresses: AddressFormValue[]) =>
       businessIdentifiers: buildIdentifiers(
         {
           identifierValue: findIdentifierValue(party, BusinessIdentifiers.BUSINESS_NUMBER),
-          businessIdentifierGuid: findIdentifierGuid(party, BusinessIdentifiers.BUSINESS_NUMBER),
+          businessIdentifierReference: findIdentifierGuid(party, BusinessIdentifiers.BUSINESS_NUMBER),
         },
         {
           identifierValue: findIdentifierValue(party, BusinessIdentifiers.WSBC_NUMBER),
-          businessIdentifierGuid: findIdentifierGuid(party, BusinessIdentifiers.WSBC_NUMBER),
+          businessIdentifierReference: findIdentifierGuid(party, BusinessIdentifiers.WSBC_NUMBER),
         },
         false,
       ),

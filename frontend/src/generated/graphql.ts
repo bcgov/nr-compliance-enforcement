@@ -169,6 +169,7 @@ export type Assessment = {
   attended?: Maybe<Scalars['Boolean']['output']>;
   cat1Actions?: Maybe<Array<Maybe<CaseFileAction>>>;
   categoryLevel?: Maybe<KeyValuePair>;
+  comments?: Maybe<Scalars['String']['output']>;
   conflictHistory?: Maybe<KeyValuePair>;
   contactedComplainant?: Maybe<Scalars['Boolean']['output']>;
   id?: Maybe<Scalars['String']['output']>;
@@ -193,6 +194,7 @@ export type AssessmentInput = {
   attended?: InputMaybe<Scalars['Boolean']['input']>;
   cat1Actions?: InputMaybe<Array<InputMaybe<AssessmentActionInput>>>;
   categoryLevel?: InputMaybe<KeyValuePairInput>;
+  comments?: InputMaybe<Scalars['String']['input']>;
   conflictHistory?: InputMaybe<KeyValuePairInput>;
   contactedComplainant?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -792,7 +794,6 @@ export type CreateUpdateContraventionInput = {
 export type CreateUpdateExhibitInput = {
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
   collectedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  dateCollected?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   exhibitGuid?: InputMaybe<Scalars['String']['input']>;
   intakeDate: Scalars['DateTime']['input'];
@@ -1154,7 +1155,6 @@ export type Exhibit = {
   activeIndicator: Scalars['Boolean']['output'];
   collectedAppUserGuidRef: Scalars['String']['output'];
   createdDate: Scalars['DateTime']['output'];
-  dateCollected: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   exhibitDisplayNumber: Scalars['String']['output'];
   exhibitGuid: Scalars['String']['output'];
@@ -2930,7 +2930,7 @@ export type QuerypersonArgs = {
 
 
 export type QueryreferencedLegislationGuidsArgs = {
-  legislationGuids: Array<Scalars['String']['input']>;
+  legislationVersionGuid: Scalars['String']['input'];
 };
 
 
@@ -3285,6 +3285,7 @@ export type UpdateInvestigationBusinessContactInput = {
 
 export type UpdateInvestigationBusinessIdentifierInput = {
   businessIdentifierGuid?: InputMaybe<Scalars['String']['input']>;
+  businessIdentifierReference?: InputMaybe<Scalars['String']['input']>;
   identifierCode: Scalars['String']['input'];
   identifierValue: Scalars['String']['input'];
 };
@@ -3328,6 +3329,7 @@ export type UpdateInvestigationPartyInput = {
   aliases?: InputMaybe<Array<InputMaybe<UpdateInvestigationAliasInput>>>;
   business?: InputMaybe<UpdateInvestigationBusinessInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<UpdateInvestigationContactMethodInput>>>;
+  images?: InputMaybe<Array<InputMaybe<ImageUpdateInput>>>;
   partyAssociationRole: Scalars['String']['input'];
   partyIdentifier: Scalars['String']['input'];
   person?: InputMaybe<UpdateInvestigationPersonInput>;

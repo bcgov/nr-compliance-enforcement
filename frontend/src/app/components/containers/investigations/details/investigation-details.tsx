@@ -141,6 +141,7 @@ export const GET_INVESTIGATION = gql`
             businessIdentifierGuid
             identifierCode
             identifierValue
+            businessIdentifierReference
           }
         }
         partyAssociationRole
