@@ -113,6 +113,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const [addMatchGuid, setAddMatchGuid] = useState<string>("");
 
+  const copyInFlightRef = useRef(false);
+  const [copyPending, setCopyPending] = useState(false);
+  const [attachmentsSaving, setAttachmentsSaving] = useState(false);
+
   const isLinkedParty = !!editParty?.partyReference;
 
   const { data: matchPartyData } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
@@ -208,6 +212,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   // After the create/update succeeds, flush attachments; their onSaved callback handles navigation.
   const flushAttachmentsThenNavigate = () => {
+    setAttachmentsSaving(true);
     // Work around for timing issue
     setTriggerSaveAttachments((n) => n + 1);
   };
@@ -221,6 +226,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
     onError: (error: any) => {
       console.error("Error adding party:", error);
+      copyInFlightRef.current = false;
+      setCopyPending(false);
       handleBusinessPartyMutationError(form, error, "Failed to add party");
     },
   });
@@ -237,6 +244,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
     onError: (error: any) => {
       console.error("Error updating party:", error);
+      copyInFlightRef.current = false;
+      setCopyPending(false);
       handleBusinessPartyMutationError(form, error, "Failed to update party");
     },
   });
@@ -250,6 +259,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
     onError: (error: any) => {
       console.error("Error copying party:", error);
+      copyInFlightRef.current = false;
+      setCopyPending(false);
       handleBusinessPartyMutationError(form, error, "Failed to add party");
     },
   });
@@ -326,7 +337,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   // disable saving from validation start through mutation completion
   const formSubmitting = useStore(form.store, (state: any) => state.isSubmitting) as boolean;
-  const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending;
+  const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending || copyPending || attachmentsSaving;
   const saveDisabled = formSubmitting || isDisabled;
 
   const { matches, handleFieldBlur } = usePartyMatchTrigger(form, isLinkedParty);
@@ -345,11 +356,18 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   };
 
   useEffect(() => {
-    if (!addMatchGuid || !matchPartyData?.party) {
+    if (!addMatchGuid || !matchPartyData?.party || copyInFlightRef.current) {
       return;
     }
 
     const party = matchPartyData.party;
+
+    // Potential long stuff happening... disable the form
+    copyInFlightRef.current = true;
+    setCopyPending(true);
+
+    // Clear the trigger so stale query data can't re-fire the copy on a later render.
+    setAddMatchGuid("");
 
     const copyParty = async () => {
       if (!party.partyIdentifier) {
@@ -401,12 +419,14 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       } else {
         addPartyMutation.mutate({ investigationGuid, input: [input] });
       }
-
-      // Clear the trigger so stale query data can't re-fire the copy on a later render.
-      setAddMatchGuid("");
     };
 
-    void copyParty();
+    try {
+      void copyParty();
+    } catch {
+      copyInFlightRef.current = false;
+      setCopyPending(false);
+    }
   }, [addMatchGuid, matchPartyData, investigationGuid]);
 
   const resolveThumbnailPin = async (

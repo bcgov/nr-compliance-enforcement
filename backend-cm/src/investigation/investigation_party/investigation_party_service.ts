@@ -627,7 +627,7 @@ export class InvestigationPartyService {
       (input.addresses ?? []).find((a) => a.addressGuid === addressGuid)?.addressReference;
 
     const addresses: AddressInput[] = (input.addresses ?? []).map((a) => ({
-      addressGuid: findAddressReference(a.addressGuid) ?? "",
+      addressGuid: a.addressReference ?? "",
       addressName: a.addressName,
       address: a.address,
       city: a.city,

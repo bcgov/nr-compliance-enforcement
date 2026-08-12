@@ -1217,14 +1217,15 @@ export class PartyService {
           addEvent,
         );
       } else if (incoming.addressName) {
+        const incomingMethods = (incoming.contactMethods as ContactMethodInput[] | undefined) ?? [];
         addEvent("ADDED", "address", null, incoming.addressName, {
           streetAddress: incoming.address ?? null,
           city: incoming.city ?? null,
           province: incoming.province ?? null,
           postalCode: incoming.postalCode ?? null,
           country: incoming.country ?? null,
-          phoneNumber: incoming.contactMethods.find((m) => m.typeCode === "PHONE")?.value ?? null,
-          emailAddress: incoming.contactMethods.find((m) => m.typeCode === "EMAILADDR")?.value ?? null,
+          phoneNumber: incomingMethods.find((m) => m?.typeCode === "PHONE")?.value ?? null,
+          emailAddress: incomingMethods.find((m) => m?.typeCode === "EMAILADDR")?.value ?? null,
         });
       }
     }

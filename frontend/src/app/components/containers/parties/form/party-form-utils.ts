@@ -783,7 +783,6 @@ export const mapPartyToInvestigationPartyInput = (
   partyAssociationRole: string,
   attachmentReferences?: CreateAttachmentReferenceInput[],
 ) => {
-  console.log(party);
   const aliases = mapAliasesFromPartyData(party.aliases)
     .filter((a) => a.name.trim().length > 0)
     .map((a) => ({ name: a.name, aliasReference: a.aliasGuid }));
