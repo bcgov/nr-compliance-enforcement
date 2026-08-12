@@ -7,6 +7,7 @@ import {
   getDisplayFilename,
   ParsedObjectMetadata,
 } from "@common/attachment-utils";
+import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
 
 const FETCH_PAGE_SIZE = 100;
 
@@ -56,15 +57,19 @@ export const buildEnforcementActionMeta = (
   };
 };
 
-/** Computes a padded sequence number per file, scoped to this EA's attachments of the same file type. */
-export const computeSequenceNumbers = (
+/**
+ * Computes a padded sequence number per file. The base is investigation-wide (all tasks and all
+ * enforcement actions) for the given file type, fetched at upload time so it reflects the current
+ * state of the investigation. Files matching an existing attachment on this enforcement action by
+ * name reuse that attachment's sequence number.
+ */
+export const computeSequenceNumbers = async (
+  investigationGuid: string,
   existingAttachments: EnforcementActionAttachment[],
   fileType: string,
   files: File[],
-): string[] => {
-  const baseSequence = existingAttachments
-    .filter((a) => a.fileType === fileType)
-    .reduce((max, a) => Math.max(max, Number.parseInt(a.sequenceNumber ?? "0", 10)), 0);
+): Promise<string[]> => {
+  const baseSequence = await fetchHighestSequenceNumber(investigationGuid, fileType);
 
   return files.map((file, i) => {
     const existing = existingAttachments.find((a) => getDisplayFilename(a.name) === file.name)?.sequenceNumber;

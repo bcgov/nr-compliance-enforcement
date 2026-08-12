@@ -25,6 +25,7 @@ import { fileTypeOptions } from "@/app/components/common/file-type-options";
 import { parseISO } from "date-fns";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
 
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
@@ -194,10 +195,9 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
     submit();
 
-    // Pre-calculate sequence numbers for each file
-    const baseSequence = existingAttachments
-      .filter((a: Attachment) => a.fileType === value.fileType)
-      .reduce((max: number, a: Attachment) => Math.max(max, Number.parseInt(a.sequenceNumber ?? "0", 10)), 0);
+    // Pre-calculate sequence numbers for each file. The base is investigation-wide (all tasks
+    // and enforcement actions), fetched at upload time so it reflects the current state.
+    const baseSequence = await fetchHighestSequenceNumber(investigationIdentifier, value.fileType);
 
     const fileSequences = files.map((file, i) => {
       const existingSequence = existingAttachments.find(
