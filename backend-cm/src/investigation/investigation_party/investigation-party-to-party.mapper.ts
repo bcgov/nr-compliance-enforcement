@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { PARTY_TYPES } from "../../common/party";
 import { AddressInput } from "../../shared/address/dto/address";
 import { Alias } from "../../shared/alias/dto/alias";
@@ -115,8 +115,7 @@ const mapBusiness = (
 
 /**
  * Maps an investigation ("local") party onto the PartyCreateInput the shared party registry expects,
- * so a party first entered inside an investigation can be published for reuse elsewhere. This is the
- * inverse of the frontend's mapPartyToInvestigationPartyInput copy and follows the same rules: child
+ * This is the inverse of the frontend's mapPartyToInvestigationPartyInput copy and follows the same rules: child
  * rows are created fresh, and addresses get client-generated GUIDs so business contact office links
  * can resolve to the copies.
  */
