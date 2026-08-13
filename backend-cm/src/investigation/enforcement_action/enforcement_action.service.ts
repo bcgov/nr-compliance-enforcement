@@ -101,7 +101,7 @@ export class EnforcementActionService {
       }
 
       // Publish local party to the shared party
-      await this.investigationPartyService.publishToSharedParty(input.partyIdentifier);
+      const publishedPartyReference = await this.investigationPartyService.publishToSharedParty(input.partyIdentifier);
 
       const enforcementAction = await this.prisma.enforcement_action.create({
         data: {
@@ -132,7 +132,10 @@ export class EnforcementActionService {
 
       await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
 
-      return await this.findOne(enforcementAction.enforcement_action_guid);
+      const created = await this.findOne(enforcementAction.enforcement_action_guid);
+
+      // Handed back so the client can copy the party's COMS attachments onto the new shared party
+      return { ...created, publishedPartyReference };
     } catch (error) {
       this.logger.error("Error creating enforcement action:", error);
       throw error;
