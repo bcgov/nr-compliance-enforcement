@@ -101,33 +101,42 @@ export class EnforcementActionService {
       }
 
       // Publish local party to the shared party
-      const publishedPartyReference = await this.investigationPartyService.publishToSharedParty(input.partyIdentifier);
+      const sharedParty = await this.investigationPartyService.publishToSharedParty(input.partyIdentifier);
 
-      const enforcementAction = await this.prisma.enforcement_action.create({
-        data: {
-          contravention_party_xref_guid: xref.contravention_party_xref_guid,
-          enforcement_action_code: input.enforcementActionCode,
-          date_issued: input.dateIssued,
-          geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
-          app_user_guid_ref: input.appUserIdentifier,
-          active_ind: true,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-          ...(input.ticketOutcomeCode &&
-            input.ticketAmount !== undefined && {
-              ticket: {
-                create: {
-                  ticket_outcome_code: input.ticketOutcomeCode,
-                  ticket_amount: input.ticketAmount,
-                  ticket_number: input.ticketNumber,
-                  paid_date: input.paidDate,
-                  active_ind: true,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
+      // The enforcement action and the link back to the published party commit together
+      const enforcementAction = await withRlsTransaction(this.prisma, async (db) => {
+        const created = await db.enforcement_action.create({
+          data: {
+            contravention_party_xref_guid: xref.contravention_party_xref_guid,
+            enforcement_action_code: input.enforcementActionCode,
+            date_issued: input.dateIssued,
+            geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
+            app_user_guid_ref: input.appUserIdentifier,
+            active_ind: true,
+            create_user_id: this.user.getIdirUsername(),
+            create_utc_timestamp: new Date(),
+            ...(input.ticketOutcomeCode &&
+              input.ticketAmount !== undefined && {
+                ticket: {
+                  create: {
+                    ticket_outcome_code: input.ticketOutcomeCode,
+                    ticket_amount: input.ticketAmount,
+                    ticket_number: input.ticketNumber,
+                    paid_date: input.paidDate,
+                    active_ind: true,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  },
                 },
-              },
-            }),
-        },
+              }),
+          },
+        });
+
+        if (sharedParty) {
+          await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier, sharedParty);
+        }
+
+        return created;
       });
 
       await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
@@ -135,7 +144,7 @@ export class EnforcementActionService {
       const created = await this.findOne(enforcementAction.enforcement_action_guid);
 
       // Handed back so the client can copy the party's COMS attachments onto the new shared party
-      return { ...created, publishedPartyReference };
+      return { ...created, publishedPartyReference: sharedParty?.partyIdentifier ?? null };
     } catch (error) {
       this.logger.error("Error creating enforcement action:", error);
       throw error;

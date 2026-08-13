@@ -48,6 +48,7 @@ import { InvestigationBusinessPersonAddressXref } from "../investigation_busines
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PARTY_TYPES } from "src/common/party";
 import { PartyService } from "../../shared/party/party.service";
+import { Party } from "../../shared/party/dto/party";
 import { mapInvestigationPartyToPartyCreateInput } from "./investigation-party-to-party.mapper";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
@@ -559,12 +560,11 @@ export class InvestigationPartyService {
   }
 
   /**
-   * Publishes a local (investigation-only) party into the shared party registry,
-   * then links the investigation rows back to the new shared records.
-   * Parties that already carry a shared reference are copies of an existing party and are left alone.
-   * Returns the shared party guid when one was created, otherwise null.
+   * Publishes a local (investigation-only) party into the shared party registry.
+   * Returns the new shared party, or null when the investigation party already carries
+   * a shared reference and is therefore a copy of an existing party.
    */
-  async publishToSharedParty(partyIdentifier: string): Promise<string | null> {
+  async publishToSharedParty(partyIdentifier: string): Promise<Party | null> {
     const investigationParty = await this.prisma.investigation_party.findUnique({
       where: { investigation_party_guid: partyIdentifier },
     });
@@ -585,43 +585,40 @@ export class InvestigationPartyService {
     }
 
     // Create the shared party record from the investigation party data
-    const sharedParty = await this.partyService.create(mapInvestigationPartyToPartyCreateInput(party));
+    return await this.partyService.create(mapInvestigationPartyToPartyCreateInput(party));
+  }
 
-    // Update the investigation party ref
-    await withRlsTransaction(this.prisma, async (db) => {
-      await db.investigation_party.update({
-        where: { investigation_party_guid: partyIdentifier },
+  async linkToSharedParty(db: any, partyIdentifier: string, sharedParty: Party): Promise<void> {
+    await db.investigation_party.update({
+      where: { investigation_party_guid: partyIdentifier },
+      data: {
+        party_guid_ref: sharedParty.partyIdentifier,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+      },
+    });
+
+    if (sharedParty.person) {
+      await db.investigation_person.updateMany({
+        where: { investigation_party_guid: partyIdentifier, active_ind: true },
         data: {
-          party_guid_ref: sharedParty.partyIdentifier,
+          person_guid_ref: sharedParty.person.personGuid,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },
       });
+    }
 
-      if (sharedParty.person) {
-        await db.investigation_person.updateMany({
-          where: { investigation_party_guid: partyIdentifier, active_ind: true },
-          data: {
-            person_guid_ref: sharedParty.person.personGuid,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        });
-      }
-
-      if (sharedParty.business) {
-        await db.investigation_business.updateMany({
-          where: { investigation_party_guid: partyIdentifier, active_ind: true },
-          data: {
-            business_guid_ref: sharedParty.business.businessGuid,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        });
-      }
-    });
-
-    return sharedParty.partyIdentifier;
+    if (sharedParty.business) {
+      await db.investigation_business.updateMany({
+        where: { investigation_party_guid: partyIdentifier, active_ind: true },
+        data: {
+          business_guid_ref: sharedParty.business.businessGuid,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    }
   }
 
   async findManyByRef(partyRefId: string): Promise<InvestigationParty[]> {
