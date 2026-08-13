@@ -225,6 +225,69 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     });
   }, [onRequestValidate]);
 
+  type FormValues = typeof form.state.values;
+
+  // Ticket details only apply to violation ticket actions, and are shared by create and update
+  const buildTicketFields = (value: FormValues) => {
+    if (!isViolationTicket) return {};
+
+    return {
+      ticketOutcomeCode: value.ticketOutcomeCode,
+      ticketAmount: Number.parseFloat(value.ticketAmount),
+      ticketNumber: value.ticketNumber,
+      paidDate: value.ticketOutcomeCode === "PAID" && value.paidDate ? new Date(value.paidDate).toISOString() : null,
+    };
+  };
+
+  // Everything that follows a successful save. Best effort: a failure here is logged but never
+  // reported as a failed save, because the enforcement action itself is already persisted.
+  const runPostSaveSideEffects = async (
+    enforcementActionId: string,
+    value: FormValues,
+    publishedPartyReference: string | null,
+  ) => {
+    try {
+      const enforcementActionLabel =
+        enforcementActionOptions.find((opt) => opt.value === value.enforcementActionCode)?.label ?? "";
+      await attachmentsRef.current?.persist(enforcementActionId, {
+        fileType: "Photo",
+        title: value.ticketNumber,
+        description: enforcementActionLabel,
+        date: value.dateIssued,
+        takenBy: value.servingOfficer,
+        location: "",
+      });
+      await updateTimestampMutation.mutateAsync({ investigationGuid });
+
+      // The party's attachments live in COMS under the investigation's tags, which the shared party
+      // page never looks at. Copy them across so the newly published profile carries them.
+      if (publishedPartyReference && party?.partyIdentifier) {
+        const failedFiles = await copyInvestigationPartyAttachmentsToSharedParty({
+          dispatch,
+          investigationGuid,
+          investigationPartyGuid: party.partyIdentifier,
+          sharedPartyGuid: publishedPartyReference,
+        });
+
+        if (failedFiles.length > 0) {
+          ToggleError(`Party was saved, but these attachments could not be copied: ${failedFiles.join(", ")}`);
+        }
+      }
+    } catch (sideEffectError) {
+      console.error("Enforcement action saved, but a post-save update failed", sideEffectError);
+    }
+  };
+
+  const showSaveSuccessToast = () => {
+    if (isEdit) {
+      ToggleSuccess("Enforcement action updated successfully");
+    } else if (willPublishParty) {
+      ToggleSuccess("Enforcement action and party details saved successfully");
+    } else {
+      ToggleSuccess("Enforcement action saved successfully");
+    }
+  };
+
   // Expose save to modal
   useEffect(() => {
     onRequestSave(async () => {
@@ -232,8 +295,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       if (!formValid) return;
 
       const value = form.state.values;
-      const paidDate =
-        value.ticketOutcomeCode === "PAID" && value.paidDate ? new Date(value.paidDate).toISOString() : null;
       onIsSavingChange?.(true);
       try {
         let enforcementActionId: string;
@@ -245,12 +306,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             dateIssued: value.dateIssued,
             geoOrganizationUnitCode: value.community,
             appUserIdentifier: value.servingOfficer,
-            ...(isViolationTicket && {
-              ticketOutcomeCode: value.ticketOutcomeCode,
-              ticketAmount: Number.parseFloat(value.ticketAmount),
-              ticketNumber: value.ticketNumber,
-              paidDate,
-            }),
+            ...buildTicketFields(value),
           };
           await updateMutation.mutateAsync({ input });
           enforcementActionId = enforcementAction!.enforcementActionIdentifier;
@@ -262,57 +318,16 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             dateIssued: value.dateIssued,
             geoOrganizationUnitCode: value.community,
             appUserIdentifier: value.servingOfficer,
-            ...(isViolationTicket && {
-              ticketOutcomeCode: value.ticketOutcomeCode,
-              ticketAmount: Number.parseFloat(value.ticketAmount),
-              ticketNumber: value.ticketNumber,
-              paidDate,
-            }),
+            ...buildTicketFields(value),
           };
           const created: any = await saveMutation.mutateAsync({ input });
           enforcementActionId = created.createEnforcementAction.enforcementActionIdentifier;
           publishedPartyReference = created.createEnforcementAction.publishedPartyReference ?? null;
         }
 
-        // Attachments and timestamp update are best effort but do not block the save
-        try {
-          const enforcementActionLabel =
-            enforcementActionOptions.find((opt) => opt.value === value.enforcementActionCode)?.label ?? "";
-          await attachmentsRef.current?.persist(enforcementActionId, {
-            fileType: "Photo",
-            title: value.ticketNumber,
-            description: enforcementActionLabel,
-            date: value.dateIssued,
-            takenBy: value.servingOfficer,
-            location: "",
-          });
-          await updateTimestampMutation.mutateAsync({ investigationGuid });
+        await runPostSaveSideEffects(enforcementActionId, value, publishedPartyReference);
 
-          // The party's attachments live in COMS under the investigation's tags, which the shared
-          // party page never looks at. Copy them across so the newly published profile carries them.
-          if (publishedPartyReference && party?.partyIdentifier) {
-            const failedFiles = await copyInvestigationPartyAttachmentsToSharedParty({
-              dispatch,
-              investigationGuid,
-              investigationPartyGuid: party.partyIdentifier,
-              sharedPartyGuid: publishedPartyReference,
-            });
-
-            if (failedFiles.length > 0) {
-              ToggleError(`Party was saved, but these attachments could not be copied: ${failedFiles.join(", ")}`);
-            }
-          }
-        } catch (sideEffectError) {
-          console.error("Enforcement action saved, but a post-save update failed", sideEffectError);
-        }
-
-        if (isEdit) {
-          ToggleSuccess("Enforcement action updated successfully");
-        } else if (willPublishParty) {
-          ToggleSuccess("Enforcement action and party details saved successfully");
-        } else {
-          ToggleSuccess("Enforcement action saved successfully");
-        }
+        showSaveSuccessToast();
         onDirtyChange?.(0, false);
         onClose();
       } catch {
