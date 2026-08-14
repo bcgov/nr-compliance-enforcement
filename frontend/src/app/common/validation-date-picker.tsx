@@ -5,9 +5,7 @@ import { enGB } from "date-fns/locale";
 // Accepts callbacks that take Date, Date | undefined, or Date | null. We always invoke with Date | undefined
 // null gets normalized to undefined below.
 export type ValidationDatePickerOnChange =
-  | ((date: Date) => void)
-  | ((date: Date | undefined) => void)
-  | ((date: Date | null) => void);
+  ((date: Date) => void) | ((date: Date | undefined) => void) | ((date: Date | null) => void);
 
 interface ValidationDatePickerProps {
   className: string;
@@ -45,6 +43,9 @@ const dateWithTime = (date: Date | string, time: string | null): Date => {
   result.setHours(hh, mm, 0, 0);
   return result;
 };
+
+const isSameCalendarDay = (a: Date, b: Date): boolean =>
+  a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
 // Allows the user to type dates like '2025 02 02' and have it parse out to the standard
 // date format of '2025-02-02'
@@ -134,7 +135,11 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
       emitClear();
     } else if (rawValue) {
       const parsed = parseDateInput(rawValue);
-      if (parsed) {
+      // Blur fires whenever focus leaves the input — including when a consumer opens a confirmation
+      // modal from onChange, at which point the input still shows the previously selected date.
+      // Re-emitting that unchanged value clobbers the consumer's pending state, so only emit on a
+      // genuine change.
+      if (parsed && !(selectedDate && isSameCalendarDay(parsed, selectedDate))) {
         emit(parsed, selectedTime);
       }
     }
