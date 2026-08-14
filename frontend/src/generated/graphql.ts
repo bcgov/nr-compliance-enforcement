@@ -816,7 +816,7 @@ export type CreateUpdateTaskInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['DateTime']['input']>;
   investigationIdentifier?: InputMaybe<Scalars['String']['input']>;
-  remarks?: InputMaybe<Scalars['String']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
   taskCategoryTypeCode?: InputMaybe<Scalars['String']['input']>;
   taskIdentifier?: InputMaybe<Scalars['String']['input']>;
   taskStatusCode?: InputMaybe<Scalars['String']['input']>;
@@ -3102,7 +3102,7 @@ export type Task = {
   dueDate: Scalars['DateTime']['output'];
   investigationIdentifier: Scalars['String']['output'];
   investigationLabel?: Maybe<Scalars['String']['output']>;
-  remarks: Scalars['String']['output'];
+  subject: Scalars['String']['output'];
   taskCategoryTypeCode: Scalars['String']['output'];
   taskIdentifier: Scalars['String']['output'];
   taskNumber: Scalars['Int']['output'];

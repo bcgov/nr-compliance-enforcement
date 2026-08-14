@@ -33,7 +33,7 @@ export class TaskService {
         description: true,
         active_ind: true,
         task_category_type_code: true,
-        remarks: true,
+        subject: true,
         due_date: true,
         investigation: {
           select: {
@@ -66,7 +66,7 @@ export class TaskService {
         description: true,
         active_ind: true,
         task_category_type_code: true,
-        remarks: true,
+        subject: true,
         due_date: true,
         investigation: {
           select: {
@@ -123,7 +123,7 @@ export class TaskService {
               create_user_id: this.user.getIdirUsername(),
               create_utc_timestamp: new Date(),
               task_category_type_code: taskInput.taskCategoryTypeCode,
-              remarks: taskInput.remarks,
+              subject: taskInput.subject,
               due_date: taskInput.dueDate,
             },
           });
@@ -196,7 +196,7 @@ export class TaskService {
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
             task_category_type_code: taskInput.taskCategoryTypeCode,
-            remarks: taskInput.remarks,
+            subject: taskInput.subject,
             due_date: taskInput.dueDate,
           },
         });

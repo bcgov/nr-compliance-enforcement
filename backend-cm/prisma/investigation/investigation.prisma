@@ -782,7 +782,7 @@ model task {
   update_user_id                                                                String?                 @db.VarChar(32)
   update_utc_timestamp                                                          DateTime?               @db.Timestamp(6)
   task_category_type_code                                                       String                  @db.VarChar(16)
-  remarks                                                                       String                  @default("") @db.VarChar(256)
+  subject                                                                       String                  @default("") @db.VarChar(256)
   due_date                                                                      DateTime                @default(dbgenerated("CURRENT_DATE")) @db.Date
   activity_note                                                                 activity_note[]
   diary_date                                                                    diary_date[]

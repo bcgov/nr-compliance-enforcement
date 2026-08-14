@@ -111,7 +111,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
 
       const sortedTasks = [...filteredTasks].sort((a, b) => (a.taskNumber ?? 0) - (b.taskNumber ?? 0));
 
-      const headers = ["Task #", "Category", "Remarks", "Status", "Officer assigned", "Due date", "Last updated"];
+      const headers = ["Task #", "Category", "Subject", "Status", "Officer assigned", "Due date", "Last updated"];
 
       const rows = sortedTasks.map((t) => {
         const category = taskCategories.find((c) => c.value === t.taskCategoryTypeCode)?.label ?? "";
@@ -122,7 +122,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
         return [
           `Task ${t.taskNumber ?? ""}`,
           category,
-          t.remarks ?? "",
+          t.subject ?? "",
           status,
           officerName,
           formatDateObjectAsString(parseUTCTimestampToLocal(t.dueDate ?? undefined), { format: "date" }),
