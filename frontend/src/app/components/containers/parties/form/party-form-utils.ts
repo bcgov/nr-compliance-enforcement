@@ -5,8 +5,6 @@ import {
   BusinessPersonAddress,
   ContactMethod,
   CreateAttachmentReferenceInput,
-  FacialHairStyleCode,
-  InvestigationBusinessIdentifier,
   InvestigationParty,
   InvestigationPersonFacialHairStyleCodeRef,
   Party,
