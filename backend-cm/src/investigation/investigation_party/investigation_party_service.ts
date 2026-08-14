@@ -47,9 +47,19 @@ import {
 import { InvestigationBusinessPersonAddressXref } from "../investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PARTY_TYPES } from "src/common/party";
+import { randomUUID } from "node:crypto";
+import { PartyIdentifiers, PartyService } from "../../shared/party/party.service";
+import { Party, PartyCreateInput } from "../../shared/party/dto/party";
+import { mapInvestigationPartyToPartyCreateInput } from "./investigation-party-to-party.mapper";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
+
+// A shared party that has been described and had its guids settled, but not yet written
+export interface PreparedSharedParty {
+  input: PartyCreateInput;
+  identifiers: PartyIdentifiers;
+}
 
 @Injectable()
 export class InvestigationPartyService {
@@ -59,6 +69,7 @@ export class InvestigationPartyService {
     @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
     private readonly investigationService: InvestigationService,
+    private readonly partyService: PartyService,
   ) {}
 
   private readonly logger = new Logger(InvestigationPartyService.name);
@@ -553,6 +564,92 @@ export class InvestigationPartyService {
 
     const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
     return refreshedInvestigation.parties.find((party) => party.partyIdentifier === newPartyGuid);
+  }
+
+  // Prepare a shared party with randomm guids
+  async prepareSharedParty(partyIdentifier: string): Promise<PreparedSharedParty | null> {
+    const investigationParty = await this.prisma.investigation_party.findUnique({
+      where: { investigation_party_guid: partyIdentifier },
+    });
+
+    if (!investigationParty) {
+      throw new Error("Party not found.");
+    }
+
+    if (investigationParty.party_guid_ref && (await this._sharedPartyExists(investigationParty.party_guid_ref))) {
+      return null;
+    }
+
+    const investigation = await this.investigationService.findOne(investigationParty.investigation_guid);
+    const party = investigation.parties.find((p) => p.partyIdentifier === partyIdentifier && p.isActive);
+
+    if (!party) {
+      throw new Error("Party not found on this investigation.");
+    }
+
+    const isBusiness = party.partyTypeCode === PARTY_TYPES.Company;
+
+    return {
+      input: mapInvestigationPartyToPartyCreateInput(party),
+      identifiers: {
+        partyGuid: investigationParty.party_guid_ref ?? randomUUID(),
+        ...(isBusiness
+          ? { businessGuid: party.business?.businessReference ?? randomUUID() }
+          : { personGuid: party.person?.personReference ?? randomUUID() }),
+      },
+    };
+  }
+
+  private async _sharedPartyExists(partyGuid: string): Promise<boolean> {
+    const sharedParty = await this.sharedPrisma.party.findUnique({
+      where: { party_guid: partyGuid },
+      select: { party_guid: true },
+    });
+
+    return !!sharedParty;
+  }
+
+  /**
+   * Points the investigation party's rows at the shared party described by a prepared publication.
+   * Takes the transaction handle from the caller so these updates commit or roll back with the rest
+   * of the caller's investigation-schema work.
+   */
+  async linkToSharedParty(db: any, partyIdentifier: string, prepared: PreparedSharedParty): Promise<void> {
+    await db.investigation_party.update({
+      where: { investigation_party_guid: partyIdentifier },
+      data: {
+        party_guid_ref: prepared.identifiers.partyGuid,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+      },
+    });
+
+    if (prepared.identifiers.personGuid) {
+      await db.investigation_person.updateMany({
+        where: { investigation_party_guid: partyIdentifier, active_ind: true },
+        data: {
+          person_guid_ref: prepared.identifiers.personGuid,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    }
+
+    if (prepared.identifiers.businessGuid) {
+      await db.investigation_business.updateMany({
+        where: { investigation_party_guid: partyIdentifier, active_ind: true },
+        data: {
+          business_guid_ref: prepared.identifiers.businessGuid,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    }
+  }
+
+  //Writes the prepared party into the shared party table.
+  async createSharedParty(prepared: PreparedSharedParty): Promise<Party> {
+    return await this.partyService.create(prepared.input, prepared.identifiers);
   }
 
   async findManyByRef(partyRefId: string): Promise<InvestigationParty[]> {

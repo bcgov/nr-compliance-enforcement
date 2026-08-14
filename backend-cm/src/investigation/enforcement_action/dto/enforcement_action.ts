@@ -13,6 +13,7 @@ export class EnforcementAction {
   appUserIdentifier: string;
   activeIndicator: boolean;
   ticket?: [Ticket];
+  publishedPartyReference?: string; //For attachments in COMS
 }
 
 export class CreateEnforcementActionInput {

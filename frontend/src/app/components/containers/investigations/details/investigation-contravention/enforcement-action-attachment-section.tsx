@@ -107,7 +107,16 @@ export const EnforcementActionAttachmentSection = forwardRef<
           closeButton: false,
           draggable: false,
         });
-        const sequences = computeSequenceNumbers(current, fieldValues.fileType, filesToAdd);
+
+        let sequences: string[];
+
+        try {
+          sequences = await computeSequenceNumbers(investigationGuid, current, fieldValues.fileType, filesToAdd);
+        } catch (error) {
+          DismissToast(toastId);
+          throw error;
+        }
+
         await uploadAttachmentsWithProgress({
           dispatch,
           files: filesToAdd,
@@ -163,7 +172,8 @@ export const EnforcementActionAttachmentSection = forwardRef<
             <span>
               <strong> Delete attachment</strong>
               <p className="mb-3">
-                Are you sure you want to delete "{getDisplayFilename(pendingRemove.name)}"? This action cannot be undone.
+                Are you sure you want to delete "{getDisplayFilename(pendingRemove.name)}"? This action cannot be
+                undone.
               </p>
             </span>
           </div>
