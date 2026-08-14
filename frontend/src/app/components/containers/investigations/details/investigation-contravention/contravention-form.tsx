@@ -114,8 +114,9 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
 
   useEffect(() => {
     onRequestSave(async () => {
-      const isValid = await validateStep(0);
-      if (!isValid) return;
+      const isDetailsValid = await validateStep(0);
+      const isPartyValid = isEditMode ? true : await validateStep(1);
+      if (!isDetailsValid || !isPartyValid) return;
 
       const step1Values = getStepValues<ContraventionDetailsFormValues>(0);
       const step2Values = getStepValues<ContraventionPartyFormValues>(1);
