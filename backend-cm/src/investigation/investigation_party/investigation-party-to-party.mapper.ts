@@ -127,7 +127,6 @@ const mapPerson = (person: InvestigationPerson, guids: Map<string, string>): Per
 
 const mapBusinessContact = (
   contact: InvestigationBusinessPersonXref,
-  sharedAddressGuidByInvestigationGuid: Map<string, string>,
   guids: SharedChildGuids,
 ): BusinessPersonXrefInput =>
   ({
@@ -142,15 +141,11 @@ const mapBusinessContact = (
     } as PersonInput,
     contactMethods: mapContactMethods(contact.contactMethods, guids.contactMethodGuids),
     officeAddressGuids: (contact.associatedAddresses ?? [])
-      .map((aa) => sharedAddressGuidByInvestigationGuid.get(aa?.address?.addressGuid ?? ""))
+      .map((aa) => guids.addressGuids.get(aa?.address?.addressGuid ?? ""))
       .filter((guid): guid is string => !!guid),
   }) as BusinessPersonXrefInput;
 
-const mapBusiness = (
-  business: InvestigationBusiness | undefined,
-  sharedAddressGuidByInvestigationGuid: Map<string, string>,
-  guids: SharedChildGuids,
-): BusinessInput =>
+const mapBusiness = (business: InvestigationBusiness | undefined, guids: SharedChildGuids): BusinessInput =>
   ({
     name: business?.name,
     safetyConcernIndicator: business?.safetyConcernIndicator,
@@ -165,9 +160,7 @@ const mapBusiness = (
             identifierValue: bi.identifierValue,
           }) as BusinessIdentifier,
       ),
-    contactPeople: (business?.contactPeople ?? []).map((contact) =>
-      mapBusinessContact(contact, sharedAddressGuidByInvestigationGuid, guids),
-    ),
+    contactPeople: (business?.contactPeople ?? []).map((contact) => mapBusinessContact(contact, guids)),
   }) as BusinessInput;
 
 /**
@@ -177,16 +170,11 @@ const mapBusiness = (
  * can resolve to the copies.
  */
 export const mapInvestigationPartyToPartyCreateInput = (party: InvestigationParty): MappedSharedParty => {
-  const sharedAddressGuidByInvestigationGuid = new Map<string, string>();
   const childGuids = emptyChildGuids();
 
-  const addresses = (party.addresses ?? []).map((address) => {
-    const sharedAddressGuid = takeSharedGuid(childGuids.addressGuids, address.addressGuid);
-    if (address.addressGuid) {
-      sharedAddressGuidByInvestigationGuid.set(address.addressGuid, sharedAddressGuid);
-    }
-    return mapAddress(address, sharedAddressGuid, childGuids);
-  });
+  const addresses = (party.addresses ?? []).map((address) =>
+    mapAddress(address, takeSharedGuid(childGuids.addressGuids, address.addressGuid), childGuids),
+  );
 
   const common: PartyCreateInput = {
     partyTypeCode: party.partyTypeCode,
@@ -201,7 +189,7 @@ export const mapInvestigationPartyToPartyCreateInput = (party: InvestigationPart
 
   const input =
     party.partyTypeCode === PARTY_TYPES.Company
-      ? { ...common, business: mapBusiness(party.business, sharedAddressGuidByInvestigationGuid, childGuids) }
+      ? { ...common, business: mapBusiness(party.business, childGuids) }
       : { ...common, person: mapPerson(party.person, childGuids.facialHairStyleGuids) };
 
   return { input, childGuids };
