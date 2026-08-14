@@ -28,6 +28,7 @@ const DEACTIVATE_INVESTIGATION_ATTACHMENT_REFERENCE_MUTATION = gql`
 
 interface PartyAttachmentsProps {
   partyId: string;
+  sharedPartyId?: string;
   activityId?: string;
   attachmentType: number;
   allowUpload: boolean;
@@ -42,6 +43,7 @@ interface PartyAttachmentsProps {
 
 export const PartyAttachments: FC<PartyAttachmentsProps> = ({
   partyId,
+  sharedPartyId,
   activityId,
   attachmentType,
   allowUpload,
@@ -195,6 +197,27 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
         attachmentType: attachmentType,
         toastId,
       });
+
+      // Attachments live only in COMS, so a copy is uploaded against the shared party as well.
+      // This sits outside the party save — a failure here leaves the investigation attachment
+      // intact and is reported separately.
+      if (sharedPartyId) {
+        const failedSharedFiles = await uploadAttachmentsWithProgress({
+          dispatch,
+          files: attachmentsToAdd,
+          identifier: sharedPartyId,
+          subIdentifier: undefined,
+          attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+          toastId,
+        });
+
+        if (failedSharedFiles.length > 0) {
+          ToggleError(
+            `Saved to the investigation, but could not sync to the shared party: ${failedSharedFiles.join(", ")}`,
+          );
+        }
+      }
+
       setAttachmentsToAdd(null);
       setAttachmentsToEdit(null);
     }

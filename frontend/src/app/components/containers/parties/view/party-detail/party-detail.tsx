@@ -57,6 +57,7 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
       <DetailSection title="Attachments">
         <PartyAttachments
           partyId={party?.partyIdentifier ?? ""}
+          sharedPartyId={partyReference ?? undefined}
           activityId={investigationGuid ?? ""}
           {...(isInvestigationParty(party) && party.attachmentReferences
             ? { attachmentReferences: party.attachmentReferences as InvestigationAttachmentReference[] }

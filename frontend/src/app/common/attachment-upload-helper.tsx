@@ -1,8 +1,12 @@
 import { ProgressBar } from "react-bootstrap";
 import { Id } from "react-toastify";
 import AttachmentEnum from "@constants/attachment-enum";
-import { handlePersistAttachments, RETRY_CONFIG, withRetry } from "@common/attachment-utils";
-import { ToggleError, UpdateToast } from "@common/toast";
+import { getDisplayFilename, handlePersistAttachments, RETRY_CONFIG, withRetry } from "@common/attachment-utils";
+import { DismissToast, ToggleError, ToggleInformation, UpdateToast } from "@common/toast";
+import { generateApiParameters, get } from "@common/api";
+import { getAttachments } from "@store/reducers/attachments";
+import { COMSObject } from "@apptypes/coms/object";
+import config from "@/config";
 
 interface UploadAttachmentsWithProgressParams {
   dispatch: any;
@@ -109,4 +113,83 @@ export const uploadAttachmentsWithProgress = async ({
   }
 
   return failedFiles;
+};
+
+interface CopyInvestigationPartyAttachmentsParams {
+  dispatch: any;
+  investigationGuid: string;
+  investigationPartyGuid: string;
+  sharedPartyGuid: string;
+}
+
+// Pulls a COMS object down as a File so it can be re-uploaded under a different set of tags.
+const downloadComsObjectAsFile = async (dispatch: any, objectId: string, fileName: string): Promise<File> => {
+  const parameters = generateApiParameters(`${config.COMS_URL}/object/${objectId}?download=url`);
+  const presignedUrl = await get<string>(dispatch, parameters);
+
+  const response = await fetch(presignedUrl);
+  if (!response.ok) {
+    throw new Error(`COMS download responded with ${response.status}`);
+  }
+
+  const blob = await response.blob();
+  return new File([blob], fileName, { type: blob.type });
+};
+
+// Copies an investigation party's attachments onto a shared party.
+export const copyInvestigationPartyAttachmentsToSharedParty = async ({
+  dispatch,
+  investigationGuid,
+  investigationPartyGuid,
+  sharedPartyGuid,
+}: CopyInvestigationPartyAttachmentsParams): Promise<string[]> => {
+  const objects = await dispatch(
+    getAttachments(investigationGuid, investigationPartyGuid, AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT, false),
+  );
+
+  const copyable = objects.filter((object: COMSObject) => !!object.id);
+  if (!copyable.length) {
+    return [];
+  }
+
+  // Only raised once there is something to copy, so a party without attachments stays quiet
+  const toastId = ToggleInformation("Uploading party attachments, do not close the application.", {
+    position: "top-right",
+    autoClose: false,
+    closeOnClick: false,
+    closeButton: false,
+    draggable: false,
+  });
+
+  try {
+    const files: File[] = [];
+    const failedFiles: string[] = [];
+
+    for (const object of copyable) {
+      const fileName = getDisplayFilename(object.name);
+      try {
+        files.push(await downloadComsObjectAsFile(dispatch, object.id as string, fileName));
+      } catch (error) {
+        console.error(`Could not download "${fileName}" to copy onto the shared party`, error);
+        failedFiles.push(fileName);
+      }
+    }
+
+    if (!files.length) {
+      return failedFiles;
+    }
+
+    const failedUploads = await uploadAttachmentsWithProgress({
+      dispatch,
+      files,
+      identifier: sharedPartyGuid,
+      subIdentifier: undefined,
+      attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+      toastId,
+    });
+
+    return [...failedFiles, ...failedUploads];
+  } finally {
+    DismissToast(toastId);
+  }
 };

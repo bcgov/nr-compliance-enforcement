@@ -9,7 +9,12 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
-import { InvestigationAttachmentReference, InvestigationParty, Party } from "@/generated/graphql";
+import {
+  CreateAttachmentReferenceInput,
+  InvestigationAttachmentReference,
+  InvestigationParty,
+  Party,
+} from "@/generated/graphql";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
@@ -44,6 +49,7 @@ import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
+import { getAttachments, getLatestObjectVersion } from "@/app/store/reducers/attachments";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -311,21 +317,81 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       return;
     }
 
-    const input = mapPartyToInvestigationPartyInput(matchPartyData.party, form.getFieldValue("partyAssociationRole"));
+    const party = matchPartyData.party;
 
-    if (isEditMode && editParty) {
-      replacePartyMutation.mutate({
-        investigationGuid,
-        partyIdentifier: editParty.partyIdentifier,
-        input,
-      });
-    } else {
-      addPartyMutation.mutate({ investigationGuid, input: [input] });
+    const copyParty = async () => {
+      if (!party.partyIdentifier) {
+        return;
+      }
+
+      // Attachments live only in COMS, so the source party's objects are listed and pinned to
+      // specific versions here, then stored as reference rows against the investigation party.
+      const attachments = await dispatch(
+        getAttachments(party.partyIdentifier, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
+      );
+
+      const attachmentReferences: CreateAttachmentReferenceInput[] = [];
+
+      for (const attachment of attachments) {
+        if (attachment.id === undefined) {
+          continue;
+        }
+
+        const version = await dispatch(getLatestObjectVersion(attachment.id));
+        if (version === undefined) {
+          continue;
+        }
+
+        const { thumbObjectId, thumbVersion } = await resolveThumbnailPin(attachment.imageIconId);
+
+        attachmentReferences.push({
+          objectId: attachment.id,
+          version: version.s3VersionId,
+          fileName: attachment.name,
+          createdAt: attachment.createdAt,
+          thumbObjectId,
+          thumbVersion,
+        });
+      }
+
+      const input = mapPartyToInvestigationPartyInput(
+        party,
+        form.getFieldValue("partyAssociationRole"),
+        attachmentReferences,
+      );
+
+      if (isEditMode && editParty) {
+        replacePartyMutation.mutate({
+          investigationGuid,
+          partyIdentifier: editParty.partyIdentifier,
+          input,
+        });
+      } else {
+        addPartyMutation.mutate({ investigationGuid, input: [input] });
+      }
+
+      // Clear the trigger so stale query data can't re-fire the copy on a later render.
+      setAddMatchGuid("");
+    };
+
+    void copyParty();
+  }, [addMatchGuid, matchPartyData, investigationGuid]);
+
+  const resolveThumbnailPin = async (
+    imageIconId: string | undefined,
+  ): Promise<{ thumbObjectId: string | undefined; thumbVersion: string | undefined }> => {
+    // Pin the thumbnail alongside it, when the image has one
+    if (imageIconId === undefined) {
+      return { thumbObjectId: undefined, thumbVersion: undefined };
     }
 
-    // Clear the trigger so stale query data can't re-fire the copy on a later render.
-    setAddMatchGuid("");
-  }, [addMatchGuid, matchPartyData, investigationGuid]);
+    const thumb = await dispatch(getLatestObjectVersion(imageIconId));
+    if (thumb === undefined) {
+      return { thumbObjectId: undefined, thumbVersion: undefined };
+    }
+
+    return { thumbObjectId: imageIconId, thumbVersion: thumb.s3VersionId };
+  };
 
   return (
     <div className="comp-investigation-edit-headerdetails">
@@ -462,6 +528,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                 </div>
                 <PartyAttachments
                   partyId={partyIdentifier}
+                  sharedPartyId={editParty?.partyReference ?? undefined}
                   activityId={investigationGuid}
                   attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
                   attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}

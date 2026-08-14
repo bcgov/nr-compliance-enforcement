@@ -1,4 +1,4 @@
-import { GraphQLClient, type RequestOptions } from 'graphql-request';
+import { GraphQLClient, RequestOptions } from 'graphql-request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -169,6 +169,7 @@ export type Assessment = {
   attended?: Maybe<Scalars['Boolean']['output']>;
   cat1Actions?: Maybe<Array<Maybe<CaseFileAction>>>;
   categoryLevel?: Maybe<KeyValuePair>;
+  comments?: Maybe<Scalars['String']['output']>;
   conflictHistory?: Maybe<KeyValuePair>;
   contactedComplainant?: Maybe<Scalars['Boolean']['output']>;
   id?: Maybe<Scalars['String']['output']>;
@@ -193,6 +194,7 @@ export type AssessmentInput = {
   attended?: InputMaybe<Scalars['Boolean']['input']>;
   cat1Actions?: InputMaybe<Array<InputMaybe<AssessmentActionInput>>>;
   categoryLevel?: InputMaybe<KeyValuePairInput>;
+  comments?: InputMaybe<Scalars['String']['input']>;
   conflictHistory?: InputMaybe<KeyValuePairInput>;
   contactedComplainant?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -1014,6 +1016,7 @@ export type EnforcementAction = {
   enforcementActionCode: EnforcementActionCode;
   enforcementActionIdentifier: Scalars['String']['output'];
   geoOrganizationUnitCode: Scalars['String']['output'];
+  publishedPartyReference?: Maybe<Scalars['String']['output']>;
   ticket?: Maybe<Ticket>;
 };
 
