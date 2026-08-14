@@ -40,8 +40,11 @@ export interface PartyIdentifiers {
   partyGuid?: string;
   personGuid?: string;
   businessGuid?: string;
-  // Shared guids generated for each investigation-local child row, keyed by the local guid, so
-  // both the shared row and the local *_guid_ref column can be written with the same value.
+}
+
+// The shared guids generated for each investigation-local child row, keyed by the local guid.
+// Only the investigation side needs these — the shared registry receives them on the input itself.
+export interface PreparedPartyIdentifiers extends PartyIdentifiers {
   addressGuids: Map<string, string>;
   contactMethodGuids: Map<string, string>;
   aliasGuids: Map<string, string>;

@@ -47,16 +47,14 @@ import {
 import { InvestigationBusinessPersonAddressXref } from "../investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PARTY_TYPES } from "src/common/party";
-import { PartyUpdateInput } from "src/shared/party/dto/party";
-import { AddressInput } from "src/shared/address/dto/address";
-import { ContactMethodInput } from "src/shared/contact_method/dto/contact_method";
-import { AliasInput } from "src/shared/alias/dto/alias";
-import { BusinessInput } from "src/shared/business/dto/business";
-import { PersonInput } from "src/shared/person/dto/person.input";
 import { randomUUID } from "node:crypto";
-import { PartyIdentifiers, PartyService } from "../../shared/party/party.service";
+import { PartyService, PreparedPartyIdentifiers } from "../../shared/party/party.service";
 import { Party, PartyCreateInput } from "../../shared/party/dto/party";
-import { mapInvestigationPartyToPartyCreateInput } from "./investigation-party-to-party.mapper";
+import {
+  mapInvestigationPartyToPartyUpdateInput,
+  mapInvestigationPartyToPartyCreateInput,
+  resolveSharedReferences,
+} from "./investigation-party-to-party.mapper";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -64,7 +62,7 @@ const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
 // A shared party that has been described and had its guids settled, but not yet written
 export interface PreparedSharedParty {
   input: PartyCreateInput;
-  identifiers: PartyIdentifiers;
+  identifiers: PreparedPartyIdentifiers;
 }
 
 @Injectable()
@@ -779,198 +777,6 @@ export class InvestigationPartyService {
     return await this.investigationService.findOne(investigationGuid);
   }
 
-  private _buildSharedPartyUpdateInput(
-    existingParty: InvestigationParty,
-    input: UpdateInvestigationPartyInput,
-  ): PartyUpdateInput {
-    const findAddressReference = (addressGuid?: string) =>
-      (input.addresses ?? []).find((a) => a.addressGuid === addressGuid)?.addressReference;
-
-    const addresses: AddressInput[] = (input.addresses ?? []).map((a) => ({
-      addressGuid: a.addressReference ?? "",
-      addressName: a.addressName,
-      address: a.address,
-      city: a.city,
-      province: a.province,
-      postalCode: a.postalCode,
-      country: a.country,
-      isPrimary: a.isPrimary,
-      displayInInvestigation: a.displayInInvestigation,
-      contactMethods: (a.contactMethods ?? []).map((cm) => ({
-        contactMethodGuid: cm.contactMethodReference,
-        typeCode: cm.typeCode,
-        value: cm.value,
-        isPrimary: cm.isPrimary,
-      })),
-    }));
-
-    const contactMethods: ContactMethodInput[] = (input.contactMethods ?? []).map((cm) => ({
-      contactMethodGuid: cm.contactMethodReference,
-      typeCode: cm.typeCode,
-      value: cm.value ?? "",
-      isPrimary: cm.isPrimary ?? false,
-    }));
-
-    const aliases: AliasInput[] = (input.aliases ?? []).map((a) => ({
-      aliasGuid: a.aliasReference ?? "",
-      name: a.name,
-    }));
-
-    const person: PersonInput | undefined = input.person
-      ? {
-          firstName: input.person.firstName,
-          middleNames: input.person.middleNames,
-          lastName: input.person.lastName,
-          dateOfBirth: input.person.dateOfBirth,
-          approximateAgeCode: input.person.approximateAgeCode,
-          driversLicenseNumber: input.person.driversLicenseNumber,
-          driversLicenseClass: input.person.driversLicenseClass,
-          driversLicenseCountryCode: input.person.driversLicenseCountryCode,
-          driversLicenseCountrySubdivisionCode: input.person.driversLicenseCountrySubdivisionCode,
-          genderCode: input.person.genderCode,
-          sexCode: input.person.sexCode,
-          heightInCm: input.person.heightInCm,
-          weightInKg: input.person.weightInKg,
-          complexionCode: input.person.complexionCode,
-          buildCode: input.person.buildCode,
-          hairColourCode: input.person.hairColourCode,
-          hairLengthCode: input.person.hairLengthCode,
-          hairColourOther: input.person.hairColourOther,
-          eyeColourCode: input.person.eyeColourCode,
-          eyeColourOther: input.person.eyeColourOther,
-          facialHairIndicator: input.person.facialHairIndicator,
-          facialHairStyleCodes: (input.person.facialHairStyleCodes ?? []).map((fhs) => ({
-            personFacialStyleHairCodeGuid: fhs.personFacialHairStyleCodeReference,
-            facialHairStyleCode: fhs.facialHairStyleCode,
-            activeIndicator: fhs.activeIndicator,
-          })),
-          additionalHairDescriptors: input.person.additionalHairDescriptors,
-          tattooIndicator: input.person.tattooIndicator,
-          tattooDescription: input.person.tattooDescription,
-          additionalDescriptors: input.person.additionalDescriptors,
-          comments: input.person.comments,
-          safetyConcernIndicator: input.person.safetyConcernIndicator,
-          safetyConcernReason: input.person.safetyConcernReason,
-        }
-      : undefined;
-
-    const business: BusinessInput | undefined = input.business
-      ? {
-          businessGuid: existingParty.business?.businessGuid ?? "",
-          partyGuid: existingParty.partyReference!,
-          name: input.business.name,
-          safetyConcernIndicator: input.business.safetyConcernIndicator,
-          safetyConcernReason: input.business.safetyConcernReason,
-          businessIdentifiers: (input.business.businessIdentifiers ?? []).map((bi) => ({
-            businessIdentifierGuid: bi.businessIdentifierReference ?? "",
-            businessGuid: existingParty.business?.businessGuid ?? "",
-            identifierCode: bi.identifierCode,
-            identifierValue: bi.identifierValue,
-          })),
-          contactPeople: (input.business.contactPeople ?? []).map((c) => ({
-            businessPersonXrefGuid: c.businessPersonXrefReference,
-            title: c.title,
-            displayInInvestigation: c.displayInInvestigation,
-            isPrimary: c.isPrimary,
-            person: {
-              firstName: c.person?.firstName ?? "",
-              middleNames: c.person?.middleNames,
-              lastName: c.person?.lastName ?? "",
-            },
-            contactMethods: (c.contactMethods ?? []).map((cm) => ({
-              contactMethodGuid: cm.contactMethodReference,
-              typeCode: cm.typeCode,
-              value: cm.value ?? "",
-              isPrimary: cm.isPrimary,
-            })),
-            officeAddressGuids: (c.officeAddressGuids ?? [])
-              .map((guid) => findAddressReference(guid))
-              .filter((guid): guid is string => !!guid),
-          })),
-        }
-      : undefined;
-
-    return {
-      partyIdentifier: existingParty.partyReference,
-      partyTypeCode: existingParty.partyTypeCode,
-      person,
-      business,
-      addresses,
-      contactMethods,
-      aliases,
-      images: input.images ?? [],
-    };
-  }
-
-  // Ensures every incoming sub-record carries the guid of its shared-party counterpart.
-  // Records already linked keep their existing reference; unlinked records get a freshly
-  // generated guid, which is written to both the local *_guid_ref column and the shared
-  // row's primary key so the two stay linked for future updates.
-  private _resolveSharedReferences(existingParty: InvestigationParty, input: UpdateInvestigationPartyInput): void {
-    for (const address of input.addresses ?? []) {
-      const existing = (existingParty.addresses ?? []).find((a) => a.addressGuid === address.addressGuid);
-      address.addressReference = existing?.addressReference ?? address.addressReference ?? randomUUID();
-    }
-
-    for (const alias of input.aliases ?? []) {
-      const existing = (existingParty.aliases ?? []).find((a) => a.aliasGuid === alias.aliasGuid);
-      alias.aliasReference = existing?.aliasReference ?? alias.aliasReference ?? randomUUID();
-    }
-
-    for (const contactMethod of input.contactMethods ?? []) {
-      const existing = (existingParty.contactMethods ?? []).find(
-        (c) => c.contactMethodGuid === contactMethod.contactMethodGuid,
-      );
-      contactMethod.contactMethodReference =
-        existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
-    }
-
-    for (const address of input.addresses ?? []) {
-      const existingAddress = (existingParty.addresses ?? []).find((a) => a.addressGuid === address.addressGuid);
-      const existingAddressContactMethods: InvestigationContactMethod[] = existingAddress?.contactMethods ?? [];
-      for (const contactMethod of address.contactMethods ?? []) {
-        const existing = existingAddressContactMethods.find(
-          (c) => c.contactMethodGuid === contactMethod.contactMethodGuid,
-        );
-        contactMethod.contactMethodReference =
-          existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
-      }
-    }
-
-    const existingFacialHairStyleCodes: InvestigationPersonFacialHairStyleCodeRef[] =
-      existingParty.person?.facialHairStyleCodes ?? [];
-    for (const fhs of input.person?.facialHairStyleCodes ?? []) {
-      const existing = existingFacialHairStyleCodes.find(
-        (f) => f.personFacialStyleHairCodeGuid === fhs.personFacialStyleHairCodeGuid,
-      );
-      fhs.personFacialHairStyleCodeReference =
-        existing?.personFacialHairStyleCodeReference ?? fhs.personFacialHairStyleCodeReference ?? randomUUID();
-    }
-
-    for (const identifier of input.business?.businessIdentifiers ?? []) {
-      const existing = (existingParty.business?.businessIdentifiers ?? []).find(
-        (i) => i.businessIdentifierGuid === identifier.businessIdentifierGuid,
-      );
-      identifier.businessIdentifierReference =
-        existing?.businessIdentifierReference ?? identifier.businessIdentifierReference ?? randomUUID();
-    }
-
-    for (const contact of input.business?.contactPeople ?? []) {
-      const existingContact = (existingParty.business?.contactPeople ?? []).find(
-        (c) => c.businessPersonXrefGuid === contact.businessPersonXrefGuid,
-      );
-      contact.businessPersonXrefReference =
-        existingContact?.businessPersonXrefReference ?? contact.businessPersonXrefReference ?? randomUUID();
-
-      const existingContactMethods: InvestigationContactMethod[] = existingContact?.contactMethods ?? [];
-      for (const contactMethod of contact.contactMethods ?? []) {
-        const existing = existingContactMethods.find((c) => c.contactMethodGuid === contactMethod.contactMethodGuid);
-        contactMethod.contactMethodReference =
-          existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
-      }
-    }
-  }
-
   async update(investigationGuid: string, input: UpdateInvestigationPartyInput): Promise<Investigation> {
     const investigation = await this.investigationService.findOne(investigationGuid);
     const existingParty = investigation.parties.find((p) => p.partyIdentifier === input.partyIdentifier && p.isActive);
@@ -983,7 +789,7 @@ export class InvestigationPartyService {
       this._validateBusinessInput(input.business);
     }
 
-    this._resolveSharedReferences(existingParty, input);
+    resolveSharedReferences(existingParty, input);
 
     await withRlsTransaction(this.prisma, async (tx) => {
       const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
@@ -1049,7 +855,7 @@ export class InvestigationPartyService {
         }
 
         if (existingParty.partyReference) {
-          const partyUpdateInput = this._buildSharedPartyUpdateInput(existingParty, input);
+          const partyUpdateInput = mapInvestigationPartyToPartyUpdateInput(existingParty, input);
           // PartyService.update() manages its own separate transaction against the shared
           // Prisma client. If it throws, this whole local transaction is rolled back too,
           // since the error propagates out of the withRlsTransaction callback.

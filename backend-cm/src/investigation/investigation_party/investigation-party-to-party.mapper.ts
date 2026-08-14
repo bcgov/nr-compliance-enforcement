@@ -1,12 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { PARTY_TYPES } from "../../common/party";
 import { AddressInput } from "../../shared/address/dto/address";
-import { Alias } from "../../shared/alias/dto/alias";
+import { Alias, AliasInput } from "../../shared/alias/dto/alias";
 import { BusinessInput } from "../../shared/business/dto/business";
 import { BusinessIdentifier } from "../../shared/business_identifier/dto/business_identifier";
 import { BusinessPersonXrefInput } from "../../shared/business_person_xref/dto/business_person_xref";
-import { ContactMethod } from "../../shared/contact_method/dto/contact_method";
-import { PartyCreateInput } from "../../shared/party/dto/party";
+import { ContactMethod, ContactMethodInput } from "../../shared/contact_method/dto/contact_method";
+import { PartyCreateInput, PartyUpdateInput } from "../../shared/party/dto/party";
 import { PersonFacialHairStyleCodeInput } from "../../shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 import { InvestigationAddress } from "../investigation_address/dto/investigation_address";
 import { InvestigationBusiness } from "../investigation_business/dto/investigation_business";
@@ -14,7 +14,7 @@ import { InvestigationBusinessPersonXref } from "../investigation_business_perso
 import { InvestigationContactMethod } from "../investigation_contact_method/dto/investigation_contact_method";
 import { InvestigationPerson } from "../investigation_person/dto/investigation_person";
 import { InvestigationPersonFacialHairStyleCodeRef } from "../investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
-import { InvestigationParty } from "./dto/investigation_party";
+import { InvestigationParty, UpdateInvestigationPartyInput } from "./dto/investigation_party";
 import { PersonInput } from "src/shared/person/dto/person.input";
 
 export interface SharedChildGuids {
@@ -193,4 +193,200 @@ export const mapInvestigationPartyToPartyCreateInput = (party: InvestigationPart
       : { ...common, person: mapPerson(party.person, childGuids.facialHairStyleGuids) };
 
   return { input, childGuids };
+};
+
+// Update Mapping
+export const mapInvestigationPartyToPartyUpdateInput = (
+  existingParty: InvestigationParty,
+  input: UpdateInvestigationPartyInput,
+): PartyUpdateInput => {
+  const findAddressReference = (addressGuid?: string) =>
+    (input.addresses ?? []).find((a) => a.addressGuid === addressGuid)?.addressReference;
+
+  const addresses: AddressInput[] = (input.addresses ?? []).map((a) => ({
+    addressGuid: a.addressReference ?? "",
+    addressName: a.addressName,
+    address: a.address,
+    city: a.city,
+    province: a.province,
+    postalCode: a.postalCode,
+    country: a.country,
+    isPrimary: a.isPrimary,
+    displayInInvestigation: a.displayInInvestigation,
+    contactMethods: (a.contactMethods ?? []).map((cm) => ({
+      contactMethodGuid: cm.contactMethodReference,
+      typeCode: cm.typeCode,
+      value: cm.value,
+      isPrimary: cm.isPrimary,
+    })),
+  }));
+
+  const contactMethods: ContactMethodInput[] = (input.contactMethods ?? []).map((cm) => ({
+    contactMethodGuid: cm.contactMethodReference,
+    typeCode: cm.typeCode,
+    value: cm.value ?? "",
+    isPrimary: cm.isPrimary ?? false,
+  }));
+
+  const aliases: AliasInput[] = (input.aliases ?? []).map((a) => ({
+    aliasGuid: a.aliasReference ?? "",
+    name: a.name,
+  }));
+
+  const person: PersonInput | undefined = input.person
+    ? {
+        firstName: input.person.firstName,
+        middleNames: input.person.middleNames,
+        lastName: input.person.lastName,
+        dateOfBirth: input.person.dateOfBirth,
+        approximateAgeCode: input.person.approximateAgeCode,
+        driversLicenseNumber: input.person.driversLicenseNumber,
+        driversLicenseClass: input.person.driversLicenseClass,
+        driversLicenseCountryCode: input.person.driversLicenseCountryCode,
+        driversLicenseCountrySubdivisionCode: input.person.driversLicenseCountrySubdivisionCode,
+        genderCode: input.person.genderCode,
+        sexCode: input.person.sexCode,
+        heightInCm: input.person.heightInCm,
+        weightInKg: input.person.weightInKg,
+        complexionCode: input.person.complexionCode,
+        buildCode: input.person.buildCode,
+        hairColourCode: input.person.hairColourCode,
+        hairLengthCode: input.person.hairLengthCode,
+        hairColourOther: input.person.hairColourOther,
+        eyeColourCode: input.person.eyeColourCode,
+        eyeColourOther: input.person.eyeColourOther,
+        facialHairIndicator: input.person.facialHairIndicator,
+        facialHairStyleCodes: (input.person.facialHairStyleCodes ?? []).map((fhs) => ({
+          personFacialStyleHairCodeGuid: fhs.personFacialHairStyleCodeReference,
+          facialHairStyleCode: fhs.facialHairStyleCode,
+          activeIndicator: fhs.activeIndicator,
+        })),
+        additionalHairDescriptors: input.person.additionalHairDescriptors,
+        tattooIndicator: input.person.tattooIndicator,
+        tattooDescription: input.person.tattooDescription,
+        additionalDescriptors: input.person.additionalDescriptors,
+        comments: input.person.comments,
+        safetyConcernIndicator: input.person.safetyConcernIndicator,
+        safetyConcernReason: input.person.safetyConcernReason,
+      }
+    : undefined;
+
+  const business: BusinessInput | undefined = input.business
+    ? {
+        businessGuid: existingParty.business?.businessGuid ?? "",
+        partyGuid: existingParty.partyReference!,
+        name: input.business.name,
+        safetyConcernIndicator: input.business.safetyConcernIndicator,
+        safetyConcernReason: input.business.safetyConcernReason,
+        businessIdentifiers: (input.business.businessIdentifiers ?? []).map((bi) => ({
+          businessIdentifierGuid: bi.businessIdentifierReference ?? "",
+          businessGuid: existingParty.business?.businessGuid ?? "",
+          identifierCode: bi.identifierCode,
+          identifierValue: bi.identifierValue,
+        })),
+        contactPeople: (input.business.contactPeople ?? []).map((c) => ({
+          businessPersonXrefGuid: c.businessPersonXrefReference,
+          title: c.title,
+          displayInInvestigation: c.displayInInvestigation,
+          isPrimary: c.isPrimary,
+          person: {
+            firstName: c.person?.firstName ?? "",
+            middleNames: c.person?.middleNames,
+            lastName: c.person?.lastName ?? "",
+          },
+          contactMethods: (c.contactMethods ?? []).map((cm) => ({
+            contactMethodGuid: cm.contactMethodReference,
+            typeCode: cm.typeCode,
+            value: cm.value ?? "",
+            isPrimary: cm.isPrimary,
+          })),
+          officeAddressGuids: (c.officeAddressGuids ?? [])
+            .map((guid) => findAddressReference(guid))
+            .filter((guid): guid is string => !!guid),
+        })),
+      }
+    : undefined;
+
+  return {
+    partyIdentifier: existingParty.partyReference,
+    partyTypeCode: existingParty.partyTypeCode,
+    person,
+    business,
+    addresses,
+    contactMethods,
+    aliases,
+    images: input.images ?? [],
+  };
+};
+
+// Ensures every incoming sub-record carries the guid of its shared-party counterpart.
+// Records already linked keep their existing reference; unlinked records get a freshly
+// generated guid, which is written to both the local *_guid_ref column and the shared
+// row's primary key so the two stay linked for future updates.
+export const resolveSharedReferences = (
+  existingParty: InvestigationParty,
+  input: UpdateInvestigationPartyInput,
+): void => {
+  for (const address of input.addresses ?? []) {
+    const existing = (existingParty.addresses ?? []).find((a) => a.addressGuid === address.addressGuid);
+    address.addressReference = existing?.addressReference ?? address.addressReference ?? randomUUID();
+  }
+
+  for (const alias of input.aliases ?? []) {
+    const existing = (existingParty.aliases ?? []).find((a) => a.aliasGuid === alias.aliasGuid);
+    alias.aliasReference = existing?.aliasReference ?? alias.aliasReference ?? randomUUID();
+  }
+
+  for (const contactMethod of input.contactMethods ?? []) {
+    const existing = (existingParty.contactMethods ?? []).find(
+      (c) => c.contactMethodGuid === contactMethod.contactMethodGuid,
+    );
+    contactMethod.contactMethodReference =
+      existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
+  }
+
+  for (const address of input.addresses ?? []) {
+    const existingAddress = (existingParty.addresses ?? []).find((a) => a.addressGuid === address.addressGuid);
+    const existingAddressContactMethods: InvestigationContactMethod[] = existingAddress?.contactMethods ?? [];
+    for (const contactMethod of address.contactMethods ?? []) {
+      const existing = existingAddressContactMethods.find(
+        (c) => c.contactMethodGuid === contactMethod.contactMethodGuid,
+      );
+      contactMethod.contactMethodReference =
+        existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
+    }
+  }
+
+  const existingFacialHairStyleCodes: InvestigationPersonFacialHairStyleCodeRef[] =
+    existingParty.person?.facialHairStyleCodes ?? [];
+  for (const fhs of input.person?.facialHairStyleCodes ?? []) {
+    const existing = existingFacialHairStyleCodes.find(
+      (f) => f.personFacialStyleHairCodeGuid === fhs.personFacialStyleHairCodeGuid,
+    );
+    fhs.personFacialHairStyleCodeReference =
+      existing?.personFacialHairStyleCodeReference ?? fhs.personFacialHairStyleCodeReference ?? randomUUID();
+  }
+
+  for (const identifier of input.business?.businessIdentifiers ?? []) {
+    const existing = (existingParty.business?.businessIdentifiers ?? []).find(
+      (i) => i.businessIdentifierGuid === identifier.businessIdentifierGuid,
+    );
+    identifier.businessIdentifierReference =
+      existing?.businessIdentifierReference ?? identifier.businessIdentifierReference ?? randomUUID();
+  }
+
+  for (const contact of input.business?.contactPeople ?? []) {
+    const existingContact = (existingParty.business?.contactPeople ?? []).find(
+      (c) => c.businessPersonXrefGuid === contact.businessPersonXrefGuid,
+    );
+    contact.businessPersonXrefReference =
+      existingContact?.businessPersonXrefReference ?? contact.businessPersonXrefReference ?? randomUUID();
+
+    const existingContactMethods: InvestigationContactMethod[] = existingContact?.contactMethods ?? [];
+    for (const contactMethod of contact.contactMethods ?? []) {
+      const existing = existingContactMethods.find((c) => c.contactMethodGuid === contactMethod.contactMethodGuid);
+      contactMethod.contactMethodReference =
+        existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
+    }
+  }
 };
