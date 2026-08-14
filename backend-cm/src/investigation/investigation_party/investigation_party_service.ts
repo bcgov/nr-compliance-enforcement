@@ -47,7 +47,7 @@ import {
 import { InvestigationBusinessPersonAddressXref } from "../investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PARTY_TYPES } from "src/common/party";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { PartyIdentifiers, PartyService } from "../../shared/party/party.service";
 import { Party, PartyCreateInput } from "../../shared/party/dto/party";
 import { mapInvestigationPartyToPartyCreateInput } from "./investigation-party-to-party.mapper";
