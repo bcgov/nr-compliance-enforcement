@@ -137,12 +137,11 @@ export class EnforcementActionService {
           },
         });
 
+        // 3. Create the shared party in the shared schema
         if (preparedParty) {
           await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier, preparedParty);
+          sharedParty = await this.investigationPartyService.createSharedParty(preparedParty);
         }
-
-        // 3. Create the shared party in the shared schema
-        sharedParty = await this.investigationPartyService.createSharedParty(preparedParty);
 
         await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
       });
