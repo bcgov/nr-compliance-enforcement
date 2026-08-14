@@ -4,6 +4,7 @@ import {
   BusinessPerson,
   BusinessPersonAddress,
   ContactMethod,
+  CreateAttachmentReferenceInput,
   FacialHairStyleCode,
   InvestigationBusinessIdentifier,
   InvestigationParty,
@@ -607,7 +608,9 @@ export const mapInvestigationPartyToDefaultValues = (
     const found = (editParty.business?.businessIdentifiers ?? [])
       .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
       .find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
-    return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : { identifierValue: "" };
+    return found
+      ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
+      : { identifierValue: "" };
   })(),
   worksafeBCNumber: (() => {
     const found = (editParty.business?.businessIdentifiers ?? [])
@@ -619,7 +622,9 @@ export const mapInvestigationPartyToDefaultValues = (
   phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
   emailAddresses: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.EMAIL),
   addresses: mapAddressesFromPartyData(editParty.addresses as Address[]),
-  contacts: mapContacts ? mapContactPeopleFromPartyData(editParty.business?.contactPeople) : ([] as ContactPersonFormValue[]),
+  contacts: mapContacts
+    ? mapContactPeopleFromPartyData(editParty.business?.contactPeople)
+    : ([] as ContactPersonFormValue[]),
   partyAssociationRole: editParty.partyAssociationRole || "",
 });
 
@@ -727,7 +732,11 @@ const buildBusinessCopy = (party: Party, copiedAddresses: AddressFormValue[]) =>
  * rules: fresh child rows (no source GUIDs carried over) and party/person/business level references
  * linking the copy back to the published profile.
  */
-export const mapPartyToInvestigationPartyInput = (party: Party, partyAssociationRole: string) => {
+export const mapPartyToInvestigationPartyInput = (
+  party: Party,
+  partyAssociationRole: string,
+  attachmentReferences?: CreateAttachmentReferenceInput[],
+) => {
   const aliases = mapAliasesFromPartyData(party.aliases)
     .filter((a) => a.name.trim().length > 0)
     .map((a) => ({ name: a.name }));
@@ -747,6 +756,7 @@ export const mapPartyToInvestigationPartyInput = (party: Party, partyAssociation
   const common = {
     partyReference: party.partyIdentifier,
     partyAssociationRole,
+    attachmentReferences,
     aliases: buildAliases(aliases, false),
     contactMethods: buildContactMethods(phoneNumbers, emailAddresses, false),
   };
