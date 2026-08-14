@@ -14,7 +14,7 @@ export class Task {
   description: string;
   activeIndicator: boolean;
   taskCategoryTypeCode: string;
-  remarks: string;
+  subject: string;
   dueDate: Date;
 }
 
@@ -26,7 +26,7 @@ export class CreateUpdateTaskInput {
   appUserIdentifier?: string;
   description?: string;
   taskCategoryTypeCode?: string;
-  remarks?: string;
+  subject?: string;
   dueDate?: Date;
 }
 
@@ -84,8 +84,8 @@ export const mapPrismaTaskToTask = (mapper: Mapper) => {
       mapFrom((src) => src.task_category_type_code),
     ),
     forMember(
-      (dest) => dest.remarks,
-      mapFrom((src) => src.remarks),
+      (dest) => dest.subject,
+      mapFrom((src) => src.subject),
     ),
     forMember(
       (dest) => dest.dueDate,

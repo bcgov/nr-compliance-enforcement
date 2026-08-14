@@ -74,7 +74,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       taskCategory: "",
       officerAssigned: primaryInvestigatorGuid ?? currentUserGuid,
       description: "",
-      remarks: "",
+      subject: "",
       dueDate: task?.dueDate ?? new Date(),
     },
     onSubmit: async ({ value }) => {
@@ -85,7 +85,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
         assignedUserIdentifier: value.officerAssigned || undefined,
         appUserIdentifier: currentUserGuid,
         description: value.description?.trim() || undefined,
-        remarks: value.remarks,
+        subject: value.subject,
         dueDate: value.dueDate as Date,
         taskCategoryTypeCode: value.taskCategory,
       };
@@ -106,7 +106,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   }, [isFormDirty, markDirty]);
 
   const clearFieldMeta = () => {
-    (["taskCategory", "officerAssigned", "description", "dueDate", "remarks"] as const).forEach((name) => {
+    (["taskCategory", "officerAssigned", "description", "dueDate", "subject"] as const).forEach((name) => {
       form.setFieldMeta(name, (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     });
   };
@@ -117,7 +117,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       form.setFieldValue("officerAssigned", task.assignedUserIdentifier ?? currentUserGuid);
       form.setFieldValue("description", task.description ?? "");
       form.setFieldValue("dueDate", task?.dueDate ? task.dueDate : new Date());
-      form.setFieldValue("remarks", task.remarks ?? "");
+      form.setFieldValue("subject", task.subject ?? "");
       clearFieldMeta();
       const timeout = globalThis.setTimeout(clearFieldMeta, 0);
       return () => globalThis.clearTimeout(timeout);
@@ -201,25 +201,25 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
           />
           <FormField
             form={form}
-            name="remarks"
-            label="Remarks"
+            name="subject"
+            label="Subject"
             required
             validators={{
-              onChange: z.string().min(1, "Task remarks is required"),
-              onSubmit: z.string().min(1, "Task remarks is required"),
+              onChange: z.string().min(1, "Task subject is required"),
+              onSubmit: z.string().min(1, "Task subject is required"),
             }}
             render={(field) => (
               <div>
                 <CompInput
-                  id="task-detail-edit-remarks"
-                  divid="task-detail-edit-remarks-value"
+                  id="task-detail-edit-subject"
+                  divid="task-detail-edit-subject-value"
                   type="input"
                   inputClass="comp-form-control"
                   error={field.state.meta.errors?.[0]?.message ?? ""}
                   maxLength={120}
                   onChange={(evt: any) => field.handleChange(evt.target.value)}
                   value={field.state.value}
-                  placeholder="Enter task remarks"
+                  placeholder="Person, location, business, vehicle, file number, etc..."
                   disabled={isReadOnly}
                 />
               </div>
@@ -286,7 +286,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 rows={4}
                 value={field.state.value}
                 onChange={(value: string) => field.handleChange(value)}
-                placeholderText="Enter task description..."
+                placeholderText="Enter details of what needs to be completed for this task..."
                 maxLength={4000}
                 errMsg={field.state.meta.errors?.[0]?.message ?? ""}
                 disabled={isReadOnly}
