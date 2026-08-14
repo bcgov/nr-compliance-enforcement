@@ -81,7 +81,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
         ) : (
           <>
             <div className="comp-party-match-card-name">{name}</div>
-            {dateOfBirth && <div className="comp-party-match-card-body-line">{sexLabel}</div>}
+            {sexLabel && <div className="comp-party-match-card-body-line">{sexLabel}</div>}
             {dateOfBirth && <div className="comp-party-match-card-body-line">{`Date of birth: ${dateOfBirth}`}</div>}
             {age && <div className="comp-party-match-card-body-line">{`Age: ${age}`}</div>}
             {driversLicense && (
