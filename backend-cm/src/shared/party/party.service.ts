@@ -40,6 +40,14 @@ export interface PartyIdentifiers {
   partyGuid?: string;
   personGuid?: string;
   businessGuid?: string;
+  // Shared guids generated for each investigation-local child row, keyed by the local guid, so
+  // both the shared row and the local *_guid_ref column can be written with the same value.
+  addressGuids: Map<string, string>;
+  contactMethodGuids: Map<string, string>;
+  aliasGuids: Map<string, string>;
+  businessIdentifierGuids: Map<string, string>;
+  businessPersonXrefGuids: Map<string, string>;
+  facialHairStyleGuids: Map<string, string>;
 }
 
 // Initial cut at scoring algorithm
@@ -378,6 +386,7 @@ export class PartyService {
         ? {
             contact_method: {
               create: input.contactMethods.map((c) => ({
+                ...(c.contactMethodGuid ? { contact_method_guid: c.contactMethodGuid } : {}),
                 contact_method_type: c.typeCode,
                 contact_value: c.value,
                 is_primary: c.isPrimary,
@@ -391,6 +400,7 @@ export class PartyService {
         ? {
             alias: {
               create: input.aliases.map((a) => ({
+                ...(a.aliasGuid ? { alias_guid: a.aliasGuid } : {}),
                 name: a.name,
                 create_user_id: this.user.getIdirUsername(),
                 create_utc_timestamp: new Date(),
@@ -447,6 +457,9 @@ export class PartyService {
             ? {
                 person_facial_hair_style_code: {
                   create: input.person.facialHairStyleCodes.map((fhs) => ({
+                    ...(fhs.personFacialStyleHairCodeGuid
+                      ? { person_facial_hair_style_code_guid: fhs.personFacialStyleHairCodeGuid }
+                      : {}),
                     facial_hair_style_code: fhs.facialHairStyleCode,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
@@ -479,6 +492,7 @@ export class PartyService {
             ? {
                 business_identifier: {
                   create: input.business.businessIdentifiers.map((i) => ({
+                    ...(i.businessIdentifierGuid ? { business_identifier_guid: i.businessIdentifierGuid } : {}),
                     business_identifier_code: i.identifierCode,
                     identifier_value: this._normalizeIdentifierValue(i.identifierValue),
                     create_user_id: this.user.getIdirUsername(),

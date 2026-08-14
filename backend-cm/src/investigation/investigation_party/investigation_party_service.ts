@@ -577,7 +577,7 @@ export class InvestigationPartyService {
     return refreshedInvestigation.parties.find((party) => party.partyIdentifier === newPartyGuid);
   }
 
-  // Prepare a shared party with randomm guids
+  // Prepare a shared party with random guids
   async prepareSharedParty(partyIdentifier: string): Promise<PreparedSharedParty | null> {
     const investigationParty = await this.prisma.investigation_party.findUnique({
       where: { investigation_party_guid: partyIdentifier },
@@ -599,14 +599,16 @@ export class InvestigationPartyService {
     }
 
     const isBusiness = party.partyTypeCode === PARTY_TYPES.Company;
+    const { input, childGuids } = mapInvestigationPartyToPartyCreateInput(party);
 
     return {
-      input: mapInvestigationPartyToPartyCreateInput(party),
+      input,
       identifiers: {
         partyGuid: investigationParty.party_guid_ref ?? randomUUID(),
         ...(isBusiness
           ? { businessGuid: party.business?.businessReference ?? randomUUID() }
           : { personGuid: party.person?.personReference ?? randomUUID() }),
+        ...childGuids,
       },
     };
   }
@@ -651,6 +653,70 @@ export class InvestigationPartyService {
         where: { investigation_party_guid: partyIdentifier, active_ind: true },
         data: {
           business_guid_ref: prepared.identifiers.businessGuid,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    }
+
+    // Child rows each carry the shared guid generated for their counterpart, so later edits update
+    // the shared row in place rather than creating a duplicate.
+    await this._linkChildRows(
+      db,
+      "investigation_address",
+      "investigation_address_guid",
+      "address_guid_ref",
+      prepared.identifiers.addressGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_contact_method",
+      "investigation_contact_method_guid",
+      "contact_method_guid_ref",
+      prepared.identifiers.contactMethodGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_alias",
+      "investigation_alias_guid",
+      "alias_guid_ref",
+      prepared.identifiers.aliasGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_business_identifier",
+      "investigation_business_identifier_guid",
+      "business_identifier_guid_ref",
+      prepared.identifiers.businessIdentifierGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_business_person_xref",
+      "investigation_business_person_xref_guid",
+      "business_person_xref_guid_ref",
+      prepared.identifiers.businessPersonXrefGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_person_facial_hair_style_code_ref",
+      "investigation_person_facial_hair_style_code_ref_guid",
+      "person_facial_hair_style_code_guid_ref",
+      prepared.identifiers.facialHairStyleGuids,
+    );
+  }
+
+  private async _linkChildRows(
+    db: any,
+    model: string,
+    guidColumn: string,
+    refColumn: string,
+    sharedGuidByLocalGuid: Map<string, string>,
+  ): Promise<void> {
+    for (const [localGuid, sharedGuid] of sharedGuidByLocalGuid) {
+      await db[model].update({
+        where: { [guidColumn]: localGuid },
+        data: {
+          [refColumn]: sharedGuid,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },

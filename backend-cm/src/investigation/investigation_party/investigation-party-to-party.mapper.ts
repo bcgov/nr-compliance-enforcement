@@ -2,13 +2,12 @@ import { randomUUID } from "node:crypto";
 import { PARTY_TYPES } from "../../common/party";
 import { AddressInput } from "../../shared/address/dto/address";
 import { Alias } from "../../shared/alias/dto/alias";
-import { Business } from "../../shared/business/dto/business";
+import { BusinessInput } from "../../shared/business/dto/business";
 import { BusinessIdentifier } from "../../shared/business_identifier/dto/business_identifier";
-import { BusinessPersonXref } from "../../shared/business_person_xref/dto/business_person_xref";
+import { BusinessPersonXrefInput } from "../../shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod } from "../../shared/contact_method/dto/contact_method";
 import { PartyCreateInput } from "../../shared/party/dto/party";
-import { Person } from "../../shared/person/dto/person";
-import { PersonFacialHairStyleCode } from "../../shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
+import { PersonFacialHairStyleCodeInput } from "../../shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 import { InvestigationAddress } from "../investigation_address/dto/investigation_address";
 import { InvestigationBusiness } from "../investigation_business/dto/investigation_business";
 import { InvestigationBusinessPersonXref } from "../investigation_business_person_xref/dto/investigation_business_person_xref";
@@ -16,17 +15,59 @@ import { InvestigationContactMethod } from "../investigation_contact_method/dto/
 import { InvestigationPerson } from "../investigation_person/dto/investigation_person";
 import { InvestigationPersonFacialHairStyleCodeRef } from "../investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
 import { InvestigationParty } from "./dto/investigation_party";
+import { PersonInput } from "src/shared/person/dto/person.input";
+
+export interface SharedChildGuids {
+  addressGuids: Map<string, string>;
+  contactMethodGuids: Map<string, string>;
+  aliasGuids: Map<string, string>;
+  businessIdentifierGuids: Map<string, string>;
+  businessPersonXrefGuids: Map<string, string>;
+  facialHairStyleGuids: Map<string, string>;
+}
+
+export interface MappedSharedParty {
+  input: PartyCreateInput;
+  childGuids: SharedChildGuids;
+}
 
 const isActive = (record?: { isActive?: boolean } | null): boolean => !!record && record.isActive !== false;
 
 const hasValue = (value?: string | null): boolean => (value ?? "").trim().length > 0;
 
-const mapContactMethods = (contactMethods?: InvestigationContactMethod[]): ContactMethod[] =>
+const emptyChildGuids = (): SharedChildGuids => ({
+  addressGuids: new Map<string, string>(),
+  contactMethodGuids: new Map<string, string>(),
+  aliasGuids: new Map<string, string>(),
+  businessIdentifierGuids: new Map<string, string>(),
+  businessPersonXrefGuids: new Map<string, string>(),
+  facialHairStyleGuids: new Map<string, string>(),
+});
+
+// Each child row gets a generated shared guid, recorded against its investigation-local guid so
+// the local *_guid_ref column can be pointed at the row the shared registry is about to create.
+const takeSharedGuid = (guids: Map<string, string>, localGuid?: string): string => {
+  const sharedGuid = randomUUID();
+  if (localGuid) {
+    guids.set(localGuid, sharedGuid);
+  }
+  return sharedGuid;
+};
+
+const mapContactMethods = (contactMethods: InvestigationContactMethod[], guids: Map<string, string>): ContactMethod[] =>
   (contactMethods ?? [])
     .filter((cm) => isActive(cm) && hasValue(cm.value))
-    .map((cm) => ({ typeCode: cm.typeCode, value: cm.value, isPrimary: cm.isPrimary ?? false }) as ContactMethod);
+    .map(
+      (cm) =>
+        ({
+          contactMethodGuid: takeSharedGuid(guids, cm.contactMethodGuid),
+          typeCode: cm.typeCode,
+          value: cm.value,
+          isPrimary: cm.isPrimary ?? false,
+        }) as ContactMethod,
+    );
 
-const mapAddress = (address: InvestigationAddress, addressGuid: string): AddressInput =>
+const mapAddress = (address: InvestigationAddress, addressGuid: string, guids: SharedChildGuids): AddressInput =>
   ({
     addressGuid,
     addressName: address.addressName,
@@ -37,10 +78,10 @@ const mapAddress = (address: InvestigationAddress, addressGuid: string): Address
     country: address.country,
     isPrimary: address.isPrimary ?? false,
     displayInInvestigation: address.displayInInvestigation ?? true,
-    contactMethods: mapContactMethods(address.contactMethods),
-  }) as unknown as AddressInput;
+    contactMethods: mapContactMethods(address.contactMethods, guids.contactMethodGuids),
+  }) as AddressInput;
 
-const mapPerson = (person?: InvestigationPerson): Person => {
+const mapPerson = (person: InvestigationPerson, guids: Map<string, string>): PersonInput => {
   const facialHairStyleCodes: InvestigationPersonFacialHairStyleCodeRef[] = person?.facialHairStyleCodes ?? [];
 
   return {
@@ -67,7 +108,13 @@ const mapPerson = (person?: InvestigationPerson): Person => {
     facialHairIndicator: person?.facialHairIndicator,
     facialHairStyleCodes: facialHairStyleCodes
       .filter((fhs) => fhs?.activeIndicator !== false)
-      .map((fhs) => ({ facialHairStyleCode: fhs.facialHairStyleCode }) as PersonFacialHairStyleCode),
+      .map(
+        (fhs) =>
+          ({
+            personFacialStyleHairCodeGuid: takeSharedGuid(guids, fhs.personFacialStyleHairCodeGuid),
+            facialHairStyleCode: fhs.facialHairStyleCode,
+          }) as PersonFacialHairStyleCodeInput,
+      ),
     additionalHairDescriptors: person?.additionalHairDescriptors,
     tattooIndicator: person?.tattooIndicator,
     tattooDescription: person?.tattooDescription,
@@ -75,14 +122,16 @@ const mapPerson = (person?: InvestigationPerson): Person => {
     comments: person?.comments,
     safetyConcernIndicator: person?.safetyConcernIndicator,
     safetyConcernReason: person?.safetyConcernReason,
-  } as Person;
+  } as PersonInput;
 };
 
 const mapBusinessContact = (
   contact: InvestigationBusinessPersonXref,
   sharedAddressGuidByInvestigationGuid: Map<string, string>,
-): BusinessPersonXref =>
+  guids: SharedChildGuids,
+): BusinessPersonXrefInput =>
   ({
+    businessPersonXrefGuid: takeSharedGuid(guids.businessPersonXrefGuids, contact.businessPersonXrefGuid),
     title: contact.title,
     displayInInvestigation: contact.displayInInvestigation ?? true,
     isPrimary: contact.isPrimary ?? false,
@@ -90,28 +139,36 @@ const mapBusinessContact = (
       firstName: contact.person?.firstName,
       middleNames: contact.person?.middleNames,
       lastName: contact.person?.lastName,
-    } as Person,
-    contactMethods: mapContactMethods(contact.contactMethods),
+    } as PersonInput,
+    contactMethods: mapContactMethods(contact.contactMethods, guids.contactMethodGuids),
     officeAddressGuids: (contact.associatedAddresses ?? [])
       .map((aa) => sharedAddressGuidByInvestigationGuid.get(aa?.address?.addressGuid ?? ""))
       .filter((guid): guid is string => !!guid),
-  }) as BusinessPersonXref;
+  }) as BusinessPersonXrefInput;
 
 const mapBusiness = (
   business: InvestigationBusiness | undefined,
   sharedAddressGuidByInvestigationGuid: Map<string, string>,
-): Business =>
+  guids: SharedChildGuids,
+): BusinessInput =>
   ({
     name: business?.name,
     safetyConcernIndicator: business?.safetyConcernIndicator,
     safetyConcernReason: business?.safetyConcernReason,
     businessIdentifiers: (business?.businessIdentifiers ?? [])
       .filter((bi) => isActive(bi) && hasValue(bi.identifierValue))
-      .map((bi) => ({ identifierCode: bi.identifierCode, identifierValue: bi.identifierValue }) as BusinessIdentifier),
+      .map(
+        (bi) =>
+          ({
+            businessIdentifierGuid: takeSharedGuid(guids.businessIdentifierGuids, bi.businessIdentifierGuid),
+            identifierCode: bi.identifierCode,
+            identifierValue: bi.identifierValue,
+          }) as BusinessIdentifier,
+      ),
     contactPeople: (business?.contactPeople ?? []).map((contact) =>
-      mapBusinessContact(contact, sharedAddressGuidByInvestigationGuid),
+      mapBusinessContact(contact, sharedAddressGuidByInvestigationGuid, guids),
     ),
-  }) as Business;
+  }) as BusinessInput;
 
 /**
  * Maps an investigation ("local") party onto the PartyCreateInput the shared party registry expects,
@@ -119,29 +176,33 @@ const mapBusiness = (
  * rows are created fresh, and addresses get client-generated GUIDs so business contact office links
  * can resolve to the copies.
  */
-export const mapInvestigationPartyToPartyCreateInput = (party: InvestigationParty): PartyCreateInput => {
+export const mapInvestigationPartyToPartyCreateInput = (party: InvestigationParty): MappedSharedParty => {
   const sharedAddressGuidByInvestigationGuid = new Map<string, string>();
+  const childGuids = emptyChildGuids();
 
   const addresses = (party.addresses ?? []).map((address) => {
-    const sharedAddressGuid = randomUUID();
+    const sharedAddressGuid = takeSharedGuid(childGuids.addressGuids, address.addressGuid);
     if (address.addressGuid) {
       sharedAddressGuidByInvestigationGuid.set(address.addressGuid, sharedAddressGuid);
     }
-    return mapAddress(address, sharedAddressGuid);
+    return mapAddress(address, sharedAddressGuid, childGuids);
   });
 
   const common: PartyCreateInput = {
     partyTypeCode: party.partyTypeCode,
     addresses,
-    contactMethods: mapContactMethods(party.contactMethods),
+    contactMethods: mapContactMethods(party.contactMethods, childGuids.contactMethodGuids),
     aliases: (party.aliases ?? [])
       .filter((alias) => isActive(alias) && hasValue(alias.name))
-      .map((alias) => ({ name: alias.name }) as Alias),
+      .map(
+        (alias) => ({ aliasGuid: takeSharedGuid(childGuids.aliasGuids, alias.aliasGuid), name: alias.name }) as Alias,
+      ),
   };
 
-  if (party.partyTypeCode === PARTY_TYPES.Company) {
-    return { ...common, business: mapBusiness(party.business, sharedAddressGuidByInvestigationGuid) };
-  }
+  const input =
+    party.partyTypeCode === PARTY_TYPES.Company
+      ? { ...common, business: mapBusiness(party.business, sharedAddressGuidByInvestigationGuid, childGuids) }
+      : { ...common, person: mapPerson(party.person, childGuids.facialHairStyleGuids) };
 
-  return { ...common, person: mapPerson(party.person) };
+  return { input, childGuids };
 };
