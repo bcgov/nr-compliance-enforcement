@@ -56,7 +56,7 @@ export class task {
   task_category_type_code: string;
 
   @ApiProperty({ type: String })
-  remarks: string;
+  subject: string;
 
   @ApiProperty({ type: Date })
   due_date: Date;

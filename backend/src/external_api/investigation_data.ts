@@ -18,7 +18,7 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
       taskNumber
       description
       taskCategoryTypeCode
-      remarks
+      subject
       dueDate
     }
     diaryDatesByTask(taskGuid: "${taskId}") {

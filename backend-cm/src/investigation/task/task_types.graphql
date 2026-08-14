@@ -11,7 +11,7 @@ type Task {
   description: String
   activeIndicator: Boolean!
   taskCategoryTypeCode: String!
-  remarks: String!
+  subject: String!
   dueDate: DateTime!
 }
 
@@ -23,6 +23,6 @@ input CreateUpdateTaskInput {
   appUserIdentifier: String
   description: String
   taskCategoryTypeCode: String
-  remarks: String
+  subject: String
   dueDate: DateTime
 }

@@ -33,7 +33,7 @@ const GET_TASK = gql`
       description
       activeIndicator
       taskCategoryTypeCode
-      remarks
+      subject
       dueDate
     }
   }
@@ -77,11 +77,11 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task }) => {
               <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-category` : undefined}>{categoryLabel}</dd>
             </div>
             <div>
-              <dt>Remarks</dt>
-              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-remarks` : undefined}>{task?.remarks ?? "-"}</dd>
+              <dt>Subject</dt>
+              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-subject` : undefined}>{task?.subject ?? "-"}</dd>
             </div>
             <div>
-              <dt>Officer Assigned</dt>
+              <dt>Officer assigned</dt>
               <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-officer-assigned` : undefined}>
                 {assignedOfficerName}
               </dd>
@@ -93,7 +93,7 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task }) => {
               </dd>
             </div>
             <div>
-              <dt>Task Details</dt>
+              <dt>Task details</dt>
               <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-detail-description` : undefined}>
                 {task?.description ?? "-"}
               </dd>
