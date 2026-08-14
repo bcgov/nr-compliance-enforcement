@@ -4,12 +4,12 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const INVESTIGATION_TAB_ITEMS = {
   summary: "Overview",
-  tasks: "Tasks",
-  contraventions: "Outcomes",
-  exhibits: "Exhibits",
-  parties: "Parties",
   continuation: "Continuation report",
+  tasks: "Tasks",
+  parties: "Parties",
+  contraventions: "Outcomes",
   documents: "Attachments",
+  exhibits: "Exhibits",
 };
 
 type InvestigationParams = {

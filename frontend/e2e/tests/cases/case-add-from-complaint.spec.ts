@@ -16,12 +16,10 @@ test.describe("Create/Add Case Modal - Search", () => {
 
     await page.getByRole("button", { name: "Actions Menu" }).click();
     await page.locator("#create-add-case-button").click();
-
-    // Wait for the modal's radio group to render
-    await expect(page.locator("#create-add-case-radiogroup-1")).toBeVisible();
   });
 
-  test('defaults the radio selection to "Add to an existing case"', async ({ page }) => {
+  //skipped due to feature flag - turned off for MVP
+  test.skip('defaults the radio selection to "Add to an existing case"', async ({ page }) => {
     const addRadio = page.locator('input[type="radio"][value="add"]');
     await expect(addRadio).toBeChecked();
 

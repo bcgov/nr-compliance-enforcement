@@ -44,6 +44,8 @@ interface ContraventionDetailsFormProps {
   isEditMode?: boolean;
 }
 
+type LegislationFieldName = "act" | "regulation" | "section" | "subsection";
+
 const getLegislationViewUrl = (sourceUrl: string | null, isRegulation: boolean): URL | null => {
   if (!sourceUrl) return null;
   const regexPattern = /^https:\/\/laws-lois\.justice\.gc\.ca\/eng\/XML\/([^/]+)\.xml$/;
@@ -129,6 +131,26 @@ export const ContraventionDetailsForm = ({
   });
 
   const { markDirty } = useFormDirtyState(onDirtyChange);
+
+  // Clears downstream legislation selections when an upstream one changes, so a stale
+  // subsection GUID can't be saved after the act, regulation or section is changed.
+  const clearLegislationFields = useCallback(
+    (names: readonly LegislationFieldName[]) => {
+      // subsection has no local state mirror - the form field is its source of truth
+      const localStateSetters: Partial<Record<LegislationFieldName, (value: string) => void>> = {
+        act: setAct,
+        regulation: setRegulation,
+        section: setSection,
+      };
+
+      for (const name of names) {
+        form.setFieldValue(name, "");
+        form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: true }));
+        localStateSetters[name]?.("");
+      }
+    },
+    [form],
+  );
 
   const userAgency = getUserAgency();
   const communityCodes = useAppSelector(selectCommunityCodeDropdown);
@@ -341,14 +363,8 @@ export const ContraventionDetailsForm = ({
                     markDirty();
                     field.handleChange(date ?? null);
                     if (act) {
-                      for (const name of ["act", "regulation", "section", "subsection"] as const) {
-                        form.setFieldValue(name, "");
-                        form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: true }));
-                      }
+                      clearLegislationFields(["act", "regulation", "section", "subsection"]);
                     }
-                    setAct("");
-                    setRegulation("");
-                    setSection("");
                   }}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                 />
@@ -404,8 +420,7 @@ export const ContraventionDetailsForm = ({
                     const value = option?.value || "";
                     field.handleChange(value);
                     setAct(value);
-                    setRegulation("");
-                    setSection("");
+                    clearLegislationFields(["regulation", "section", "subsection"]);
                   }}
                   placeholder="Select act"
                   isClearable={true}
@@ -451,7 +466,7 @@ export const ContraventionDetailsForm = ({
                       const value = option?.value || "";
                       field.handleChange(value);
                       setRegulation(value);
-                      setSection("");
+                      clearLegislationFields(["section", "subsection"]);
                     }}
                     placeholder="Select regulation"
                     isClearable={true}
@@ -499,6 +514,7 @@ export const ContraventionDetailsForm = ({
                     const value = option?.value || "";
                     field.handleChange(value);
                     setSection(value);
+                    clearLegislationFields(["subsection"]);
                   }}
                   placeholder="Select section"
                   isClearable={true}

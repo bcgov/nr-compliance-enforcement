@@ -35,12 +35,8 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
   const dobDate = parseUTCDateToLocal(person?.dateOfBirth);
   const dateOfBirth = formatDateObjectAsString(dobDate, { format: "date" });
   const age = dobDate ? calculateAgeYears(dobDate) : "";
-       
-  const driversLicense = (person?.driversLicenseNumber ?? "").trim();
 
-  // Compose "Sex as per ID: F, 24 (2002-02-23)", dropping whichever pieces are absent.
-  const sexAge = [sexLabel, age === null ? "" : String(age)].filter(Boolean).join(", ");
-  const descriptorLine = [sexAge, dateOfBirth ? `(${dateOfBirth})` : ""].filter(Boolean).join(" ");
+  const driversLicense = (person?.driversLicenseNumber ?? "").trim();
 
   // --- Shared derivations ---
   const name = getPartyName(party);
@@ -85,6 +81,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
         ) : (
           <>
             <div className="comp-party-match-card-name">{name}</div>
+            {sexLabel && <div className="comp-party-match-card-body-line">{sexLabel}</div>}
             {dateOfBirth && <div className="comp-party-match-card-body-line">{`Date of birth: ${dateOfBirth}`}</div>}
             {age && <div className="comp-party-match-card-body-line">{`Age: ${age}`}</div>}
             {driversLicense && (

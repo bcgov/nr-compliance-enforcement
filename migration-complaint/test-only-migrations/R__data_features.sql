@@ -90,3 +90,12 @@ WHERE feature_code = 'CASES';
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'ASMTCOMNTS';
+
+---------------------
+-- Disable Case Creation for all agencies
+---------------------
+
+UPDATE feature_agency_xref
+SET active_ind = 'N'
+WHERE feature_code = 'CREATECASE';
+
