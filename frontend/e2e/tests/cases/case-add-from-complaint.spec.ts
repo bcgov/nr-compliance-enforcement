@@ -16,9 +16,6 @@ test.describe("Create/Add Case Modal - Search", () => {
 
     await page.getByRole("button", { name: "Actions Menu" }).click();
     await page.locator("#create-add-case-button").click();
-
-    // Wait for the modal's radio group to render
-    await expect(page.locator("#create-add-case-radiogroup-0")).toBeVisible();
   });
 
   //skipped due to feature flag - turned off for MVP

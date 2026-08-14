@@ -22,6 +22,7 @@ import { joinWithAnd } from "@common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
 import { closeComplaintWithAssessment } from "@store/reducers/complaint-outcome-thunks";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
 
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
@@ -256,25 +257,27 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
             display: "inherit",
           }}
         >
-          <div
-            className="comp-details-form-row"
-            id="create-or-add-case-div"
-          >
-            <CompRadioGroup
-              id="create-add-case-radiogroup"
-              options={createOrAddOptions}
-              enableValidation={true}
-              itemClassName="comp-radio-btn"
-              groupClassName="comp-equipment-form-radio-group"
-              value={createOrAddOption}
-              onChange={(option: any) => {
-                setCreateOrAddOption(option.target.value);
-                markDirty();
-              }}
-              isDisabled={false}
-              radioGroupName="create-add-case-radiogroup"
-            />
-          </div>
+          <FeatureFlag feature={FEATURE_TYPES.CREATE_CASE}>
+            <div
+              className="comp-details-form-row"
+              id="create-or-add-case-div"
+            >
+              <CompRadioGroup
+                id="create-add-case-radiogroup"
+                options={createOrAddOptions}
+                enableValidation={true}
+                itemClassName="comp-radio-btn"
+                groupClassName="comp-equipment-form-radio-group"
+                value={createOrAddOption}
+                onChange={(option: any) => {
+                  setCreateOrAddOption(option.target.value);
+                  markDirty();
+                }}
+                isDisabled={false}
+                radioGroupName="create-add-case-radiogroup"
+              />
+            </div>
+          </FeatureFlag>
 
           {createOrAddOption === "create" && (
             <form
