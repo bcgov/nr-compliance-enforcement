@@ -100,10 +100,12 @@ export class EnforcementActionService {
         );
       }
 
-      // Publish local party to the shared party
-      const sharedParty = await this.investigationPartyService.publishToSharedParty(input.partyIdentifier);
+      // Promoting investigation_party to shared schema when enforcement action is created
 
-      // The enforcement action and the link back to the published party commit together
+      // 1. Prepare the party for publishing with a random partyIdentifier
+      const preparedParty = await this.investigationPartyService.prepareSharedParty(input.partyIdentifier);
+
+      // 2. Create enforcement action and update refs to prepared party
       const enforcementAction = await withRlsTransaction(this.prisma, async (db) => {
         const created = await db.enforcement_action.create({
           data: {
@@ -132,12 +134,15 @@ export class EnforcementActionService {
           },
         });
 
-        if (sharedParty) {
-          await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier, sharedParty);
+        if (preparedParty) {
+          await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier, preparedParty);
         }
 
         return created;
       });
+
+      // 3. Create the shared party in the shared schema
+      const sharedParty = preparedParty ? await this.investigationPartyService.createSharedParty(preparedParty) : null;
 
       await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
 

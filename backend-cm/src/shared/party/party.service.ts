@@ -31,6 +31,14 @@ import { BusinessIdentifiers } from "src/enum/business-identifier.enum";
 
 type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, extra?: Record<string, any>) => void;
 
+// Guids a caller can pin on create instead of letting the database generate them. Not exposed
+// through GraphQL - the API must never let a client choose a party's identity.
+export interface PartyIdentifiers {
+  partyGuid?: string;
+  personGuid?: string;
+  businessGuid?: string;
+}
+
 // Initial cut at scoring algorithm
 // DL Number and Business Number shoot matches to top of list regardless of what is entered
 const MATCH_FIELD_WEIGHTS = {
@@ -277,7 +285,7 @@ export class PartyService {
     }
   }
 
-  async create(input: PartyCreateInput): Promise<Party> {
+  async create(input: PartyCreateInput, identifiers?: PartyIdentifiers): Promise<Party> {
     let data: any;
 
     try {
@@ -286,9 +294,9 @@ export class PartyService {
       }
 
       if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
-        data = await this._buildPersonCreateData(input);
+        data = await this._buildPersonCreateData(input, identifiers);
       } else {
-        data = await this._buildBusinessCreateData(input);
+        data = await this._buildBusinessCreateData(input, identifiers);
       }
 
       const prismaParty: any = await this.prisma.$transaction(async (tx) => {
@@ -337,11 +345,12 @@ export class PartyService {
     }
   }
 
-  private async _buildCommonPartyCreateData(input: PartyCreateInput): Promise<any> {
+  private async _buildCommonPartyCreateData(input: PartyCreateInput, identifiers?: PartyIdentifiers): Promise<any> {
     const createdByUser = await this.appUser.findOne(undefined, this.user.getUserGuid());
 
     // addresses are created after the party so contact office links can reference them
     return {
+      ...(identifiers?.partyGuid ? { party_guid: identifiers.partyGuid } : {}),
       party_type: input.partyTypeCode,
       create_user_id: this.user.getIdirUsername(),
       create_utc_timestamp: new Date(),
@@ -406,13 +415,14 @@ export class PartyService {
     };
   }
 
-  private async _buildPersonCreateData(input: PartyCreateInput): Promise<any> {
-    const common = await this._buildCommonPartyCreateData(input);
+  private async _buildPersonCreateData(input: PartyCreateInput, identifiers?: PartyIdentifiers): Promise<any> {
+    const common = await this._buildCommonPartyCreateData(input, identifiers);
 
     return {
       ...common,
       person: {
         create: {
+          ...(identifiers?.personGuid ? { person_guid: identifiers.personGuid } : {}),
           ...this._buildPersonFieldData(input.person),
           ...(input.person?.facialHairStyleCodes?.length
             ? {
@@ -432,14 +442,15 @@ export class PartyService {
     };
   }
 
-  private async _buildBusinessCreateData(input: PartyCreateInput): Promise<any> {
+  private async _buildBusinessCreateData(input: PartyCreateInput, identifiers?: PartyIdentifiers): Promise<any> {
     // contact people are created after the party so office links can reference the addresses
-    const common = await this._buildCommonPartyCreateData(input);
+    const common = await this._buildCommonPartyCreateData(input, identifiers);
 
     return {
       ...common,
       business: {
         create: {
+          ...(identifiers?.businessGuid ? { business_guid: identifiers.businessGuid } : {}),
           name: input.business?.name,
           safety_concern_ind: input.business?.safetyConcernIndicator,
           safety_concern_reason: input.business?.safetyConcernReason,
@@ -1392,8 +1403,18 @@ export class PartyService {
   ): void {
     if (!oldBusiness || !newBusiness) return;
     this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
-    this._compareField("Safety concern", oldBusiness.safetyConcernIndicator, newBusiness.safetyConcernIndicator, addEvent);
-    this._compareField("Safety concern reason", oldBusiness.safetyConcernReason, newBusiness.safetyConcernReason, addEvent);
+    this._compareField(
+      "Safety concern",
+      oldBusiness.safetyConcernIndicator,
+      newBusiness.safetyConcernIndicator,
+      addEvent,
+    );
+    this._compareField(
+      "Safety concern reason",
+      oldBusiness.safetyConcernReason,
+      newBusiness.safetyConcernReason,
+      addEvent,
+    );
     this._diffBusinessIdentifiers(
       oldBusiness.businessIdentifiers ?? [],
       newBusiness.businessIdentifiers ?? [],
