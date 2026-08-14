@@ -368,10 +368,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           variant="warning"
           id="enforcement-action-publish-party-notice"
         >
-          {" "}
-          <i className="bi bi-info-circle-fill pe-2" />
-          Saving this enforcement action will also save the details of the party involved for use in future
-          investigations.
+          <i className="bi bi-info-circle-fill pe-2" /> Saving this enforcement action will also save the details of the
+          party involved for use in future investigations.
         </Alert>
       )}
 
