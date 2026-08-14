@@ -105,9 +105,11 @@ export class EnforcementActionService {
       // 1. Prepare the party for publishing with a random partyIdentifier
       const preparedParty = await this.investigationPartyService.prepareSharedParty(input.partyIdentifier);
 
+      let enforcementAction;
+
       // 2. Create enforcement action and update refs to prepared party
-      const enforcementAction = await withRlsTransaction(this.prisma, async (db) => {
-        const created = await db.enforcement_action.create({
+      await withRlsTransaction(this.prisma, async (db) => {
+        enforcementAction = await db.enforcement_action.create({
           data: {
             contravention_party_xref_guid: xref.contravention_party_xref_guid,
             enforcement_action_code: input.enforcementActionCode,
@@ -138,18 +140,14 @@ export class EnforcementActionService {
           await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier, preparedParty);
         }
 
-        return created;
+        // 3. Create the shared party in the shared schema
+        await this.investigationPartyService.createSharedParty(preparedParty);
+
+        await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
       });
 
-      // 3. Create the shared party in the shared schema
-      const sharedParty = preparedParty ? await this.investigationPartyService.createSharedParty(preparedParty) : null;
-
-      await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
-
-      const created = await this.findOne(enforcementAction.enforcement_action_guid);
-
       // Handed back so the client can copy the party's COMS attachments onto the new shared party
-      return { ...created, publishedPartyReference: sharedParty?.partyIdentifier ?? null };
+      return await this.findOne(enforcementAction.enforcement_action_guid);
     } catch (error) {
       this.logger.error("Error creating enforcement action:", error);
       throw error;
