@@ -2,7 +2,6 @@ type Task {
   taskIdentifier: String!
   investigationIdentifier: String!
   investigationLabel: String
-  taskTypeCode: String
   taskStatusCode: String!
   assignedUserIdentifier: String
   createdByUserIdentifier: String!
@@ -19,7 +18,6 @@ type Task {
 input CreateUpdateTaskInput {
   taskIdentifier: String
   investigationIdentifier: String
-  taskTypeCode: String
   taskStatusCode: String
   assignedUserIdentifier: String
   appUserIdentifier: String

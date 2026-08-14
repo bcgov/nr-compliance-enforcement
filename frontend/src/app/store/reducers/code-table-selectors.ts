@@ -83,15 +83,6 @@ export const selectTaskCategory = createSelector([selectCodeTables], (codeTables
   return items.map(({ taskCategoryTypeCode: value, longDescription: label }) => ({ label, value }));
 });
 
-export const selectTaskSubCategory = createSelector([selectCodeTables], (codeTables) => {
-  const { "task-type": items } = codeTables;
-  return items.map(({ taskTypeCode: value, taskCategoryTypeCode: taskCategory, longDescription: label }) => ({
-    label,
-    taskCategory,
-    value,
-  }));
-});
-
 export const selectTaskStatus = createSelector([selectCodeTables], (codeTables) => {
   const { "task-status-type": items } = codeTables;
   return items.map(({ taskStatusCode: value, longDescription: label }) => ({ label, value }));

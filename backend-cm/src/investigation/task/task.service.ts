@@ -24,7 +24,6 @@ export class TaskService {
       select: {
         task_guid: true,
         investigation_guid: true,
-        task_type_code: true,
         task_status_code: true,
         assigned_app_user_guid_ref: true,
         app_create_user_guid_ref: true,
@@ -58,7 +57,6 @@ export class TaskService {
       select: {
         task_guid: true,
         investigation_guid: true,
-        task_type_code: true,
         task_status_code: true,
         assigned_app_user_guid_ref: true,
         app_create_user_guid_ref: true,
@@ -115,7 +113,6 @@ export class TaskService {
           return await db.task.create({
             data: {
               investigation_guid: taskInput.investigationIdentifier,
-              task_type_code: taskInput.taskTypeCode || null,
               task_status_code: taskInput.taskStatusCode,
               assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
               app_create_user_guid_ref: taskInput.appUserIdentifier,
@@ -191,7 +188,6 @@ export class TaskService {
             task_guid: taskInput.taskIdentifier,
           },
           data: {
-            task_type_code: taskInput.taskTypeCode,
             task_status_code: taskInput.taskStatusCode,
             assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
             app_update_user_guid_ref: taskInput.appUserIdentifier,

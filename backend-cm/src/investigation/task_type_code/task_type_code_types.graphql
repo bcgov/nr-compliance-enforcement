@@ -1,8 +1,0 @@
-type TaskTypeCode {
-  taskTypeCode: String
-  taskCategoryTypeCode: String
-  shortDescription: String
-  longDescription: String
-  displayOrder: Int
-  activeIndicator: Boolean
-}

@@ -45,7 +45,6 @@ import { PartyType } from "../app/shared/party-type";
 import { PartyAssociationRole } from "../app/shared/party-association-role";
 import { TaskStatusType } from "@/app/types/app/investigation/task-status";
 import { TaskCategoryType } from "@/app/types/app/investigation/task-category";
-import { TaskType } from "@/app/types/app/investigation/task-category-detail";
 import { LegislationType } from "../app/code-tables/legislation-type";
 import { InvestigationSourceCode } from "@/app/types/app/investigation/investigation-source-code";
 import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-action";
@@ -110,7 +109,6 @@ export interface CodeTableState {
     | Array<PartyAssociationRole>
     | Array<TaskStatusType>
     | Array<TaskCategoryType>
-    | Array<TaskType>
     | Array<InvestigationSourceCode>
     | Array<LegislationType>
     | Array<EnforcementActionType>
@@ -172,7 +170,6 @@ export interface CodeTableState {
   "party-association-role": Array<PartyAssociationRole>;
   "task-status-type": Array<TaskStatusType>;
   "task-category-type": Array<TaskCategoryType>;
-  "task-type": Array<TaskType>;
   "investigation-source-code": Array<InvestigationSourceCode>;
   "legislation-type": Array<LegislationType>;
   "enforcement-action-type": Array<EnforcementActionType>;
