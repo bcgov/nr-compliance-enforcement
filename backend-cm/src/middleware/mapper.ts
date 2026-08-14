@@ -42,7 +42,6 @@ import { mapPrismaTaskStatusCodeToTaskStatusCode } from "../investigation/task_s
 import { mapPrismaTaskToTask } from "../investigation/task/dto/task";
 import { mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode } from "../investigation/task_category_type_code/dto/task_category_type_code";
 import { mapPrismaInvestigationSourceCodeToInvestigationSourceCode } from "../investigation/investigation_source_code/dto/investigation_source_code";
-import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
 import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/diary_date";
 import { mapPrismaAliasToAlias } from "../shared/alias/dto/alias";
 import { mapPrismaAddressToAddress } from "../shared/address/dto/address";
@@ -132,7 +131,6 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaPartyToInvestigationParty(mapper);
   mapPrismaContreventionToContravention(mapper);
   mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
-  mapPrismaTaskTypeCodeToTaskTypeCode(mapper);
   mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode(mapper);
   mapPrismaInvestigationSourceCodeToInvestigationSourceCode(mapper);
   mapPrismaTaskToTask(mapper);

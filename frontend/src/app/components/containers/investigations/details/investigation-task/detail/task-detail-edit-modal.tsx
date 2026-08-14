@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -9,7 +9,7 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
-import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { CompInput } from "@/app/components/common/comp-input";
@@ -40,20 +40,14 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const currentUserGuid = useAppSelector(selectAppUserGuid);
   const taskCategories = useAppSelector(selectTaskCategory);
-  const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const agency = useAppSelector(selectOfficerAgency);
   const officers = useAppSelector(selectOfficers);
   const officersInAgencyList = useAppSelector((state) => selectOfficersByAgency(state, agency));
-
-  const [selectedCategory, setSelectedCategory] = useState("");
 
   const taskCategoryOptions = taskCategories.map((c) => ({
     value: String(c.value ?? ""),
     label: String(c.label ?? ""),
   }));
-  const taskSubCategoryOptions = taskSubCategories
-    .filter((s) => s.taskCategory === selectedCategory)
-    .map((s) => ({ value: String(s.value ?? ""), label: String(s.label ?? "") }));
   const assignedOfficer =
     task && officers ? (officers.find((o) => o.app_user_guid === task.assignedUserIdentifier) ?? null) : null;
 
@@ -78,22 +72,20 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const form = useForm({
     defaultValues: {
       taskCategory: "",
-      taskSubCategory: "",
       officerAssigned: primaryInvestigatorGuid ?? currentUserGuid,
       description: "",
-      remarks: "",
+      subject: "",
       dueDate: task?.dueDate ?? new Date(),
     },
     onSubmit: async ({ value }) => {
       const input: CreateUpdateTaskInput = {
         taskIdentifier: task?.taskIdentifier,
         investigationIdentifier: investigationGuid,
-        taskTypeCode: value.taskSubCategory || null,
         taskStatusCode: task ? undefined : "OPEN", // default to open for new tasks
         assignedUserIdentifier: value.officerAssigned || undefined,
         appUserIdentifier: currentUserGuid,
         description: value.description?.trim() || undefined,
-        remarks: value.remarks,
+        subject: value.subject,
         dueDate: value.dueDate as Date,
         taskCategoryTypeCode: value.taskCategory,
       };
@@ -114,28 +106,23 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   }, [isFormDirty, markDirty]);
 
   const clearFieldMeta = () => {
-    (["taskCategory", "taskSubCategory", "officerAssigned", "description", "dueDate", "remarks"] as const).forEach(
-      (name) => {
-        form.setFieldMeta(name, (meta) => ({ ...meta, isDirty: false, isTouched: false }));
-      },
-    );
+    (["taskCategory", "officerAssigned", "description", "dueDate", "subject"] as const).forEach((name) => {
+      form.setFieldMeta(name, (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    });
   };
 
   useEffect(() => {
     if (show && task) {
-      setSelectedCategory(task.taskCategoryTypeCode ?? "");
       form.setFieldValue("taskCategory", task.taskCategoryTypeCode ?? "");
-      form.setFieldValue("taskSubCategory", task.taskTypeCode ?? "");
       form.setFieldValue("officerAssigned", task.assignedUserIdentifier ?? currentUserGuid);
       form.setFieldValue("description", task.description ?? "");
       form.setFieldValue("dueDate", task?.dueDate ? task.dueDate : new Date());
-      form.setFieldValue("remarks", task.remarks ?? "");
+      form.setFieldValue("subject", task.subject ?? "");
       clearFieldMeta();
       const timeout = globalThis.setTimeout(clearFieldMeta, 0);
       return () => globalThis.clearTimeout(timeout);
     }
     if (show && !task) {
-      setSelectedCategory("");
       form.reset();
       form.setFieldValue("officerAssigned", primaryInvestigatorGuid ?? currentUserGuid);
     }
@@ -202,8 +189,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 onChange={(option) => {
                   const value = option?.value ?? "";
                   field.handleChange(value);
-                  setSelectedCategory(value);
-                  form.setFieldValue("taskSubCategory", ""); // reset sub-category when category changes
                 }}
                 placeholder="Select category"
                 isClearable
@@ -214,51 +199,27 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
               />
             )}
           />
-          {selectedCategory && (
-            <FormField
-              form={form}
-              name="taskSubCategory"
-              label="Task sub-category"
-              render={(field) => (
-                <CompSelect
-                  key={selectedCategory}
-                  id="task-detail-edit-subcategory"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={taskSubCategoryOptions}
-                  value={taskSubCategoryOptions.find((opt) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value ?? "")}
-                  placeholder={taskSubCategoryOptions[0].label === "None" ? "" : "Select sub-category"}
-                  isClearable
-                  showInactive={false}
-                  enableValidation
-                  errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                  isDisabled={taskSubCategoryOptions[0].label === "None"}
-                />
-              )}
-            />
-          )}
           <FormField
             form={form}
-            name="remarks"
-            label="Remarks"
+            name="subject"
+            label="Subject"
             required
             validators={{
-              onChange: z.string().min(1, "Task remarks is required"),
-              onSubmit: z.string().min(1, "Task remarks is required"),
+              onChange: z.string().min(1, "Task subject is required"),
+              onSubmit: z.string().min(1, "Task subject is required"),
             }}
             render={(field) => (
               <div>
                 <CompInput
-                  id="task-detail-edit-remarks"
-                  divid="task-detail-edit-remarks-value"
+                  id="task-detail-edit-subject"
+                  divid="task-detail-edit-subject-value"
                   type="input"
                   inputClass="comp-form-control"
                   error={field.state.meta.errors?.[0]?.message ?? ""}
                   maxLength={120}
                   onChange={(evt: any) => field.handleChange(evt.target.value)}
                   value={field.state.value}
-                  placeholder="Enter task remarks"
+                  placeholder="Person, location, business, vehicle, file number, etc..."
                   disabled={isReadOnly}
                 />
               </div>
@@ -325,7 +286,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 rows={4}
                 value={field.state.value}
                 onChange={(value: string) => field.handleChange(value)}
-                placeholderText="Enter task description..."
+                placeholderText="Enter details of what needs to be completed for this task..."
                 maxLength={4000}
                 errMsg={field.state.meta.errors?.[0]?.message ?? ""}
                 disabled={isReadOnly}

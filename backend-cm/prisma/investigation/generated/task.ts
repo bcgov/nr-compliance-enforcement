@@ -4,7 +4,6 @@ import { exhibit } from "./exhibit";
 import { investigation } from "./investigation";
 import { task_category_type_code } from "./task_category_type_code";
 import { task_status_code } from "./task_status_code";
-import { task_type_code } from "./task_type_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class task {
@@ -13,9 +12,6 @@ export class task {
 
   @ApiProperty({ type: String })
   investigation_guid: string;
-
-  @ApiPropertyOptional({ type: String })
-  task_type_code?: string;
 
   @ApiProperty({ type: String })
   task_status_code: string;
@@ -60,7 +56,7 @@ export class task {
   task_category_type_code: string;
 
   @ApiProperty({ type: String })
-  remarks: string;
+  subject: string;
 
   @ApiProperty({ type: Date })
   due_date: Date;
@@ -82,7 +78,4 @@ export class task {
 
   @ApiProperty({ type: () => task_status_code })
   task_status_code_task_task_status_codeTotask_status_code: task_status_code;
-
-  @ApiPropertyOptional({ type: () => task_type_code })
-  task_type_code_task_task_type_codeTotask_type_code?: task_type_code;
 }

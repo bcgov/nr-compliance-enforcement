@@ -5,7 +5,6 @@ export class Task {
   taskIdentifier: string;
   investigationIdentifier: string;
   investigationLabel: string;
-  taskTypeCode: string;
   taskStatusCode: string;
   assignedUserIdentifier: string;
   createdByUserIdentifier: string;
@@ -15,20 +14,19 @@ export class Task {
   description: string;
   activeIndicator: boolean;
   taskCategoryTypeCode: string;
-  remarks: string;
+  subject: string;
   dueDate: Date;
 }
 
 export class CreateUpdateTaskInput {
   taskIdentifier?: string;
   investigationIdentifier?: string;
-  taskTypeCode?: string;
   taskStatusCode?: string;
   assignedUserIdentifier?: string;
   appUserIdentifier?: string;
   description?: string;
   taskCategoryTypeCode?: string;
-  remarks?: string;
+  subject?: string;
   dueDate?: Date;
 }
 
@@ -48,10 +46,6 @@ export const mapPrismaTaskToTask = (mapper: Mapper) => {
     forMember(
       (dest) => dest.investigationLabel,
       mapFrom((src) => src.investigation?.name),
-    ),
-    forMember(
-      (dest) => dest.taskTypeCode,
-      mapFrom((src) => src.task_type_code),
     ),
     forMember(
       (dest) => dest.taskStatusCode,
@@ -90,8 +84,8 @@ export const mapPrismaTaskToTask = (mapper: Mapper) => {
       mapFrom((src) => src.task_category_type_code),
     ),
     forMember(
-      (dest) => dest.remarks,
-      mapFrom((src) => src.remarks),
+      (dest) => dest.subject,
+      mapFrom((src) => src.subject),
     ),
     forMember(
       (dest) => dest.dueDate,

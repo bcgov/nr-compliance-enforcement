@@ -24,7 +24,6 @@ export class TaskService {
       select: {
         task_guid: true,
         investigation_guid: true,
-        task_type_code: true,
         task_status_code: true,
         assigned_app_user_guid_ref: true,
         app_create_user_guid_ref: true,
@@ -34,7 +33,7 @@ export class TaskService {
         description: true,
         active_ind: true,
         task_category_type_code: true,
-        remarks: true,
+        subject: true,
         due_date: true,
         investigation: {
           select: {
@@ -58,7 +57,6 @@ export class TaskService {
       select: {
         task_guid: true,
         investigation_guid: true,
-        task_type_code: true,
         task_status_code: true,
         assigned_app_user_guid_ref: true,
         app_create_user_guid_ref: true,
@@ -68,7 +66,7 @@ export class TaskService {
         description: true,
         active_ind: true,
         task_category_type_code: true,
-        remarks: true,
+        subject: true,
         due_date: true,
         investigation: {
           select: {
@@ -115,7 +113,6 @@ export class TaskService {
           return await db.task.create({
             data: {
               investigation_guid: taskInput.investigationIdentifier,
-              task_type_code: taskInput.taskTypeCode || null,
               task_status_code: taskInput.taskStatusCode,
               assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
               app_create_user_guid_ref: taskInput.appUserIdentifier,
@@ -126,7 +123,7 @@ export class TaskService {
               create_user_id: this.user.getIdirUsername(),
               create_utc_timestamp: new Date(),
               task_category_type_code: taskInput.taskCategoryTypeCode,
-              remarks: taskInput.remarks,
+              subject: taskInput.subject,
               due_date: taskInput.dueDate,
             },
           });
@@ -191,7 +188,6 @@ export class TaskService {
             task_guid: taskInput.taskIdentifier,
           },
           data: {
-            task_type_code: taskInput.taskTypeCode,
             task_status_code: taskInput.taskStatusCode,
             assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
             app_update_user_guid_ref: taskInput.appUserIdentifier,
@@ -200,7 +196,7 @@ export class TaskService {
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
             task_category_type_code: taskInput.taskCategoryTypeCode,
-            remarks: taskInput.remarks,
+            subject: taskInput.subject,
             due_date: taskInput.dueDate,
           },
         });

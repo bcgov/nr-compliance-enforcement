@@ -10,6 +10,7 @@ import {
 } from "src/investigation/enforcement_action/dto/enforcement_action";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { InvestigationService } from "../investigation/investigation.service";
+import { InvestigationPartyService } from "../investigation_party/investigation_party_service";
 
 @Injectable()
 export class EnforcementActionService {
@@ -18,6 +19,7 @@ export class EnforcementActionService {
     private readonly user: UserService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly investigationService: InvestigationService,
+    private readonly investigationPartyService: InvestigationPartyService,
   ) {}
 
   private readonly logger = new Logger(EnforcementActionService.name);
@@ -98,36 +100,56 @@ export class EnforcementActionService {
         );
       }
 
-      const enforcementAction = await this.prisma.enforcement_action.create({
-        data: {
-          contravention_party_xref_guid: xref.contravention_party_xref_guid,
-          enforcement_action_code: input.enforcementActionCode,
-          date_issued: input.dateIssued,
-          geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
-          app_user_guid_ref: input.appUserIdentifier,
-          active_ind: true,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-          ...(input.ticketOutcomeCode &&
-            input.ticketAmount !== undefined && {
-              ticket: {
-                create: {
-                  ticket_outcome_code: input.ticketOutcomeCode,
-                  ticket_amount: input.ticketAmount,
-                  ticket_number: input.ticketNumber,
-                  paid_date: input.paidDate,
-                  active_ind: true,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
+      // Promoting investigation_party to shared schema when enforcement action is created
+
+      // 1. Prepare the party for publishing with a random partyIdentifier
+      const preparedParty = await this.investigationPartyService.prepareSharedParty(input.partyIdentifier);
+
+      let enforcementAction;
+      let sharedParty;
+
+      // 2. Create enforcement action and update refs to prepared party
+      await withRlsTransaction(this.prisma, async (db) => {
+        enforcementAction = await db.enforcement_action.create({
+          data: {
+            contravention_party_xref_guid: xref.contravention_party_xref_guid,
+            enforcement_action_code: input.enforcementActionCode,
+            date_issued: input.dateIssued,
+            geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
+            app_user_guid_ref: input.appUserIdentifier,
+            active_ind: true,
+            create_user_id: this.user.getIdirUsername(),
+            create_utc_timestamp: new Date(),
+            ...(input.ticketOutcomeCode &&
+              input.ticketAmount !== undefined && {
+                ticket: {
+                  create: {
+                    ticket_outcome_code: input.ticketOutcomeCode,
+                    ticket_amount: input.ticketAmount,
+                    ticket_number: input.ticketNumber,
+                    paid_date: input.paidDate,
+                    active_ind: true,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  },
                 },
-              },
-            }),
-        },
+              }),
+          },
+        });
+
+        if (preparedParty) {
+          await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier, preparedParty);
+        }
+
+        // 3. Create the shared party in the shared schema
+        sharedParty = await this.investigationPartyService.createSharedParty(preparedParty);
+
+        await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
       });
 
-      await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
-
-      return await this.findOne(enforcementAction.enforcement_action_guid);
+      // Handed back so the client can copy the party's COMS attachments onto the new shared party
+      const created = await this.findOne(enforcementAction.enforcement_action_guid);
+      return { ...created, publishedPartyReference: sharedParty?.partyIdentifier ?? null };
     } catch (error) {
       this.logger.error("Error creating enforcement action:", error);
       throw error;

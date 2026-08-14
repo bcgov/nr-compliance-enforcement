@@ -17,7 +17,6 @@ import { PartyType } from "@/app/types/app/shared/party-type";
 import { PartyAssociationRole } from "@/app/types/app/shared/party-association-role";
 import { TaskStatusType } from "@/app/types/app/investigation/task-status";
 import { TaskCategoryType } from "@/app/types/app/investigation/task-category";
-import { TaskType } from "@/app/types/app/investigation/task-category-detail";
 import { InvestigationSourceCode } from "@/app/types/app/investigation/investigation-source-code";
 import { LegislationType } from "@/app/types/app/code-tables/legislation-type";
 import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-action";
@@ -163,14 +162,6 @@ export const fetchTaskCategoryTypes = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const fetchTaskTypes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TASK_TYPE}`);
-  const response = await get<Array<TaskType>>(dispatch, parameters);
-  if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.TASK_TYPE, data: response };
-    dispatch(setCodeTable(payload));
-  }
-};
 export const fetchInvestigationSourceCodes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(
     `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.INVESTIGATION_SOURCE_CODE}`,

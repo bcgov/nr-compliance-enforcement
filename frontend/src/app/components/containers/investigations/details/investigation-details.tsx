@@ -146,7 +146,6 @@ export const GET_INVESTIGATION = gql`
       }
       tasks {
         taskIdentifier
-        taskTypeCode
         taskStatusCode
         assignedUserIdentifier
         createdByUserIdentifier
@@ -156,7 +155,7 @@ export const GET_INVESTIGATION = gql`
         description
         activeIndicator
         taskCategoryTypeCode
-        remarks
+        subject
         dueDate
       }
       contraventions {

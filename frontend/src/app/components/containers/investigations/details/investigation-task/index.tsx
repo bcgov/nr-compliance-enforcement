@@ -14,7 +14,7 @@ import type { CreateUpdateTaskInput } from "@/generated/graphql";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation, ToggleSuccess } from "@/app/common/toast";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { exportTasksList } from "@/app/store/reducers/documents-thunks";
@@ -50,7 +50,6 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
   const { searchValues } = useTaskSearch();
 
   const taskCategories = useAppSelector(selectTaskCategory);
-  const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const officers = useAppSelector(selectOfficers);
   const currentDownload = useSelector(selectCurrentDownload);
@@ -63,18 +62,11 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
     () =>
       tasks.filter((task) => {
         if (searchValues.categoryFilter && task.taskCategoryTypeCode !== searchValues.categoryFilter) return false;
-        if (searchValues.subCategoryFilter && task.taskTypeCode !== searchValues.subCategoryFilter) return false;
         if (searchValues.statusFilter && task.taskStatusCode !== searchValues.statusFilter) return false;
         if (searchValues.officerFilter && task.assignedUserIdentifier !== searchValues.officerFilter) return false;
         return true;
       }),
-    [
-      tasks,
-      searchValues.categoryFilter,
-      searchValues.subCategoryFilter,
-      searchValues.statusFilter,
-      searchValues.officerFilter,
-    ],
+    [tasks, searchValues.categoryFilter, searchValues.statusFilter, searchValues.officerFilter],
   );
 
   const assignedOfficerIds = useMemo(
@@ -119,21 +111,10 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
 
       const sortedTasks = [...filteredTasks].sort((a, b) => (a.taskNumber ?? 0) - (b.taskNumber ?? 0));
 
-      const headers = [
-        "Task #",
-        "Category",
-        "Sub-category",
-        "Remarks",
-        "Status",
-        "Officer assigned",
-        "Due date",
-        "Last updated",
-      ];
+      const headers = ["Task #", "Category", "Subject", "Status", "Officer assigned", "Due date", "Last updated"];
 
       const rows = sortedTasks.map((t) => {
         const category = taskCategories.find((c) => c.value === t.taskCategoryTypeCode)?.label ?? "";
-        const subCategory = taskSubCategories.find((sc) => sc.value === t.taskTypeCode);
-        const subCategoryLabel = subCategory?.label && subCategory.label !== "None" ? subCategory.label : "";
         const status = taskStatuses.find((s) => s.value === t.taskStatusCode)?.label ?? "";
         const officer = officers?.find((o) => o.app_user_guid === t.assignedUserIdentifier);
         const officerName = officer ? `${officer.last_name}, ${officer.first_name}` : "";
@@ -141,8 +122,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
         return [
           `Task ${t.taskNumber ?? ""}`,
           category,
-          subCategoryLabel,
-          t.remarks ?? "",
+          t.subject ?? "",
           status,
           officerName,
           formatDateObjectAsString(parseUTCTimestampToLocal(t.dueDate ?? undefined), { format: "date" }),
@@ -173,16 +153,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
     } finally {
       if (toastId !== undefined) DismissToast(toastId);
     }
-  }, [
-    filteredTasks,
-    taskCategories,
-    taskSubCategories,
-    taskStatuses,
-    officers,
-    investigationGuid,
-    investigationData?.name,
-    dispatch,
-  ]);
+  }, [filteredTasks, taskCategories, taskStatuses, officers, investigationGuid, investigationData?.name, dispatch]);
 
   const renderDesktopFilterSection = () => (
     <Collapse

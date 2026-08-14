@@ -10,7 +10,7 @@ import { TaskDetailEditModal } from "./task-detail-edit-modal";
 import { DiaryDates } from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { TaskAttachments } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/task-attachments";
@@ -24,7 +24,6 @@ const GET_TASK = gql`
       taskIdentifier
       investigationIdentifier
       investigationLabel
-      taskTypeCode
       taskStatusCode
       assignedUserIdentifier
       createdByUserIdentifier
@@ -34,7 +33,7 @@ const GET_TASK = gql`
       description
       activeIndicator
       taskCategoryTypeCode
-      remarks
+      subject
       dueDate
     }
   }
@@ -55,13 +54,10 @@ interface TaskDetailSectionProps {
 //-----------TASK DETAIL SECTION----------------
 const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task }) => {
   const taskCategories = useAppSelector(selectTaskCategory);
-  const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const officers = useAppSelector(selectOfficers);
 
   const category = taskCategories.find((c) => c.value === task?.taskCategoryTypeCode);
-  const subCategory = taskSubCategories.find((s) => s.value === task?.taskTypeCode);
   const categoryLabel = category?.label ?? "-";
-  const subCategoryLabel = subCategory?.label && subCategory?.label !== "None" ? subCategory.label : "-";
   const assignedOfficer = officers?.find((o) => o.app_user_guid === task?.assignedUserIdentifier);
   const assignedOfficerName = assignedOfficer ? `${assignedOfficer.last_name}, ${assignedOfficer.first_name}` : "-";
 
@@ -81,17 +77,11 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task }) => {
               <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-category` : undefined}>{categoryLabel}</dd>
             </div>
             <div>
-              <dt>Sub Category</dt>
-              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-sub-category` : undefined}>
-                {subCategoryLabel}
-              </dd>
+              <dt>Subject</dt>
+              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-subject` : undefined}>{task?.subject ?? "-"}</dd>
             </div>
             <div>
-              <dt>Remarks</dt>
-              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-remarks` : undefined}>{task?.remarks ?? "-"}</dd>
-            </div>
-            <div>
-              <dt>Officer Assigned</dt>
+              <dt>Officer assigned</dt>
               <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-officer-assigned` : undefined}>
                 {assignedOfficerName}
               </dd>
@@ -103,7 +93,7 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task }) => {
               </dd>
             </div>
             <div>
-              <dt>Task Details</dt>
+              <dt>Task details</dt>
               <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-detail-description` : undefined}>
                 {task?.description ?? "-"}
               </dd>

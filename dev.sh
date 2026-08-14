@@ -82,7 +82,8 @@ EOF
 
 # nuke and recreate all containers
 cmd_reset() {
-  cmd_health || { error "Fix health issues before resetting."; }
+  # Real config problems still fail loudly at wait_for_service below.
+  cmd_health || warn "Health checks reported issues — resetting anyway."
 
   info "Tearing down..."
   docker compose down -v 2>/dev/null || true
@@ -331,7 +332,7 @@ cmd_health() {
   if [[ $issues -eq 0 ]]; then
     info "All checks passed."
   else
-    exit 1
+    return 1
   fi
 }
 

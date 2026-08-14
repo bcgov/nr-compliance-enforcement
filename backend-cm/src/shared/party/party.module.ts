@@ -26,5 +26,6 @@ import { EventPublisherModule } from "../../event_publisher/event_publisher.modu
     EventPublisherModule,
   ],
   providers: [PartyResolver, PartyService, PartyHistoryResolver, PartyHistoryService],
+  exports: [PartyService],
 })
 export class PartyModule {}

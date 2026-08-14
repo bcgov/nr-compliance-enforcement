@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import { useTaskSearch } from "./hooks/use-task-search";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
 
 type Props = {
@@ -28,14 +28,13 @@ export const TaskFilterBar: FC<Props> = ({
   const { searchValues, clearValues } = useTaskSearch();
 
   const taskCategories = useAppSelector(selectTaskCategory);
-  const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const officers = useAppSelector(selectOfficers);
 
   const removeFilter = useCallback(
     (filterName: string) => {
       if (filterName === "categoryFilter") {
-        clearValues(["categoryFilter", "subCategoryFilter"]);
+        clearValues(["categoryFilter"]);
       } else {
         clearValues(filterName as keyof typeof searchValues);
       }
@@ -49,10 +48,6 @@ export const TaskFilterBar: FC<Props> = ({
 
   const getCategoryFilterLabel = (): string => {
     return taskCategories.find((c) => c.value === searchValues.categoryFilter)?.label ?? "Category";
-  };
-
-  const getSubCategoryFilterLabel = (): string => {
-    return taskSubCategories.find((sc) => sc.value === searchValues.subCategoryFilter)?.label ?? "Sub-category";
   };
 
   const getStatusFilterLabel = (): string => {
@@ -88,14 +83,6 @@ export const TaskFilterBar: FC<Props> = ({
             id="category-filter-pill"
             label={getCategoryFilterLabel()}
             name="categoryFilter"
-            clear={removeFilter}
-          />
-        )}
-        {hasFilter("subCategoryFilter") && (
-          <FilterButton
-            id="subcategory-filter-pill"
-            label={getSubCategoryFilterLabel()}
-            name="subCategoryFilter"
             clear={removeFilter}
           />
         )}

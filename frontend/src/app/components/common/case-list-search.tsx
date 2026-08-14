@@ -140,7 +140,7 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     onChange(
       selected.length > 0 ? ({ label: selected[0].name as string, value: selected[0].id as string } as Option) : null,
     );
-    setHintText(isFocused ? `${selectedCase.name} || ""}` : "");
+    setHintText(isFocused ? `${selectedCase.name || ""}` : "");
   };
 
   const handleInputChange = (text: string) => {
