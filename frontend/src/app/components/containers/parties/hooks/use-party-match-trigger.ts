@@ -90,7 +90,7 @@ const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populated
 
 /**
  * Builds the business branch of the match input from the form's live values, including only
- * fields that carry a value. Business match-fields: business name, business number, and the
+ * fields that carry a value. Business match-fields: legal name, business number, and the
  * shared party-level phone and address line. Returns the input plus the count of populated
  * match-fields so the caller can enforce the minimum-two threshold.
  */

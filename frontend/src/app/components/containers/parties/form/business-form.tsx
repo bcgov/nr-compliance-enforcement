@@ -87,7 +87,9 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
                 onChange: ({ value }: { value: string | null | undefined }) => {
                   const isSafetyConcernChecked = !!form.getFieldValue("businessSafetyConcernIndicator");
                   const isEmpty = !value?.trim();
-                  return isSafetyConcernChecked && isEmpty ? { message: "Safety concern reason is required" } : undefined;
+                  return isSafetyConcernChecked && isEmpty
+                    ? { message: "Safety concern reason is required" }
+                    : undefined;
                 },
               }}
               render={(field) => (
@@ -110,7 +112,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
       <FormField
         form={form}
         name="businessName"
-        label="Name"
+        label="Legal name"
         required
         validators={{
           onChange: z.string().min(1, "Name is required"),
@@ -125,7 +127,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
             error={field.state.meta.errors?.[0]?.message || ""}
             maxLength={50}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter name..."
+            placeholder="Enter legal name..."
             disabled={isDisabled}
           />
         )}
@@ -134,6 +136,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         form={form}
         isDisabled={isDisabled}
         aliases={aliases}
+        aliasLabel="Doing business as"
         onAdd={handleAddAlias}
         onRemove={handleRemoveAlias}
       />

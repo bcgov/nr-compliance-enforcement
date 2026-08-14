@@ -291,6 +291,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         form={form}
         isDisabled={isDisabled}
         aliases={aliases}
+        aliasLabel="Alias(es)"
         onAdd={handleAddAlias}
         onRemove={handleRemoveAlias}
       />

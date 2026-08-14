@@ -563,7 +563,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                   <h4>Business details</h4>
                   <div className="comp-details-form-row">
                     <div className="col-md-6">
-                      <strong>Business name:</strong>
+                      <strong>Legal name:</strong>
                       <p id="selected-party-businessName">{selectedParty?.business?.name}</p>
                     </div>
                   </div>

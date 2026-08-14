@@ -9,23 +9,35 @@ type PartyAliasFieldsProps = {
   form: any;
   isDisabled: boolean;
   aliases: Alias[];
+  aliasLabel: string;
   onAdd: () => void;
   onRemove: (index: number) => void;
 };
 
-export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({ form, isDisabled, aliases, onAdd, onRemove }) => (
+function formatLabel(value: string): string {
+  return value.split("(")[0].trim().toLowerCase();
+}
+
+export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({
+  form,
+  isDisabled,
+  aliases,
+  aliasLabel,
+  onAdd,
+  onRemove,
+}) => (
   <>
     {aliases?.map((alias: Alias, index: number) => (
       <FormField
         key={alias.aliasGuid || `alias-${index}`}
         form={form}
         name={`aliases[${index}].name` as any}
-        label={index === 0 ? "Alias(es)" : ""}
+        label={index === 0 ? aliasLabel : ""}
         validators={{
           // only validate if there are multiple, a single empty item is allowed
           onChange: ({ value, fieldApi }: any) => {
             const rows = fieldApi.form.getFieldValue("aliases") ?? [];
-            return rows.length > 1 && !value?.trim() ? "Enter or remove this alias" : undefined;
+            return rows.length > 1 && !value?.trim() ? `Enter or remove this ${formatLabel(aliasLabel)}` : undefined;
           },
         }}
         render={(field) => (
@@ -40,7 +52,7 @@ export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({ form, isDisabled, 
                 error={getFieldErrorMessage(field)}
                 maxLength={512}
                 onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                placeholder="Enter alias"
+                placeholder={`Enter ${formatLabel(aliasLabel) === "alias" ? "alias" : "name"}`}
                 disabled={isDisabled}
               />
             </div>
@@ -74,7 +86,7 @@ export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({ form, isDisabled, 
         >
           <i className="bi bi-plus-circle me-1" />
           {/**/}
-          Add alias
+          Add {formatLabel(aliasLabel) === "alias" ? "alias" : "name"}
         </Button>
       )}
     />

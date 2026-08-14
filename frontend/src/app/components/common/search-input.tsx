@@ -151,7 +151,7 @@ const SearchInput: FC<Props> = ({
     >
       <TooltipContent
         title="Business searchable fields:"
-        items={["Party name", "Business identifier", "Phone", "Email", "Address", "City"]}
+        items={["Legal name", "Business identifier", "Phone", "Email", "Address", "City"]}
       />
     </Tooltip>
   );
