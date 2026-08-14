@@ -179,7 +179,10 @@
   },
   "overrides": {
     "minimist@<1.2.6": "1.2.6",
-    "minimatch": "^10.2.3",
+    "minimatch": {
+      ".": "^10.2.3",
+      "brace-expansion": "^5.0.9"
+    },
     "test-exclude": {
       "minimatch": "^3.1.2",
       "glob": "^7.2.3"
