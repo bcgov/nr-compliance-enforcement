@@ -1,4 +1,4 @@
-import { GraphQLClient, type RequestOptions } from 'graphql-request';
+import { GraphQLClient, RequestOptions } from 'graphql-request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1021,6 +1021,7 @@ export type EnforcementAction = {
   enforcementActionCode: EnforcementActionCode;
   enforcementActionIdentifier: Scalars['String']['output'];
   geoOrganizationUnitCode: Scalars['String']['output'];
+  publishedPartyReference?: Maybe<Scalars['String']['output']>;
   ticket?: Maybe<Ticket>;
 };
 

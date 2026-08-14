@@ -10,5 +10,6 @@ import { PartyModule } from "src/shared/party/party.module";
 @Module({
   imports: [PrismaModuleInvestigation, UserModule, InvestigationModule, PartyModule],
   providers: [InvestigationPartyResolver, InvestigationPartyService, SharedPrismaService],
+  exports: [InvestigationPartyService],
 })
 export class InvestigationPartyModule {}
