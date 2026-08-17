@@ -1,5 +1,6 @@
 input CreateInvestigationAliasInput {
   name: String!
+  aliasReference: String
 }
 
 input UpdateInvestigationAliasInput {

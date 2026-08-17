@@ -3,15 +3,15 @@ import { Modal, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 
-type RemovePartyProps = {
+type SaveConfirmProps = {
   close: () => void;
   submit: () => void;
 };
 
-export const RemovePartyModal: FC<RemovePartyProps> = ({ close, submit }) => {
+export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
 
-  const { title, description } = modalData;
+  const { title, description, cancelText, saveText } = modalData;
 
   const handleConfirm = () => {
     submit();
@@ -33,13 +33,13 @@ export const RemovePartyModal: FC<RemovePartyProps> = ({ close, submit }) => {
           variant="outline-primary"
           onClick={close}
         >
-          No, go back
+          {cancelText}
         </Button>
         <Button
           variant="primary"
           onClick={handleConfirm}
         >
-          Yes, remove party
+          {saveText}
         </Button>
       </Modal.Footer>
     </>

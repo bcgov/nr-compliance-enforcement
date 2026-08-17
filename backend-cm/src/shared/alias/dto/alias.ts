@@ -8,13 +8,8 @@ export class Alias {
 }
 
 export class AliasInput {
-  @Field(() => String)
-  name: string;
-}
-
-export class AliasUpdateInput {
-  @Field(() => String)
-  aliasGuid: string;
+  @Field(() => String, { nullable: true })
+  aliasGuid?: string;
 
   @Field(() => String)
   name: string;

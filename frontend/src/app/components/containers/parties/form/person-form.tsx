@@ -145,6 +145,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           personFacialStyleHairCodeGuid: existing?.personFacialStyleHairCodeGuid,
           personGuid: existing?.personGuid,
           facialHairStyleCode: o.value,
+          personFacialHairStyleCodeReference: (existing as any)?.personFacialHairStyleCodeReference,
         };
       });
 
@@ -500,6 +501,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         emailAddresses={emailAddresses}
         onAddEmail={handleAddEmail}
         onRemoveEmail={handleRemoveEmail}
+        showContactMethods={true}
         onSetPrimaryEmail={handleSetPrimaryEmail}
       />
       <div className="comp-details-section-header pt-5">

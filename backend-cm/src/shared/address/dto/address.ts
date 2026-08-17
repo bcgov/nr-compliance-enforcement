@@ -19,11 +19,11 @@ export class Address {
 
 @InputType()
 export class AddressInput {
-  @Field(() => String)
-  addressGuid: string;
+  @Field(() => String, { nullable: true })
+  addressGuid?: string;
 
   @Field(() => String)
-  partyGuid: string;
+  partyGuid?: string;
 
   @Field(() => String)
   addressName: string;

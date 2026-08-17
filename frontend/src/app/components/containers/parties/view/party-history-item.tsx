@@ -55,6 +55,9 @@ const useEventDescription = (event: Event): string => {
     province?: string;
     postalCode?: string;
     country?: string;
+    phoneNumber?: string;
+    emailAddress?: string;
+    investigationContext?: string;
   } | null;
 
   if (verb === "CREATED") {
@@ -103,35 +106,49 @@ const useEventDescription = (event: Event): string => {
     const countryName = content?.country
       ? (countries.find((c) => c.value === content.country)?.label ?? content.country)
       : null;
-    return [content?.streetAddress, content?.city, provinceName, content?.postalCode, countryName]
+    return [content?.streetAddress, content?.city, provinceName, content?.postalCode, countryName, ...contactDetails()]
       .filter(Boolean)
       .join(", ");
   };
 
-  switch (verb) {
-    case "ADDED": {
-      if (field === "address") {
-        const details = formatAddressDetails();
-        return details ? `added address ${newValue}: ${details}` : `added address: ${newValue}`;
-      }
-      return `added ${fieldLabel}: ${formatValue(newValue)}`;
+  const contactDetails = (): (string | null | undefined)[] => {
+    const phone = content?.phoneNumber ? formatPhoneNumber(content.phoneNumber) || content.phoneNumber : null;
+    return [phone, content?.emailAddress];
+  };
+
+  // Address and business contact events carry extra detail in the event content, so they render
+  // as "<verb> <field> <name>: <details>" rather than the plain field/value form.
+  const describeDetailedChange = (verbLabel: string, value: string | null | undefined): string | undefined => {
+    if (field === "address") {
+      const details = formatAddressDetails();
+      return details ? `${verbLabel} address ${value}: ${details}` : `${verbLabel} address: ${value}`;
     }
-    case "REMOVED": {
-      if (field === "address") {
-        const details = formatAddressDetails();
-        return details ? `removed address ${oldValue}: ${details}` : `removed address: ${oldValue}`;
-      }
-      return `removed ${fieldLabel}: ${formatValue(oldValue)}`;
+    if (field === "business contact") {
+      const details = contactDetails().filter(Boolean).join(", ");
+      return details ? `${verbLabel} business contact ${value}: ${details}` : `${verbLabel} business contact: ${value}`;
     }
-    case "EDITED": {
-      if (oldValue === newValue) {
-        return `updated ${fieldLabel} "${formatValue(oldValue)}"`;
+    return undefined;
+  };
+
+  const describeChange = (): string => {
+    switch (verb) {
+      case "ADDED":
+        return describeDetailedChange("added", newValue) ?? `added ${fieldLabel}: ${formatValue(newValue)}`;
+      case "REMOVED":
+        return describeDetailedChange("removed", oldValue) ?? `removed ${fieldLabel}: ${formatValue(oldValue)}`;
+      case "EDITED": {
+        if (oldValue === newValue) {
+          return `updated ${fieldLabel} "${formatValue(oldValue)}"`;
+        }
+        return `updated ${fieldLabel} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
       }
-      return `updated ${fieldLabel} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
+      default:
+        return `performed ${verb.toLowerCase()} on ${fieldLabel}`;
     }
-    default:
-      return `performed ${verb.toLowerCase()} on ${fieldLabel}`;
-  }
+  };
+
+  const description = describeChange();
+  return content?.investigationContext ? `${description} ${content.investigationContext}` : description;
 };
 
 export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers }) => {

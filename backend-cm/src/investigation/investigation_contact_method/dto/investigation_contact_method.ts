@@ -8,6 +8,7 @@ export class InvestigationContactMethod {
   value: string;
   isPrimary: boolean;
   isActive: boolean;
+  contactMethodReference?: string;
 }
 
 @InputType()
@@ -23,12 +24,18 @@ export class CreateInvestigationContactMethodInput {
 
   @Field(() => Boolean, { nullable: true })
   isPrimary: boolean;
+
+  @Field(() => String, { nullable: true })
+  contactMethodReference?: string;
 }
 
 @InputType()
 export class UpdateInvestigationContactMethodInput {
   @Field(() => String, { nullable: true })
   contactMethodGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  contactMethodReference?: string;
 
   @Field(() => String)
   typeCode: string;
@@ -64,6 +71,10 @@ export const mapPrismaContactMethodToInvestigationContactMethod = (mapper: Mappe
     forMember(
       (dest) => dest.isActive,
       mapFrom((src) => src.active_ind),
+    ),
+    forMember(
+      (dest) => dest.contactMethodReference,
+      mapFrom((src) => src.contact_method_guid_ref),
     ),
   );
 };

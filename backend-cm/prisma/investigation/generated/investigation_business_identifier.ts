@@ -29,6 +29,9 @@ export class investigation_business_identifier {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  business_identifier_guid_ref?: string;
+
   @ApiProperty({ type: () => investigation_business })
   investigation_business: investigation_business;
 }

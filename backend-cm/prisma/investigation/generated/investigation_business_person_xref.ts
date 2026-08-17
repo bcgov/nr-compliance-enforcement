@@ -40,6 +40,9 @@ export class investigation_business_person_xref {
   @ApiProperty({ type: Boolean })
   is_primary: boolean;
 
+  @ApiPropertyOptional({ type: String })
+  business_person_xref_guid_ref?: string;
+
   @ApiProperty({ isArray: true, type: () => investigation_business_person_address_xref })
   investigation_business_person_address_xref: investigation_business_person_address_xref[];
 

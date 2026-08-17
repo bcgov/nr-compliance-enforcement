@@ -5,14 +5,13 @@ import {
   BusinessPersonAddress,
   ContactMethod,
   CreateAttachmentReferenceInput,
-  FacialHairStyleCode,
-  InvestigationBusinessIdentifier,
   InvestigationParty,
   InvestigationPersonFacialHairStyleCodeRef,
   Party,
   PersonFacialHairStyleCode,
   PersonInput,
   PersonUpdateInput,
+  UpdateInvestigationBusinessIdentifierInput,
 } from "@/generated/graphql";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { ContactMethods } from "@/app/constants/contact-methods";
@@ -23,6 +22,7 @@ import { PartyTypeCodes } from "@/app/constants/party-types";
 
 export type ContactMethodFormValue = {
   contactMethodGuid?: string;
+  contactMethodReference?: string;
   typeCode?: string;
   value?: string;
   isPrimary?: boolean;
@@ -41,12 +41,16 @@ export type AddressFormValue = {
   displayInInvestigation?: boolean;
   phoneNumber?: string;
   phoneNumberGuid?: string;
+  phoneNumberReference?: string;
   emailAddress?: string;
   emailAddressGuid?: string;
+  emailAddressReference?: string;
+  addressReference?: string;
 };
 
 export type ContactPersonFormValue = {
   businessPersonXrefGuid?: string;
+  businessPersonXrefReference?: string;
   business: { businessGuid?: string };
   person: { personGuid?: string; firstName?: string; lastName?: string };
   contactMethods: ContactMethodFormValue[];
@@ -254,6 +258,7 @@ const buildAddressContactMethods = (address: AddressFormValue) => {
   if (hasValue(address.phoneNumber))
     methods.push({
       ...(address.phoneNumberGuid ? { contactMethodGuid: address.phoneNumberGuid } : {}),
+      contactMethodReference: address.phoneNumberReference,
       typeCode: ContactMethods.PHONE,
       value: address.phoneNumber!.trim(),
       isPrimary: true,
@@ -261,6 +266,7 @@ const buildAddressContactMethods = (address: AddressFormValue) => {
   if (hasValue(address.emailAddress))
     methods.push({
       ...(address.emailAddressGuid ? { contactMethodGuid: address.emailAddressGuid } : {}),
+      contactMethodReference: address.emailAddressReference,
       typeCode: ContactMethods.EMAIL,
       value: address.emailAddress!.trim(),
       isPrimary: true,
@@ -273,6 +279,7 @@ export const buildAddresses = (addresses: AddressFormValue[] | undefined) =>
     .filter((address) => !isDefaultAddress(address))
     .map((address) => ({
       addressGuid: address.addressGuid,
+      addressReference: address.addressReference,
       addressName: address.addressName?.trim() ?? "",
       address: address.address?.trim() || null,
       city: address.city?.trim() || null,
@@ -297,6 +304,7 @@ export const buildContactMethods = (
         .filter((p) => hasValue(p.value))
         .map((p) => ({
           ...(includeGuid && p.contactMethodGuid ? { contactMethodGuid: p.contactMethodGuid } : {}),
+          ...(p.contactMethodReference ? { contactMethodReference: p.contactMethodReference } : {}),
           typeCode: ContactMethods.PHONE,
           value: p.value ?? "",
           isPrimary: p.isPrimary ?? false,
@@ -310,6 +318,7 @@ export const buildContactMethods = (
         .filter((e) => hasValue(e.value))
         .map((e) => ({
           ...(includeGuid && e.contactMethodGuid ? { contactMethodGuid: e.contactMethodGuid } : {}),
+          ...(e.contactMethodReference ? { contactMethodReference: e.contactMethodReference } : {}),
           typeCode: ContactMethods.EMAIL,
           value: e.value ?? "",
           isPrimary: e.isPrimary ?? false,
@@ -321,7 +330,7 @@ export const buildContactMethods = (
 };
 
 export const buildAliases = (
-  aliases: Array<{ aliasGuid?: string; name?: string | null }> | undefined,
+  aliases: Array<{ aliasGuid?: string; name?: string | null; aliasReference?: string }> | undefined,
   includeGuid: boolean,
 ) =>
   (aliases ?? [])
@@ -329,6 +338,7 @@ export const buildAliases = (
     .map((a) => ({
       ...(includeGuid && a.aliasGuid ? { aliasGuid: a.aliasGuid } : {}),
       name: a.name!.trim(),
+      ...(a.aliasReference ? { aliasReference: a.aliasReference } : {}),
     }));
 
 export const buildContactPeople = (
@@ -344,6 +354,7 @@ export const buildContactPeople = (
 
   const built = (contacts ?? []).map((c) => ({
     ...(isUpdate && c.businessPersonXrefGuid ? { businessPersonXrefGuid: c.businessPersonXrefGuid } : {}),
+    ...(c.businessPersonXrefReference ? { businessPersonXrefReference: c.businessPersonXrefReference } : {}),
     person: {
       ...buildContactPersonGuid(isUpdate, c.person.personGuid),
       firstName: c.person.firstName?.trim() ?? "",
@@ -356,6 +367,7 @@ export const buildContactPeople = (
       .filter((cm) => hasValue(cm.value))
       .map((cm) => ({
         ...(isUpdate && cm.contactMethodGuid ? { contactMethodGuid: cm.contactMethodGuid } : {}),
+        ...(cm.contactMethodReference ? { contactMethodReference: cm.contactMethodReference } : {}),
         typeCode: cm.typeCode ?? ContactMethods.PHONE,
         value: cm.value ?? "",
         isPrimary: cm.isPrimary ?? false,
@@ -366,12 +378,17 @@ export const buildContactPeople = (
 };
 
 // Helper to build identifiers array
-export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any) => {
+export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, includeGuid: boolean) => {
   const identifiers = [];
 
   if (businessNumber?.identifierValue) {
     identifiers.push({
-      businessIdentifierGuid: businessNumber.businessIdentifierGuid,
+      ...(includeGuid && businessNumber.businessIdentifierGuid
+        ? { businessIdentifierGuid: businessNumber.businessIdentifierGuid }
+        : {}),
+      ...(businessNumber.businessIdentifierReference
+        ? { businessIdentifierReference: businessNumber.businessIdentifierReference }
+        : {}),
       identifierCode: BusinessIdentifiers.BUSINESS_NUMBER,
       identifierValue: businessNumber.identifierValue,
     });
@@ -379,7 +396,12 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any) => 
 
   if (worksafeBCNumber?.identifierValue) {
     identifiers.push({
-      businessIdentifierGuid: worksafeBCNumber.businessIdentifierGuid,
+      ...(includeGuid && worksafeBCNumber.businessIdentifierGuid
+        ? { businessIdentifierGuid: worksafeBCNumber.businessIdentifierGuid }
+        : {}),
+      ...(worksafeBCNumber.businessIdentifierReference
+        ? { businessIdentifierReference: worksafeBCNumber.businessIdentifierReference }
+        : {}),
       identifierCode: BusinessIdentifiers.WSBC_NUMBER,
       identifierValue: worksafeBCNumber.identifierValue,
     });
@@ -479,10 +501,11 @@ export function buildPersonBase(value: any) {
     eyeColourOther: value.eyeColourOther || null,
     facialHairIndicator: value.facialHairIndicator || null,
     facialHairStyleCodes:
-      value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
+      value.facialHairStyleCodes?.map((fhs: any) => ({
         personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
         personGuid: fhs.personGuid,
         facialHairStyleCode: fhs.facialHairStyleCode,
+        personFacialHairStyleCodeReference: fhs.personFacialHairStyleCodeReference,
       })) || [],
     additionalHairDescriptors: value.additionalHairDescriptors || null,
     comments: value.comments || null,
@@ -506,7 +529,7 @@ export function buildPersonForUpdate(value: any): PersonUpdateInput {
 export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => {
   return {
     name: value.businessName?.trim(),
-    businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
+    businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
     safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
     safetyConcernReason: value.businessSafetyConcernReason || null,
     ...(contactPeople === undefined ? {} : { contactPeople: contactPeople.length ? contactPeople : undefined }),
@@ -593,6 +616,7 @@ export const mapInvestigationPartyToDefaultValues = (
       personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
       personGuid: fhs.personGuid,
       facialHairStyleCode: fhs.facialHairStyleCode,
+      personFacialHairStyleCodeReference: fhs.personFacialHairStyleCodeReference,
     })),
   additionalHairDescriptors: editParty.person?.additionalHairDescriptors || null,
   tattooIndicator: editParty.person?.tattooIndicator || null,
@@ -606,17 +630,27 @@ export const mapInvestigationPartyToDefaultValues = (
   businessName: editParty.business?.name || "",
   businessNumber: (() => {
     const found = (editParty.business?.businessIdentifiers ?? [])
-      .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
+      .filter((bi): bi is UpdateInvestigationBusinessIdentifierInput => bi != null)
       .find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
     return found
-      ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
+      ? {
+          businessIdentifierGuid: found.businessIdentifierGuid,
+          businessIdentifierReference: found.businessIdentifierReference,
+          identifierValue: found.identifierValue,
+        }
       : { identifierValue: "" };
   })(),
   worksafeBCNumber: (() => {
     const found = (editParty.business?.businessIdentifiers ?? [])
-      .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
+      .filter((bi): bi is UpdateInvestigationBusinessIdentifierInput => bi != null)
       .find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER);
-    return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
+    return found
+      ? {
+          businessIdentifierGuid: found.businessIdentifierGuid,
+          businessIdentifierReference: found.businessIdentifierReference,
+          identifierValue: found.identifierValue,
+        }
+      : { identifierValue: "" };
   })(),
   aliases: mapAliasesFromPartyData(editParty.aliases),
   phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
@@ -634,6 +668,11 @@ const findIdentifierValue = (party: Party, code: string) =>
     .filter((bi): bi is BusinessIdentifier => bi != null)
     .find((bi) => bi.identifierCode === code)?.identifierValue;
 
+const findIdentifierGuid = (party: Party, code: string) =>
+  (party.business?.businessIdentifiers ?? [])
+    .filter((bi): bi is BusinessIdentifier => bi != null)
+    .find((bi) => bi.identifierCode === code)?.businessIdentifierGuid;
+
 /** Maps a published business contact person onto the form-value shape buildContactPeople expects. */
 const mapCopyContactPerson = (
   contact: BusinessPerson,
@@ -650,10 +689,12 @@ const mapCopyContactPerson = (
       typeCode: cm.typeCode ?? ContactMethods.PHONE,
       value: cm.value ?? "",
       isPrimary: cm.isPrimary ?? false,
+      contactMethodReference: cm.contactMethodGuid ?? undefined,
     })),
   title: contact.title ?? "",
   displayInInvestigation: contact.displayInInvestigation ?? true,
   isPrimary: contact.isPrimary ?? false,
+  businessPersonXrefReference: contact.businessPersonXrefGuid ?? undefined,
   // Office associations are re-pointed at the copied addresses. Source addresses that weren't
   // copied resolve to nothing and drop out rather than pointing at the source party's rows.
   officeAddressGuids: (contact.associatedAddresses ?? [])
@@ -665,9 +706,10 @@ const mapCopyContactPerson = (
 const buildPersonCopy = (party: Party, copiedAddresses: AddressFormValue[]) => {
   const personBase = buildPersonBase(party.person);
 
-  const facialHairStyleCodes = personBase.facialHairStyleCodes.map((fhs: FacialHairStyleCode) => ({
+  const facialHairStyleCodes = personBase.facialHairStyleCodes.map((fhs: PersonFacialHairStyleCode) => ({
     ...fhs,
     personFacialStyleHairCodeGuid: undefined,
+    personFacialHairStyleCodeReference: fhs.personFacialStyleHairCodeGuid,
     personGuid: undefined,
   }));
 
@@ -682,8 +724,11 @@ const buildPersonCopy = (party: Party, copiedAddresses: AddressFormValue[]) => {
       copiedAddresses.map((a) => ({
         ...a,
         addressGuid: undefined,
+        addressReference: a.addressGuid,
         phoneNumberGuid: undefined,
+        phoneNumberReference: a.phoneNumberGuid,
         emailAddressGuid: undefined,
+        emailAddressReference: a.emailAddressGuid,
       })),
     ),
   };
@@ -702,8 +747,11 @@ const buildBusinessCopy = (party: Party, copiedAddresses: AddressFormValue[]) =>
     return {
       ...a,
       addressGuid: copiedAddressGuid,
+      addressReference: a.addressGuid,
       phoneNumberGuid: undefined,
+      phoneNumberReference: a.phoneNumberGuid,
       emailAddressGuid: undefined,
+      emailAddressReference: a.emailAddressGuid,
     };
   });
 
@@ -717,8 +765,15 @@ const buildBusinessCopy = (party: Party, copiedAddresses: AddressFormValue[]) =>
       name: party.business?.name ?? "",
       businessReference: party.business?.businessGuid,
       businessIdentifiers: buildIdentifiers(
-        { identifierValue: findIdentifierValue(party, BusinessIdentifiers.BUSINESS_NUMBER) },
-        { identifierValue: findIdentifierValue(party, BusinessIdentifiers.WSBC_NUMBER) },
+        {
+          identifierValue: findIdentifierValue(party, BusinessIdentifiers.BUSINESS_NUMBER),
+          businessIdentifierReference: findIdentifierGuid(party, BusinessIdentifiers.BUSINESS_NUMBER),
+        },
+        {
+          identifierValue: findIdentifierValue(party, BusinessIdentifiers.WSBC_NUMBER),
+          businessIdentifierReference: findIdentifierGuid(party, BusinessIdentifiers.WSBC_NUMBER),
+        },
+        false,
       ),
       contactPeople: buildContactPeople(contacts, false),
     },
@@ -739,15 +794,15 @@ export const mapPartyToInvestigationPartyInput = (
 ) => {
   const aliases = mapAliasesFromPartyData(party.aliases)
     .filter((a) => a.name.trim().length > 0)
-    .map((a) => ({ name: a.name }));
+    .map((a) => ({ name: a.name, aliasReference: a.aliasGuid }));
 
   const phoneNumbers = mapContactMethodsFromPartyData(party.contactMethods, ContactMethods.PHONE)
     .filter((c) => (c.value ?? "").trim().length > 0)
-    .map((c) => ({ ...c, contactMethodGuid: undefined }));
+    .map((c) => ({ ...c, contactMethodReference: c.contactMethodGuid, contactMethodGuid: undefined }));
 
   const emailAddresses = mapContactMethodsFromPartyData(party.contactMethods, ContactMethods.EMAIL)
     .filter((c) => (c.value ?? "").trim().length > 0)
-    .map((c) => ({ ...c, contactMethodGuid: undefined }));
+    .map((c) => ({ ...c, contactMethodReference: c.contactMethodGuid, contactMethodGuid: undefined }));
 
   const copiedAddresses = mapAddressesFromPartyData(party.addresses as Address[]).filter(
     (a) => (a.address ?? "").trim().length > 0 || (a.city ?? "").trim().length > 0,

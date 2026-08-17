@@ -197,6 +197,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         onRemoveEmail={handleRemoveEmail}
         onSetPrimaryEmail={handleSetPrimaryEmail}
         showOfficeFields={showInvestigationFields}
+        showContactMethods={false}
         showDisplayInInvestigation={showDisplayInInvestigation}
       />
       {showContactPeople && (

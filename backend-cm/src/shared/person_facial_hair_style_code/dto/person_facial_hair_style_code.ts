@@ -15,7 +15,7 @@ export class PersonFacialHairStyleCodeInput {
   personFacialStyleHairCodeGuid: string;
 
   @Field(() => String)
-  personGuid: string;
+  personGuid?: string;
 
   @Field(() => String)
   facialHairStyleCode: string;

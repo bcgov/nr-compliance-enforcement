@@ -7,6 +7,7 @@ export class InvestigationPersonFacialHairStyleCodeRef {
   personGuid: string;
   facialHairStyleCode: string;
   activeIndicator: boolean;
+  personFacialHairStyleCodeReference?: string;
 }
 
 @InputType()
@@ -22,6 +23,9 @@ export class InvestigationPersonFacialHairStyleCodeRefInput {
 
   @Field(() => String)
   activeIndicator: string;
+
+  @Field(() => String)
+  personFacialHairStyleCodeReference: string;
 }
 
 export const mapPrismaInvestigationPersonFacialHairStyleCodeRefToInvestigationPersonFacialHairStyleCodeRef = (
@@ -46,6 +50,10 @@ export const mapPrismaInvestigationPersonFacialHairStyleCodeRefToInvestigationPe
     forMember(
       (dest) => dest.activeIndicator,
       mapFrom((src) => src.active_ind),
+    ),
+    forMember(
+      (dest) => dest.personFacialHairStyleCodeReference,
+      mapFrom((src) => src.person_facial_hair_style_code_guid_ref),
     ),
   );
 };

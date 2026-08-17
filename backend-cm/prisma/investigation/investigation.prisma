@@ -302,6 +302,7 @@ model investigation_address {
   update_user_id                             String?                                      @db.VarChar(32)
   update_utc_timestamp                       DateTime?                                    @db.Timestamp(6)
   display_in_investigation_ind               Boolean                                      @default(true)
+  address_guid_ref                           String?                                      @db.Uuid
   investigation_party                        investigation_party                          @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_address_party_fk")
   investigation_business_person_address_xref investigation_business_person_address_xref[]
   investigation_contact_method               investigation_contact_method[]
@@ -333,6 +334,7 @@ model investigation_alias {
   create_utc_timestamp     DateTime            @default(now()) @db.Timestamp(6)
   update_user_id           String?             @db.VarChar(32)
   update_utc_timestamp     DateTime?           @db.Timestamp(6)
+  alias_guid_ref           String?             @db.Uuid
   investigation_party      investigation_party @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_alias_investigation_party_fk")
 
   @@schema("investigation")
@@ -427,6 +429,7 @@ model investigation_business_identifier {
   create_utc_timestamp                   DateTime               @default(now()) @db.Timestamp(6)
   update_user_id                         String?                @db.VarChar(32)
   update_utc_timestamp                   DateTime?              @db.Timestamp(6)
+  business_identifier_guid_ref           String?                @db.Uuid
   investigation_business                 investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_business_identifier_business")
 
   @@schema("investigation")
@@ -486,6 +489,7 @@ model investigation_business_person_xref {
   display_in_investigation_ind               Boolean                                      @default(true)
   title_role                                 String?                                      @db.VarChar(256)
   is_primary                                 Boolean                                      @default(false)
+  business_person_xref_guid_ref              String?                                      @db.Uuid
   investigation_business_person_address_xref investigation_business_person_address_xref[]
   investigation_business                     investigation_business                       @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_business_person_xref_business_fk")
   investigation_person                       investigation_person                         @relation(fields: [investigation_person_guid], references: [investigation_person_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_business_person_xref_person_fk")
@@ -519,6 +523,7 @@ model investigation_contact_method {
   update_user_id                    String?                @db.VarChar(32)
   update_utc_timestamp              DateTime?              @db.Timestamp(6)
   investigation_address_guid        String?                @db.Uuid
+  contact_method_guid_ref           String?                @db.Uuid
   investigation_address             investigation_address? @relation(fields: [investigation_address_guid], references: [investigation_address_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_contact_method_address_fk")
   investigation_party               investigation_party?   @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_contact_method_investigation_party_fk")
 
@@ -643,6 +648,7 @@ model investigation_person_facial_hair_style_code_ref {
   create_utc_timestamp                                 DateTime             @default(now()) @db.Timestamp(6)
   update_user_id                                       String?              @db.VarChar(32)
   update_utc_timestamp                                 DateTime?            @db.Timestamp(6)
+  person_facial_hair_style_code_guid_ref               String?              @db.Uuid
   investigation_person                                 investigation_person @relation(fields: [investigation_person_guid], references: [investigation_person_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_person_facial_hair_style_code_ref_investigation_p")
 
   @@schema("investigation")

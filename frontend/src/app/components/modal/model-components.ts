@@ -15,8 +15,7 @@ import {
   ADD_COMPLAINT_TO_CASE,
   CREATE_ADD_CASE,
   ADD_PARTY,
-  REMOVE_ACTIVITY_FROM_CASE,
-  REMOVE_PARTY,
+  SAVE_CONFIRM,
   CANCEL_CONFIRM_FILE_UPDATE,
   ADD_EDIT_TASK_ATTACHMENT,
   ADD_EDIT_DIARY_DATE,
@@ -37,14 +36,13 @@ import {
   ToggleDeactivateModal,
   ReferComplaintModal,
   ManageCollaboratorsModal,
-  RemovePartyModal,
 } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 import { MapModal } from "@/app/components/modal/instances/map-modal";
 import { LinkComplaintModal } from "./instances/link-complaint-modal";
 import { AddComplaintToCaseModal } from "./instances/add-complaint-to-case";
 import { CreateAddCaseModal } from "@/app/components/modal/instances/create-add-case";
-import { RemoveActivityFromCaseModal } from "@/app/components/modal/instances/remove-activity-from-case";
+import { SaveConfirmModal } from "@/app/components/modal/instances/save-confirm-modal";
 import { AddEditPartyModal } from "@/app/components/modal/instances/add-party";
 import { CancelConfirmFileUpdateModal } from "./instances/cancel-confirm-file-update-modal";
 import { AddEditTaskAttachmentModal } from "@/app/components/modal/instances/add-task-attachment";
@@ -70,9 +68,8 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [LINK_COMPLAINT]: LinkComplaintModal,
   [ADD_COMPLAINT_TO_CASE]: AddComplaintToCaseModal,
   [CREATE_ADD_CASE]: CreateAddCaseModal,
-  [REMOVE_ACTIVITY_FROM_CASE]: RemoveActivityFromCaseModal,
+  [SAVE_CONFIRM]: SaveConfirmModal,
   [ADD_PARTY]: AddEditPartyModal,
-  [REMOVE_PARTY]: RemovePartyModal,
   [CANCEL_CONFIRM_FILE_UPDATE]: CancelConfirmFileUpdateModal,
   [ADD_EDIT_TASK_ATTACHMENT]: AddEditTaskAttachmentModal,
   [ADD_EDIT_DIARY_DATE]: AddEditDiaryDateModal,

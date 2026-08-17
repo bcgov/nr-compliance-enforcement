@@ -3,4 +3,5 @@ input InvestigationPersonFacialHairStyleCodeRefInput {
   personGuid: String
   facialHairStyleCode: String
   activeIndicator: Boolean
+  personFacialHairStyleCodeReference: String
 }
