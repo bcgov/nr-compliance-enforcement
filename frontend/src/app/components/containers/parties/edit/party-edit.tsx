@@ -36,7 +36,6 @@ import {
   buildContactPeople,
   buildPersonForCreate,
   buildPersonForUpdate,
-  createEmptyAddress,
   createEmptyContactMethod,
   mapAddressesFromPartyData,
   mapAliasesFromPartyData,
@@ -234,7 +233,7 @@ const PartyEdit: FC = () => {
       phoneNumbers: [createEmptyContactMethod(true)],
       emailAddresses: [createEmptyContactMethod(true)],
       contacts: [],
-      addresses: [{ ...createEmptyAddress(), isPrimary: true }],
+      addresses: [],
     };
   }, [isEditMode, partyData]);
 

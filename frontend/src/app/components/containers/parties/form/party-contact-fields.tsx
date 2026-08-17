@@ -223,7 +223,6 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
           form={form}
           isDisabled={isDisabled}
           isPrimary={address.isPrimary || false}
-          canRemove={addresses.length > 1}
           onRemoveAddress={onRemoveAddress}
           onSetPrimaryAddress={onSetPrimaryAddress}
           showOfficeFields={showOfficeFields}

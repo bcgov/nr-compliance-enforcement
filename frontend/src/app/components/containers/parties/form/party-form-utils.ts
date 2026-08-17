@@ -61,15 +61,16 @@ export type ContactPersonFormValue = {
 };
 
 export const CANADA_COUNTRY_CODE = "CA";
+export const DEFAULT_CANADA_PROVINCE = "CA-BC";
 
 export const createEmptyAddress = (): AddressFormValue => ({
   addressGuid: uuidv4(),
   addressName: "",
   address: "",
   city: "",
-  province: "",
+  province: DEFAULT_CANADA_PROVINCE,
   postalCode: "",
-  country: "",
+  country: CANADA_COUNTRY_CODE,
   isPrimary: false,
   displayInInvestigation: true,
   phoneNumber: "",
@@ -194,7 +195,7 @@ export const mapAddressesFromPartyData = (addresses: Array<Address | null> | nul
         emailAddress: pickAddressContactMethod(address, ContactMethods.EMAIL)?.value ?? "",
         emailAddressGuid: pickAddressContactMethod(address, ContactMethods.EMAIL)?.contactMethodGuid ?? undefined,
       })) ?? [];
-  return mapped.length ? mapped : [{ ...createEmptyAddress(), isPrimary: true }];
+  return mapped;
 };
 
 export const mapAliasesFromPartyData = (
@@ -241,14 +242,14 @@ export const mapContactPeopleFromPartyData = (contactPeople: any): ContactPerson
 const pickAddressContactMethod = (address: Address, typeCode: string) =>
   address.contactMethods?.filter((cm) => cm?.typeCode === typeCode).find(Boolean) ?? undefined;
 
-// an untouched row should not be saved
+// an untouched row should not be saved - an added row starts with the Canada/BC defaults
 export const isDefaultAddress = (a: AddressFormValue): boolean =>
   !hasValue(a.addressName) &&
   !hasValue(a.address) &&
   !hasValue(a.city) &&
   !hasValue(a.postalCode) &&
-  !hasValue(a.province) &&
-  !hasValue(a.country) &&
+  (!hasValue(a.province) || a.province?.trim() === DEFAULT_CANADA_PROVINCE) &&
+  (!hasValue(a.country) || a.country?.trim() === CANADA_COUNTRY_CODE) &&
   !hasValue(a.phoneNumber) &&
   !hasValue(a.emailAddress);
 
@@ -416,12 +417,12 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
     return "Name is required.";
   }
 
-  // only validate if there are multiple, a single empty item is allowed
+  // rows only exist once the user adds one, so every row must be filled in or removed
   const addresses = (value.addresses as AddressFormValue[] | undefined) ?? [];
-  const missingNameIndex = addresses.findIndex(
-    (address) => (addresses.length > 1 || !isDefaultAddress(address)) && !address.addressName?.trim(),
-  );
-  if (missingNameIndex >= 0) {
+  if (addresses.some((address) => isDefaultAddress(address))) {
+    return "Enter or remove empty addresses.";
+  }
+  if (addresses.some((address) => !address.addressName?.trim())) {
     return "Address name is required.";
   }
 
@@ -577,7 +578,7 @@ export const createEmptyPartyFormValues = () => ({
   aliases: [{ aliasGuid: undefined, name: "" }] as Array<{ aliasGuid?: string; name: string }>,
   phoneNumbers: [createEmptyContactMethod(true)] as ContactMethodFormValue[],
   emailAddresses: [createEmptyContactMethod(true)] as ContactMethodFormValue[],
-  addresses: [{ ...createEmptyAddress(), isPrimary: true }] as AddressFormValue[],
+  addresses: [] as AddressFormValue[],
   contacts: [] as ContactPersonFormValue[],
 });
 
