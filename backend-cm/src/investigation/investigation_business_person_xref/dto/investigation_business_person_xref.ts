@@ -23,6 +23,7 @@ export class InvestigationBusinessPersonXref {
   person: Person;
   contactMethods?: [InvestigationContactMethod]; // These are at the party level for people so need to be passed in parallel
   associatedAddresses?: [InvestigationBusinessPersonAddressXref];
+  businessPersonXrefReference?: string;
 }
 
 @InputType()
@@ -45,6 +46,9 @@ export class CreateInvestigationBusinessContactInput {
   // office references: always investigation_address_guids (client-generated for new addresses)
   @Field(() => [String], { nullable: true })
   officeAddressGuids?: string[];
+
+  @Field(() => String, { nullable: true })
+  businessPersonXrefReference?: string;
 }
 
 @InputType()
@@ -69,6 +73,9 @@ export class UpdateInvestigationBusinessContactInput {
 
   @Field(() => [String], { nullable: true })
   officeAddressGuids?: string[];
+
+  @Field(() => String, { nullable: true })
+  businessPersonXrefReference?: string;
 }
 
 export const mapPrismaInvestigationBusinessPersonXrefToInvestigationBusinessPersonXref = (mapper: Mapper) => {
@@ -121,6 +128,10 @@ export const mapPrismaInvestigationBusinessPersonXrefToInvestigationBusinessPers
           "InvestigationBusinessPersonAddressXref",
         ),
       ),
+    ),
+    forMember(
+      (dest) => dest.businessPersonXrefReference,
+      mapFrom((src) => src.business_person_xref_guid_ref),
     ),
   );
 };

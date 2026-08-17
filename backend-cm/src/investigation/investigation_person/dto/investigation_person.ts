@@ -81,11 +81,11 @@ export class CreateInvestigationPersonInput {
   @Field(() => String, { nullable: true })
   sexCode?: string;
 
-  @Field(() => String, { nullable: true })
-  heightInCm?: string;
+  @Field(() => Number, { nullable: true })
+  heightInCm?: number;
 
-  @Field(() => String, { nullable: true })
-  weightInKg?: string;
+  @Field(() => Number, { nullable: true })
+  weightInKg?: number;
 
   @Field(() => String, { nullable: true })
   complexionCode?: string;

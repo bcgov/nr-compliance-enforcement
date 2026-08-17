@@ -14,20 +14,23 @@ import {
 } from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
-import { Alias } from "src/shared/alias/dto/alias";
+import { Alias, AliasInput } from "src/shared/alias/dto/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
-import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
+import { BusinessPersonXref, BusinessPersonXrefInput } from "src/shared/business_person_xref/dto/business_person_xref";
 import { BusinessPersonAddressXref } from "src/shared/business_person_address_xref/dto/business_person_address_xref";
-import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
+import { ContactMethod, ContactMethodInput } from "src/shared/contact_method/dto/contact_method";
 import { Address, AddressInput } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
-import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
+import {
+  PersonFacialHairStyleCode,
+  PersonFacialHairStyleCodeInput,
+} from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 import { AppUserService } from "src/shared/app_user/app_user.service";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
-import { Person } from "src/shared/person/dto/person";
 import { BusinessIdentifiers } from "src/enum/business-identifier.enum";
+import { PersonInput } from "src/shared/person/dto/person.input";
 
 type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, extra?: Record<string, any>) => void;
 
@@ -37,6 +40,17 @@ export interface PartyIdentifiers {
   partyGuid?: string;
   personGuid?: string;
   businessGuid?: string;
+}
+
+// The shared guids generated for each investigation-local child row, keyed by the local guid.
+// Only the investigation side needs these — the shared registry receives them on the input itself.
+export interface PreparedPartyIdentifiers extends PartyIdentifiers {
+  addressGuids: Map<string, string>;
+  contactMethodGuids: Map<string, string>;
+  aliasGuids: Map<string, string>;
+  businessIdentifierGuids: Map<string, string>;
+  businessPersonXrefGuids: Map<string, string>;
+  facialHairStyleGuids: Map<string, string>;
 }
 
 // Initial cut at scoring algorithm
@@ -53,6 +67,22 @@ const MATCH_FIELD_WEIGHTS = {
   phone: 1,
   addressLine: 1,
 } as const;
+
+// Rows removed from the shared party are deactivated rather than deleted, so a guid supplied from
+// an activity may belong to an inactive row. Those are reactivated in place rather than
+// created, which would violate the primary key.
+interface InactiveGuids {
+  address: Set<string>;
+  contactMethod: Set<string>;
+  alias: Set<string>;
+  businessIdentifier: Set<string>;
+  businessPersonXref: Set<string>;
+  facialHairStyle: Set<string>;
+  // Deactivating a business contact leaves the person's own contact methods active, since they
+  // remain valid — only the link to the business is removed. Reactivating the xref therefore has
+  // to match against those still-active rows, which the active-only party load doesn't carry.
+  inactiveXrefContactMethods: Map<string, ContactMethod[]>;
+}
 
 @Injectable()
 export class PartyService {
@@ -359,6 +389,7 @@ export class PartyService {
         ? {
             contact_method: {
               create: input.contactMethods.map((c) => ({
+                ...(c.contactMethodGuid ? { contact_method_guid: c.contactMethodGuid } : {}),
                 contact_method_type: c.typeCode,
                 contact_value: c.value,
                 is_primary: c.isPrimary,
@@ -372,6 +403,7 @@ export class PartyService {
         ? {
             alias: {
               create: input.aliases.map((a) => ({
+                ...(a.aliasGuid ? { alias_guid: a.aliasGuid } : {}),
                 name: a.name,
                 create_user_id: this.user.getIdirUsername(),
                 create_utc_timestamp: new Date(),
@@ -382,7 +414,7 @@ export class PartyService {
     };
   }
 
-  private _buildPersonFieldData(person?: Person): any {
+  private _buildPersonFieldData(person?: PersonInput): any {
     return {
       first_name: person?.firstName,
       middle_names: person?.middleNames,
@@ -428,6 +460,9 @@ export class PartyService {
             ? {
                 person_facial_hair_style_code: {
                   create: input.person.facialHairStyleCodes.map((fhs) => ({
+                    ...(fhs.personFacialStyleHairCodeGuid
+                      ? { person_facial_hair_style_code_guid: fhs.personFacialStyleHairCodeGuid }
+                      : {}),
                     facial_hair_style_code: fhs.facialHairStyleCode,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
@@ -460,6 +495,7 @@ export class PartyService {
             ? {
                 business_identifier: {
                   create: input.business.businessIdentifiers.map((i) => ({
+                    ...(i.businessIdentifierGuid ? { business_identifier_guid: i.businessIdentifierGuid } : {}),
                     business_identifier_code: i.identifierCode,
                     identifier_value: this._normalizeIdentifierValue(i.identifierValue),
                     create_user_id: this.user.getIdirUsername(),
@@ -473,19 +509,30 @@ export class PartyService {
     };
   }
 
-  private _buildPersonUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
+  private _buildPersonUpdateData(input: PartyUpdateInput, existingPartyDto: Party, inactiveGuids: InactiveGuids): any {
     const personContactMethodOperations = this._buildContactMethodOperations(
       input.contactMethods ?? [],
       existingPartyDto.contactMethods ?? [],
+      inactiveGuids.contactMethod,
     );
 
-    const personAliasOperations = this._buildAliasOperations(input.aliases ?? [], existingPartyDto.aliases ?? []);
+    const personAliasOperations = this._buildAliasOperations(
+      input.aliases ?? [],
+      existingPartyDto.aliases ?? [],
+      inactiveGuids.alias,
+    );
 
-    const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
+    const addressOperations = this._buildAddressOperations(
+      input.addresses ?? [],
+      existingPartyDto.addresses ?? [],
+      inactiveGuids.address,
+      inactiveGuids.contactMethod,
+    );
 
     const facialHairStyleOperations = this._buildFacialHairStyleOperations(
       input.person?.facialHairStyleCodes ?? [],
       existingPartyDto.person?.facialHairStyleCodes ?? [],
+      inactiveGuids.facialHairStyle,
     );
 
     return {
@@ -508,24 +555,42 @@ export class PartyService {
     };
   }
 
-  private _buildBusinessUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
-    const aliasOperations = this._buildAliasOperations(input.aliases ?? [], existingPartyDto.aliases ?? []);
+  private _buildBusinessUpdateData(
+    input: PartyUpdateInput,
+    existingPartyDto: Party,
+    inactiveGuids: InactiveGuids,
+  ): any {
+    const aliasOperations = this._buildAliasOperations(
+      input.aliases ?? [],
+      existingPartyDto.aliases ?? [],
+      inactiveGuids.alias,
+    );
 
     const contactMethodOperations = this._buildContactMethodOperations(
       input.contactMethods ?? [],
       existingPartyDto.contactMethods ?? [],
+      inactiveGuids.contactMethod,
     );
 
     const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
       input.business?.businessIdentifiers ?? [],
       existingPartyDto.business?.businessIdentifiers ?? [],
+      inactiveGuids.businessIdentifier,
     );
 
-    const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
+    const addressOperations = this._buildAddressOperations(
+      input.addresses ?? [],
+      existingPartyDto.addresses ?? [],
+      inactiveGuids.address,
+      inactiveGuids.contactMethod,
+    );
 
     const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
       input.business?.contactPeople ?? [],
       existingPartyDto.business?.contactPeople ?? [],
+      inactiveGuids.businessPersonXref,
+      inactiveGuids.contactMethod,
+      inactiveGuids.inactiveXrefContactMethods,
     );
 
     return {
@@ -552,16 +617,23 @@ export class PartyService {
     };
   }
 
-  private _buildAliasOperations(incomingAliases: Alias[], existingAliases: Alias[]): any {
+  private _buildAliasOperations(
+    incomingAliases: AliasInput[],
+    existingAliases: Alias[],
+    inactiveGuids: Set<string>,
+  ): any {
     const existingAliasGuids = new Set(existingAliases.map((a) => a.aliasGuid));
-    const aliasesToCreate = incomingAliases.filter((a) => !a.aliasGuid || !existingAliasGuids.has(a.aliasGuid));
-    const aliasesToUpdate = incomingAliases.filter((a) => a.aliasGuid && existingAliasGuids.has(a.aliasGuid));
+    const aliasesToUpdate = incomingAliases.filter(
+      (a) => a.aliasGuid && (existingAliasGuids.has(a.aliasGuid) || inactiveGuids.has(a.aliasGuid)),
+    );
+    const aliasesToCreate = incomingAliases.filter((a) => !aliasesToUpdate.includes(a));
     const aliasesToDelete = existingAliases.filter((a) => !incomingAliases.some((ia) => ia.aliasGuid === a.aliasGuid));
 
     const operations: any = {};
 
     if (aliasesToCreate.length) {
       operations.create = aliasesToCreate.map((a) => ({
+        ...(a.aliasGuid ? { alias_guid: a.aliasGuid } : {}),
         name: a.name,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
@@ -571,7 +643,7 @@ export class PartyService {
 
     if (aliasesToUpdate.length || aliasesToDelete.length) {
       operations.update = [
-        ...aliasesToUpdate.map((a) => ({
+        ...[...aliasesToUpdate].map((a) => ({
           where: { alias_guid: a.aliasGuid },
           data: {
             name: a.name,
@@ -597,9 +669,17 @@ export class PartyService {
   private _buildBusinessIdentifierOperations(
     incomingIdentifiers: BusinessIdentifier[],
     existingIdentifiers: BusinessIdentifier[],
+    inactiveBusinessIdentifierGuids: Set<string>,
   ): any {
-    const identifiersToCreate = incomingIdentifiers.filter((i) => !i.businessIdentifierGuid);
-    const identifiersToUpdate = incomingIdentifiers.filter((i) => i.businessIdentifierGuid);
+    const existingGuids = new Set(existingIdentifiers.map((i) => i.businessIdentifierGuid));
+    // A supplied guid may belong to a deactivated row, which is reactivated in place rather than
+    // created, since creating it would violate the primary key.
+    const identifiersToUpdate = incomingIdentifiers.filter(
+      (i) =>
+        i.businessIdentifierGuid &&
+        (existingGuids.has(i.businessIdentifierGuid) || inactiveBusinessIdentifierGuids.has(i.businessIdentifierGuid)),
+    );
+    const identifiersToCreate = incomingIdentifiers.filter((i) => !identifiersToUpdate.includes(i));
     const identifiersToDelete = existingIdentifiers.filter(
       (i) => !new Set(incomingIdentifiers.map((ei) => ei.businessIdentifierGuid)).has(i.businessIdentifierGuid),
     );
@@ -608,6 +688,7 @@ export class PartyService {
 
     if (identifiersToCreate.length) {
       operations.create = identifiersToCreate.map((i) => ({
+        ...(i.businessIdentifierGuid ? { business_identifier_guid: i.businessIdentifierGuid } : {}),
         business_identifier_code: i.identifierCode,
         identifier_value: this._normalizeIdentifierValue(i.identifierValue),
         active_ind: true,
@@ -648,13 +729,22 @@ export class PartyService {
     return [...nonPrimary, ...primary];
   }
 
-  private _buildAddressOperations(incomingAddresses: AddressInput[], existingAddresses: Address[]): any {
+  private _buildAddressOperations(
+    incomingAddresses: AddressInput[],
+    existingAddresses: Address[],
+    inactiveAddressGuids: Set<string>,
+    inactiveContactMethodGuids: Set<string>,
+  ): any {
     // addresses may now include client-generated ids so existing are updated and new ones are created
     const existingGuids = new Set(existingAddresses.map((a) => a.addressGuid));
-    const addressesToCreate = incomingAddresses.filter((a) => !a.addressGuid || !existingGuids.has(a.addressGuid));
+    // A supplied guid may belong to a deactivated row, which is reactivated in place rather than
+    // created, since creating it would violate the primary key.
     const addressesToUpdate = this._sortAddressesPrimaryLast(
-      incomingAddresses.filter((a) => a.addressGuid && existingGuids.has(a.addressGuid)),
+      incomingAddresses.filter(
+        (a) => a.addressGuid && (existingGuids.has(a.addressGuid) || inactiveAddressGuids.has(a.addressGuid)),
+      ),
     );
+    const addressesToCreate = incomingAddresses.filter((a) => !addressesToUpdate.includes(a));
     const addressesToDelete = existingAddresses.filter(
       (a) => !new Set(incomingAddresses.map((ea) => ea.addressGuid)).has(a.addressGuid),
     );
@@ -698,6 +788,7 @@ export class PartyService {
           const contactMethodOps = this._buildContactMethodOperations(
             (a.contactMethods as ContactMethod[] | undefined) ?? [],
             (existingAddress?.contactMethods as ContactMethod[] | undefined) ?? [],
+            inactiveContactMethodGuids,
           );
 
           return {
@@ -725,11 +816,20 @@ export class PartyService {
   }
 
   private _buildFacialHairStyleOperations(
-    incomingFacialHairStyles: PersonFacialHairStyleCode[],
+    incomingFacialHairStyles: PersonFacialHairStyleCodeInput[],
     existingFacialHairStyles: PersonFacialHairStyleCode[],
+    inactiveFHSGuids: Set<string>,
   ): any {
-    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.personFacialStyleHairCodeGuid);
-    const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.personFacialStyleHairCodeGuid);
+    const existingGuids = new Set(existingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid));
+    // A supplied guid may belong to a deactivated row, which is reactivated in place rather than
+    // created, since creating it would violate the primary key.
+    const fhsToUpdate = incomingFacialHairStyles.filter(
+      (fhs) =>
+        fhs.personFacialStyleHairCodeGuid &&
+        (existingGuids.has(fhs.personFacialStyleHairCodeGuid) ||
+          inactiveFHSGuids.has(fhs.personFacialStyleHairCodeGuid)),
+    );
+    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhsToUpdate.includes(fhs));
     const fhsToDelete = existingFacialHairStyles.filter(
       (fhs) =>
         !new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid)).has(
@@ -741,6 +841,9 @@ export class PartyService {
 
     if (fhsToCreate.length) {
       operations.create = fhsToCreate.map((fhs) => ({
+        ...(fhs.personFacialStyleHairCodeGuid
+          ? { person_facial_hair_style_code_guid: fhs.personFacialStyleHairCodeGuid }
+          : {}),
         facial_hair_style_code: fhs.facialHairStyleCode,
         person_guid: fhs.personGuid,
         active_ind: true,
@@ -779,15 +882,25 @@ export class PartyService {
    * Sort contact methods so that the primary contact methods are last to preven updates
    * from violating the unique constraint in the database.
    */
-  private _sortContactMethodsPrimaryLast(contactMethods: ContactMethod[]): ContactMethod[] {
+  private _sortContactMethodsPrimaryLast(contactMethods: ContactMethodInput[]): ContactMethodInput[] {
     const nonPrimary = contactMethods.filter((m) => !m.isPrimary);
     const primary = contactMethods.filter((m) => m.isPrimary);
     return [...nonPrimary, ...primary];
   }
 
-  private _buildContactMethodOperations(incomingMethods: ContactMethod[], existingMethods: ContactMethod[]): any {
-    const methodsToCreate = incomingMethods.filter((cm) => !cm.contactMethodGuid);
-    const methodsToUpdate = this._sortContactMethodsPrimaryLast(incomingMethods.filter((cm) => cm.contactMethodGuid));
+  private _buildContactMethodOperations(
+    incomingMethods: ContactMethodInput[],
+    existingMethods: ContactMethod[],
+    inactiveGuids: Set<string>,
+  ): any {
+    const existingGuids = new Set(existingMethods.map((cm) => cm.contactMethodGuid));
+    const methodsToUpdate = this._sortContactMethodsPrimaryLast(
+      incomingMethods.filter(
+        (cm) =>
+          cm.contactMethodGuid && (existingGuids.has(cm.contactMethodGuid) || inactiveGuids.has(cm.contactMethodGuid)),
+      ),
+    );
+    const methodsToCreate = incomingMethods.filter((cm) => !methodsToUpdate.includes(cm));
     const methodsToDelete = existingMethods.filter(
       (cm) => !new Set(incomingMethods.map((im) => im.contactMethodGuid)).has(cm.contactMethodGuid),
     );
@@ -795,6 +908,7 @@ export class PartyService {
 
     if (methodsToCreate.length) {
       operations.create = this._sortContactMethodsPrimaryLast(methodsToCreate).map((cm) => ({
+        ...(cm.contactMethodGuid ? { contact_method_guid: cm.contactMethodGuid } : {}),
         contact_method_type_code: {
           connect: {
             contact_method_type_code: cm.typeCode,
@@ -834,8 +948,14 @@ export class PartyService {
     return operations;
   }
 
-  private _contactMethodCreateData(cm: { typeCode: string; value: string; isPrimary?: boolean }) {
+  private _contactMethodCreateData(cm: {
+    typeCode: string;
+    value: string;
+    isPrimary?: boolean;
+    contactMethodGuid?: string;
+  }) {
     return {
+      ...(cm.contactMethodGuid ? { contact_method_guid: cm.contactMethodGuid } : {}),
       contact_method_type: cm.typeCode,
       contact_value: cm.value,
       is_primary: cm.isPrimary ?? false,
@@ -869,9 +989,10 @@ export class PartyService {
     }
   }
 
-  private async _createBusinessContact(tx: any, businessGuid: string, contact: BusinessPersonXref): Promise<void> {
+  private async _createBusinessContact(tx: any, businessGuid: string, contact: BusinessPersonXrefInput): Promise<void> {
     const xref = await tx.business_person_xref.create({
       data: {
+        ...(contact.businessPersonXrefGuid ? { business_person_xref_guid: contact.businessPersonXrefGuid } : {}),
         business: { connect: { business_guid: businessGuid } },
         business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code: {
           connect: { business_person_xref_code: "CONT" },
@@ -897,16 +1018,7 @@ export class PartyService {
                 ...(contact.contactMethods?.length
                   ? {
                       contact_method: {
-                        create: contact.contactMethods.map((cm) => ({
-                          contact_method_type_code: {
-                            connect: { contact_method_type_code: cm.typeCode },
-                          },
-                          contact_value: cm.value,
-                          is_primary: cm.isPrimary,
-                          active_ind: true,
-                          create_user_id: this.user.getIdirUsername(),
-                          create_utc_timestamp: new Date(),
-                        })),
+                        create: contact.contactMethods.map((cm) => this._contactMethodCreateData(cm)),
                       },
                     }
                   : {}),
@@ -962,11 +1074,21 @@ export class PartyService {
   }
 
   private _buildBusinessPersonXrefOperations(
-    incomingXrefs: BusinessPersonXref[],
+    incomingXrefs: BusinessPersonXrefInput[],
     existingXrefs: BusinessPersonXref[],
+    inactiveBusinessXREFGuids: Set<string>,
+    inactiveContactMethodGuids: Set<string>,
+    inactiveXrefContactMethods: Map<string, ContactMethod[]>,
   ): any {
-    const xrefsToCreate = incomingXrefs.filter((bpx) => !bpx.businessPersonXrefGuid);
-    const xrefsToUpdate = incomingXrefs.filter((bpx) => bpx.businessPersonXrefGuid);
+    const existingGuids = new Set(existingXrefs?.map((bpx) => bpx.businessPersonXrefGuid));
+    // A supplied guid may belong to a deactivated row, which is reactivated in place rather than
+    // created, since creating it would violate the primary key.
+    const xrefsToUpdate = incomingXrefs.filter(
+      (bpx) =>
+        bpx.businessPersonXrefGuid &&
+        (existingGuids.has(bpx.businessPersonXrefGuid) || inactiveBusinessXREFGuids.has(bpx.businessPersonXrefGuid)),
+    );
+    const xrefsToCreate = incomingXrefs.filter((bpx) => !xrefsToUpdate.includes(bpx));
     const xrefsToDelete = existingXrefs?.filter(
       (bpx) => !new Set(incomingXrefs.map((ei) => ei.businessPersonXrefGuid)).has(bpx.businessPersonXrefGuid),
     );
@@ -974,6 +1096,7 @@ export class PartyService {
 
     if (xrefsToCreate.length) {
       operations.create = xrefsToCreate.map((bpx) => ({
+        ...(bpx.businessPersonXrefGuid ? { business_person_xref_guid: bpx.businessPersonXrefGuid } : {}),
         business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code: {
           connect: {
             business_person_xref_code: "CONT",
@@ -1023,12 +1146,17 @@ export class PartyService {
         ...xrefsToUpdate.map((bpx) => {
           // Find the corresponding existing xref to get existing contact methods
           const existingXref = existingXrefs?.find((ex) => ex.businessPersonXrefGuid === bpx.businessPersonXrefGuid);
-          const existingContactMethods = existingXref?.contactMethods || [];
+          const existingContactMethods =
+            existingXref?.contactMethods || inactiveXrefContactMethods.get(bpx.businessPersonXrefGuid ?? "") || [];
 
           // Build contact method operations if there are any
           const contactMethodOps =
             bpx.contactMethods?.length || existingContactMethods.length
-              ? this._buildContactMethodOperations(bpx.contactMethods || [], existingContactMethods)
+              ? this._buildContactMethodOperations(
+                  bpx.contactMethods || [],
+                  existingContactMethods,
+                  inactiveContactMethodGuids,
+                )
               : undefined;
 
           return {
@@ -1088,19 +1216,21 @@ export class PartyService {
    */
   private _compareContactMethods(
     existingMethods: ContactMethod[],
-    incomingMethods: ContactMethod[],
+    incomingMethods: ContactMethodInput[],
     labelFn: (typeCode: string) => string,
     addEvent: AddEventFn,
   ): void {
     // Detect added and edited contact methods
     for (const incoming of incomingMethods) {
-      if (incoming.contactMethodGuid) {
-        const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
-        if (existing && existing.value !== incoming.value) {
-          addEvent("EDITED", labelFn(incoming.typeCode), existing.value, incoming.value);
+      const existing = incoming.contactMethodGuid
+        ? existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid)
+        : undefined;
+      if (!existing) {
+        if (incoming.value) {
+          addEvent("ADDED", labelFn(incoming.typeCode), null, incoming.value);
         }
-      } else if (incoming.value) {
-        addEvent("ADDED", labelFn(incoming.typeCode), null, incoming.value);
+      } else if (existing.value !== incoming.value) {
+        addEvent("EDITED", labelFn(incoming.typeCode), existing.value, incoming.value);
       }
     }
 
@@ -1135,15 +1265,13 @@ export class PartyService {
     }
   }
 
-  private _diffAliases(existingAliases: Alias[], incomingAliases: Alias[], addEvent: AddEventFn): void {
+  private _diffAliases(existingAliases: Alias[], incomingAliases: AliasInput[], addEvent: AddEventFn): void {
     for (const incoming of incomingAliases) {
-      if (incoming.aliasGuid) {
-        const existing = existingAliases.find((a) => a.aliasGuid === incoming.aliasGuid);
-        if (existing && existing.name !== incoming.name) {
-          addEvent("EDITED", "alias", existing.name, incoming.name);
-        }
-      } else {
+      const existing = incoming.aliasGuid ? existingAliases.find((a) => a.aliasGuid === incoming.aliasGuid) : undefined;
+      if (!existing) {
         addEvent("ADDED", "alias", null, incoming.name);
+      } else if (existing.name !== incoming.name) {
+        addEvent("EDITED", "alias", existing.name, incoming.name);
       }
     }
     const incomingGuids = new Set(incomingAliases.map((a) => a.aliasGuid));
@@ -1158,18 +1286,18 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingIdentifiers) {
-      if (incoming.businessIdentifierGuid) {
-        const existing = existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid);
-        if (existing && existing.identifierValue !== incoming.identifierValue) {
-          addEvent(
-            "EDITED",
-            `identifier (${incoming.identifierCode})`,
-            existing.identifierValue,
-            incoming.identifierValue,
-          );
-        }
-      } else {
+      const existing = incoming.businessIdentifierGuid
+        ? existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid)
+        : undefined;
+      if (!existing) {
         addEvent("ADDED", `identifier (${incoming.identifierCode})`, null, incoming.identifierValue);
+      } else if (existing.identifierValue !== incoming.identifierValue) {
+        addEvent(
+          "EDITED",
+          `identifier (${incoming.identifierCode})`,
+          existing.identifierValue,
+          incoming.identifierValue,
+        );
       }
     }
     const incomingGuids = new Set(incomingIdentifiers.map((i) => i.businessIdentifierGuid));
@@ -1193,28 +1321,43 @@ export class PartyService {
         this._compareField(`province in address "${label}"`, existing.province, incoming.province, addEvent);
         this._compareField(`postal code in address "${label}"`, existing.postalCode, incoming.postalCode, addEvent);
         this._compareField(`country in address "${label}"`, existing.country, incoming.country, addEvent);
+        this._compareContactMethods(
+          (existing.contactMethods as ContactMethod[] | undefined) ?? [],
+          (incoming.contactMethods as ContactMethodInput[] | undefined) ?? [],
+          (tc) => `${this._contactMethodLabel(tc)} in address "${label}"`,
+          addEvent,
+        );
       } else if (incoming.addressName) {
+        const incomingMethods = (incoming.contactMethods as ContactMethodInput[] | undefined) ?? [];
         addEvent("ADDED", "address", null, incoming.addressName, {
           streetAddress: incoming.address ?? null,
           city: incoming.city ?? null,
           province: incoming.province ?? null,
           postalCode: incoming.postalCode ?? null,
           country: incoming.country ?? null,
+          phoneNumber: incomingMethods.find((m) => m?.typeCode === "PHONE")?.value ?? null,
+          emailAddress: incomingMethods.find((m) => m?.typeCode === "EMAILADDR")?.value ?? null,
         });
       }
     }
     const incomingGuids = new Set(incomingAddresses.map((a) => a.addressGuid));
     existingAddresses
       .filter((a) => !incomingGuids.has(a.addressGuid))
-      .forEach((a) =>
+      .forEach((a) => {
         addEvent("REMOVED", "address", a.addressName, null, {
           streetAddress: a.address ?? null,
           city: a.city ?? null,
           province: a.province ?? null,
           postalCode: a.postalCode ?? null,
           country: a.country ?? null,
-        }),
-      );
+        });
+        this._compareContactMethods(
+          (a.contactMethods as ContactMethod[] | undefined) ?? [],
+          [],
+          (tc) => `${this._contactMethodLabel(tc)} in address "${a.addressName}"`,
+          addEvent,
+        );
+      });
     // Detect when the primary address switches from one address to another
     const oldPrimary = existingAddresses.find((a) => a.isPrimary);
     const newPrimary = incomingAddresses.find((a) => a.isPrimary);
@@ -1223,22 +1366,18 @@ export class PartyService {
     }
   }
 
-  private _diffNewContact(incoming: BusinessPersonXref, addEvent: AddEventFn): void {
+  private _diffNewContact(incoming: BusinessPersonXrefInput, addEvent: AddEventFn): void {
     const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
-    addEvent("ADDED", "business contact", null, name);
-    for (const cm of incoming.contactMethods ?? []) {
-      if (cm?.value) {
-        const contactLabel = name
-          ? `${this._contactMethodLabel(cm.typeCode)} in business contact ${name}`
-          : `contact ${this._contactMethodLabel(cm.typeCode)}`;
-        addEvent("ADDED", contactLabel, null, cm.value);
-      }
-    }
+    const methods = incoming.contactMethods ?? [];
+    addEvent("ADDED", "business contact", null, name, {
+      phoneNumber: methods.find((cm) => cm?.typeCode === "PHONE")?.value ?? null,
+      emailAddress: methods.find((cm) => cm?.typeCode === "EMAILADDR")?.value ?? null,
+    });
   }
 
   private _diffExistingContact(
     existingXrefs: BusinessPersonXref[],
-    incoming: BusinessPersonXref,
+    incoming: BusinessPersonXrefInput,
     addEvent: AddEventFn,
   ): void {
     const existingXref = existingXrefs.find((x) => x.businessPersonXrefGuid === incoming.businessPersonXrefGuid);
@@ -1265,11 +1404,14 @@ export class PartyService {
 
   private _diffContactPeople(
     existingXrefs: BusinessPersonXref[],
-    incomingXrefs: BusinessPersonXref[],
+    incomingXrefs: BusinessPersonXrefInput[],
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingXrefs) {
-      if (incoming.businessPersonXrefGuid) {
+      const existing = incoming.businessPersonXrefGuid
+        ? existingXrefs.find((x) => x.businessPersonXrefGuid === incoming.businessPersonXrefGuid)
+        : undefined;
+      if (existing) {
         this._diffExistingContact(existingXrefs, incoming, addEvent);
       } else {
         this._diffNewContact(incoming, addEvent);
@@ -1280,25 +1422,29 @@ export class PartyService {
       .filter((x) => !incomingGuids.has(x.businessPersonXrefGuid))
       .forEach((x) => {
         const name = [x.person?.firstName, x.person?.lastName].filter(Boolean).join(" ");
-        addEvent("REMOVED", "business contact", name, null);
+        const methods = (x.contactMethods as ContactMethod[] | undefined) ?? [];
+        addEvent("REMOVED", "business contact", name, null, {
+          phoneNumber: methods.find((cm) => cm?.typeCode === "PHONE")?.value ?? null,
+          emailAddress: methods.find((cm) => cm?.typeCode === "EMAILADDR")?.value ?? null,
+        });
       });
   }
 
   private _diffFacialHairTypes(
     existingFacialHairStyles: PersonFacialHairStyleCode[],
-    incomingFacialHairStyles: PersonFacialHairStyleCode[],
+    incomingFacialHairStyles: PersonFacialHairStyleCodeInput[],
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingFacialHairStyles) {
-      if (incoming.personFacialStyleHairCodeGuid) {
-        const existing = existingFacialHairStyles.find(
-          (fhs) => fhs.personFacialStyleHairCodeGuid === incoming.personFacialStyleHairCodeGuid,
-        );
-        if (existing && existing.facialHairStyleCode !== incoming.facialHairStyleCode) {
-          addEvent("EDITED", "facial hair style", existing.facialHairStyleCode, incoming.facialHairStyleCode);
-        }
-      } else {
+      const existing = incoming.personFacialStyleHairCodeGuid
+        ? existingFacialHairStyles.find(
+            (fhs) => fhs.personFacialStyleHairCodeGuid === incoming.personFacialStyleHairCodeGuid,
+          )
+        : undefined;
+      if (!existing) {
         addEvent("ADDED", "facial hair style", null, incoming.facialHairStyleCode);
+      } else if (existing.facialHairStyleCode !== incoming.facialHairStyleCode) {
+        addEvent("EDITED", "facial hair style", existing.facialHairStyleCode, incoming.facialHairStyleCode);
       }
     }
     const incomingGuids = new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid));
@@ -1427,7 +1573,12 @@ export class PartyService {
    * Builds the list of party history events describing what changed between the existing party
    * state and the incoming update input.
    */
-  private _partyChangeEvents(partyIdentifier: string, oldParty: Party, input: PartyUpdateInput): EventCreateInput[] {
+  private _partyChangeEvents(
+    partyIdentifier: string,
+    oldParty: Party,
+    input: PartyUpdateInput,
+    investigationContext?: string,
+  ): EventCreateInput[] {
     const events: EventCreateInput[] = [];
     const actorId = this.user.getUserGuid();
 
@@ -1440,7 +1591,13 @@ export class PartyService {
         actorEntityTypeCode: "USER",
         targetId: partyIdentifier,
         targetEntityTypeCode: "PARTY",
-        content: { field, oldValue: oldValue ?? null, newValue: newValue ?? null, ...extraContent },
+        content: {
+          field,
+          oldValue: oldValue ?? null,
+          newValue: newValue ?? null,
+          ...extraContent,
+          ...(investigationContext ? { investigationContext } : {}),
+        },
       });
     };
 
@@ -1461,7 +1618,117 @@ export class PartyService {
     return events;
   }
 
-  async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
+  private async _loadInactiveGuids(partyIdentifier: string): Promise<InactiveGuids> {
+    const party: any = await this.prisma.party.findUnique({
+      where: { party_guid: partyIdentifier },
+      select: {
+        address: {
+          where: { active_ind: false },
+          select: { address_guid: true },
+        },
+        contact_method: {
+          where: { active_ind: false },
+          select: { contact_method_guid: true },
+        },
+        alias: {
+          where: { active_ind: false },
+          select: { alias_guid: true },
+        },
+        person: {
+          select: {
+            person_facial_hair_style_code: {
+              where: { active_ind: false },
+              select: { person_facial_hair_style_code_guid: true },
+            },
+          },
+        },
+        business: {
+          select: {
+            business_identifier: {
+              where: { active_ind: false },
+              select: { business_identifier_guid: true },
+            },
+            business_person_xref: {
+              where: { active_ind: false },
+              select: {
+                business_person_xref_guid: true,
+                person: {
+                  select: {
+                    party: {
+                      select: {
+                        contact_method: {
+                          where: { active_ind: true },
+                          select: {
+                            contact_method_guid: true,
+                            contact_method_type: true,
+                            contact_value: true,
+                            is_primary: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Contact methods hang off the party, off each address, and off each business contact's own
+    // party, so all three are collected into one set.
+    const addressContactMethods = await this.prisma.contact_method.findMany({
+      where: { active_ind: false, address: { party_guid: partyIdentifier } },
+      select: { contact_method_guid: true },
+    });
+
+    const businessContactMethods = await this.prisma.contact_method.findMany({
+      where: {
+        active_ind: false,
+        party: {
+          person: {
+            business_person_xref: {
+              some: { business: { party_guid: partyIdentifier } },
+            },
+          },
+        },
+      },
+      select: { contact_method_guid: true },
+    });
+
+    return {
+      address: new Set<string>((party?.address ?? []).map((a: any) => a.address_guid)),
+      contactMethod: new Set<string>([
+        ...(party?.contact_method ?? []).map((cm: any) => cm.contact_method_guid),
+        ...addressContactMethods.map((cm) => cm.contact_method_guid),
+        ...businessContactMethods.map((cm) => cm.contact_method_guid),
+      ]),
+      alias: new Set<string>((party?.alias ?? []).map((a: any) => a.alias_guid)),
+      businessIdentifier: new Set<string>(
+        (party?.business?.business_identifier ?? []).map((bi: any) => bi.business_identifier_guid),
+      ),
+      businessPersonXref: new Set<string>(
+        (party?.business?.business_person_xref ?? []).map((bpx: any) => bpx.business_person_xref_guid),
+      ),
+      facialHairStyle: new Set<string>(
+        (party?.person?.person_facial_hair_style_code ?? []).map((fhs: any) => fhs.person_facial_hair_style_code_guid),
+      ),
+      inactiveXrefContactMethods: new Map<string, ContactMethod[]>(
+        (party?.business?.business_person_xref ?? []).map((bpx: any) => [
+          bpx.business_person_xref_guid,
+          (bpx.person?.party?.contact_method ?? []).map((cm: any) => ({
+            contactMethodGuid: cm.contact_method_guid,
+            typeCode: cm.contact_method_type,
+            value: cm.contact_value,
+            isPrimary: cm.is_primary,
+          })),
+        ]),
+      ),
+    };
+  }
+
+  async update(partyIdentifier: string, input: PartyUpdateInput, investigationContext?: string): Promise<Party> {
     const existingParty: any = await this.prisma.party.findUnique({
       include: {
         address: {
@@ -1512,6 +1779,8 @@ export class PartyService {
     });
     if (!existingParty) throw new Error("Party not found");
 
+    const inactiveGuids = await this._loadInactiveGuids(existingParty.party_guid);
+
     const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
 
     if (input.partyTypeCode === PARTY_TYPES.Company && input.business) {
@@ -1524,8 +1793,18 @@ export class PartyService {
     const newAddresses = isBusiness
       ? (input.addresses ?? []).filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid))
       : [];
+    const existingXrefGuids = new Set(
+      (existingPartyDto.business?.contactPeople ?? []).map((c) => c.businessPersonXrefGuid),
+    );
     const newContacts = isBusiness
-      ? (input.business?.contactPeople ?? []).filter((c) => !c.businessPersonXrefGuid)
+      ? (input.business?.contactPeople ?? []).filter(
+          (c) =>
+            !c.businessPersonXrefGuid ||
+            !(
+              existingXrefGuids.has(c.businessPersonXrefGuid) ||
+              inactiveGuids.businessPersonXref.has(c.businessPersonXrefGuid)
+            ),
+        )
       : [];
     const builderInput = isBusiness
       ? {
@@ -1534,7 +1813,12 @@ export class PartyService {
           business: input.business
             ? {
                 ...input.business,
-                contactPeople: (input.business.contactPeople ?? []).filter((c) => c.businessPersonXrefGuid),
+                contactPeople: (input.business.contactPeople ?? []).filter(
+                  (c) =>
+                    c.businessPersonXrefGuid &&
+                    (existingXrefGuids.has(c.businessPersonXrefGuid) ||
+                      inactiveGuids.businessPersonXref.has(c.businessPersonXrefGuid)),
+                ),
               }
             : input.business,
         }
@@ -1543,12 +1827,13 @@ export class PartyService {
     let data: any;
 
     if (input.partyTypeCode === PARTY_TYPES.Person) {
-      data = this._buildPersonUpdateData(input, existingPartyDto);
+      data = this._buildPersonUpdateData(input, existingPartyDto, inactiveGuids);
     } else {
-      data = this._buildBusinessUpdateData(builderInput, existingPartyDto);
+      data = this._buildBusinessUpdateData(builderInput, existingPartyDto, inactiveGuids);
     }
+
     try {
-      const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input);
+      const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input, investigationContext);
 
       const prismaParty: any = await this.prisma.$transaction(async (tx) => {
         const updated: any = await tx.party.update({
@@ -1568,7 +1853,9 @@ export class PartyService {
             await this._createBusinessContact(tx, updated.business.business_guid, contact);
           }
 
-          for (const contact of (input.business?.contactPeople ?? []).filter((c) => c.businessPersonXrefGuid)) {
+          for (const contact of (input.business?.contactPeople ?? []).filter(
+            (c) => c.businessPersonXrefGuid && existingXrefGuids.has(c.businessPersonXrefGuid),
+          )) {
             if (contact.officeAddressGuids === undefined) continue;
             const existingXref = existingPartyDto.business?.contactPeople?.find(
               (x) => x.businessPersonXrefGuid === contact.businessPersonXrefGuid,

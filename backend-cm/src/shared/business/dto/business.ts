@@ -2,7 +2,7 @@ import { Mapper, createMap, forMember, mapFrom, mapWithArguments } from "@automa
 import { business } from "../../../../prisma/shared/generated/business";
 import { BusinessDto } from "../../../common/party";
 import { BusinessIdentifier, BusinessIdentifierMatchInput } from "../../business_identifier/dto/business_identifier";
-import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
+import { BusinessPersonXref, BusinessPersonXrefInput } from "src/shared/business_person_xref/dto/business_person_xref";
 import { Field, InputType } from "@nestjs/graphql";
 
 export class Business implements BusinessDto {
@@ -13,6 +13,30 @@ export class Business implements BusinessDto {
   contactPeople: BusinessPersonXref[];
   safetyConcernIndicator?: boolean;
   safetyConcernReason?: string;
+}
+
+@InputType()
+export class BusinessInput {
+  @Field(() => String, { nullable: true })
+  businessGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  partyGuid?: string;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => Boolean, { nullable: true })
+  safetyConcernIndicator?: boolean;
+
+  @Field(() => String, { nullable: true })
+  safetyConcernReason?: string;
+
+  @Field(() => [BusinessIdentifier], { nullable: true })
+  businessIdentifiers?: BusinessIdentifier[];
+
+  @Field(() => [BusinessPersonXrefInput], { nullable: true })
+  contactPeople?: BusinessPersonXrefInput[];
 }
 
 @InputType()

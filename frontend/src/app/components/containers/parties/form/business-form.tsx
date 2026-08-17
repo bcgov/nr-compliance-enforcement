@@ -87,7 +87,9 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
                 onChange: ({ value }: { value: string | null | undefined }) => {
                   const isSafetyConcernChecked = !!form.getFieldValue("businessSafetyConcernIndicator");
                   const isEmpty = !value?.trim();
-                  return isSafetyConcernChecked && isEmpty ? { message: "Safety concern reason is required" } : undefined;
+                  return isSafetyConcernChecked && isEmpty
+                    ? { message: "Safety concern reason is required" }
+                    : undefined;
                 },
               }}
               render={(field) => (
@@ -194,6 +196,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         onRemoveEmail={handleRemoveEmail}
         onSetPrimaryEmail={handleSetPrimaryEmail}
         showOfficeFields={showInvestigationFields}
+        showContactMethods={false}
         showDisplayInInvestigation={showDisplayInInvestigation}
       />
       {showContactPeople && (

@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -7,10 +7,11 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { openModal } from "@store/reducers/app";
-import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { CANCEL_CONFIRM, SAVE_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import {
   CreateAttachmentReferenceInput,
+  ImageUpdateInput,
   InvestigationAttachmentReference,
   InvestigationParty,
   Party,
@@ -112,6 +113,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const [addMatchGuid, setAddMatchGuid] = useState<string>("");
 
+  const copyInFlightRef = useRef(false);
+  const [copyPending, setCopyPending] = useState(false);
+  const [attachmentsSaving, setAttachmentsSaving] = useState(false);
+
   const isLinkedParty = !!editParty?.partyReference;
 
   const { data: matchPartyData } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
@@ -133,6 +138,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     return { ...createEmptyPartyFormValues(), partyAssociationRole: "" };
   }, [isEditMode, editParty]);
 
+  const pendingImagesRef = useRef<ImageUpdateInput[]>([]);
+
+  const handlePendingImagesChange = useCallback((images: ImageUpdateInput[]) => {
+    pendingImagesRef.current = images;
+  }, []);
+
   const form = useForm({
     defaultValues,
     // fires only when a submission attempt is blocked by validation
@@ -145,6 +156,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           aliases: buildAliases(value.aliases, true),
           addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
+          images: pendingImagesRef.current,
         };
 
         if (value.partyType === PartyTypeCodes.PERSON) {
@@ -200,6 +212,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   // After the create/update succeeds, flush attachments; their onSaved callback handles navigation.
   const flushAttachmentsThenNavigate = () => {
+    setAttachmentsSaving(true);
     // Work around for timing issue
     setTriggerSaveAttachments((n) => n + 1);
   };
@@ -213,17 +226,26 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
     onError: (error: any) => {
       console.error("Error adding party:", error);
+      copyInFlightRef.current = false;
+      setCopyPending(false);
       handleBusinessPartyMutationError(form, error, "Failed to add party");
     },
   });
 
   const updatePartyMutation = useGraphQLMutation(UPDATE_INVESTIGATION_PARTY, {
-    invalidateQueries: [["getInvestigation", investigationGuid]],
+    invalidateQueries: [
+      ["getInvestigation", investigationGuid],
+      ["party", editParty?.partyReference],
+      ["searchPartyEvents", editParty?.partyReference],
+      ["searchParties"],
+    ],
     onSuccess: () => {
       flushAttachmentsThenNavigate();
     },
     onError: (error: any) => {
       console.error("Error updating party:", error);
+      copyInFlightRef.current = false;
+      setCopyPending(false);
       handleBusinessPartyMutationError(form, error, "Failed to update party");
     },
   });
@@ -237,6 +259,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
     onError: (error: any) => {
       console.error("Error copying party:", error);
+      copyInFlightRef.current = false;
+      setCopyPending(false);
       handleBusinessPartyMutationError(form, error, "Failed to add party");
     },
   });
@@ -266,6 +290,25 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   }, [isEditMode, editParty]);
 
   const saveButtonClick = () => {
+    if (isEditMode && isLinkedParty) {
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: SAVE_CONFIRM,
+          data: {
+            title: "Save party",
+            description:
+              "Saving this party will update its details for all NatSuite users and will be available for use in future investigations.",
+            cancelText: "Cancel",
+            saveText: "Save and close",
+          },
+          callback: () => {
+            form.handleSubmit();
+          },
+        }),
+      );
+      return;
+    }
     form.handleSubmit();
   };
 
@@ -294,7 +337,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   // disable saving from validation start through mutation completion
   const formSubmitting = useStore(form.store, (state: any) => state.isSubmitting) as boolean;
-  const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending;
+  const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending || copyPending || attachmentsSaving;
   const saveDisabled = formSubmitting || isDisabled;
 
   const { matches, handleFieldBlur } = usePartyMatchTrigger(form, isLinkedParty);
@@ -313,11 +356,18 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   };
 
   useEffect(() => {
-    if (!addMatchGuid || !matchPartyData?.party) {
+    if (!addMatchGuid || !matchPartyData?.party || copyInFlightRef.current) {
       return;
     }
 
     const party = matchPartyData.party;
+
+    // Potential long stuff happening... disable the form
+    copyInFlightRef.current = true;
+    setCopyPending(true);
+
+    // Clear the trigger so stale query data can't re-fire the copy on a later render.
+    setAddMatchGuid("");
 
     const copyParty = async () => {
       if (!party.partyIdentifier) {
@@ -369,12 +419,13 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       } else {
         addPartyMutation.mutate({ investigationGuid, input: [input] });
       }
-
-      // Clear the trigger so stale query data can't re-fire the copy on a later render.
-      setAddMatchGuid("");
     };
 
-    void copyParty();
+    void copyParty().catch((error) => {
+      console.error("Error copying party:", error);
+      copyInFlightRef.current = false;
+      setCopyPending(false);
+    });
   }, [addMatchGuid, matchPartyData, investigationGuid]);
 
   const resolveThumbnailPin = async (
@@ -532,6 +583,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   activityId={investigationGuid}
                   attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
                   attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                  onPendingImagesChange={handlePendingImagesChange}
                   allowUpload
                   allowDelete
                   triggerSave={triggerSaveAttachments}

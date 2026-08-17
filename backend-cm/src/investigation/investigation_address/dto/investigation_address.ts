@@ -17,6 +17,7 @@ export class InvestigationAddress {
   displayInInvestigation?: boolean;
   isPrimary?: boolean;
   contactMethods: [InvestigationContactMethod];
+  addressReference?: string;
 }
 
 @InputType()
@@ -50,6 +51,9 @@ export class CreateInvestigationAddressInput {
 
   @Field(() => [CreateInvestigationContactMethodInput], { nullable: true })
   contactMethods?: CreateInvestigationContactMethodInput[];
+
+  @Field(() => String, { nullable: true })
+  addressReference?: string;
 }
 
 export const mapPrismaAddressToInvestigationAddress = (mapper: Mapper) => {
@@ -102,6 +106,10 @@ export const mapPrismaAddressToInvestigationAddress = (mapper: Mapper) => {
           "InvestigationContactMethod",
         ),
       ),
+    ),
+    forMember(
+      (dest) => dest.addressReference,
+      mapFrom((src) => src.address_guid_ref ?? undefined),
     ),
   );
 };

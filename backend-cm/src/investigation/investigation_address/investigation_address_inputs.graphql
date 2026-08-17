@@ -9,6 +9,7 @@ input CreateInvestigationAddressInput {
   isPrimary: Boolean
   displayInInvestigation: Boolean
   contactMethods: [CreateInvestigationContactMethodInput]
+  addressReference: String
 }
 
 input UpdateInvestigationAddressInput {

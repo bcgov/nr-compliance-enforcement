@@ -31,6 +31,7 @@ import {
   CreateInvestigationAttachmentReferenceInput,
   InvestigationAttachmentReference,
 } from "src/investigation/investigation_attachment_reference/dto/investigation_attachment_reference";
+import { ImageUpdate } from "src/shared/party/dto/party";
 
 export class InvestigationParty implements PartyDto {
   partyIdentifier: string;
@@ -101,6 +102,9 @@ export class UpdateInvestigationPartyInput {
 
   @Field(() => [CreateInvestigationAddressInput], { nullable: true })
   addresses?: CreateInvestigationAddressInput[];
+
+  @Field(() => ImageUpdate, { nullable: true })
+  images?: ImageUpdate[];
 }
 
 export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {

@@ -91,10 +91,12 @@ export const Attachments: FC<Props> = ({
         attachments.push(...liveAttachments);
       }
 
-      // Also include any pinned versions that were passed into the component
+      // Also include any pinned versions that were passed into the component. A pinned version is
+      // skipped when a live attachment of the same name exists, since the live one supersedes it.
       if (attachmentReferences) {
         const snapshotAttachments = await dispatch(getSnapshotAttachments(attachmentReferences));
-        attachments.push(...snapshotAttachments);
+        const liveNames = new Set(attachments.map((a) => getDisplayFilename(a.name)));
+        attachments.push(...snapshotAttachments.filter((a: COMSObject) => !liveNames.has(getDisplayFilename(a.name))));
       }
 
       if (isMounted) {

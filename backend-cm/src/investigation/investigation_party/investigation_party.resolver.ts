@@ -96,7 +96,7 @@ export class InvestigationPartyResolver {
     try {
       return await this.investigationPartyService.update(investigationGuid, input);
     } catch (error) {
-      this.logger.error("Update investigation party error:", error);
+      this.logger.error("Update investigation party error:", error.stack ?? error);
       throw new GraphQLError("Error updating investigation party", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",

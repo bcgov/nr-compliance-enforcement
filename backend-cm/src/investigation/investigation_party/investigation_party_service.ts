@@ -48,9 +48,13 @@ import { InvestigationBusinessPersonAddressXref } from "../investigation_busines
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PARTY_TYPES } from "src/common/party";
 import { randomUUID } from "node:crypto";
-import { PartyIdentifiers, PartyService } from "../../shared/party/party.service";
+import { PartyService, PreparedPartyIdentifiers } from "../../shared/party/party.service";
 import { Party, PartyCreateInput } from "../../shared/party/dto/party";
-import { mapInvestigationPartyToPartyCreateInput } from "./investigation-party-to-party.mapper";
+import {
+  mapInvestigationPartyToPartyUpdateInput,
+  mapInvestigationPartyToPartyCreateInput,
+  resolveSharedReferences,
+} from "./investigation-party-to-party.mapper";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -58,7 +62,7 @@ const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
 // A shared party that has been described and had its guids settled, but not yet written
 export interface PreparedSharedParty {
   input: PartyCreateInput;
-  identifiers: PartyIdentifiers;
+  identifiers: PreparedPartyIdentifiers;
 }
 
 @Injectable()
@@ -149,13 +153,7 @@ export class InvestigationPartyService {
           ...(input.contactMethods?.length
             ? {
                 investigation_contact_method: {
-                  create: input.contactMethods.map((c) => ({
-                    contact_method_type_code_ref: c.typeCode,
-                    contact_value: c.value,
-                    is_primary: c.isPrimary,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
+                  create: input.contactMethods.map((c) => this._contactMethodCreateData(c)),
                 },
               }
             : {}),
@@ -164,6 +162,7 @@ export class InvestigationPartyService {
                 investigation_alias: {
                   create: input.aliases.map((a) => ({
                     name: a.name,
+                    alias_guid_ref: a.aliasReference ?? null,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
                   })),
@@ -260,6 +259,7 @@ export class InvestigationPartyService {
               investigation_person_facial_hair_style_code_ref: {
                 create: input.facialHairStyleCodes.map((fhs) => ({
                   facial_hair_style_code_ref: fhs.facialHairStyleCode,
+                  person_facial_hair_style_code_guid_ref: fhs.personFacialHairStyleCodeReference,
                   create_user_id: this.user.getIdirUsername(),
                   create_utc_timestamp: new Date(),
                 })),
@@ -311,6 +311,7 @@ export class InvestigationPartyService {
           investigation_business_guid: investigationBusiness.investigation_business_guid,
           business_identifier_code_ref: bi.identifierCode,
           identifier_value: bi.identifierValue,
+          business_identifier_guid_ref: bi.businessIdentifierReference ?? null,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
         })),
@@ -327,12 +328,18 @@ export class InvestigationPartyService {
     }
   }
 
-  private _contactMethodCreateData(cm: { typeCode: string; value: string; isPrimary?: boolean }) {
+  private _contactMethodCreateData(cm: {
+    typeCode: string;
+    value: string;
+    isPrimary?: boolean;
+    contactMethodReference?: string;
+  }) {
     return {
       contact_method_type_code_ref: cm.typeCode,
       contact_value: cm.value,
       is_primary: cm.isPrimary ?? false,
       active_ind: true,
+      contact_method_guid_ref: cm.contactMethodReference ?? null,
       create_user_id: this.user.getIdirUsername(),
       create_utc_timestamp: new Date(),
     };
@@ -356,6 +363,7 @@ export class InvestigationPartyService {
           country_code_ref: a.country?.trim() || null,
           is_primary: a.isPrimary ?? false,
           display_in_investigation_ind: a.displayInInvestigation ?? true,
+          address_guid_ref: a.addressReference ?? null,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
           ...(a.contactMethods?.length
@@ -402,6 +410,7 @@ export class InvestigationPartyService {
         display_in_investigation_ind: contact.displayInInvestigation ?? true,
         title_role: contact.title ?? null,
         is_primary: contact.isPrimary ?? false,
+        business_person_xref_guid_ref: contact.businessPersonXrefReference ?? null,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       },
@@ -566,7 +575,7 @@ export class InvestigationPartyService {
     return refreshedInvestigation.parties.find((party) => party.partyIdentifier === newPartyGuid);
   }
 
-  // Prepare a shared party with randomm guids
+  // Prepare a shared party with random guids
   async prepareSharedParty(partyIdentifier: string): Promise<PreparedSharedParty | null> {
     const investigationParty = await this.prisma.investigation_party.findUnique({
       where: { investigation_party_guid: partyIdentifier },
@@ -588,14 +597,16 @@ export class InvestigationPartyService {
     }
 
     const isBusiness = party.partyTypeCode === PARTY_TYPES.Company;
+    const { input, childGuids } = mapInvestigationPartyToPartyCreateInput(party);
 
     return {
-      input: mapInvestigationPartyToPartyCreateInput(party),
+      input,
       identifiers: {
         partyGuid: investigationParty.party_guid_ref ?? randomUUID(),
         ...(isBusiness
           ? { businessGuid: party.business?.businessReference ?? randomUUID() }
           : { personGuid: party.person?.personReference ?? randomUUID() }),
+        ...childGuids,
       },
     };
   }
@@ -640,6 +651,70 @@ export class InvestigationPartyService {
         where: { investigation_party_guid: partyIdentifier, active_ind: true },
         data: {
           business_guid_ref: prepared.identifiers.businessGuid,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    }
+
+    // Child rows each carry the shared guid generated for their counterpart, so later edits update
+    // the shared row in place rather than creating a duplicate.
+    await this._linkChildRows(
+      db,
+      "investigation_address",
+      "investigation_address_guid",
+      "address_guid_ref",
+      prepared.identifiers.addressGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_contact_method",
+      "investigation_contact_method_guid",
+      "contact_method_guid_ref",
+      prepared.identifiers.contactMethodGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_alias",
+      "investigation_alias_guid",
+      "alias_guid_ref",
+      prepared.identifiers.aliasGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_business_identifier",
+      "investigation_business_identifier_guid",
+      "business_identifier_guid_ref",
+      prepared.identifiers.businessIdentifierGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_business_person_xref",
+      "investigation_business_person_xref_guid",
+      "business_person_xref_guid_ref",
+      prepared.identifiers.businessPersonXrefGuids,
+    );
+    await this._linkChildRows(
+      db,
+      "investigation_person_facial_hair_style_code_ref",
+      "investigation_person_facial_hair_style_code_ref_guid",
+      "person_facial_hair_style_code_guid_ref",
+      prepared.identifiers.facialHairStyleGuids,
+    );
+  }
+
+  private async _linkChildRows(
+    db: any,
+    model: string,
+    guidColumn: string,
+    refColumn: string,
+    sharedGuidByLocalGuid: Map<string, string>,
+  ): Promise<void> {
+    for (const [localGuid, sharedGuid] of sharedGuidByLocalGuid) {
+      await db[model].update({
+        where: { [guidColumn]: localGuid },
+        data: {
+          [refColumn]: sharedGuid,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },
@@ -714,7 +789,9 @@ export class InvestigationPartyService {
       this._validateBusinessInput(input.business);
     }
 
-    await this.prisma.$transaction(async (tx) => {
+    resolveSharedReferences(existingParty, input);
+
+    await withRlsTransaction(this.prisma, async (tx) => {
       const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
 
       const incomingAddresses = input.addresses ?? [];
@@ -775,6 +852,18 @@ export class InvestigationPartyService {
 
         if (input.business && existingParty.business) {
           await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
+        }
+
+        if (existingParty.partyReference) {
+          const partyUpdateInput = mapInvestigationPartyToPartyUpdateInput(existingParty, input);
+          // PartyService.update() manages its own separate transaction against the shared
+          // Prisma client. If it throws, this whole local transaction is rolled back too,
+          // since the error propagates out of the withRlsTransaction callback.
+          await this.partyService.update(
+            existingParty.partyReference,
+            partyUpdateInput,
+            `on investigation ${investigation.name}`,
+          );
         }
       } catch (error) {
         this.logger.error("Error updating investigation party:", error);
@@ -1006,6 +1095,7 @@ export class InvestigationPartyService {
         contact_value: cm.value,
         is_primary: cm.isPrimary,
         active_ind: true,
+        contact_method_guid_ref: cm.contactMethodReference ?? null,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       }));
@@ -1057,6 +1147,7 @@ export class InvestigationPartyService {
             investigation_business_guid: investigationBusinessGuid,
             business_identifier_code_ref: bi.identifierCode,
             identifier_value: bi.identifierValue,
+            business_identifier_guid_ref: bi.businessIdentifierReference ?? null,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
           },
@@ -1108,6 +1199,7 @@ export class InvestigationPartyService {
     if (toCreate.length) {
       operations.create = toCreate.map((a) => ({
         name: a.name,
+        alias_guid_ref: a.aliasReference ?? null,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
@@ -1213,6 +1305,7 @@ export class InvestigationPartyService {
         facial_hair_style_code_ref: fhs.facialHairStyleCode,
         investigation_person_guid: fhs.personGuid,
         active_ind: true,
+        person_facial_hair_style_code_guid_ref: fhs.personFacialHairStyleCodeReference ?? null,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       }));
