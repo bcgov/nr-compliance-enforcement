@@ -63,7 +63,9 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
           <DetailField label="Last name">{person.lastName}</DetailField>
           <DetailField label="Alias(es)">{aliases}</DetailField>
           <DetailField label="Sex as per ID">{person?.sexCode}</DetailField>
-          <DetailField label="Date of birth">{formatDateObjectAsString(parseUTCDateToLocal(person.dateOfBirth), { format: "date" })}</DetailField>
+          <DetailField label="Date of birth">
+            {formatDateObjectAsString(parseUTCDateToLocal(person.dateOfBirth), { format: "date" })}
+          </DetailField>
           <DetailField label="Age">{ageDisplay}</DetailField>
           <DetailField label="Approximate age">{approximateAge}</DetailField>
           <DetailField label="Driver's licence number">{person.driversLicenseNumber}</DetailField>
@@ -86,7 +88,7 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
                 {id.identifierValue}
               </DetailField>
             ))}
-          <DetailField label="Alias(es)">{aliases}</DetailField>
+          <DetailField label="Doing business as">{aliases}</DetailField>
         </DetailSection>
       )}
     </>

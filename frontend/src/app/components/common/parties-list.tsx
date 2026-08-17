@@ -227,7 +227,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
       const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
       return (
         <Card.Body className="py-3 px-4">
-          {renderDetailRow("Alias", aliases, "Business number", businessNumbers)}
+          {renderDetailRow("Doing business as", aliases, "Business number", businessNumbers)}
           {renderDetailRow("Primary phone", formatPhoneNumber(phone), "Primary address", address)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">

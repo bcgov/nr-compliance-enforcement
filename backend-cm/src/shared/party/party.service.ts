@@ -1548,7 +1548,7 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     if (!oldBusiness || !newBusiness) return;
-    this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
+    this._compareField("legal name", oldBusiness.name, newBusiness.name, addEvent);
     this._compareField(
       "Safety concern",
       oldBusiness.safetyConcernIndicator,

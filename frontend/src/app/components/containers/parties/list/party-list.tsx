@@ -67,8 +67,8 @@ const getAgeDisplay = (party: Party, approxAges: ApproximateAgeType[]): number |
   return calculateAgeYears(dateOfBirth) ?? "";
 };
 
-const partyNameColumn: CompColumn<any> = {
-  label: "Party name",
+const partyNameColumn = (label: string): CompColumn<any> => ({
+  label,
   sortKey: "partyName",
   headerClassName: "comp-cell-width-140 comp-cell-min-width-140 sticky-col sticky-col--left",
   cellClassName: "comp-cell-width-140 comp-cell-min-width-140 sticky-col sticky-col--left",
@@ -82,10 +82,10 @@ const partyNameColumn: CompColumn<any> = {
       {getPartyName(party)}
     </Link>
   ),
-};
+});
 
 const getBusinessColumns = (countrySubdivisions: CountrySubdivisionType[]): CompColumn<any>[] => [
-  partyNameColumn,
+  partyNameColumn("Legal name"),
   {
     label: "Business number",
     headerClassName: "comp-cell-min-width-110",
@@ -116,7 +116,7 @@ const getPersonColumns = (
   countrySubdivisions: CountrySubdivisionType[],
   approxAges: ApproximateAgeType[],
 ): CompColumn<any>[] => [
-  partyNameColumn,
+  partyNameColumn("Party name"),
   {
     label: "Age",
     sortKey: "age",
