@@ -74,6 +74,7 @@ export const TaskFilter: FC<Props> = ({ assignedOfficerIds }) => {
             value={selectedCategory}
             isClearable={true}
             showInactive={false}
+            maxMenuHeight={150}
           />
         </div>
       </div>
@@ -115,6 +116,7 @@ export const TaskFilter: FC<Props> = ({ assignedOfficerIds }) => {
             isClearable={true}
             showInactive={false}
             menuPlacement="top"
+            maxMenuHeight={175}
           />
         </div>
       </div>
