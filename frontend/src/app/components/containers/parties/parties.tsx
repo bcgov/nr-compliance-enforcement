@@ -29,6 +29,8 @@ const SEARCH_PARTIES = gql`
           address
           city
           province
+          postalCode
+          country
           isPrimary
         }
         person {
