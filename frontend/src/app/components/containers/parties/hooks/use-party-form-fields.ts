@@ -136,7 +136,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       isPrimary: currentAddresses.length === 0,
     });
     revalidateList("addresses");
-    focusFieldById(`business-address-name-${currentAddresses.length}`);
+    focusFieldById(`address-name-${currentAddresses.length}`);
   }, [form, focusFieldById, revalidateList]);
 
   const handleRemoveAddress = useCallback(
