@@ -1,7 +1,7 @@
 {
   "name": "nr-natsuite",
   "type": "module",
-  "version": "2.0.374",
+  "version": "2.0.375",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
