@@ -6,11 +6,13 @@ import { Button, Card } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { ValidationCheckboxGroup } from "@/app/common/validation-checkbox-group";
 import { CompSelect } from "@/app/components/common/comp-select";
+import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 
 import Option from "@/app/types/app/option";
 import { Prevention } from "@/app/types/outcomes/prevention";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 import { selectIsInEdit } from "@/app/store/reducers/complaint-outcome-selectors";
 import { selectPreventionTypeCodeDropdown } from "@store/reducers/code-table";
@@ -74,12 +76,16 @@ export const HWCRPreventionForm: FC<Props> = ({
   const [officerErrorMessage, setOfficerErrorMessage] = useState<string>("");
   const [preventionDateErrorMessage, setPreventionDateErrorMessage] = useState<string>("");
   const [preventionRequiredErrorMessage, setPreventionRequiredErrorMessage] = useState<string>("");
+  const [wacnAmountErrorMessage, setWacnAmountErrorMessage] = useState<string>("");
 
   // Form state
 
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
   const [selectedOfficer, setSelectedOfficer] = useState<Option>();
   const [selectedPreventionTypes, setSelectedPreventionTypes] = useState<Option[]>([]);
+  const [wacnAmount, setWacnAmount] = useState<string>("");
+
+  const isWacnSelected = selectedPreventionTypes?.some((item) => item.value === CASE_ACTION_CODE.ISSUEWACN);
 
   // Effects
 
@@ -101,6 +107,12 @@ export const HWCRPreventionForm: FC<Props> = ({
       );
 
       setSelectedDate(preventionState.date ? new Date(preventionState.date) : new Date());
+
+      setWacnAmount(
+        preventionState.wacnAmount !== undefined && preventionState.wacnAmount !== null
+          ? String(preventionState.wacnAmount)
+          : "",
+      );
 
       if (!officer && officersInAgencyList && assigned) {
         const officerAssigned = officersInAgencyList
@@ -129,6 +141,15 @@ export const HWCRPreventionForm: FC<Props> = ({
   const handlePreventionTypesChange = (selectedItems: Option[]) => {
     markDirty();
     setSelectedPreventionTypes(selectedItems);
+    if (!selectedItems?.some((item) => item.value === CASE_ACTION_CODE.ISSUEWACN)) {
+      setWacnAmount("");
+      setWacnAmountErrorMessage("");
+    }
+  };
+
+  const handleWacnAmountChange = (input: string) => {
+    markDirty();
+    setWacnAmount(input.replace(/\D/g, ""));
   };
 
   const handleDateChange = (date: Date | null, _time: string | null) => {
@@ -146,6 +167,7 @@ export const HWCRPreventionForm: FC<Props> = ({
     setOfficerErrorMessage("");
     setPreventionDateErrorMessage("");
     setPreventionRequiredErrorMessage("");
+    setWacnAmountErrorMessage("");
   };
 
   const hasErrors = (): boolean => {
@@ -164,6 +186,11 @@ export const HWCRPreventionForm: FC<Props> = ({
 
     if (!selectedPreventionTypes || selectedPreventionTypes?.length <= 0) {
       setPreventionRequiredErrorMessage("One or more prevention and education is required");
+      hasErrors = true;
+    }
+
+    if (isWacnSelected && (!wacnAmount || Number(wacnAmount) < 1)) {
+      setWacnAmountErrorMessage("Required");
       hasErrors = true;
     }
 
@@ -206,6 +233,7 @@ export const HWCRPreventionForm: FC<Props> = ({
             value: item.value,
           };
         }),
+        wacnAmount: isWacnSelected && wacnAmount ? Number(wacnAmount) : undefined,
       };
 
       dispatch(upsertPrevention(id, ownedByAgencyCode.agency, updatedPreventionData));
@@ -240,6 +268,28 @@ export const HWCRPreventionForm: FC<Props> = ({
               ></ValidationCheckboxGroup>
             </div>
           </div>
+          {isWacnSelected && (
+            <div
+              className="comp-details-form-row"
+              id="prev-educ-wacn-amount-div"
+            >
+              <label htmlFor="prev-educ-wacn-amount">
+                Number of WACN issued<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-input">
+                <CompInput
+                  type="input"
+                  inputClass="comp-form-control"
+                  id="prev-educ-wacn-amount"
+                  divid="prev-educ-wacn-amount-div"
+                  maxLength={3}
+                  value={wacnAmount}
+                  onChange={(e: { target: { value: string } }) => handleWacnAmountChange(e.target.value)}
+                  error={wacnAmountErrorMessage}
+                />
+              </div>
+            </div>
+          )}
           <div
             className="comp-details-form-row"
             id="prev-educ-outcome-officer-div"

@@ -967,6 +967,7 @@ export class ComplaintOutcomeService {
         outcome_agency_code: true,
         update_user_id: true,
         update_utc_timestamp: true,
+        wacn_amount: true,
         action: {
           select: {
             action_guid: true,
@@ -1002,6 +1003,7 @@ export class ComplaintOutcomeService {
       return {
         id: prevention.prevention_education_guid,
         outcomeAgencyCode: prevention.outcome_agency_code,
+        wacnAmount: prevention.wacn_amount ?? undefined,
         actions: prevention.action
           .sort(
             (left, right) => left.action_type_action_xref.display_order - right.action_type_action_xref.display_order,
@@ -1054,6 +1056,7 @@ export class ComplaintOutcomeService {
           complaint_outcome_guid: complaintOutcomeGuid,
           create_user_id: model.createUserId,
           create_utc_timestamp: new Date(),
+          wacn_amount: model.prevention.wacnAmount ?? null,
         },
       });
 
@@ -1117,6 +1120,7 @@ export class ComplaintOutcomeService {
         data: {
           update_user_id: model.updateUserId,
           update_utc_timestamp: new Date(),
+          wacn_amount: model.prevention.wacnAmount ?? null,
         },
       });
 

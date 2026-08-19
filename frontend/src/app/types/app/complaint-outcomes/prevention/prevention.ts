@@ -3,4 +3,5 @@ export interface PreventionDto {
   id: string;
   outcomeAgencyCode: string;
   actions: Array<PreventionActionDto>;
+  wacnAmount?: number;
 }
