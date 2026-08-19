@@ -140,10 +140,15 @@ export const HWCRPreventionForm: FC<Props> = ({
 
   const handlePreventionTypesChange = (selectedItems: Option[]) => {
     markDirty();
+    const wasWacnSelected = selectedPreventionTypes?.some((item) => item.value === CASE_ACTION_CODE.ISSUEWACN);
+    const isWacnNowSelected = selectedItems?.some((item) => item.value === CASE_ACTION_CODE.ISSUEWACN);
     setSelectedPreventionTypes(selectedItems);
-    if (!selectedItems?.some((item) => item.value === CASE_ACTION_CODE.ISSUEWACN)) {
+    if (!isWacnNowSelected) {
       setWacnAmount("");
       setWacnAmountErrorMessage("");
+    } else if (!wasWacnSelected) {
+      // Default to 1 when the option is first checked; leave an existing value alone otherwise.
+      setWacnAmount("1");
     }
   };
 
