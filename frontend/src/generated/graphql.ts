@@ -1674,6 +1674,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addPartyToInspection: Inspection;
   addPartyToInvestigation: Array<InvestigationParty>;
+  addPartyToInvestigationFromSharedParty: InvestigationParty;
   createAppUser?: Maybe<AppUser>;
   createAppUserTeamXref?: Maybe<AppUserTeamXref>;
   createAssessment: ComplaintOutcome;
@@ -1724,6 +1725,7 @@ export type Mutation = {
   removePartyFromInvestigation: Investigation;
   removeTask: Task;
   replacePartyOnInvestigation: InvestigationParty;
+  replacePartyOnInvestigationFromSharedParty: InvestigationParty;
   resetLegislationVersion: Scalars['Boolean']['output'];
   saveActivityNote: ActivityNote;
   saveDiaryDate: DiaryDate;
@@ -1767,6 +1769,14 @@ export type MutationaddPartyToInspectionArgs = {
 export type MutationaddPartyToInvestigationArgs = {
   input: Array<InputMaybe<CreateInvestigationPartyInput>>;
   investigationGuid: Scalars['String']['input'];
+};
+
+
+export type MutationaddPartyToInvestigationFromSharedPartyArgs = {
+  attachmentReferences?: InputMaybe<Array<InputMaybe<CreateAttachmentReferenceInput>>>;
+  investigationGuid: Scalars['String']['input'];
+  partyAssociationRole: Scalars['String']['input'];
+  partyReference: Scalars['String']['input'];
 };
 
 
@@ -2026,6 +2036,15 @@ export type MutationreplacePartyOnInvestigationArgs = {
   input: CreateInvestigationPartyInput;
   investigationGuid: Scalars['String']['input'];
   partyIdentifier: Scalars['String']['input'];
+};
+
+
+export type MutationreplacePartyOnInvestigationFromSharedPartyArgs = {
+  attachmentReferences?: InputMaybe<Array<InputMaybe<CreateAttachmentReferenceInput>>>;
+  investigationGuid: Scalars['String']['input'];
+  partyAssociationRole: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
+  partyReference: Scalars['String']['input'];
 };
 
 

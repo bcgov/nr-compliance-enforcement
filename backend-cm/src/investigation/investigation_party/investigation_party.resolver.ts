@@ -34,6 +34,32 @@ export class InvestigationPartyResolver {
     }
   }
 
+  @Mutation("addPartyToInvestigationFromSharedParty")
+  @Roles(coreRoles)
+  async addFromSharedParty(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("partyReference") partyReference: string,
+    @Args("partyAssociationRole") partyAssociationRole: string,
+    @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
+  ) {
+    try {
+      return await this.investigationPartyService.addFromSharedParty(
+        investigationGuid,
+        partyReference,
+        partyAssociationRole,
+        attachmentReferences,
+      );
+    } catch (error) {
+      this.logger.error("Add party to investigation from shared party error:", error.stack ?? error);
+      throw new GraphQLError("Error adding party to investigation from shared party", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
+
   @Mutation("removePartyFromInvestigation")
   @Roles(coreRoles)
   async remove(@Args("investigationGuid") investigationGuid: string, @Args("partyIdentifier") partyIdentifier: string) {
@@ -143,6 +169,34 @@ export class InvestigationPartyResolver {
     } catch (error) {
       this.logger.error("Replace investigation party error:", error);
       throw new GraphQLError("Error replacing party on investigation", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
+
+  @Mutation("replacePartyOnInvestigationFromSharedParty")
+  @Roles(coreRoles)
+  async replaceFromSharedParty(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("partyIdentifier") partyIdentifier: string,
+    @Args("partyReference") partyReference: string,
+    @Args("partyAssociationRole") partyAssociationRole: string,
+    @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
+  ) {
+    try {
+      return await this.investigationPartyService.replaceFromSharedParty(
+        investigationGuid,
+        partyIdentifier,
+        partyReference,
+        partyAssociationRole,
+        attachmentReferences,
+      );
+    } catch (error) {
+      this.logger.error("Replace investigation party from shared party error:", error.stack ?? error);
+      throw new GraphQLError("Error replacing party on investigation from shared party", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
           originalError: error.message,

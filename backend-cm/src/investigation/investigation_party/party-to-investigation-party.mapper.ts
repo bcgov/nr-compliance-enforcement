@@ -14,13 +14,14 @@ import {
   InvestigationAddress,
 } from "../investigation_address/dto/investigation_address";
 import { UpdateInvestigationAliasInput } from "../investigation_alias/dto/investigation_alias";
+import { CreateInvestigationAttachmentReferenceInput } from "../investigation_attachment_reference/dto/investigation_attachment_reference";
 import {
+  CreateInvestigationBusinessInput,
   InvestigationBusiness,
-  UpdateInvestigationBusinessInput,
 } from "../investigation_business/dto/investigation_business";
 import {
+  CreateInvestigationBusinessContactInput,
   InvestigationBusinessPersonXref,
-  UpdateInvestigationBusinessContactInput,
 } from "../investigation_business_person_xref/dto/investigation_business_person_xref";
 import {
   InvestigationContactMethod,
@@ -31,7 +32,11 @@ import {
   InvestigationPersonFacialHairStyleCodeRef,
   InvestigationPersonFacialHairStyleCodeRefInput,
 } from "../investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
-import { InvestigationParty, UpdateInvestigationPartyInput } from "./dto/investigation_party";
+import {
+  CreateInvestigationPartyInput,
+  InvestigationParty,
+  UpdateInvestigationPartyInput,
+} from "./dto/investigation_party";
 
 const mapContactMethods = (
   contactMethods: ContactMethod[],
@@ -115,7 +120,7 @@ const mapBusinessContact = (
   contact: BusinessPersonXref,
   existingContacts: InvestigationBusinessPersonXref[],
   localAddressGuids: Map<string, string>,
-): UpdateInvestigationBusinessContactInput => {
+): CreateInvestigationBusinessContactInput & { businessPersonXrefGuid?: string } => {
   const existingContact = existingContacts.find(
     (c) => c.businessPersonXrefReference === contact.businessPersonXrefGuid,
   );
@@ -146,7 +151,7 @@ const mapBusiness = (
   business: Business,
   existingBusiness: InvestigationBusiness | undefined,
   localAddressGuids: Map<string, string>,
-): UpdateInvestigationBusinessInput => ({
+): CreateInvestigationBusinessInput => ({
   name: business?.name,
   safetyConcernIndicator: business?.safetyConcernIndicator ?? null,
   safetyConcernReason: business?.safetyConcernReason ?? null,
@@ -164,23 +169,14 @@ const mapBusiness = (
 });
 
 /**
- * Maps a shared party onto the UpdateInvestigationPartyInput that replaces the investigation
- * ("local") copy of it in place. This is the inverse of mapInvestigationPartyToPartyUpdateInput:
- * shared child rows matched to a local row through its *Reference value carry that local guid so the
- * update builders update them, unmatched shared rows carry no local guid so they are created, and
- * local rows without a shared counterpart are left out, which deactivates them.
- *
- * Nullable fields are coalesced to null because the shared DTOs map null columns to undefined, which
- * Prisma would skip — a value cleared on the shared party must also clear on the local copy.
+ * Maps the child relationships a shared party and its investigation ("local") copy share. The create
+ * path leaves existingParty out because it has no local copy to match against.
  */
-export const mapPartyToInvestigationPartyUpdateInput = (
-  sharedParty: Party,
-  existingParty: InvestigationParty,
-): UpdateInvestigationPartyInput => {
+const mapPartyChildren = (sharedParty: Party, existingParty?: InvestigationParty) => {
   const sharedAddresses: Address[] = sharedParty.addresses ?? [];
   const sharedContactMethods: ContactMethod[] = sharedParty.contactMethods ?? [];
   const sharedAliases: Alias[] = sharedParty.aliases ?? [];
-  const existingAddresses: InvestigationAddress[] = existingParty.addresses ?? [];
+  const existingAddresses: InvestigationAddress[] = existingParty?.addresses ?? [];
 
   const localAddressGuids = new Map<string, string>();
   const addresses = sharedAddresses.map((address) => {
@@ -193,21 +189,72 @@ export const mapPartyToInvestigationPartyUpdateInput = (
   });
 
   const aliases: UpdateInvestigationAliasInput[] = sharedAliases.map((alias) => ({
-    aliasGuid: (existingParty.aliases ?? []).find((a) => a.aliasReference === alias.aliasGuid)?.aliasGuid,
+    aliasGuid: (existingParty?.aliases ?? []).find((a) => a.aliasReference === alias.aliasGuid)?.aliasGuid,
     aliasReference: alias.aliasGuid,
     name: alias.name,
   }));
+
+  return {
+    localAddressGuids,
+    addresses,
+    contactMethods: mapContactMethods(sharedContactMethods, existingParty?.contactMethods ?? []),
+    aliases,
+  };
+};
+
+/**
+ * Maps a shared party onto the UpdateInvestigationPartyInput that replaces the investigation
+ * ("local") copy of it in place. This is the inverse of mapInvestigationPartyToPartyUpdateInput.
+ */
+export const mapPartyToInvestigationPartyUpdateInput = (
+  sharedParty: Party,
+  existingParty: InvestigationParty,
+): UpdateInvestigationPartyInput => {
+  const { localAddressGuids, ...children } = mapPartyChildren(sharedParty, existingParty);
 
   const common: UpdateInvestigationPartyInput = {
     partyIdentifier: existingParty.partyIdentifier,
     // the role a party plays is investigation-local, so the shared party never overwrites it
     partyAssociationRole: existingParty.partyAssociationRole,
-    addresses,
-    contactMethods: mapContactMethods(sharedContactMethods, existingParty.contactMethods ?? []),
-    aliases,
+    ...children,
   };
 
   return existingParty.partyTypeCode === PARTY_TYPES.Company
     ? { ...common, business: mapBusiness(sharedParty.business, existingParty.business, localAddressGuids) }
     : { ...common, person: mapPerson(sharedParty.person, existingParty.person) };
+};
+
+/**
+ * Maps a shared party onto the CreateInvestigationPartyInput that adds the investigation ("local")
+ * copy of it.
+ */
+export const mapPartyToInvestigationPartyCreateInput = (
+  sharedParty: Party,
+  partyAssociationRole: string,
+  attachmentReferences?: CreateInvestigationAttachmentReferenceInput[],
+): CreateInvestigationPartyInput => {
+  const isBusiness = sharedParty.partyTypeCode === PARTY_TYPES.Company;
+  const { localAddressGuids, ...children } = mapPartyChildren(sharedParty);
+
+  const common: CreateInvestigationPartyInput = {
+    partyTypeCode: isBusiness ? PARTY_TYPES.Company : PARTY_TYPES.Person,
+    partyReference: sharedParty.partyIdentifier,
+    // the role a party plays is not local to the investigation not global
+    partyAssociationRole,
+    attachmentReferences,
+    ...children,
+  };
+
+  return isBusiness
+    ? {
+        ...common,
+        business: {
+          ...mapBusiness(sharedParty.business, undefined, localAddressGuids),
+          businessReference: sharedParty.business?.businessGuid,
+        },
+      }
+    : {
+        ...common,
+        person: { ...mapPerson(sharedParty.person, undefined), personReference: sharedParty.person?.personGuid },
+      };
 };

@@ -1,5 +1,11 @@
 type Mutation {
   addPartyToInvestigation(investigationGuid: String!, input: [CreateInvestigationPartyInput]!): [InvestigationParty!]!
+  addPartyToInvestigationFromSharedParty(
+    investigationGuid: String!
+    partyReference: String!
+    partyAssociationRole: String!
+    attachmentReferences: [CreateAttachmentReferenceInput]
+  ): InvestigationParty!
   removePartyFromInvestigation(investigationGuid: String!, partyIdentifier: String!): Investigation!
   editPartyRoleInInvestigation(
     investigationGuid: String!
@@ -16,6 +22,13 @@ type Mutation {
     investigationGuid: String!
     partyIdentifier: String!
     input: CreateInvestigationPartyInput!
+  ): InvestigationParty!
+  replacePartyOnInvestigationFromSharedParty(
+    investigationGuid: String!
+    partyIdentifier: String!
+    partyReference: String!
+    partyAssociationRole: String!
+    attachmentReferences: [CreateAttachmentReferenceInput]
   ): InvestigationParty!
 }
 

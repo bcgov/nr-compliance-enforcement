@@ -9,7 +9,6 @@ import {
   BusinessIdentifier,
   ContactMethod,
   CreateInspectionPartyInput,
-  CreateInvestigationPartyInput,
   InvestigationParty,
   Party,
   PersonFacialHairStyleCode,
@@ -40,6 +39,7 @@ import { v4 as uuidv4 } from "uuid";
 import z from "zod";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
+import { ADD_PARTY_TO_INVESTIGATION_FROM_SHARED_PARTY } from "@/app/components/containers/investigations/details/investigation-party/create/investigation-party-form";
 import { buildSharedPartyAttachmentReferences } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
@@ -157,7 +157,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const { data: fullPartyData } = useGraphQLQuery(GET_PARTY, {
     queryKey: ["party-for-add", selectedParty?.partyIdentifier],
     variables: { partyIdentifier: selectedParty?.partyIdentifier },
-    enabled: !!selectedParty?.partyIdentifier,
+    enabled: !!selectedParty?.partyIdentifier && activityType !== "investigation",
   });
 
   const defaultValues = useMemo(() => {
@@ -245,6 +245,22 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     },
   });
 
+  const addPartyFromSharedPartyMutation = useGraphQLMutation(ADD_PARTY_TO_INVESTIGATION_FROM_SHARED_PARTY, {
+    onSuccess: (data: any) => {
+      const createdParty = data?.addPartyToInvestigationFromSharedParty;
+      if (createdParty?.partyIdentifier) {
+        setPartyIdentifier(createdParty.partyIdentifier);
+      }
+
+      ToggleSuccess("Party added successfully");
+      submit();
+    },
+    onError: (error: any) => {
+      console.error("Error adding party:", error);
+      handleBusinessPartyMutationError(partyForm, error, "Failed to add party");
+    },
+  });
+
   const updatePartyMutation = useGraphQLMutation(UPDATE_INVESTIGATION_PARTY_MUTATION, {
     onSuccess: () => {
       if (pendingAttachmentsSaveAfterCreate) {
@@ -307,6 +323,19 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       dispatch,
       sharedPartyGuid: party.partyIdentifier,
     });
+
+    setPendingAttachmentsSaveAfterCreate(false);
+
+    // the backend maps the shared party onto the investigation
+    if (activityType === "investigation") {
+      addPartyFromSharedPartyMutation.mutate({
+        investigationGuid: activityGuid,
+        partyReference: party.partyIdentifier,
+        partyAssociationRole: selectedPartyRole,
+        attachmentReferences,
+      });
+      return;
+    }
 
     // new guids for the copied addresses so the same party can be added more than once
     const newAddressGuidByAddressReference = new Map<string, string>();
@@ -400,17 +429,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       partyAssociationRole: selectedPartyRole,
     };
 
-    setPendingAttachmentsSaveAfterCreate(false);
-
     // Backend expects the named ids
-    if (activityType === "investigation") {
-      addPartyMutation.mutate({
-        investigationGuid: activityGuid,
-        input: addPartyInput as CreateInvestigationPartyInput,
-      });
-    } else {
-      addPartyMutation.mutate({ inspectionGuid: activityGuid, input: addPartyInput as CreateInspectionPartyInput });
-    }
+    addPartyMutation.mutate({ inspectionGuid: activityGuid, input: addPartyInput as CreateInspectionPartyInput });
   };
 
   const partyRoleOptions = partyRoles

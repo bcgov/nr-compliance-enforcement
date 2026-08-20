@@ -56,7 +56,10 @@ import {
   mapInvestigationPartyToPartyCreateInput,
   resolveSharedReferences,
 } from "./investigation-party-to-party.mapper";
-import { mapPartyToInvestigationPartyUpdateInput } from "./party-to-investigation-party.mapper";
+import {
+  mapPartyToInvestigationPartyCreateInput,
+  mapPartyToInvestigationPartyUpdateInput,
+} from "./party-to-investigation-party.mapper";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -906,6 +909,51 @@ export class InvestigationPartyService {
     });
 
     return await this.investigationService.findOne(investigationGuid);
+  }
+
+  private async _buildInputFromSharedParty(
+    partyReference: string,
+    partyAssociationRole: string,
+    attachmentReferences?: CreateInvestigationAttachmentReferenceInput[],
+  ): Promise<CreateInvestigationPartyInput> {
+    const sharedParty = await this.partyService.findOne(partyReference);
+
+    if (!sharedParty) {
+      throw new Error("Shared party not found.");
+    }
+
+    return mapPartyToInvestigationPartyCreateInput(sharedParty, partyAssociationRole, attachmentReferences);
+  }
+
+  /**
+   * Adds the investigation's copy of a shared party to the investigation.
+   */
+  async addFromSharedParty(
+    investigationGuid: string,
+    partyReference: string,
+    partyAssociationRole: string,
+    attachmentReferences?: CreateInvestigationAttachmentReferenceInput[],
+  ): Promise<InvestigationParty> {
+    const input = await this._buildInputFromSharedParty(partyReference, partyAssociationRole, attachmentReferences);
+
+    const [party] = await this.create(investigationGuid, [input]);
+
+    return party;
+  }
+
+  /**
+   * Replaces a party on the investigation with the investigation's copy of a shared party.
+   */
+  async replaceFromSharedParty(
+    investigationGuid: string,
+    partyIdentifier: string,
+    partyReference: string,
+    partyAssociationRole: string,
+    attachmentReferences?: CreateInvestigationAttachmentReferenceInput[],
+  ): Promise<InvestigationParty> {
+    const input = await this._buildInputFromSharedParty(partyReference, partyAssociationRole, attachmentReferences);
+
+    return await this.replace(investigationGuid, partyIdentifier, input);
   }
 
   private async _applyPartyUpdate(

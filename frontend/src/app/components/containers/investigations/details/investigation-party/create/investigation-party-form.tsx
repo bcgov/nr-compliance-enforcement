@@ -23,7 +23,6 @@ import {
   buildPersonBase,
   createEmptyPartyFormValues,
   mapInvestigationPartyToDefaultValues,
-  mapPartyToInvestigationPartyInput,
   validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import {
@@ -40,8 +39,6 @@ import { InvestigationPartyHeader } from "../investigation-party-header";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/use-party-match-trigger";
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
-import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
-import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 import { buildSharedPartyAttachmentReferences } from "@/app/common/attachment-upload-helper";
@@ -65,16 +62,38 @@ const UPDATE_INVESTIGATION_PARTY = gql`
   }
 `;
 
-const REPLACE_PARTY_ON_INVESTIGATION = gql`
-  mutation ReplacePartyOnInvestigation(
+export const ADD_PARTY_TO_INVESTIGATION_FROM_SHARED_PARTY = gql`
+  mutation AddPartyToInvestigationFromSharedParty(
+    $investigationGuid: String!
+    $partyReference: String!
+    $partyAssociationRole: String!
+    $attachmentReferences: [CreateAttachmentReferenceInput]
+  ) {
+    addPartyToInvestigationFromSharedParty(
+      investigationGuid: $investigationGuid
+      partyReference: $partyReference
+      partyAssociationRole: $partyAssociationRole
+      attachmentReferences: $attachmentReferences
+    ) {
+      partyIdentifier
+    }
+  }
+`;
+
+const REPLACE_PARTY_ON_INVESTIGATION_FROM_SHARED_PARTY = gql`
+  mutation ReplacePartyOnInvestigationFromSharedParty(
     $investigationGuid: String!
     $partyIdentifier: String!
-    $input: CreateInvestigationPartyInput!
+    $partyReference: String!
+    $partyAssociationRole: String!
+    $attachmentReferences: [CreateAttachmentReferenceInput]
   ) {
-    replacePartyOnInvestigation(
+    replacePartyOnInvestigationFromSharedParty(
       investigationGuid: $investigationGuid
       partyIdentifier: $partyIdentifier
-      input: $input
+      partyReference: $partyReference
+      partyAssociationRole: $partyAssociationRole
+      attachmentReferences: $attachmentReferences
     ) {
       partyIdentifier
     }
@@ -112,12 +131,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const [attachmentsSaving, setAttachmentsSaving] = useState(false);
 
   const isLinkedParty = !!editParty?.partyReference;
-
-  const { data: matchPartyData } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
-    queryKey: ["party", addMatchGuid],
-    variables: { partyIdentifier: addMatchGuid },
-    enabled: !!addMatchGuid,
-  });
 
   // Identifying Information data
   const dob = editParty?.person?.dateOfBirth ? new Date(String(editParty?.person?.dateOfBirth)) : null;
@@ -244,10 +257,25 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
   });
 
-  const replacePartyMutation = useGraphQLMutation(REPLACE_PARTY_ON_INVESTIGATION, {
+  const addPartyFromSharedPartyMutation = useGraphQLMutation(ADD_PARTY_TO_INVESTIGATION_FROM_SHARED_PARTY, {
     invalidateQueries: [["getInvestigation", investigationGuid]],
     onSuccess: (data: any) => {
-      const replacementPartyIdentifier = data?.replacePartyOnInvestigation?.partyIdentifier;
+      const created = data?.addPartyToInvestigationFromSharedParty;
+      if (created?.partyIdentifier) setPartyIdentifier(created.partyIdentifier);
+      flushAttachmentsThenNavigate();
+    },
+    onError: (error: any) => {
+      console.error("Error copying party:", error);
+      copyInFlightRef.current = false;
+      setCopyPending(false);
+      handleBusinessPartyMutationError(form, error, "Failed to add party");
+    },
+  });
+
+  const replacePartyFromSharedPartyMutation = useGraphQLMutation(REPLACE_PARTY_ON_INVESTIGATION_FROM_SHARED_PARTY, {
+    invalidateQueries: [["getInvestigation", investigationGuid]],
+    onSuccess: (data: any) => {
+      const replacementPartyIdentifier = data?.replacePartyOnInvestigationFromSharedParty?.partyIdentifier;
       if (replacementPartyIdentifier) setPartyIdentifier(replacementPartyIdentifier);
       flushAttachmentsThenNavigate();
     },
@@ -350,43 +378,40 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   };
 
   useEffect(() => {
-    if (!addMatchGuid || !matchPartyData?.party || copyInFlightRef.current) {
+    if (!addMatchGuid || copyInFlightRef.current) {
       return;
     }
 
-    const party = matchPartyData.party;
+    const sharedPartyGuid = addMatchGuid;
 
     // Potential long stuff happening... disable the form
     copyInFlightRef.current = true;
     setCopyPending(true);
 
-    // Clear the trigger so stale query data can't re-fire the copy on a later render.
+    // Clear the trigger so it can't re-fire the copy on a later render.
     setAddMatchGuid("");
 
     const copyParty = async () => {
-      if (!party.partyIdentifier) {
-        return;
-      }
-
       const attachmentReferences = await buildSharedPartyAttachmentReferences({
         dispatch,
-        sharedPartyGuid: party.partyIdentifier,
+        sharedPartyGuid,
       });
 
-      const input = mapPartyToInvestigationPartyInput(
-        party,
-        form.getFieldValue("partyAssociationRole"),
-        attachmentReferences,
-      );
-
       if (isEditMode && editParty) {
-        replacePartyMutation.mutate({
+        replacePartyFromSharedPartyMutation.mutate({
           investigationGuid,
           partyIdentifier: editParty.partyIdentifier,
-          input,
+          partyReference: sharedPartyGuid,
+          partyAssociationRole: form.getFieldValue("partyAssociationRole"),
+          attachmentReferences,
         });
       } else {
-        addPartyMutation.mutate({ investigationGuid, input: [input] });
+        addPartyFromSharedPartyMutation.mutate({
+          investigationGuid,
+          partyReference: sharedPartyGuid,
+          partyAssociationRole: form.getFieldValue("partyAssociationRole"),
+          attachmentReferences,
+        });
       }
     };
 
@@ -395,7 +420,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       copyInFlightRef.current = false;
       setCopyPending(false);
     });
-  }, [addMatchGuid, matchPartyData, investigationGuid]);
+  }, [addMatchGuid, investigationGuid]);
 
   return (
     <div className="comp-investigation-edit-headerdetails">
