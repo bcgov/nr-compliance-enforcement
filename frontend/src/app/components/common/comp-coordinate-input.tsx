@@ -408,7 +408,7 @@ export const CompCoordinateInput: FC<Props> = ({
           mode: mode,
           title: getModalTitle(),
           complaintCoords:
-            sourceXCoordinate !== "0" && sourceYCoordinate !== "0"
+            sourceXCoordinate && sourceYCoordinate && sourceXCoordinate !== "0" && sourceYCoordinate !== "0"
               ? [Number(sourceXCoordinate), Number(sourceYCoordinate)]
               : null,
           setXCoordinate: setXCoordinate,

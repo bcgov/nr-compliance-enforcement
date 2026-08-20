@@ -141,7 +141,11 @@ export const MapModal: FC<MapModalProps> = ({
 
   let zoomLevel = ZOOM_LEVELS.Province;
   if (mode === "equipment") {
-    zoomLevel = complaintCoords ? ZOOM_LEVELS.Street : ZOOM_LEVELS.Neighborhood;
+    if (complaintCoords) {
+      zoomLevel = ZOOM_LEVELS.Street;
+    } else if (geocodedComplaintCoordinates?.features?.length) {
+      zoomLevel = ZOOM_LEVELS.Neighborhood;
+    }
   } else if (mode === "complaint") {
     if (equipmentCoords) {
       zoomLevel = ZOOM_LEVELS.Neighborhood;
@@ -165,7 +169,7 @@ export const MapModal: FC<MapModalProps> = ({
     if (mode === "equipment" || (mode === "complaint" && equipmentCoords)) {
       if (complaintCoords) {
         setMapCenterPosition({ lat: complaintCoords[1], lng: complaintCoords[0] });
-      } else if (geocodedComplaintCoordinates?.features) {
+      } else if (geocodedComplaintCoordinates?.features?.length) {
         const lat =
           geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
             ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
@@ -175,6 +179,8 @@ export const MapModal: FC<MapModalProps> = ({
             ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
             : 0;
         setMapCenterPosition({ lat: lat, lng: lng });
+      } else {
+        setMapCenterPosition({ lat: 49.57, lng: -120.333 });
       }
     } else {
       setMapCenterPosition({ lat: 49.57, lng: -120.333 });

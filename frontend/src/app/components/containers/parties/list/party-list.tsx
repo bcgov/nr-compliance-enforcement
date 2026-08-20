@@ -13,6 +13,7 @@ import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Address, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
+import { CountryType } from "@/app/types/app/code-tables/country";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
 import { getPartyName } from "@/app/common/party-name";
 
@@ -35,12 +36,16 @@ const getPrimaryPhone = (contactMethods: ContactMethod[]): string => {
   return formatPhoneNumber(primary.value) ?? primary.value;
 };
 
-const getPrimaryAddress = (addresses: Address[], countrySubdivisions: CountrySubdivisionType[]): string => {
+const getPrimaryAddress = (
+  addresses: Address[],
+  countrySubdivisions: CountrySubdivisionType[],
+  countries: CountryType[],
+): string => {
   if (!addresses?.length) {
     return "";
   }
   const primary = addresses.find((a) => a.isPrimary);
-  if (!primary?.address && !primary?.city && !primary?.province) {
+  if (!primary) {
     return "";
   }
 
@@ -48,7 +53,9 @@ const getPrimaryAddress = (addresses: Address[], countrySubdivisions: CountrySub
     countrySubdivisions.find((s) => s.countrySubdivisionCode === primary?.province)?.shortDescription ??
     primary?.province;
 
-  return [primary?.address, primary?.city, province].filter(Boolean).join(", ");
+  const country = countries.find((c) => c.countryCode === primary?.country)?.shortDescription ?? primary?.country;
+
+  return [primary?.address, primary?.city, province, country, primary?.postalCode].filter(Boolean).join(", ");
 };
 
 const getBusinessNumber = (identifiers: BusinessIdentifier[]): string => {
@@ -84,7 +91,10 @@ const partyNameColumn = (label: string): CompColumn<any> => ({
   ),
 });
 
-const getBusinessColumns = (countrySubdivisions: CountrySubdivisionType[]): CompColumn<any>[] => [
+const getBusinessColumns = (
+  countrySubdivisions: CountrySubdivisionType[],
+  countries: CountryType[],
+): CompColumn<any>[] => [
   partyNameColumn("Legal name"),
   {
     label: "Business number",
@@ -107,13 +117,14 @@ const getBusinessColumns = (countrySubdivisions: CountrySubdivisionType[]): Comp
     headerClassName: "comp-cell-min-width-110",
     cellClassName: "comp-cell-width-110",
     isSortable: false,
-    getValue: (party) => getPrimaryAddress(party.addresses, countrySubdivisions),
-    renderCell: (party) => getPrimaryAddress(party.addresses, countrySubdivisions),
+    getValue: (party) => getPrimaryAddress(party.addresses, countrySubdivisions, countries),
+    renderCell: (party) => getPrimaryAddress(party.addresses, countrySubdivisions, countries),
   },
 ];
 
 const getPersonColumns = (
   countrySubdivisions: CountrySubdivisionType[],
+  countries: CountryType[],
   approxAges: ApproximateAgeType[],
 ): CompColumn<any>[] => [
   partyNameColumn("Party name"),
@@ -147,8 +158,8 @@ const getPersonColumns = (
     headerClassName: "comp-cell-min-width-170",
     cellClassName: "comp-cell-width-170",
     isSortable: false,
-    getValue: (party) => getPrimaryAddress(party.addresses, countrySubdivisions),
-    renderCell: (party) => getPrimaryAddress(party.addresses, countrySubdivisions),
+    getValue: (party) => getPrimaryAddress(party.addresses, countrySubdivisions, countries),
+    renderCell: (party) => getPrimaryAddress(party.addresses, countrySubdivisions, countries),
   },
 ];
 
@@ -170,13 +181,14 @@ export const PartyList: FC<Props> = ({ parties, partyTypeCode, totalItems = 0, i
   );
 
   const countrySubdivisions = useAppSelector((state) => state.codeTables["country-subdivision-type"]);
+  const countries = useAppSelector((state) => state.codeTables["country-type"]);
   const approximateAgeCodes = useAppSelector((state) => state.codeTables["approximate-age-type"]);
 
   const columns = useMemo(
     () =>
       partyTypeCode === PartyTypeCodes.BUSINESS
-        ? getBusinessColumns(countrySubdivisions)
-        : getPersonColumns(countrySubdivisions, approximateAgeCodes),
+        ? getBusinessColumns(countrySubdivisions, countries)
+        : getPersonColumns(countrySubdivisions, countries, approximateAgeCodes),
     [partyTypeCode],
   );
 

@@ -9,20 +9,18 @@ import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers
 import { CompSelect } from "@/app/components/common/comp-select";
 import {
   CANADA_COUNTRY_CODE,
+  DEFAULT_CANADA_PROVINCE,
   isDefaultAddress,
   validateEmailValue,
   validatePhoneNumberValue,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 
-const DEFAULT_CANADA_PROVINCE = "CA-BC";
-
 interface AddressFieldsProps {
   addressIndex: number;
   form: any;
   isDisabled: boolean;
   isPrimary: boolean;
-  canRemove?: boolean;
   onRemoveAddress: (index: number) => void;
   onSetPrimaryAddress: (index: number) => void;
   showOfficeFields?: boolean;
@@ -34,7 +32,6 @@ export const AddressFields: FC<AddressFieldsProps> = ({
   form,
   isDisabled,
   isPrimary,
-  canRemove = true,
   onRemoveAddress,
   onSetPrimaryAddress,
   showOfficeFields = false,
@@ -82,22 +79,20 @@ export const AddressFields: FC<AddressFieldsProps> = ({
           />{" "}
           Mark as Primary address
         </label>
-        {canRemove && (
-          <Button
-            variant="outline-primary"
-            size="sm"
-            onClick={() => onRemoveAddress(addressIndex)}
-            type="button"
-          >
-            <i className="bi bi-trash" /> Remove Address
-          </Button>
-        )}
+        <Button
+          variant="outline-primary"
+          size="sm"
+          onClick={() => onRemoveAddress(addressIndex)}
+          type="button"
+        >
+          <i className="bi bi-trash" /> Remove Address
+        </Button>
       </div>
 
       <FormField
         form={form}
         name={`addresses[${addressIndex}].addressName` as any}
-        label="Nickname"
+        label="Address name"
         required
         validators={{
           // re-run when any of these change
@@ -108,12 +103,13 @@ export const AddressFields: FC<AddressFieldsProps> = ({
             `addresses[${addressIndex}].province`,
             `addresses[${addressIndex}].country`,
           ],
-          // only the single default address may stay empty
+          // an added row must be entered or removed
           onChange: ({ value, fieldApi }: any) => {
-            const addresses = fieldApi.form.getFieldValue("addresses") ?? [];
+            if (value?.trim()) return undefined;
             const address = fieldApi.form.getFieldValue(`addresses[${addressIndex}]`) ?? {};
-            if (addresses.length === 1 && isDefaultAddress({ ...address, addressName: value })) return undefined;
-            return value?.trim() ? undefined : "Address nickname is required";
+            return isDefaultAddress({ ...address, addressName: value })
+              ? "Enter or remove this address"
+              : "Address name is required";
           },
         }}
         render={(field) => (
@@ -126,7 +122,7 @@ export const AddressFields: FC<AddressFieldsProps> = ({
             error={getFieldErrorMessage(field)}
             maxLength={128}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter address name"
+            placeholder="Home, Office, etc."
             disabled={isDisabled}
           />
         )}
