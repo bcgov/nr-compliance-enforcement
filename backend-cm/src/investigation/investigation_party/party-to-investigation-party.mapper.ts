@@ -255,6 +255,6 @@ export const mapPartyToInvestigationPartyCreateInput = (
       }
     : {
         ...common,
-        person: { ...mapPerson(sharedParty.person, undefined), personReference: sharedParty.person?.personGuid },
+        person: { ...mapPerson(sharedParty.person), personReference: sharedParty.person?.personGuid },
       };
 };

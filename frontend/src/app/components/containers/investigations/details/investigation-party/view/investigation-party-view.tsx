@@ -63,6 +63,13 @@ const InvestigationPartyView: FC = () => {
     );
   }
 
+  let editDisabledReason: string | undefined;
+  if (isReadOnly) {
+    editDisabledReason = "Parties can only be edited on open investigations";
+  } else if (party.isUpToDate === false) {
+    editDisabledReason = "Parties can only be edited once their information is up-to-date";
+  }
+
   return (
     <InvestigationPartyDetail
       party={party}
@@ -70,13 +77,7 @@ const InvestigationPartyView: FC = () => {
       investigationLabel={data?.getInvestigation?.name ?? undefined}
       onBack={backToParties}
       onEdit={() => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}/edit`)}
-      editDisabledReason={
-        isReadOnly
-          ? "Parties can only be edited on open investigations"
-          : party.isUpToDate === false
-            ? "Parties can only be edited once their information is up-to-date"
-            : undefined
-      }
+      editDisabledReason={editDisabledReason}
       onUpdateParty={
         isReadOnly
           ? undefined
