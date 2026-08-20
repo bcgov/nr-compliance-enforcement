@@ -9,13 +9,7 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM, SAVE_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
-import {
-  CreateAttachmentReferenceInput,
-  ImageUpdateInput,
-  InvestigationAttachmentReference,
-  InvestigationParty,
-  Party,
-} from "@/generated/graphql";
+import { ImageUpdateInput, InvestigationAttachmentReference, InvestigationParty, Party } from "@/generated/graphql";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
@@ -50,7 +44,7 @@ import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
-import { getAttachments, getLatestObjectVersion } from "@/app/store/reducers/attachments";
+import { buildSharedPartyAttachmentReferences } from "@/app/common/attachment-upload-helper";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -374,35 +368,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         return;
       }
 
-      // Attachments live only in COMS, so the source party's objects are listed and pinned to
-      // specific versions here, then stored as reference rows against the investigation party.
-      const attachments = await dispatch(
-        getAttachments(party.partyIdentifier, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
-      );
-
-      const attachmentReferences: CreateAttachmentReferenceInput[] = [];
-
-      for (const attachment of attachments) {
-        if (attachment.id === undefined) {
-          continue;
-        }
-
-        const version = await dispatch(getLatestObjectVersion(attachment.id));
-        if (version === undefined) {
-          continue;
-        }
-
-        const { thumbObjectId, thumbVersion } = await resolveThumbnailPin(attachment.imageIconId);
-
-        attachmentReferences.push({
-          objectId: attachment.id,
-          version: version.s3VersionId,
-          fileName: attachment.name,
-          createdAt: attachment.createdAt,
-          thumbObjectId,
-          thumbVersion,
-        });
-      }
+      const attachmentReferences = await buildSharedPartyAttachmentReferences({
+        dispatch,
+        sharedPartyGuid: party.partyIdentifier,
+      });
 
       const input = mapPartyToInvestigationPartyInput(
         party,
@@ -427,22 +396,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       setCopyPending(false);
     });
   }, [addMatchGuid, matchPartyData, investigationGuid]);
-
-  const resolveThumbnailPin = async (
-    imageIconId: string | undefined,
-  ): Promise<{ thumbObjectId: string | undefined; thumbVersion: string | undefined }> => {
-    // Pin the thumbnail alongside it, when the image has one
-    if (imageIconId === undefined) {
-      return { thumbObjectId: undefined, thumbVersion: undefined };
-    }
-
-    const thumb = await dispatch(getLatestObjectVersion(imageIconId));
-    if (thumb === undefined) {
-      return { thumbObjectId: undefined, thumbVersion: undefined };
-    }
-
-    return { thumbObjectId: imageIconId, thumbVersion: thumb.s3VersionId };
-  };
 
   return (
     <div className="comp-investigation-edit-headerdetails">

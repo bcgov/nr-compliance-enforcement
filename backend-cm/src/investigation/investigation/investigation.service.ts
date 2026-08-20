@@ -219,11 +219,44 @@ export class InvestigationService {
     }
 
     try {
-      return this.mapper.map<investigation, Investigation>(
+      const mappedResult = this.mapper.map<investigation, Investigation>(
         prismaInvestigation as investigation,
         "investigation",
         "Investigation",
       );
+
+      const partyReferences = [
+        ...new Set<string>(
+          prismaInvestigation.investigation_party
+            .map((party) => party.party_guid_ref)
+            .filter((partyReference) => partyReference != null),
+        ),
+      ];
+
+      const sharedParties = partyReferences.length
+        ? await this.shared.party.findMany({
+            where: { party_guid: { in: partyReferences } },
+            select: { party_guid: true, update_utc_timestamp: true },
+          })
+        : [];
+
+      const sharedUpdatedTimestamps = new Map(
+        sharedParties.map((sharedParty) => [sharedParty.party_guid, sharedParty.update_utc_timestamp]),
+      );
+      const reflectedTimestamps = new Map(
+        prismaInvestigation.investigation_party.map((party) => [
+          party.investigation_party_guid,
+          party.party_update_utc_timestamp_ref,
+        ]),
+      );
+
+      for (const party of mappedResult.parties) {
+        const reflected = reflectedTimestamps.get(party.partyIdentifier);
+        const sharedUpdated = party.partyReference ? sharedUpdatedTimestamps.get(party.partyReference) : null;
+        party.isUpToDate = !reflected || !sharedUpdated || reflected >= sharedUpdated;
+      }
+
+      return mappedResult;
     } catch (error) {
       this.logger.error("Error mapping investigation:", error);
       throw error;

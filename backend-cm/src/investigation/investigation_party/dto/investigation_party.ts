@@ -41,6 +41,7 @@ export class InvestigationParty implements PartyDto {
   isActive: boolean;
   investigationGuid: string;
   partyReference?: string;
+  isUpToDate?: boolean;
   partyAssociationRole?: string;
   placeholderName?: string;
   enforcementActions?: EnforcementAction[];

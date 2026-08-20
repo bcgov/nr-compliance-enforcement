@@ -33,6 +33,7 @@ export const GET_INVESTIGATION = gql`
         __typename
         partyIdentifier
         partyReference
+        isUpToDate
         partyTypeCode
         placeholderName
         attachmentReferences {

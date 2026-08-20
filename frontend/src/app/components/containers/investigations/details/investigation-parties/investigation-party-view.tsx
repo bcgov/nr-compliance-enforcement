@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button } from "react-bootstrap";
+import { Alert, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
@@ -20,7 +20,9 @@ interface PartyDetailProps {
   investigationGuid: string;
   investigationLabel?: string;
   onBack: () => void;
-  onEdit?: () => void;
+  onEdit: () => void;
+  editDisabledReason?: string;
+  onUpdateParty?: () => void;
 }
 
 export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
@@ -29,6 +31,8 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   investigationLabel,
   onBack,
   onEdit,
+  editDisabledReason,
+  onUpdateParty,
 }) => {
   // Code tables
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
@@ -47,6 +51,18 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
     partyRoles.find(
       (r) => r.partyAssociationRole === party.partyAssociationRole && r.caseActivityTypeCode === "INVSTGTN",
     )?.shortDescription ?? party.partyAssociationRole;
+
+  const editButton = (
+    <Button
+      variant="outline-light"
+      id="party-detail-edit-button"
+      onClick={onEdit}
+      disabled={!!editDisabledReason}
+    >
+      <i className="bi bi-pencil"></i>
+      <span>Edit party</span>
+    </Button>
+  );
 
   return (
     <div className="comp-complaint-details">
@@ -70,15 +86,20 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
               <i className="bi bi-arrow-left"></i>
               <span>Parties</span>
             </Button>
-            {onEdit && (
-              <Button
-                variant="outline-light"
-                id="party-detail-edit-button"
-                onClick={onEdit}
+            {editDisabledReason ? (
+              <OverlayTrigger
+                placement="left"
+                overlay={<Tooltip id="party-detail-edit-disabled-tooltip">{editDisabledReason}</Tooltip>}
               >
-                <i className="bi bi-pencil"></i>
-                <span>Edit party</span>
-              </Button>
+                <span
+                  className="d-inline-block ms-2"
+                  style={{ cursor: "not-allowed" }}
+                >
+                  {editButton}
+                </span>
+              </OverlayTrigger>
+            ) : (
+              editButton
             )}
           </>
         }
@@ -87,6 +108,35 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
       <section className="comp-details-body comp-container">
         <div className="comp-details-view">
           <div className="comp-details-content">
+            {party.isUpToDate === false && (
+              <Alert
+                id="party-detail-not-up-to-date-alert"
+                variant="warning"
+                className="comp-complaint-details-alert"
+              >
+                <div className="d-flex align-items-start gap-2">
+                  <i className="bi bi-info-circle mt-2" />
+                  <span>
+                    {onUpdateParty
+                      ? "This party has been edited as part of another investigation. Update the party to bring the " +
+                        "latest information into this investigation before making any new edits."
+                      : "This party includes the information available when the investigation was closed. See the " +
+                        "published profile list to view the most up-to-date information."}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-end gap-2">
+                  <Button
+                    id="party-detail-update-party-information-button"
+                    variant="outline-primary"
+                    onClick={onUpdateParty}
+                    disabled={!onUpdateParty}
+                  >
+                    Update party information
+                  </Button>
+                </div>
+              </Alert>
+            )}
+
             {/* Investigation role — own section at top*/}
             <DetailSection title="Party details">
               <DetailField label="Investigation role">{roleText}</DetailField>

@@ -7,6 +7,7 @@ import {
   CreateInvestigationPartyInput,
   UpdateInvestigationPartyInput,
 } from "../investigation_party/dto/investigation_party";
+import { CreateInvestigationAttachmentReferenceInput } from "../investigation_attachment_reference/dto/investigation_attachment_reference";
 import { InvestigationPartyService } from "../investigation_party/investigation_party_service";
 
 @Resolver("InvestigationParty")
@@ -98,6 +99,30 @@ export class InvestigationPartyResolver {
     } catch (error) {
       this.logger.error("Update investigation party error:", error.stack ?? error);
       throw new GraphQLError("Error updating investigation party", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
+
+  @Mutation("updateInvestigationPartyFromSharedParty")
+  @Roles(coreRoles)
+  async updateFromSharedParty(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("partyIdentifier") partyIdentifier: string,
+    @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
+  ) {
+    try {
+      return await this.investigationPartyService.updateFromSharedParty(
+        investigationGuid,
+        partyIdentifier,
+        attachmentReferences,
+      );
+    } catch (error) {
+      this.logger.error("Update investigation party from shared party error:", error.stack ?? error);
+      throw new GraphQLError("Error updating investigation party from shared party", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
           originalError: error.message,

@@ -7,6 +7,11 @@ type Mutation {
     partyAssociationRole: String!
   ): Investigation!
   updateInvestigationParty(investigationGuid: String!, input: UpdateInvestigationPartyInput!): Investigation!
+  updateInvestigationPartyFromSharedParty(
+    investigationGuid: String!
+    partyIdentifier: String!
+    attachmentReferences: [CreateAttachmentReferenceInput]
+  ): Investigation!
   replacePartyOnInvestigation(
     investigationGuid: String!
     partyIdentifier: String!

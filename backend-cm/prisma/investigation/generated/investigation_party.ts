@@ -48,6 +48,9 @@ export class investigation_party {
   @ApiPropertyOptional({ type: Number })
   placeholder_number?: number;
 
+  @ApiPropertyOptional({ type: Date })
+  party_update_utc_timestamp_ref?: Date;
+
   @ApiProperty({ isArray: true, type: () => contravention_party_xref })
   contravention_party_xref: contravention_party_xref[];
 

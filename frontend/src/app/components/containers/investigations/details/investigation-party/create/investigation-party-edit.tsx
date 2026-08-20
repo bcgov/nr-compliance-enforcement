@@ -39,7 +39,12 @@ const InvestigationPartyEdit: FC = () => {
   const partiesTab = `/investigation/${investigationGuid}/parties`;
 
   if (isReadOnly) {
-    return <Navigate to={partiesTab} replace />;
+    return (
+      <Navigate
+        to={partiesTab}
+        replace
+      />
+    );
   }
 
   // Edit mode hydrates from the cached investigation before mounting the form so it initializes with the right values.
@@ -54,7 +59,21 @@ const InvestigationPartyEdit: FC = () => {
   }
 
   if (partyMissing) {
-    return <Navigate to={partiesTab} replace />;
+    return (
+      <Navigate
+        to={partiesTab}
+        replace
+      />
+    );
+  }
+
+  if (editParty?.isUpToDate === false) {
+    return (
+      <Navigate
+        to={`/investigation/${investigationGuid}/party/${partyIdentifier}`}
+        replace
+      />
+    );
   }
 
   return (

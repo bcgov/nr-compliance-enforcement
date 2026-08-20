@@ -34,6 +34,7 @@ import {
   CreateInvestigationAddressInput,
   InvestigationAddress,
 } from "../investigation_address/dto/investigation_address";
+import { CreateInvestigationAttachmentReferenceInput } from "../investigation_attachment_reference/dto/investigation_attachment_reference";
 import { withRlsTransaction } from "src/pg-session-extension/with-rls-transaction";
 import {
   InvestigationPersonFacialHairStyleCodeRef,
@@ -55,6 +56,7 @@ import {
   mapInvestigationPartyToPartyCreateInput,
   resolveSharedReferences,
 } from "./investigation-party-to-party.mapper";
+import { mapPartyToInvestigationPartyUpdateInput } from "./party-to-investigation-party.mapper";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -142,9 +144,17 @@ export class InvestigationPartyService {
     try {
       this.ensurePartyNotAlreadyOnInvestigation(investigation, input);
 
+      const sharedParty = input.partyReference
+        ? await this.sharedPrisma.party.findUnique({
+            where: { party_guid: input.partyReference },
+            select: { update_utc_timestamp: true },
+          })
+        : null;
+
       const investigationParty = await db.investigation_party.create({
         data: {
           party_guid_ref: input.partyReference,
+          party_update_utc_timestamp_ref: sharedParty?.update_utc_timestamp ?? null,
           party_type_code_ref: input.partyTypeCode,
           investigation_guid: investigationGuid,
           create_user_id: this.user.getIdirUsername(),
@@ -722,6 +732,21 @@ export class InvestigationPartyService {
     }
   }
 
+  /**
+   * Records the shared party's update timestamp on the investigation party so the investigation party
+   * can know whether it is up to date with the shared party.
+   */
+  async stampSharedPartyUpdate(db: any, partyIdentifier: string, partyUpdateUtcTimestamp: Date): Promise<void> {
+    await db.investigation_party.update({
+      where: { investigation_party_guid: partyIdentifier },
+      data: {
+        party_update_utc_timestamp_ref: partyUpdateUtcTimestamp,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+      },
+    });
+  }
+
   //Writes the prepared party into the shared party table.
   async createSharedParty(prepared: PreparedSharedParty): Promise<Party> {
     return await this.partyService.create(prepared.input, prepared.identifiers);
@@ -785,6 +810,12 @@ export class InvestigationPartyService {
       throw new Error("Party not found on this investigation.");
     }
 
+    if (existingParty.isUpToDate === false) {
+      throw new Error(
+        "This party has been edited as part of another investigation. Update the party to bring the latest information into this investigation before making any new edits.",
+      );
+    }
+
     if (input.business) {
       this._validateBusinessInput(input.business);
     }
@@ -792,86 +823,162 @@ export class InvestigationPartyService {
     resolveSharedReferences(existingParty, input);
 
     await withRlsTransaction(this.prisma, async (tx) => {
-      const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
+      await this._applyPartyUpdate(tx, investigationGuid, existingParty, input);
 
-      const incomingAddresses = input.addresses ?? [];
-      const existingAddressGuids = new Set((existingParty.addresses ?? []).map((a) => a.addressGuid));
-      const addressOperations = this._buildInvestigationAddressOperations(
-        incomingAddresses.filter((a) => a.addressGuid && existingAddressGuids.has(a.addressGuid)),
-        existingParty.addresses ?? [],
-      );
-
-      const contactMethodOperations = this._buildInvestigationContactMethodOperations(
-        input.contactMethods ?? [],
-        existingParty.contactMethods ?? [],
-      );
-
-      try {
-        // Update the party role
-        await tx.investigation_party.update({
-          where: { investigation_party_guid: input.partyIdentifier },
-          data: {
-            ...(Object.keys(aliasOperations).length ? { investigation_alias: aliasOperations } : {}),
-            ...(Object.keys(addressOperations).length ? { investigation_address: addressOperations } : {}),
-            ...(Object.keys(contactMethodOperations).length
-              ? { investigation_contact_method: contactMethodOperations }
-              : {}),
-            party_association_role_ref: input.partyAssociationRole,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        });
-
-        await this._createAddresses(
-          tx,
-          input.partyIdentifier,
-          incomingAddresses.filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid)),
+      if (existingParty.partyReference) {
+        const partyUpdateInput = mapInvestigationPartyToPartyUpdateInput(existingParty, input);
+        // PartyService.update() manages its own separate transaction against the shared
+        // Prisma client. If it throws, this whole local transaction is rolled back too,
+        // since the error propagates out of the withRlsTransaction callback.
+        const updatedSharedParty = await this.partyService.update(
+          existingParty.partyReference,
+          partyUpdateInput,
+          `on investigation ${investigation.name}`,
         );
 
-        if (input.person && existingParty.person) {
-          await this.updatePerson(tx, existingParty.person, input.person);
-
-          if (this._hasName(input.person)) {
-            if (existingParty.placeholderName) {
-              await tx.investigation_party.update({
-                where: { investigation_party_guid: input.partyIdentifier },
-                data: {
-                  placeholder_name: null,
-                  update_user_id: this.user.getIdirUsername(),
-                  update_utc_timestamp: new Date(),
-                },
-              });
-            }
-          } else if (
-            !existingParty.placeholderName ||
-            input.partyAssociationRole !== existingParty.partyAssociationRole
-          ) {
-            await this._assignPlaceholder(tx, investigationGuid, input.partyIdentifier, input.partyAssociationRole);
-          }
-        }
-
-        if (input.business && existingParty.business) {
-          await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
-        }
-
-        if (existingParty.partyReference) {
-          const partyUpdateInput = mapInvestigationPartyToPartyUpdateInput(existingParty, input);
-          // PartyService.update() manages its own separate transaction against the shared
-          // Prisma client. If it throws, this whole local transaction is rolled back too,
-          // since the error propagates out of the withRlsTransaction callback.
-          await this.partyService.update(
-            existingParty.partyReference,
-            partyUpdateInput,
-            `on investigation ${investigation.name}`,
-          );
-        }
-      } catch (error) {
-        this.logger.error("Error updating investigation party:", error);
-        throw error;
+        await this.stampSharedPartyUpdate(tx, input.partyIdentifier, updatedSharedParty.updatedDateTime);
       }
     });
 
     return await this.investigationService.findOne(investigationGuid);
+  }
+
+  /**
+   * Replaces the investigation's copy of a shared party with the shared party's current information.
+   */
+  async updateFromSharedParty(
+    investigationGuid: string,
+    partyIdentifier: string,
+    attachmentReferences?: CreateInvestigationAttachmentReferenceInput[],
+  ): Promise<Investigation> {
+    const investigation = await this.investigationService.findOne(investigationGuid);
+    const existingParty = investigation.parties.find((p) => p.partyIdentifier === partyIdentifier && p.isActive);
+
+    if (!existingParty) {
+      throw new Error("Party not found on this investigation.");
+    }
+
+    if (!existingParty.partyReference) {
+      throw new Error("Party is not linked to a shared party.");
+    }
+
+    const sharedParty = await this.partyService.findOne(existingParty.partyReference);
+
+    if (!sharedParty) {
+      throw new Error("Shared party not found.");
+    }
+
+    const input = mapPartyToInvestigationPartyUpdateInput(sharedParty, existingParty);
+
+    await withRlsTransaction(this.prisma, async (tx) => {
+      await this._applyPartyUpdate(tx, investigationGuid, existingParty, input);
+
+      if (attachmentReferences) {
+        await tx.investigation_party.update({
+          where: { investigation_party_guid: partyIdentifier },
+          data: {
+            investigation_attachment_reference: {
+              updateMany: {
+                where: { active_ind: true },
+                data: {
+                  active_ind: false,
+                  update_user_id: this.user.getIdirUsername(),
+                  update_utc_timestamp: new Date(),
+                },
+              },
+              create: attachmentReferences.map((ar) => ({
+                object_guid_ref: ar.objectId,
+                s3_version_ref: ar.version,
+                filename_text: ar.fileName,
+                coms_created_date: ar.createdAt,
+                thumb_object_guid_ref: ar.thumbObjectId,
+                thumb_s3_version_ref: ar.thumbVersion,
+                active_ind: true,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          },
+        });
+      }
+
+      await this.stampSharedPartyUpdate(tx, partyIdentifier, sharedParty.updatedDateTime);
+    });
+
+    return await this.investigationService.findOne(investigationGuid);
+  }
+
+  private async _applyPartyUpdate(
+    tx: any,
+    investigationGuid: string,
+    existingParty: InvestigationParty,
+    input: UpdateInvestigationPartyInput,
+  ) {
+    const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
+
+    const incomingAddresses = input.addresses ?? [];
+    const existingAddressGuids = new Set((existingParty.addresses ?? []).map((a) => a.addressGuid));
+    const addressOperations = this._buildInvestigationAddressOperations(
+      incomingAddresses.filter((a) => a.addressGuid && existingAddressGuids.has(a.addressGuid)),
+      existingParty.addresses ?? [],
+    );
+
+    const contactMethodOperations = this._buildInvestigationContactMethodOperations(
+      input.contactMethods ?? [],
+      existingParty.contactMethods ?? [],
+    );
+
+    try {
+      // Update the party role
+      await tx.investigation_party.update({
+        where: { investigation_party_guid: input.partyIdentifier },
+        data: {
+          ...(Object.keys(aliasOperations).length ? { investigation_alias: aliasOperations } : {}),
+          ...(Object.keys(addressOperations).length ? { investigation_address: addressOperations } : {}),
+          ...(Object.keys(contactMethodOperations).length
+            ? { investigation_contact_method: contactMethodOperations }
+            : {}),
+          party_association_role_ref: input.partyAssociationRole,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+
+      await this._createAddresses(
+        tx,
+        input.partyIdentifier,
+        incomingAddresses.filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid)),
+      );
+
+      if (input.person && existingParty.person) {
+        await this.updatePerson(tx, existingParty.person, input.person);
+
+        if (this._hasName(input.person)) {
+          if (existingParty.placeholderName) {
+            await tx.investigation_party.update({
+              where: { investigation_party_guid: input.partyIdentifier },
+              data: {
+                placeholder_name: null,
+                update_user_id: this.user.getIdirUsername(),
+                update_utc_timestamp: new Date(),
+              },
+            });
+          }
+        } else if (
+          !existingParty.placeholderName ||
+          input.partyAssociationRole !== existingParty.partyAssociationRole
+        ) {
+          await this._assignPlaceholder(tx, investigationGuid, input.partyIdentifier, input.partyAssociationRole);
+        }
+      }
+
+      if (input.business && existingParty.business) {
+        await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
+      }
+    } catch (error) {
+      this.logger.error("Error updating investigation party:", error);
+      throw error;
+    }
   }
 
   private async updatePerson(tx: any, existingPerson: InvestigationPerson, input: UpdateInvestigationPersonInput) {
