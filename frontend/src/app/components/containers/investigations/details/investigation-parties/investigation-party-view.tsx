@@ -112,10 +112,10 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
               <Alert
                 id="party-detail-not-up-to-date-alert"
                 variant="warning"
-                className="comp-complaint-details-alert"
+                className="comp-complaint-details-alert d-flex align-items-center justify-content-between"
               >
-                <div className="d-flex align-items-start gap-2">
-                  <i className="bi bi-info-circle mt-2" />
+                <div className="d-flex align-items-center">
+                  <i className="bi bi-info-circle me-2" />
                   <span>
                     {onUpdateParty
                       ? "This party has been edited as part of another investigation. Update the party to bring the " +
@@ -124,16 +124,15 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
                         "published profile list to view the most up-to-date information."}
                   </span>
                 </div>
-                <div className="d-flex justify-content-end gap-2">
-                  <Button
-                    id="party-detail-update-party-information-button"
-                    variant="outline-primary"
-                    onClick={onUpdateParty}
-                    disabled={!onUpdateParty}
-                  >
-                    Update party information
-                  </Button>
-                </div>
+                <Button
+                  id="party-detail-update-party-information-button"
+                  variant="outline-primary"
+                  className="ms-3 text-nowrap"
+                  onClick={onUpdateParty}
+                  disabled={!onUpdateParty}
+                >
+                  Update party information
+                </Button>
               </Alert>
             )}
 
