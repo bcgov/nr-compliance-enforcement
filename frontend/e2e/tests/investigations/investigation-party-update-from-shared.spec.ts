@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { selectItemById } from "../../utils/helpers";
+import { selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for updating an investigation party from the shared party it was copied from
@@ -56,6 +56,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
 
   test("it publishes a party and copies it into the investigation", async ({ page }) => {
     await page.goto("/party/create");
+    await waitForSpinner(page);
 
     // Select party type - Business
     await selectItemById("party-type-select", "Company", page);
@@ -101,6 +102,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
 
   test("it shows the alert and blocks editing once the shared party changes", async ({ page }) => {
     await page.goto(`${sharedPartyPath}/edit`);
+    await waitForSpinner(page);
 
     // Change the published party, which leaves the copy on the investigation out of date
     const businessNameInput = page.locator("#businessName");
@@ -131,6 +133,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
 
   test("it pulls the shared changes and dismisses the alert", async ({ page }) => {
     await page.goto(investigationPartyPath);
+    await waitForSpinner(page);
 
     const updateButton = page.locator("#party-detail-update-party-information-button");
     await expect(updateButton).toBeVisible();

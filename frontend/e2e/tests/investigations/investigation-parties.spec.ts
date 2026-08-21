@@ -25,8 +25,10 @@ test.describe("Investigation Party Form", () => {
     const partyCards = page.locator(".party-card");
     let count = await partyCards.count();
     while (count > 0) {
-      await partyCards.first().locator(".comp-kebab-toggle").click();
-      await page.locator(".dropdown-item", { hasText: "Remove" }).click();
+      // Scope to the card: every card's dropdown menu is mounted in the dom, even while closed
+      const firstCard = partyCards.first();
+      await firstCard.locator(".comp-kebab-toggle").click();
+      await firstCard.locator(".dropdown-item", { hasText: "Remove" }).click();
 
       const confirmModal = page.locator(".modal").first();
       await expect(confirmModal).toBeVisible();
