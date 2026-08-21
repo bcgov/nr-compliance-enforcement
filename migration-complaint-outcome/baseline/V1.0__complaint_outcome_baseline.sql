@@ -3867,8 +3867,6 @@ INSERT INTO complaint_outcome.action_code VALUES ('CNTCTPOLIC', 'Contacted/refer
 INSERT INTO complaint_outcome.action_code VALUES ('CNTCTREHFT', 'Contacted/referred to rehabilitation facility', 'Contacted/referred to rehabilitation facility', true, 'postgres', '2025-09-10 20:06:55.81104', NULL, NULL);
 INSERT INTO complaint_outcome.action_code VALUES ('ADMNSTRDRG', 'Drug administered by an officer', 'Drug administered by an officer', true, 'postgres', '2025-09-10 20:06:56.125214', 'postgres', '2025-09-10 20:06:56.125214');
 INSERT INTO complaint_outcome.action_code VALUES ('RECOUTCOME', 'Outcome recorded by an officer', 'Outcome recorded by an officer', true, 'postgres', '2025-09-10 20:06:56.125214', 'postgres', '2025-09-10 20:06:56.125214');
-INSERT INTO complaint_outcome.action_code VALUES ('ISSUEWACN', 'Issued Wildlife Attractant Compliance Notice', 'Issued Wildlife Attractant Compliance Notice', true, 'postgres', '2026-08-20 20:06:56.125214', 'postgres', '2026-08-20 20:06:56.125214');
-
 
 --
 -- Data for Name: action_h; Type: TABLE DATA; Schema: complaint_outcome; Owner: -
@@ -3926,7 +3924,6 @@ INSERT INTO complaint_outcome.action_type_action_xref VALUES ('a6c3bd52-5fe1-402
 INSERT INTO complaint_outcome.action_type_action_xref VALUES ('be0ef344-21da-4e44-8b38-8cc6cb5efdc6', 'WILDLIFE', 'ADMNSTRDRG', 1, true, 'postgres', '2025-09-10 20:06:56.125214', NULL, NULL);
 INSERT INTO complaint_outcome.action_type_action_xref VALUES ('d413edde-626e-436a-ad15-eeda019c9d5c', 'WILDLIFE', 'RECOUTCOME', 2, true, 'postgres', '2025-09-10 20:06:56.125214', NULL, NULL);
 INSERT INTO complaint_outcome.action_type_action_xref VALUES ('529efadd-fbe4-405f-b3e6-d0158f5d6604', 'CASEACTION', 'UPDATENOTE', 1, true, 'postgres', '2025-09-10 20:06:56.183043', NULL, NULL);
-INSERT INTO complaint_outcome.action_type_action_xref (action_type_code, action_code, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp) VALUES ('PRKPRV&EDU', 'ISSUEWACN', 70, true, 'postgres', '2026-08-20 20:06:56.183043', NULL, NULL);
 
 
 --
