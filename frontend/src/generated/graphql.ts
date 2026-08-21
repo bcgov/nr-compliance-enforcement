@@ -1,4 +1,4 @@
-import { GraphQLClient, RequestOptions } from 'graphql-request';
+import { GraphQLClient, type RequestOptions } from 'graphql-request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1451,6 +1451,7 @@ export type InvestigationBusiness = {
 export type InvestigationBusinessIdentifier = {
   __typename?: 'InvestigationBusinessIdentifier';
   businessIdentifierGuid?: Maybe<Scalars['String']['output']>;
+  businessIdentifierReference?: Maybe<Scalars['String']['output']>;
   identifierCode: Scalars['String']['output'];
   identifierValue: Scalars['String']['output'];
 };
@@ -1508,6 +1509,7 @@ export type InvestigationParty = {
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   enforcementActions?: Maybe<Array<Maybe<EnforcementAction>>>;
   investigationGuid: Scalars['String']['output'];
+  isUpToDate?: Maybe<Scalars['Boolean']['output']>;
   partyAssociationRole?: Maybe<Scalars['String']['output']>;
   partyIdentifier: Scalars['String']['output'];
   partyReference?: Maybe<Scalars['String']['output']>;
@@ -1672,6 +1674,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addPartyToInspection: Inspection;
   addPartyToInvestigation: Array<InvestigationParty>;
+  addPartyToInvestigationFromSharedParty: InvestigationParty;
   createAppUser?: Maybe<AppUser>;
   createAppUserTeamXref?: Maybe<AppUserTeamXref>;
   createAssessment: ComplaintOutcome;
@@ -1722,6 +1725,7 @@ export type Mutation = {
   removePartyFromInvestigation: Investigation;
   removeTask: Task;
   replacePartyOnInvestigation: InvestigationParty;
+  replacePartyOnInvestigationFromSharedParty: InvestigationParty;
   resetLegislationVersion: Scalars['Boolean']['output'];
   saveActivityNote: ActivityNote;
   saveDiaryDate: DiaryDate;
@@ -1738,6 +1742,7 @@ export type Mutation = {
   updateInspection: Inspection;
   updateInvestigation: Investigation;
   updateInvestigationParty: Investigation;
+  updateInvestigationPartyFromSharedParty: Investigation;
   updateInvestigationTimestamp: Investigation;
   updateLegislationConfiguration: Scalars['Boolean']['output'];
   updateLegislationSource: LegislationSource;
@@ -1764,6 +1769,14 @@ export type MutationaddPartyToInspectionArgs = {
 export type MutationaddPartyToInvestigationArgs = {
   input: Array<InputMaybe<CreateInvestigationPartyInput>>;
   investigationGuid: Scalars['String']['input'];
+};
+
+
+export type MutationaddPartyToInvestigationFromSharedPartyArgs = {
+  attachmentReferences?: InputMaybe<Array<InputMaybe<CreateAttachmentReferenceInput>>>;
+  investigationGuid: Scalars['String']['input'];
+  partyAssociationRole: Scalars['String']['input'];
+  partyReference: Scalars['String']['input'];
 };
 
 
@@ -2026,6 +2039,15 @@ export type MutationreplacePartyOnInvestigationArgs = {
 };
 
 
+export type MutationreplacePartyOnInvestigationFromSharedPartyArgs = {
+  attachmentReferences?: InputMaybe<Array<InputMaybe<CreateAttachmentReferenceInput>>>;
+  investigationGuid: Scalars['String']['input'];
+  partyAssociationRole: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
+  partyReference: Scalars['String']['input'];
+};
+
+
 export type MutationresetLegislationVersionArgs = {
   legislationVersionGuid: Scalars['String']['input'];
 };
@@ -2110,6 +2132,13 @@ export type MutationupdateInvestigationArgs = {
 export type MutationupdateInvestigationPartyArgs = {
   input: UpdateInvestigationPartyInput;
   investigationGuid: Scalars['String']['input'];
+};
+
+
+export type MutationupdateInvestigationPartyFromSharedPartyArgs = {
+  attachmentReferences?: InputMaybe<Array<InputMaybe<CreateAttachmentReferenceInput>>>;
+  investigationGuid: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
 };
 
 

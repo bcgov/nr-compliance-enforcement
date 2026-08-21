@@ -9,7 +9,6 @@ import {
   BusinessIdentifier,
   ContactMethod,
   CreateInspectionPartyInput,
-  CreateInvestigationPartyInput,
   InvestigationParty,
   Party,
   PersonFacialHairStyleCode,
@@ -40,7 +39,8 @@ import { v4 as uuidv4 } from "uuid";
 import z from "zod";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
-import { getAttachments, getLatestObjectVersion } from "@/app/store/reducers/attachments";
+import { ADD_PARTY_TO_INVESTIGATION_FROM_SHARED_PARTY } from "@/app/components/containers/investigations/details/investigation-party/create/investigation-party-form";
+import { buildSharedPartyAttachmentReferences } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 
@@ -157,7 +157,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const { data: fullPartyData } = useGraphQLQuery(GET_PARTY, {
     queryKey: ["party-for-add", selectedParty?.partyIdentifier],
     variables: { partyIdentifier: selectedParty?.partyIdentifier },
-    enabled: !!selectedParty?.partyIdentifier,
+    enabled: !!selectedParty?.partyIdentifier && activityType !== "investigation",
   });
 
   const defaultValues = useMemo(() => {
@@ -245,6 +245,22 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     },
   });
 
+  const addPartyFromSharedPartyMutation = useGraphQLMutation(ADD_PARTY_TO_INVESTIGATION_FROM_SHARED_PARTY, {
+    onSuccess: (data: any) => {
+      const createdParty = data?.addPartyToInvestigationFromSharedParty;
+      if (createdParty?.partyIdentifier) {
+        setPartyIdentifier(createdParty.partyIdentifier);
+      }
+
+      ToggleSuccess("Party added successfully");
+      submit();
+    },
+    onError: (error: any) => {
+      console.error("Error adding party:", error);
+      handleBusinessPartyMutationError(partyForm, error, "Failed to add party");
+    },
+  });
+
   const updatePartyMutation = useGraphQLMutation(UPDATE_INVESTIGATION_PARTY_MUTATION, {
     onSuccess: () => {
       if (pendingAttachmentsSaveAfterCreate) {
@@ -287,23 +303,6 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     partyForm.handleSubmit();
   };
 
-  const resolveThumbnailPin = async (
-    dispatch: ReturnType<typeof useAppDispatch>,
-    imageIconId: string | undefined,
-  ): Promise<{ thumbObjectId: string | undefined; thumbVersion: string | undefined }> => {
-    // Pin the thumbnail alongside it, when the image has one
-    if (imageIconId === undefined) {
-      return { thumbObjectId: undefined, thumbVersion: undefined };
-    }
-
-    const thumb = await dispatch(getLatestObjectVersion(imageIconId));
-    if (thumb === undefined) {
-      return { thumbObjectId: undefined, thumbVersion: undefined };
-    }
-
-    return { thumbObjectId: imageIconId, thumbVersion: thumb.s3VersionId };
-  };
-
   const handleAddParty = async () => {
     if (!selectedParty) {
       setPartyErrorMessage("Please select a party to add.");
@@ -320,35 +319,22 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     const party = fullPartyData?.party ?? selectedParty;
 
     // Get all the attachments associated with the party
-    const attachments = await dispatch(
-      getAttachments(party.partyIdentifier, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
-    );
+    const attachmentReferences = await buildSharedPartyAttachmentReferences({
+      dispatch,
+      sharedPartyGuid: party.partyIdentifier,
+    });
 
-    const versionLinks: InvestigationAttachmentReference[] = [];
+    setPendingAttachmentsSaveAfterCreate(false);
 
-    for (const attachment of attachments) {
-      if (attachment.id === undefined) {
-        continue;
-      }
-
-      // Pin the image version
-      const version = await dispatch(getLatestObjectVersion(attachment.id));
-      if (version === undefined) {
-        continue;
-      }
-
-      // Pin the thumbnail alongside it, when the image has one
-      const { thumbObjectId, thumbVersion } = await resolveThumbnailPin(dispatch, attachment.imageIconId);
-
-      versionLinks.push({
-        objectId: attachment.id,
-        version: version.s3VersionId,
-        fileName: attachment.name,
-        createdAt: attachment.createdAt,
-        thumbObjectId,
-        thumbVersion,
-        activeInd: true,
+    // the backend maps the shared party onto the investigation
+    if (activityType === "investigation") {
+      addPartyFromSharedPartyMutation.mutate({
+        investigationGuid: activityGuid,
+        partyReference: party.partyIdentifier,
+        partyAssociationRole: selectedPartyRole,
+        attachmentReferences,
       });
+      return;
     }
 
     // new guids for the copied addresses so the same party can be added more than once
@@ -360,16 +346,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     const addPartyInput = {
       partyTypeCode: party.partyTypeCode || "",
       partyReference: party.partyIdentifier,
-      attachmentReferences: versionLinks
-        ?.filter((av: InvestigationAttachmentReference): av is InvestigationAttachmentReference => av != null)
-        .map((av: InvestigationAttachmentReference) => ({
-          objectId: av.objectId,
-          version: av.version,
-          fileName: av.fileName,
-          createdAt: av.createdAt,
-          thumbObjectId: av.thumbObjectId,
-          thumbVersion: av.thumbVersion,
-        })),
+      attachmentReferences,
       aliases: party.aliases
         ?.filter((a: Alias): a is Alias => a != null)
         .map((a: Alias) => ({
@@ -452,17 +429,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       partyAssociationRole: selectedPartyRole,
     };
 
-    setPendingAttachmentsSaveAfterCreate(false);
-
     // Backend expects the named ids
-    if (activityType === "investigation") {
-      addPartyMutation.mutate({
-        investigationGuid: activityGuid,
-        input: addPartyInput as CreateInvestigationPartyInput,
-      });
-    } else {
-      addPartyMutation.mutate({ inspectionGuid: activityGuid, input: addPartyInput as CreateInspectionPartyInput });
-    }
+    addPartyMutation.mutate({ inspectionGuid: activityGuid, input: addPartyInput as CreateInspectionPartyInput });
   };
 
   const partyRoleOptions = partyRoles

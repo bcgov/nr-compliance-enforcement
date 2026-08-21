@@ -4,8 +4,9 @@ import AttachmentEnum from "@constants/attachment-enum";
 import { getDisplayFilename, handlePersistAttachments, RETRY_CONFIG, withRetry } from "@common/attachment-utils";
 import { DismissToast, ToggleError, ToggleInformation, UpdateToast } from "@common/toast";
 import { generateApiParameters, get } from "@common/api";
-import { getAttachments } from "@store/reducers/attachments";
+import { getAttachments, getLatestObjectVersion } from "@store/reducers/attachments";
 import { COMSObject } from "@apptypes/coms/object";
+import { CreateAttachmentReferenceInput } from "@/generated/graphql";
 import config from "@/config";
 
 interface UploadAttachmentsWithProgressParams {
@@ -192,4 +193,48 @@ export const copyInvestigationPartyAttachmentsToSharedParty = async ({
   } finally {
     DismissToast(toastId);
   }
+};
+
+interface BuildSharedPartyAttachmentReferencesParams {
+  dispatch: any;
+  sharedPartyGuid: string;
+}
+
+// Attachments live only in COMS, so the shared party's objects are listed and pinned to specific
+// versions here, then stored as reference rows against the investigation party.
+export const buildSharedPartyAttachmentReferences = async ({
+  dispatch,
+  sharedPartyGuid,
+}: BuildSharedPartyAttachmentReferencesParams): Promise<CreateAttachmentReferenceInput[]> => {
+  const attachments: COMSObject[] = await dispatch(
+    getAttachments(sharedPartyGuid, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
+  );
+
+  const attachmentReferences: CreateAttachmentReferenceInput[] = [];
+
+  for (const attachment of attachments) {
+    if (attachment.id === undefined) {
+      continue;
+    }
+
+    const version = await dispatch(getLatestObjectVersion(attachment.id));
+    if (version === undefined) {
+      continue;
+    }
+
+    // Pin the thumbnail alongside it, when the image has one
+    const thumb =
+      attachment.imageIconId === undefined ? undefined : await dispatch(getLatestObjectVersion(attachment.imageIconId));
+
+    attachmentReferences.push({
+      objectId: attachment.id,
+      version: version.s3VersionId,
+      fileName: attachment.name,
+      createdAt: attachment.createdAt,
+      thumbObjectId: thumb === undefined ? undefined : attachment.imageIconId,
+      thumbVersion: thumb?.s3VersionId,
+    });
+  }
+
+  return attachmentReferences;
 };

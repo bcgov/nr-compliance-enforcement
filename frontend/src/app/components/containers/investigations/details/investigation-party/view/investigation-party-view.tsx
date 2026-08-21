@@ -6,6 +6,7 @@ import { Investigation, InvestigationParty } from "@/generated/graphql";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import InvestigationPartyDetail from "@/app/components/containers/investigations/details/investigation-parties/investigation-party-view";
 import { useInvestigationReadOnly } from "../../../hooks/use-investigation-read-only";
+import { useUpdatePartyFromSharedParty } from "../../../hooks/use-update-party-from-shared-party";
 
 const InvestigationPartyView: FC = () => {
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ const InvestigationPartyView: FC = () => {
       ),
     [data, partyIdentifier],
   );
+
+  const updatePartyFromSharedParty = useUpdatePartyFromSharedParty(investigationGuid);
 
   const backToParties = () => navigate(`/investigation/${investigationGuid}/parties`);
 
@@ -60,14 +63,29 @@ const InvestigationPartyView: FC = () => {
     );
   }
 
+  let editDisabledReason: string | undefined;
+  if (isReadOnly) {
+    editDisabledReason = "Parties can only be edited on open investigations";
+  } else if (party.isUpToDate === false) {
+    editDisabledReason = "Parties can only be edited once their information is up-to-date";
+  }
+
   return (
     <InvestigationPartyDetail
       party={party}
       investigationGuid={investigationGuid}
       investigationLabel={data?.getInvestigation?.name ?? undefined}
       onBack={backToParties}
-      onEdit={
-        isReadOnly ? undefined : () => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}/edit`)
+      onEdit={() => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}/edit`)}
+      editDisabledReason={editDisabledReason}
+      onUpdateParty={
+        isReadOnly
+          ? undefined
+          : () => {
+              if (party.partyReference) {
+                updatePartyFromSharedParty(partyIdentifier, party.partyReference);
+              }
+            }
       }
     />
   );

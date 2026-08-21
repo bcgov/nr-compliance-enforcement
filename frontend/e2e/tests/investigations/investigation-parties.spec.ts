@@ -22,18 +22,20 @@ test.describe("Investigation Party Form", () => {
   // Remove parties so that the investigation doesn't accumulate duplicate parties
   const removeAllParties = async (page: Page) => {
     await openPartiesTab(page);
-    const partyItems = page.locator(".party-accordion .list-group-item");
-    let count = await partyItems.count();
+    const partyCards = page.locator(".party-card");
+    let count = await partyCards.count();
     while (count > 0) {
-      await partyItems.first().locator(".dropdown-toggle-no-caret").click();
-      await page.locator(".dropdown-item", { hasText: "Remove" }).click();
+      // Scope to the card: every card's dropdown menu is mounted in the dom, even while closed
+      const firstCard = partyCards.first();
+      await firstCard.locator(".comp-kebab-toggle").click();
+      await firstCard.locator(".dropdown-item", { hasText: "Remove" }).click();
 
       const confirmModal = page.locator(".modal").first();
       await expect(confirmModal).toBeVisible();
       await confirmModal.locator("button", { hasText: "Yes, remove party" }).click();
 
-      await expect(partyItems).toHaveCount(count - 1, { timeout: 10000 });
-      count = await partyItems.count();
+      await expect(partyCards).toHaveCount(count - 1, { timeout: 10000 });
+      count = await partyCards.count();
     }
   };
 
