@@ -11,10 +11,12 @@ test.describe("Investigation Party Update From Shared Party", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
   test.describe.configure({ mode: "serial" });
 
-  const INVESTIGATION_PATH = "investigation/66dd3a1f-4bc5-4758-a986-a664b8d8f200/";
+  // Not the parties spec's investigation: both files mutate their fixture's parties and run in parallel workers
+  const INVESTIGATION_PATH = "investigation/66dd3a1f-4bc5-4758-a986-a664b8d8f201/";
 
-  const randomBusinessNumber = Math.random().toString().substring(2, 10);
-  const businessName = `Cedar Ridge Contracting ${randomBusinessNumber}`;
+  // Timestamp-derived so it can't collide with the published parties left behind by earlier runs
+  const uniqueBusinessNumber = Date.now().toString().slice(-8);
+  const businessName = `Cedar Ridge Contracting ${uniqueBusinessNumber}`;
   const updatedBusinessName = `${businessName} Updated`;
 
   // Captured from the urls the tests land on, then reused by the tests that follow
@@ -62,7 +64,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await businessNameInput.fill(businessName);
 
     const businessNumberInput = page.locator("#businessNumber");
-    await businessNumberInput.fill(randomBusinessNumber);
+    await businessNumberInput.fill(uniqueBusinessNumber);
 
     // Save
     const saveButton = page.locator("#details-screen-save-button-top");
@@ -81,9 +83,11 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await selectItemById("party-type-select", "Company", page);
 
     await page.locator("#businessName").fill(businessName);
-    await page.locator("#businessNumber").fill(randomBusinessNumber);
+    await page.locator("#businessNumber").fill(uniqueBusinessNumber);
 
-    // Matching profiles are only searched once a match field is blurred
+    // Matching profiles are only searched once a match field is blurred; blur from the name field
+    // so both filled values have settled by the time the blur handler reads them
+    await page.locator("#businessName").click();
     await page.keyboard.press("Tab");
 
     const matchCard = page.locator(".comp-party-match-card", { hasText: businessName });
