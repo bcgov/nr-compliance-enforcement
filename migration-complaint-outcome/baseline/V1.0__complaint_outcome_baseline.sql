@@ -3868,7 +3868,6 @@ INSERT INTO complaint_outcome.action_code VALUES ('CNTCTREHFT', 'Contacted/refer
 INSERT INTO complaint_outcome.action_code VALUES ('ADMNSTRDRG', 'Drug administered by an officer', 'Drug administered by an officer', true, 'postgres', '2025-09-10 20:06:56.125214', 'postgres', '2025-09-10 20:06:56.125214');
 INSERT INTO complaint_outcome.action_code VALUES ('RECOUTCOME', 'Outcome recorded by an officer', 'Outcome recorded by an officer', true, 'postgres', '2025-09-10 20:06:56.125214', 'postgres', '2025-09-10 20:06:56.125214');
 
-
 --
 -- Data for Name: action_h; Type: TABLE DATA; Schema: complaint_outcome; Owner: -
 --

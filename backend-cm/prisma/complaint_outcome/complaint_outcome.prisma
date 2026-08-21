@@ -677,6 +677,7 @@ model prevention_education {
   create_utc_timestamp                                                              DateTime            @db.Timestamp(6)
   update_user_id                                                                    String?             @db.VarChar(32)
   update_utc_timestamp                                                              DateTime?           @db.Timestamp(6)
+  wacn_amount                                                                       Int?                @db.SmallInt
   action                                                                            action[]
   outcome_agency_code_prevention_education_outcome_agency_codeTooutcome_agency_code outcome_agency_code @relation("prevention_education_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_prevention_education__agency_code")
   complaint_outcome                                                                 complaint_outcome   @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_prevention_education__case_file_guid")

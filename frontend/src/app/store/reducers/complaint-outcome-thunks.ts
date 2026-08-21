@@ -521,6 +521,7 @@ const addPrevention =
             actionCode: item.value,
           };
         }),
+        wacnAmount: prevention.wacnAmount,
       },
     } as CreatePreventionInput;
     for (let item of preventionType.filter((record) => record.isActive && record.agencyCode === agencyCode)) {
@@ -579,6 +580,7 @@ const updatePrevention =
             actionCode: item.value,
           };
         }),
+        wacnAmount: prevention.wacnAmount,
       },
     } as UpdatePreventionInput;
     for (let item of preventionType.filter((record) => record.isActive && record.agencyCode === agencyCode)) {
@@ -674,6 +676,7 @@ const parsePreventionResponse = async (
         .map((action) => {
           return { key: action.longDescription, value: action.actionCode };
         }),
+      wacnAmount: prevention.wacnAmount,
     } as Prevention;
     return updatedPreventionData;
   }) || [];
