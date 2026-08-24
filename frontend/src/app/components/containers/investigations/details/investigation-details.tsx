@@ -229,6 +229,7 @@ export const InvestigationDetails: FC = () => {
     queryKey: ["getInvestigation", investigationGuid],
     variables: { investigationGuid: investigationGuid },
     enabled: !!investigationGuid, // Only refresh query if id is provided
+    refetchInterval: 30 * 1000, // poll for shared party changes
   });
 
   // dirty form Handler

@@ -21,6 +21,7 @@ const InvestigationPartyView: FC = () => {
     queryKey: ["getInvestigation", investigationGuid],
     variables: { investigationGuid },
     enabled: !!investigationGuid,
+    refetchInterval: 30 * 1000, // poll for shared party changes
   });
 
   const party = useMemo(
