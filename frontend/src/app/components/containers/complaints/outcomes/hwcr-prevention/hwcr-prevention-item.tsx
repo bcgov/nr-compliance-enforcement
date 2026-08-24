@@ -6,6 +6,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import UserService from "@/app/service/user-service";
 import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
 import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type Props = {
   prevention: Prevention;
@@ -18,6 +19,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
   const isSameAgency = UserService.getUserAgency() === prevention.outcomeAgencyCode;
   const officer = useAppSelector(selectOfficerByAuthUserGuid(prevention.officer?.value ?? ""));
   const canEdit = isSameAgency && !isReadOnly;
+  const isWacnIssued = prevention.prevention_type?.some((item) => item.value === CASE_ACTION_CODE.ISSUEWACN);
 
   return (
     <Card border="default">
@@ -40,6 +42,12 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
                   </ul>
                 </dd>
               </div>
+              {isWacnIssued && (
+                <div id="prev-educ-wacn-amount-div">
+                  <dt>Number of WACN issued</dt>
+                  <dd>{prevention.wacnAmount ?? ""}</dd>
+                </div>
+              )}
               <div id="prev-educ-outcome-officer-div">
                 <dt>Officer</dt>
                 <dd>

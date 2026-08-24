@@ -10,4 +10,5 @@ export interface Prevention {
   createdAt?: Date;
   updatedBy?: string;
   updatedAt?: Date;
+  wacnAmount?: number;
 }

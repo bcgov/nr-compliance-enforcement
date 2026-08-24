@@ -41,6 +41,7 @@ type Prevention {
   id: String
   outcomeAgencyCode: String
   actions: [CaseFileAction]
+  wacnAmount: Int
 }
 
 type Note {

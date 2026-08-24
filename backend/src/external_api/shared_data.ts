@@ -166,6 +166,7 @@ export const caseFileQueryFields: string = `
       longDescription
       activeIndicator
     }
+    wacnAmount
   }
   notes {
     id

@@ -4,4 +4,5 @@ export class Prevention {
   id: string;
   outcomeAgencyCode: string;
   actions: CaseFileAction[];
+  wacnAmount?: number;
 }
