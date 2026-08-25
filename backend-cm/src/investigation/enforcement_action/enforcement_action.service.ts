@@ -141,6 +141,11 @@ export class EnforcementActionService {
         if (preparedParty) {
           await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier, preparedParty);
           sharedParty = await this.investigationPartyService.createSharedParty(preparedParty);
+          await this.investigationPartyService.stampSharedPartyUpdate(
+            db,
+            input.partyIdentifier,
+            sharedParty.updatedDateTime,
+          );
         }
 
         await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);

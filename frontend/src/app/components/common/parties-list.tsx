@@ -27,10 +27,19 @@ interface Props {
   parties?: (InvestigationParty | InspectionParty)[];
   onRemoveParty?: (partyIdentifier: string, partyName: string) => void;
   onViewParty?: (partyIdentifier: string) => void;
+  onUpdateParty?: (partyIdentifier: string) => void;
   activityType: string;
 }
 
-const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemoveParty, onViewParty, activityType }) => {
+const PartiesList: React.FC<Props> = ({
+  companies,
+  people,
+  parties,
+  onRemoveParty,
+  onViewParty,
+  onUpdateParty,
+  activityType,
+}) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
   const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
@@ -183,6 +192,34 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     );
   };
 
+  const renderNotUpToDateAlert = (partyIdentifier: string) => {
+    return (
+      <div
+        id={`party-not-up-to-date-alert-${partyIdentifier}`}
+        className="alert alert-warning d-flex align-items-center justify-content-between py-2 px-3 mb-0 mt-2 small"
+      >
+        <div className="d-flex align-items-center">
+          <i className="bi bi-exclamation-circle me-2" />
+          {onUpdateParty
+            ? "This party has been edited as part of another investigation. Update the party to bring the latest " +
+              "information into this investigation before making any new edits."
+            : "This party includes the information available when the investigation was closed. See the published " +
+              "profile list to view the most up-to-date information."}
+        </div>
+        <Button
+          id={`update-party-information-button-${partyIdentifier}`}
+          variant="outline-primary"
+          size="sm"
+          className="ms-3 text-nowrap"
+          onClick={() => onUpdateParty?.(partyIdentifier)}
+          disabled={!onUpdateParty}
+        >
+          Update party information
+        </Button>
+      </div>
+    );
+  };
+
   const renderCardBody = (party: InvestigationParty | InspectionParty) => {
     if (!isInvestigation) return null;
     const invParty = party as InvestigationParty;
@@ -208,6 +245,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Sex as per ID", sex, "Age", ageDisplay)}
           {renderDetailRow("Phone number", formatPhoneNumber(phone), "Address", address)}
+          {invParty.isUpToDate === false && renderNotUpToDateAlert(invParty.partyIdentifier)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
@@ -229,6 +267,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Doing business as", aliases, "Business number", businessNumbers)}
           {renderDetailRow("Primary phone", formatPhoneNumber(phone), "Primary address", address)}
+          {invParty.isUpToDate === false && renderNotUpToDateAlert(invParty.partyIdentifier)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />

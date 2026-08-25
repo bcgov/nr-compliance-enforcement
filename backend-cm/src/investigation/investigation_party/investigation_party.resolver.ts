@@ -7,6 +7,7 @@ import {
   CreateInvestigationPartyInput,
   UpdateInvestigationPartyInput,
 } from "../investigation_party/dto/investigation_party";
+import { CreateInvestigationAttachmentReferenceInput } from "../investigation_attachment_reference/dto/investigation_attachment_reference";
 import { InvestigationPartyService } from "../investigation_party/investigation_party_service";
 
 @Resolver("InvestigationParty")
@@ -25,6 +26,32 @@ export class InvestigationPartyResolver {
     } catch (error) {
       this.logger.error("Update investigation error:", error);
       throw new GraphQLError("Error adding parties to investigation", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
+
+  @Mutation("addPartyToInvestigationFromSharedParty")
+  @Roles(coreRoles)
+  async addFromSharedParty(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("partyReference") partyReference: string,
+    @Args("partyAssociationRole") partyAssociationRole: string,
+    @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
+  ) {
+    try {
+      return await this.investigationPartyService.addFromSharedParty(
+        investigationGuid,
+        partyReference,
+        partyAssociationRole,
+        attachmentReferences,
+      );
+    } catch (error) {
+      this.logger.error("Add party to investigation from shared party error:", error.stack ?? error);
+      throw new GraphQLError("Error adding party to investigation from shared party", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
           originalError: error.message,
@@ -106,6 +133,30 @@ export class InvestigationPartyResolver {
     }
   }
 
+  @Mutation("updateInvestigationPartyFromSharedParty")
+  @Roles(coreRoles)
+  async updateFromSharedParty(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("partyIdentifier") partyIdentifier: string,
+    @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
+  ) {
+    try {
+      return await this.investigationPartyService.updateFromSharedParty(
+        investigationGuid,
+        partyIdentifier,
+        attachmentReferences,
+      );
+    } catch (error) {
+      this.logger.error("Update investigation party from shared party error:", error.stack ?? error);
+      throw new GraphQLError("Error updating investigation party from shared party", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
+
   @Mutation("replacePartyOnInvestigation")
   @Roles(coreRoles)
   async replace(
@@ -118,6 +169,34 @@ export class InvestigationPartyResolver {
     } catch (error) {
       this.logger.error("Replace investigation party error:", error);
       throw new GraphQLError("Error replacing party on investigation", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
+
+  @Mutation("replacePartyOnInvestigationFromSharedParty")
+  @Roles(coreRoles)
+  async replaceFromSharedParty(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("partyIdentifier") partyIdentifier: string,
+    @Args("partyReference") partyReference: string,
+    @Args("partyAssociationRole") partyAssociationRole: string,
+    @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
+  ) {
+    try {
+      return await this.investigationPartyService.replaceFromSharedParty(
+        investigationGuid,
+        partyIdentifier,
+        partyReference,
+        partyAssociationRole,
+        attachmentReferences,
+      );
+    } catch (error) {
+      this.logger.error("Replace investigation party from shared party error:", error.stack ?? error);
+      throw new GraphQLError("Error replacing party on investigation from shared party", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
           originalError: error.message,

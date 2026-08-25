@@ -11,6 +11,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { useInvestigationReadOnly } from "../hooks/use-investigation-read-only";
+import { useUpdatePartyFromSharedParty } from "../hooks/use-update-party-from-shared-party";
 
 interface InvestigationPartiesProps {
   investigationGuid: string;
@@ -51,6 +52,8 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
       ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to remove party");
     },
   });
+
+  const updatePartyFromSharedParty = useUpdatePartyFromSharedParty(investigationGuid);
 
   const handleAddParty = () => {
     navigate(`/investigation/${investigationGuid}/party/add`);
@@ -107,6 +110,16 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
             parties={parties}
             onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
             onViewParty={(partyIdentifier) => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}`)}
+            onUpdateParty={
+              isReadOnly
+                ? undefined
+                : (partyIdentifier) => {
+                    const partyReference = parties.find((p) => p.partyIdentifier === partyIdentifier)?.partyReference;
+                    if (partyReference) {
+                      updatePartyFromSharedParty(partyIdentifier, partyReference);
+                    }
+                  }
+            }
             activityType={CaseActivities.INVESTIGATION}
           />
         </div>
