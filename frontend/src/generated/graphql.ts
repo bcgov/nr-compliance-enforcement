@@ -78,6 +78,10 @@ export type AddressInput = {
 
 export type AddressMatchInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
+  province?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AddressUpdateInput = {
@@ -266,6 +270,7 @@ export type BusinessInput = {
 
 export type BusinessMatchInput = {
   businessIdentifiers?: InputMaybe<Array<BusinessIdentifierMatchInput>>;
+  contactPeople?: InputMaybe<Array<BusinessPersonMatchInput>>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -298,6 +303,12 @@ export type BusinessPersonInput = {
   officeAddressGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   person?: InputMaybe<PersonInput>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BusinessPersonMatchInput = {
+  contactMethods?: InputMaybe<Array<ContactMethodMatchInput>>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BusinessPersonUpdateInput = {
@@ -2312,6 +2323,20 @@ export type PartyMatchInput = {
   person?: InputMaybe<PersonMatchInput>;
 };
 
+export type PartyMatchResult = {
+  __typename?: 'PartyMatchResult';
+  matchedFields: Array<PartyMatchedField>;
+  party: Party;
+  score: Scalars['Int']['output'];
+};
+
+export type PartyMatchedField = {
+  __typename?: 'PartyMatchedField';
+  exact: Scalars['Boolean']['output'];
+  field: Scalars['String']['output'];
+  points: Scalars['Int']['output'];
+};
+
 export type PartyResult = {
   __typename?: 'PartyResult';
   items: Array<Party>;
@@ -2435,12 +2460,23 @@ export type PersonInput = {
 };
 
 export type PersonMatchInput = {
+  approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
+  buildCode?: InputMaybe<Scalars['String']['input']>;
+  complexionCode?: InputMaybe<Scalars['String']['input']>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
+  eyeColourCode?: InputMaybe<Scalars['String']['input']>;
+  facialHairIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   genderCode?: InputMaybe<Scalars['String']['input']>;
+  hairColourCode?: InputMaybe<Scalars['String']['input']>;
+  hairLengthCode?: InputMaybe<Scalars['String']['input']>;
+  heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
+  middleNames?: InputMaybe<Scalars['String']['input']>;
   sexCode?: InputMaybe<Scalars['String']['input']>;
+  tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  weightInKg?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type PersonUpdateInput = {
@@ -2576,7 +2612,7 @@ export type Query = {
   legislationVersionContraventionStats: ContraventionStats;
   legislationVersions: Array<Maybe<LegislationVersion>>;
   legislations: Array<Maybe<Legislation>>;
-  matchParty: Array<Party>;
+  matchParty: Array<PartyMatchResult>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
   office?: Maybe<Office>;
   offices: Array<Maybe<Office>>;

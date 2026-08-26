@@ -4,7 +4,7 @@ type Query {
   partyHistoryInvestigations(partyId: String!, partyType: String!): [Investigation]
   partyHistoryInspections(partyId: String!, partyType: String!): [Inspection]
   partyHistoryCaseFiles(activityIdentifiers: [String!]!): [CaseFile]
-  matchParty(input: PartyMatchInput!): [Party!]!
+  matchParty(input: PartyMatchInput!): [PartyMatchResult!]!
 }
 
 type Mutation {

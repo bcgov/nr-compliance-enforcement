@@ -68,9 +68,20 @@ input PersonUpdateInput {
 # Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
 input PersonMatchInput {
   firstName: String
+  middleNames: String
   lastName: String
   dateOfBirth: DateTime
+  approximateAgeCode: String
   genderCode: String
   sexCode: String
   driversLicenseNumber: String
+  heightInCm: Float
+  weightInKg: Float
+  complexionCode: String
+  buildCode: String
+  hairColourCode: String
+  hairLengthCode: String
+  eyeColourCode: String
+  facialHairIndicator: Boolean
+  tattooIndicator: Boolean
 }

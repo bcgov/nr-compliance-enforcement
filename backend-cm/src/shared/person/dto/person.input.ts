@@ -97,10 +97,16 @@ export class PersonMatchInput {
   firstName?: string;
 
   @Field(() => String, { nullable: true })
+  middleNames?: string;
+
+  @Field(() => String, { nullable: true })
   lastName?: string;
 
   @Field(() => Date, { nullable: true })
   dateOfBirth?: Date;
+
+  @Field(() => String, { nullable: true })
+  approximateAgeCode?: string;
 
   @Field(() => String, { nullable: true })
   driversLicenseNumber?: string;
@@ -110,4 +116,31 @@ export class PersonMatchInput {
 
   @Field(() => String, { nullable: true })
   sexCode?: string;
+
+  @Field(() => Number, { nullable: true })
+  heightInCm?: number;
+
+  @Field(() => Number, { nullable: true })
+  weightInKg?: number;
+
+  @Field(() => String, { nullable: true })
+  complexionCode?: string;
+
+  @Field(() => String, { nullable: true })
+  buildCode?: string;
+
+  @Field(() => String, { nullable: true })
+  hairColourCode?: string;
+
+  @Field(() => String, { nullable: true })
+  hairLengthCode?: string;
+
+  @Field(() => String, { nullable: true })
+  eyeColourCode?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  facialHairIndicator?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  tattooIndicator?: boolean;
 }
