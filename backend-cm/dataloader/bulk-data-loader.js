@@ -21,6 +21,13 @@ const partyClient = new Client({
   password: process.env.PARTY_POSTGRESQL_PASSWORD || "default",
 });
 
+// Builds the "($1, $2), ($3, $4)" placeholder list for a multi-row insert
+const valuePlaceholders = (rowCount, columnCount) =>
+  Array.from({ length: rowCount }, (_, row) => {
+    const placeholders = Array.from({ length: columnCount }, (_, column) => "$" + (row * columnCount + column + 1));
+    return "(" + placeholders.join(", ") + ")";
+  }).join(", ");
+
 // Generates HWCR data.  Currently only assessment and outcomes are implemented.
 const generateHWCRCaseData = () => {
   const action_not_required_ind = faker.datatype.boolean(); // 50% chance of action required / not required.
@@ -358,7 +365,7 @@ const insertHWCRData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES 
-        ${caseValues.map((_, i) => `($${i * 16 + 1}, $${i * 16 + 2}, $${i * 16 + 3}, $${i * 16 + 4}, $${i * 16 + 5}, $${i * 16 + 6}, $${i * 16 + 7}, $${i * 16 + 8}, $${i * 16 + 9}, $${i * 16 + 10}, $${i * 16 + 11}, $${i * 16 + 12}, $${i * 16 + 13}, $${i * 16 + 14}, $${i * 16 + 15}, $${i * 16 + 16})`).join(", ")}`,
+        ${valuePlaceholders(caseValues.length, 16)}`,
         caseValues.flat(),
       );
     }
@@ -374,7 +381,7 @@ const insertHWCRData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES 
-        ${leadValues.map((_, i) => `($${i * 6 + 1}, $${i * 6 + 2}, $${i * 6 + 3}, $${i * 6 + 4}, $${i * 6 + 5}, $${i * 6 + 6})`).join(", ")}`,
+        ${valuePlaceholders(leadValues.length, 6)}`,
         leadValues.flat(),
       );
     }
@@ -397,7 +404,7 @@ const insertHWCRData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES 
-        ${assessmentActionValues.map((_, i) => `($${i * 13 + 1}, $${i * 13 + 2}, $${i * 13 + 3}, $${i * 13 + 4}, $${i * 13 + 5}, $${i * 13 + 6}, $${i * 13 + 7}, $${i * 13 + 8}, $${i * 13 + 9}, $${i * 13 + 10}, $${i * 13 + 11}, $${i * 13 + 12}, $${i * 13 + 13})`).join(", ")}`,
+        ${valuePlaceholders(assessmentActionValues.length, 13)}`,
         assessmentActionValues.flat(),
       );
     }
@@ -420,7 +427,7 @@ const insertHWCRData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES 
-        ${wildlifeValues.map((_, i) => `($${i * 13 + 1}, $${i * 13 + 2}, $${i * 13 + 3}, $${i * 13 + 4}, $${i * 13 + 5}, $${i * 13 + 6}, $${i * 13 + 7}, $${i * 13 + 8}, $${i * 13 + 9}, $${i * 13 + 10}, $${i * 13 + 11}, $${i * 13 + 12}, $${i * 13 + 13})`).join(", ")}`,
+        ${valuePlaceholders(wildlifeValues.length, 13)}`,
         wildlifeValues.flat(),
       );
     }
@@ -443,7 +450,7 @@ const insertHWCRData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES 
-        ${wildlifeActionValues.map((_, i) => `($${i * 13 + 1}, $${i * 13 + 2}, $${i * 13 + 3}, $${i * 13 + 4}, $${i * 13 + 5}, $${i * 13 + 6}, $${i * 13 + 7}, $${i * 13 + 8}, $${i * 13 + 9}, $${i * 13 + 10}, $${i * 13 + 11}, $${i * 13 + 12}, $${i * 13 + 13})`).join(", ")}`,
+        ${valuePlaceholders(wildlifeActionValues.length, 13)}`,
         wildlifeActionValues.flat(),
       );
     }
@@ -554,7 +561,7 @@ const insertCEEBData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES 
-        ${caseValues.map((_, i) => `($${i * 16 + 1}, $${i * 16 + 2}, $${i * 16 + 3}, $${i * 16 + 4}, $${i * 16 + 5}, $${i * 16 + 6}, $${i * 16 + 7}, $${i * 16 + 8}, $${i * 16 + 9}, $${i * 16 + 10}, $${i * 16 + 11}, $${i * 16 + 12}, $${i * 16 + 13}, $${i * 16 + 14}, $${i * 16 + 15}, $${i * 16 + 16})`).join(", ")}`,
+        ${valuePlaceholders(caseValues.length, 16)}`,
         caseValues.flat(),
       );
     }
@@ -570,7 +577,7 @@ const insertCEEBData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES 
-        ${leadValues.map((_, i) => `($${i * 6 + 1}, $${i * 6 + 2}, $${i * 6 + 3}, $${i * 6 + 4}, $${i * 6 + 5}, $${i * 6 + 6})`).join(", ")}`,
+        ${valuePlaceholders(leadValues.length, 6)}`,
         leadValues.flat(),
       );
     }
@@ -588,7 +595,7 @@ const insertCEEBData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES 
-        ${authorizationValues.map((_, i) => `($${i * 8 + 1}, $${i * 8 + 2}, $${i * 8 + 3}, $${i * 8 + 4}, $${i * 8 + 5}, $${i * 8 + 6}, $${i * 8 + 7}, $${i * 8 + 8})`).join(", ")}`,
+        ${valuePlaceholders(authorizationValues.length, 8)}`,
         authorizationValues.flat(),
       );
     }
@@ -606,7 +613,7 @@ const insertCEEBData = async (records) => {
           update_user_id, 
           update_utc_timestamp
         ) VALUES
-        ${siteValues.map((_, i) => `($${i * 8 + 1}, $${i * 8 + 2}, $${i * 8 + 3}, $${i * 8 + 4}, $${i * 8 + 5}, $${i * 8 + 6}, $${i * 8 + 7}, $${i * 8 + 8})`).join(", ")}`,
+        ${valuePlaceholders(siteValues.length, 8)}`,
         siteValues.flat(),
       );
     }
@@ -1149,26 +1156,26 @@ const fixtureBusiness = (name, attributes = {}) => {
 
 // The planted recall fixtures - one deterministic case per entry on the recall checklist
 const generatePartyFixtures = () => {
-  const records = [];
+  const records = [
+    // Typo, similar and sound alike name pairs
+    fixturePerson("Fredrick", "Aldergrove"),
+    fixturePerson("Frederick", "Aldergrove"),
+    fixturePerson("Alex", "Kispiox"),
+    fixturePerson("Alec", "Kispiox"),
+    fixturePerson("Stephen", "Nechako"),
+    fixturePerson("Steven", "Nechako"),
 
-  // Typo, similar and sound alike name pairs
-  records.push(fixturePerson("Fredrick", "Aldergrove"));
-  records.push(fixturePerson("Frederick", "Aldergrove"));
-  records.push(fixturePerson("Alex", "Kispiox"));
-  records.push(fixturePerson("Alec", "Kispiox"));
-  records.push(fixturePerson("Stephen", "Nechako"));
-  records.push(fixturePerson("Steven", "Nechako"));
+    // Accent variants - the pair must match exactly, not fuzzily
+    fixturePerson("Frédéric", "Kootenay"),
+    fixturePerson("Frederic", "Kootenay"),
 
-  // Accent variants - the pair must match exactly, not fuzzily
-  records.push(fixturePerson("Frédéric", "Kootenay"));
-  records.push(fixturePerson("Frederic", "Kootenay"));
-
-  // Special character variants, and the worked example's three ranked O'Brien candidates
-  records.push(fixturePerson("Jon", "O'Brien", { date_of_birth: "1985-03-12" }));
-  records.push(fixturePerson("Jon", "OBrien", { date_of_birth: "1985-03-12" }));
-  records.push(fixturePerson("Jon", "O Brien", { date_of_birth: "1985-03-12" }));
-  records.push(fixturePerson("John", "O'Brien", { phone: "+12505551234" }));
-  records.push(fixturePerson("Jon", "Obrien"));
+    // Special character variants, and the worked example's three ranked O'Brien candidates
+    fixturePerson("Jon", "O'Brien", { date_of_birth: "1985-03-12" }),
+    fixturePerson("Jon", "OBrien", { date_of_birth: "1985-03-12" }),
+    fixturePerson("Jon", "O Brien", { date_of_birth: "1985-03-12" }),
+    fixturePerson("John", "O'Brien", { phone: "+12505551234" }),
+    fixturePerson("Jon", "Obrien"),
+  ];
 
   // Identifier crowd out - one drivers licence hidden behind twelve hundred identical names
   for (let i = 0; i < 1200; i++) {
@@ -1182,16 +1189,16 @@ const generatePartyFixtures = () => {
       fixturePerson(FIXTURE_CROWD_NAMES[i % FIXTURE_CROWD_NAMES.length], "Chilcotin", { date_of_birth: "1990-06-15" }),
     );
   }
-  records.push(fixturePerson("Marguerite", "Chilcotin", { date_of_birth: "1990-06-15" }));
-
-  // Email match
-  records.push(fixturePerson("Priya", "Similkameen", { email: "party.match.email@fixture.test" }));
-
-  // Business number and WorkSafeBC number match
-  records.push(fixtureBusiness("Skeena Falls Contracting Ltd.", { bnum: "BNUMFIXTURE1", wsbc: "WSBCFIXTURE1" }));
-
-  // Contact phone and email reach the business, and outrank the business's own phone
   records.push(
+    fixturePerson("Marguerite", "Chilcotin", { date_of_birth: "1990-06-15" }),
+
+    // Email match
+    fixturePerson("Priya", "Similkameen", { email: "party.match.email@fixture.test" }),
+
+    // Business number and WorkSafeBC number match
+    fixtureBusiness("Skeena Falls Contracting Ltd.", { bnum: "BNUMFIXTURE1", wsbc: "WSBCFIXTURE1" }),
+
+    // Contact phone and email reach the business, and outrank the business's own phone
     fixtureBusiness("Nechako Valley Consulting Ltd.", {
       phone: "+16045550100",
       contact: {
@@ -1201,16 +1208,16 @@ const generatePartyFixtures = () => {
         email: "party.match.contact@fixture.test",
       },
     }),
+
+    // Short names, where the trigram branches are skipped
+    fixturePerson("Wei", "Li", { date_of_birth: "1979-04-08" }),
+    fixturePerson("Jun", "Li", { date_of_birth: "1988-09-22" }),
+    fixturePerson("Anna", "Ng", { date_of_birth: "1995-02-11" }),
+
+    // Combination ranking - the name pair alone against the full first, last and birthdate triple
+    fixturePerson("Nadia", "Okanagan"),
+    fixturePerson("Nadia", "Okanagan", { date_of_birth: "1978-11-02" }),
   );
-
-  // Short names, where the trigram branches are skipped
-  records.push(fixturePerson("Wei", "Li", { date_of_birth: "1979-04-08" }));
-  records.push(fixturePerson("Jun", "Li", { date_of_birth: "1988-09-22" }));
-  records.push(fixturePerson("Anna", "Ng", { date_of_birth: "1995-02-11" }));
-
-  // Combination ranking - the name pair alone against the full first, last and birthdate triple
-  records.push(fixturePerson("Nadia", "Okanagan"));
-  records.push(fixturePerson("Nadia", "Okanagan", { date_of_birth: "1978-11-02" }));
 
   return records;
 };
@@ -1330,7 +1337,7 @@ const insertPartyRows = async (table, columns, values) => {
       `INSERT INTO ${table} (
         ${columns.join(",\n        ")}
       ) VALUES
-      ${rows.map((_, i) => `(${columns.map((_, c) => `$${i * columns.length + c + 1}`).join(", ")})`).join(", ")}`,
+      ${valuePlaceholders(rows.length, columns.length)}`,
       rows.flat(),
     );
   }

@@ -2432,9 +2432,11 @@ export class PartyService {
       matched.push({ field: "dateOfBirth", exact: false, points: Math.round(weights.dateOfBirth * FUZZY_MODIFIER) });
     }
 
-    matched.push(...this._scoreContactFields(input, party, weights));
-    matched.push(...this._scoreAddressFields(input, party, weights, comparisons));
-    matched.push(...this._scoreDescriptorFields(input, party, weights));
+    matched.push(
+      ...this._scoreContactFields(input, party, weights),
+      ...this._scoreAddressFields(input, party, weights, comparisons),
+      ...this._scoreDescriptorFields(input, party, weights),
+    );
 
     // A young person flag derived from the date of birth or approximate age shouldn't score if its
     // source field is already a match
