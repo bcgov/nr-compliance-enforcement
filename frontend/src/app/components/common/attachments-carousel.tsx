@@ -74,6 +74,9 @@ export const Attachments: FC<Props> = ({
     }
   }, [carouselData]);
 
+  // reload when an update from the shared party replaces the references
+  const attachmentReferencesKey = (attachmentReferences ?? []).map((r) => `${r.objectId}:${r.version}`).join();
+
   // get the attachments when the Carousel loads
   useEffect(() => {
     if (!identifier) {
@@ -109,7 +112,7 @@ export const Attachments: FC<Props> = ({
     return () => {
       isMounted = false;
     };
-  }, [dispatch, identifier, subIdentifier, attachmentType, refreshKey]);
+  }, [dispatch, identifier, subIdentifier, attachmentType, refreshKey, attachmentReferencesKey]);
 
   // Update the slide count when the slides state changes
   useEffect(() => {

@@ -388,6 +388,9 @@ export class PartyService {
                 contact_value: true,
                 is_primary: true,
               },
+              where: {
+                active_ind: true,
+              },
             },
             address_guid: true,
             party_guid: true,
@@ -398,6 +401,7 @@ export class PartyService {
             postal_code: true,
             country_code: true,
             is_primary: true,
+            display_in_investigation_ind: true,
           },
           where: {
             active_ind: true,

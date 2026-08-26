@@ -3,6 +3,7 @@ type InvestigationParty {
   partyTypeCode: String!
   investigationGuid: String!
   partyReference: String
+  isUpToDate: Boolean
   person: InvestigationPerson
   business: InvestigationBusiness
   partyAssociationRole: String

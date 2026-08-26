@@ -569,6 +569,7 @@ model investigation_party {
   created_by_app_user_guid_ref       String?                              @db.Uuid
   placeholder_name                   String?                              @db.VarChar(128)
   placeholder_number                 Int?
+  party_update_utc_timestamp_ref     DateTime?                            @db.Timestamp(6)
   contravention_party_xref           contravention_party_xref[]
   investigation_address              investigation_address[]
   investigation_alias                investigation_alias[]
