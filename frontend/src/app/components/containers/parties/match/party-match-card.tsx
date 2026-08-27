@@ -162,6 +162,9 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
         <div className="w-100 border-bottom d-flex align-items-center gap-2 pb-2">
           <i className={`bi ${isBusiness ? "bi-building" : "bi-person"} text-muted fs-6`} />
           <span className="comp-party-match-card-name">{name}</span>
+          {(isBusiness ? anyMatched("businessName") : anyMatched("firstName", "lastName", "middleNames")) && (
+            <i className="bi bi-circle-fill text-success comp-party-match-card-matched-dot" />
+          )}
           {score >= STRONG_MATCH_MINIMUM ? (
             <Badge bg="success">Strong match</Badge>
           ) : (

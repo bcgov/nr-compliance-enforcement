@@ -106,12 +106,15 @@ interface InvestigationPartyFormProps {
   editParty?: InvestigationParty;
   // Investigation shown in the breadcrumb
   investigationLabel?: string;
+  // Shared party guids already linked to this investigation
+  linkedPartyReferences?: string[];
 }
 
 export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   investigationGuid,
   editParty,
   investigationLabel,
+  linkedPartyReferences = [],
 }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -363,12 +366,15 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const saveDisabled = formSubmitting || isDisabled;
 
   const {
-    matches,
+    matches: allMatches,
     isFetching: matchFetching,
     hasSearched: matchSearched,
     error: matchError,
     handleFieldBlur,
   } = usePartyMatchTrigger(form, isLinkedParty);
+
+  // A party already linked to this investigation is not a useful suggestion
+  const matches = allMatches.filter((match) => !linkedPartyReferences.includes(match.party.partyIdentifier ?? ""));
 
   // Pulse every card except one showing the same party at the same position as the previous set
   const matchGuids = matches.map((match) => match.party.partyIdentifier ?? "").join(",");
@@ -429,6 +435,11 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     observer.observe(content);
     return () => observer.disconnect();
   }, [matchGuids, matchError, matchFetching, matchPaneStyle]);
+
+  // A changed result set reads from the top
+  useEffect(() => {
+    matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [matchGuids]);
 
   const handleAddMatch = (party: Party) => {
     const partyAssociationRole = form.getFieldValue("partyAssociationRole");

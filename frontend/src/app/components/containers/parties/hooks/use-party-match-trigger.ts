@@ -11,8 +11,8 @@ import {
   ContactPersonFormValue,
 } from "@/app/components/containers/parties/form/party-form-utils";
 
-// Only fields the backend can search on count towards the minimum.
-const MINIMUM_MATCH_FIELDS = 2;
+// Only fields the backend can search on count towards the minimum
+const MINIMUM_MATCH_FIELDS = 1;
 
 // Trailing delay after the last value change.
 const MATCH_DEBOUNCE_MS = 2000;
@@ -102,7 +102,7 @@ const buildPersonDescriptors = (values: any): NonNullable<PartyMatchInput["perso
 /**
  * Builds the person branch of the match input from the form's live values, including
  * only fields that carry a value. Returns the input plus the count of populated
- * match-fields so the caller can enforce the minimum-two threshold.
+ * match-fields so the caller can enforce the minimum threshold.
  */
 const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populatedCount: number } => {
   const person: NonNullable<PartyMatchInput["person"]> = {};
@@ -196,7 +196,7 @@ const buildContactPeopleMatchInput = (
  * Builds the business branch of the match input from the form's live values, including only
  * fields that carry a value. Business match-fields: legal name, business and WorkSafeBC numbers,
  * contact people, and the shared party-level phone, email and address line. Returns the input plus
- * the count of populated match-fields so the caller can enforce the minimum-two threshold.
+ * the count of populated match-fields so the caller can enforce the minimum threshold.
  */
 const buildBusinessMatchInput = (values: any): { input: PartyMatchInput; populatedCount: number } => {
   const business: NonNullable<PartyMatchInput["business"]> = {};
