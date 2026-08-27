@@ -415,6 +415,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     };
   }, []);
 
+  const [showMatchRules, setShowMatchRules] = useState(false);
+
   // The pane scrolls its own results using overlay buttons page down and back up
   const matchScrollRef = useRef<HTMLDivElement>(null);
   const [matchScroll, setMatchScroll] = useState({ up: false, down: false });
@@ -673,27 +675,58 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   >
                     <div>
                       <Alert
-                        className="comp-complaint-details-alert d-flex align-items-center"
+                        className="comp-complaint-details-alert"
                         variant="info"
                       >
-                        {matchFetching ? (
-                          <>
-                            <Spinner
-                              animation="border"
-                              size="sm"
-                              className="me-3"
-                            />
-                            <span>Looking for matching published profiles...</span>
-                          </>
-                        ) : (
-                          <>
-                            <i className="bi bi-info-circle-fill me-3"></i>
-                            <span>
-                              {matches.length
-                                ? "Potentially matching published profiles found."
-                                : "No matching published profiles found."}
-                            </span>
-                          </>
+                        <div className="d-flex align-items-center">
+                          {matchFetching ? (
+                            <>
+                              <Spinner
+                                animation="border"
+                                size="sm"
+                                className="me-3"
+                              />
+                              <span>Looking for matching published profiles...</span>
+                            </>
+                          ) : (
+                            <>
+                              <i className="bi bi-info-circle-fill me-3"></i>
+                              <span>
+                                {matches.length
+                                  ? "Potentially matching published profiles found."
+                                  : "No matching published profiles found."}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <Button
+                          variant="link"
+                          className="d-block p-0"
+                          aria-expanded={showMatchRules}
+                          onClick={() => setShowMatchRules((show) => !show)}
+                        >
+                          <i className={`bi bi-chevron-${showMatchRules ? "down" : "right"} me-1`} />
+                          <span>See matching rules</span>
+                        </Button>
+                        {showMatchRules && (
+                          <div className="comp-party-match-rules">
+                            <span>Identifier (licence, business number, WorkSafeBC, contact phone/email)</span>
+                            <span>1000</span>
+                            <span>Name, date of birth, phone, email, address, city</span>
+                            <span>50</span>
+                            <span>Descriptor (sex, age range, height, hair...)</span>
+                            <span>10</span>
+                            <span>Similar (typo, sound-alike, short form, close birthdate)</span>
+                            <span>&times; 0.5</span>
+                            <span>Cross-field (alias, first as middle, similar legal name)</span>
+                            <span>&times; 0.25</span>
+                            <span>First + last name bonus</span>
+                            <span>+100</span>
+                            <span>Name + date of birth bonus</span>
+                            <span>+850</span>
+                            <span>Shown / likely match / strong match</span>
+                            <span>&ge; 50 / 250 / 850</span>
+                          </div>
                         )}
                       </Alert>
                       <div

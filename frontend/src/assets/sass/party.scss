@@ -152,6 +152,14 @@
   }
 }
 
+.comp-party-match-rules {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  column-gap: 1.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
 .comp-party-match-card {
   border: 1px solid #dee2e6;
   border-radius: 4px;
