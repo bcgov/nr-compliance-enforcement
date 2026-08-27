@@ -284,13 +284,13 @@ const PartiesList: React.FC<Props> = ({
     const globalParty = isGlobalParty(party);
 
     return (
-      <div className="d-flex justify-content-between align-items-center pt-4 px-4">
+      <div className="d-flex justify-content-between align-items-center pt-3 px-4">
         <div className="w-100 border-bottom d-flex justify-content-between pb-2">
-          <div className="d-flex align-items-center gap-2">
-            <i className={`bi ${icon} text-muted`} />
+          <div className="d-flex align-items-center gap-2 investigation-party-name">
+            <i className={`bi ${icon} text-muted party-icon`} />
             <Button
               variant="link"
-              className="p-0 investigation-party-name"
+              className="p-0"
               onClick={() => onViewParty?.(party.partyIdentifier)}
             >
               <h5>{getPartyName(party)}</h5>

@@ -34,7 +34,7 @@
   margin-bottom: 0px;
 }
 .party-card--linked {
-  border: 1px solid $gray-400 !important;
+  border: 1px solid $gray-300 !important;
   background-image: none;
 }
 
@@ -44,6 +44,9 @@
       font-size: 20px;
       color: #1f5c94;
       margin-bottom: 0px;
+    }
+    .party-icon {
+      font-size: 20px;
     }
   }
 }
