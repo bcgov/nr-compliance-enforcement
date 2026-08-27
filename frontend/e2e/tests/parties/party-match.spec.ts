@@ -34,7 +34,7 @@ test.describe("Party Match Suggestions", () => {
     await expect(page.locator(".comp-party-match-card-name").first()).toContainText("SCOTT, Michael");
 
     const firstCard = page.locator(".comp-party-match-card").first();
-    await firstCard.locator(".comp-party-match-card-score-toggle").click();
-    await expect(firstCard.locator(".comp-party-match-card-score-line").first()).toBeVisible();
+    await firstCard.getByRole("button", { name: "Why did this match?" }).click();
+    await expect(firstCard.locator(".comp-party-match-card-score-table")).toContainText("Total");
   });
 });

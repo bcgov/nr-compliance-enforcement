@@ -120,7 +120,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
     const partyCard = page.locator(".party-card", { hasText: businessName }).first();
     const cardAlert = partyCard.locator("[id^=party-not-up-to-date-alert-]");
     await expect(cardAlert).toBeVisible();
-    await expect(cardAlert).toContainText("edited as part of another investigation");
+    await expect(cardAlert).toContainText("changed as part of another investigation");
 
     const partyButton = page.getByRole("button", { name: businessName }).first();
     await partyButton.click();
