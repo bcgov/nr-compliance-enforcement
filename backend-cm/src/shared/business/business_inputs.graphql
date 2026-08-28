@@ -21,4 +21,11 @@ input BusinessUpdateInput {
 input BusinessMatchInput {
   name: String
   businessIdentifiers: [BusinessIdentifierMatchInput!]
+  contactPeople: [BusinessPersonMatchInput!]
+}
+
+input BusinessPersonMatchInput {
+  firstName: String
+  lastName: String
+  contactMethods: [ContactMethodMatchInput!]
 }

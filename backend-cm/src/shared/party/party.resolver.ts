@@ -5,7 +5,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";
 import { PartyService } from "./party.service";
-import { PartyCreateInput, PartyFilters, PartyMatchInput, PartyUpdateInput } from "./dto/party";
+import { PartyCreateInput, PartyFilters, PartyMatchInput, PartyMatchResult, PartyUpdateInput } from "./dto/party";
 
 @UseGuards(JwtRoleGuard)
 @Resolver("Party")
@@ -49,7 +49,7 @@ export class PartyResolver {
 
   @Query("matchParty")
   @Roles(coreRoles)
-  async matchParty(@Args("input") input: PartyMatchInput) {
+  async matchParty(@Args("input") input: PartyMatchInput): Promise<PartyMatchResult[]> {
     try {
       return await this.partyService.matchParty(input);
     } catch (error) {

@@ -32,6 +32,8 @@ services:
     hostname: database
     restart: always
     user: postgres
+    # Parallel query workers allocate shared memory beyond Docker's 64MB default
+    shm_size: 1gb
     ports:
       - "5432:5432"
     healthcheck:

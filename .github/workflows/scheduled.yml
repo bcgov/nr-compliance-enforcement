@@ -41,7 +41,11 @@ jobs:
       - name: Enable Extensions
         run: |
           docker exec $(docker ps -q --filter "ancestor=postgis/postgis:16-3.4") \
-            psql -U postgres -d default -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+            psql -U postgres -d default \
+            -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' \
+            -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm;' \
+            -c 'CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;' \
+            -c 'CREATE EXTENSION IF NOT EXISTS unaccent;'
       - name: Flyway - shared
         uses: docker://flyway/flyway:10
         env:

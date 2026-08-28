@@ -4,7 +4,7 @@ import { person } from "../../../../prisma/shared/generated/person";
 import { business } from "../../../../prisma/shared/generated/business";
 import { Person } from "../../person/dto/person";
 import { Business, BusinessInput, BusinessMatchInput } from "../../business/dto/business";
-import { Field, InputType, ObjectType } from "@nestjs/graphql";
+import { Field, InputType, Int, ObjectType } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
 import { PaginatedResult } from "../../../common/pagination.utility";
 import { PageInfo } from "../../case_file/dto/case_file";
@@ -185,4 +185,28 @@ export class PartyResult implements PaginatedResult<Party> {
 
   @Field(() => PageInfo)
   pageInfo: PageInfo;
+}
+
+@ObjectType()
+export class PartyMatchedField {
+  @Field(() => String)
+  field: string;
+
+  @Field(() => Boolean)
+  exact: boolean;
+
+  @Field(() => Int)
+  points: number;
+}
+
+@ObjectType()
+export class PartyMatchResult {
+  @Field(() => Party)
+  party: Party;
+
+  @Field(() => Int)
+  score: number;
+
+  @Field(() => [PartyMatchedField])
+  matchedFields: PartyMatchedField[];
 }
