@@ -1,5 +1,5 @@
 import { FC, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
@@ -34,7 +34,10 @@ const InvestigationPartyView: FC = () => {
 
   const updatePartyFromSharedParty = useUpdatePartyFromSharedParty(investigationGuid);
 
-  const backToParties = () => navigate(`/investigation/${investigationGuid}/parties`);
+  const location = useLocation();
+  const backTab = location.state?.from === "contraventions" ? "contraventions" : "parties";
+  const backLabel = backTab === "contraventions" ? "Contraventions" : "Parties";
+  const backToInvestigationTab = () => navigate(`/investigation/${investigationGuid}/${backTab}`);
 
   if (isLoading) {
     return (
@@ -54,10 +57,10 @@ const InvestigationPartyView: FC = () => {
           <Button
             variant="outline-primary"
             size="sm"
-            onClick={backToParties}
+            onClick={backToInvestigationTab}
           >
             <i className="bi bi-arrow-left"></i>
-            <span>Parties</span>
+            <span>{backLabel}</span>
           </Button>
         </div>
       </div>
@@ -76,7 +79,8 @@ const InvestigationPartyView: FC = () => {
       party={party}
       investigationGuid={investigationGuid}
       investigationLabel={data?.getInvestigation?.name ?? undefined}
-      onBack={backToParties}
+      onBack={backToInvestigationTab}
+      backLabel={backLabel}
       onEdit={() => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}/edit`)}
       editDisabledReason={editDisabledReason}
       onUpdateParty={

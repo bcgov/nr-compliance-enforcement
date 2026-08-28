@@ -16,7 +16,6 @@ interface ContraventionTableProps {
   partyGuid: string | null;
   isReadOnly: boolean;
   enforcementActionsWithAttachments?: Set<string>;
-  onView?: (contraventionId: string, partyGuid: string | null) => void;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
   onAddEnforcementAction: (contraventionId: string, partyId: string) => void;
   onEditEnforcementAction: (enforcementActionId: string, contraventionId: string, partyGuid: string) => void;
@@ -44,7 +43,6 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   partyGuid,
   isReadOnly,
   enforcementActionsWithAttachments,
-  onView,
   onEdit,
   onAddEnforcementAction,
   onEditEnforcementAction,
@@ -61,20 +59,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       cellClassName: "comp-cell-width-percent-50",
       isSortable: true,
       getValue: (c) => c.legislationIdentifierRef ?? "",
-      renderCell: (c) =>
-        onView ? (
-          <button
-            type="button"
-            className="btn btn-link p-0 text-start"
-            onClick={() => {
-              onView(c.contraventionIdentifier, partyGuid);
-            }}
-          >
-            <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />
-          </button>
-        ) : (
-          <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />
-        ),
+      renderCell: (c) => <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />,
     },
     {
       label: "Date",
@@ -103,7 +88,20 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       isSortable: false,
       getValue: () => "",
       renderCell: (c) => {
-        if (!partyGuid) return <span></span>;
+        if (!partyGuid) {
+          return (
+            <div className="d-flex justify-content-center">
+              <Button
+                id={`add-enforcement-action-${c.contraventionIdentifier}`}
+                variant="outline-primary"
+                size="sm"
+                disabled
+              >
+                <i className="bi bi-plus-circle" /> Add enforcement action
+              </Button>
+            </div>
+          );
+        }
 
         const party = c.investigationParty?.find((p) => p?.partyIdentifier === partyGuid);
         const enforcementActions = (party?.enforcementActions ?? []) as EnforcementAction[];
@@ -239,7 +237,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
                 onClick={() => onEdit(c.contraventionIdentifier, partyGuid)}
                 disabled={isReadOnly}
               >
-                <i className="bi bi-pencil" /> Edit
+                <i className="bi bi-pencil" /> Edit contravention
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
@@ -257,7 +255,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       pageSize={5}
       columns={columns}
       getRowKey={(c) => c.contraventionIdentifier ?? ""}
-      emptyMessage="No contraventions added."
+      emptyMessage="No contraventions added"
       alwaysShowFooter={false}
     />
   );

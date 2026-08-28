@@ -20,6 +20,7 @@ interface PartyDetailProps {
   investigationGuid: string;
   investigationLabel?: string;
   onBack: () => void;
+  backLabel: string;
   onEdit: () => void;
   editDisabledReason?: string;
   onUpdateParty?: () => void;
@@ -30,6 +31,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   investigationGuid,
   investigationLabel,
   onBack,
+  backLabel,
   onEdit,
   editDisabledReason,
   onUpdateParty,
@@ -84,7 +86,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
               onClick={onBack}
             >
               <i className="bi bi-arrow-left"></i>
-              <span>Parties</span>
+              <span>{backLabel}</span>
             </Button>
             {editDisabledReason ? (
               <OverlayTrigger

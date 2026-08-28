@@ -22,13 +22,11 @@ test.describe("Investigation Party Form", () => {
   // Remove parties so that the investigation doesn't accumulate duplicate parties
   const removeAllParties = async (page: Page) => {
     await openPartiesTab(page);
-    const partyCards = page.locator(".party-card");
+    const partyCards = page.locator(".party-card--linked");
     let count = await partyCards.count();
     while (count > 0) {
-      // Scope to the card: every card's dropdown menu is mounted in the dom, even while closed
       const firstCard = partyCards.first();
-      await firstCard.locator(".comp-kebab-toggle").click();
-      await firstCard.locator(".dropdown-item", { hasText: "Remove" }).click();
+      await firstCard.getByRole("button", { name: "Remove" }).click();
 
       const confirmModal = page.locator(".modal").first();
       await expect(confirmModal).toBeVisible();
@@ -111,7 +109,7 @@ test.describe("Investigation Party Form", () => {
 
   test("it edits a person party", async ({ page }) => {
     // Find a person party in the list and access the details page
-    const personItem = page.locator(".party-card", { has: page.locator(".bi-person") }).first();
+    const personItem = page.locator(".party-card--linked", { has: page.locator(".bi-person") }).first();
     await expect(personItem).toBeVisible();
 
     const partyButton = page.getByRole("button", { name: "DOE, Jane" }).first();
