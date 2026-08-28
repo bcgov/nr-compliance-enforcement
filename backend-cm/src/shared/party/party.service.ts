@@ -254,19 +254,17 @@ const scoreNameField = (
 };
 
 const isSameUtcDate = (inputDate?: Date | null, partyDate?: Date | null): boolean =>
-  !!inputDate &&
-  !!partyDate &&
-  inputDate.getUTCFullYear() === partyDate.getUTCFullYear() &&
-  inputDate.getUTCMonth() === partyDate.getUTCMonth() &&
-  inputDate.getUTCDate() === partyDate.getUTCDate();
+  !!inputDate && !!partyDate && toDateString(inputDate) === toDateString(partyDate);
 
 // Same year and month, or a transposed day and month, is close enough to be evidence
-const isCloseUtcDate = (inputDate?: Date | null, partyDate?: Date | null): boolean =>
-  !!inputDate &&
-  !!partyDate &&
-  inputDate.getUTCFullYear() === partyDate.getUTCFullYear() &&
-  (inputDate.getUTCMonth() === partyDate.getUTCMonth() ||
-    (inputDate.getUTCMonth() + 1 === partyDate.getUTCDate() && inputDate.getUTCDate() === partyDate.getUTCMonth() + 1));
+const isCloseUtcDate = (inputDate?: Date | null, partyDate?: Date | null): boolean => {
+  if (!inputDate || !partyDate) {
+    return false;
+  }
+  const [year, month, day] = toDateString(inputDate).split("-");
+  const [partyYear, partyMonth, partyDay] = toDateString(partyDate).split("-");
+  return year === partyYear && (month === partyMonth || (month === partyDay && day === partyMonth));
+};
 
 // The form's imperial/metric toggle stores a converted value, so compare at the column's one decimal
 const isSameMeasurement = (inputValue?: number | null, partyValue?: Prisma.Decimal | number | null): boolean =>

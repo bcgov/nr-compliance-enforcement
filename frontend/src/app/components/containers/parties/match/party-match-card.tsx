@@ -9,7 +9,8 @@ import { Address, Alias, BusinessIdentifier, ContactMethod, Party, PartyMatchedF
 import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { getPartyName } from "@/app/common/party-name";
-import { isYoungPerson } from "@/app/common/methods";
+import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 const MATCH_FIELD_LABELS: Record<string, string> = {
   driversLicenseNumber: "Driver's licence",
@@ -113,16 +114,10 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
         .join(", ")
     : "-";
 
+  const dob = parseUTCDateToLocal(person?.dateOfBirth);
   const getAge = (): string => {
-    if (person?.dateOfBirth) {
-      const dateStr = String(person.dateOfBirth).slice(0, 10);
-      const [year, month, day] = dateStr.split("-").map(Number);
-      const today = new Date();
-      let age = today.getFullYear() - year;
-      if (today.getMonth() + 1 < month || (today.getMonth() + 1 === month && today.getDate() < day)) {
-        age--;
-      }
-      return `${age} (${dateStr})`;
+    if (dob) {
+      return `${calculateAgeYears(dob)} (${formatDateObjectAsString(dob, { format: "date" })})`;
     }
     if (person?.approximateAgeCode) {
       return (
@@ -133,7 +128,6 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
     return "-";
   };
 
-  const dob = person?.dateOfBirth ? new Date(String(person.dateOfBirth)) : null;
   const personIsYoung = isYoungPerson(dob, person?.approximateAgeCode);
   const ageDisplay = personIsYoung ? (
     <>
