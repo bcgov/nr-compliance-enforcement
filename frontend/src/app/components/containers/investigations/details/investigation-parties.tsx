@@ -87,7 +87,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
 
   return (
     <>
-      <div className="row align-items-center mb-3">
+      <div className="row align-items-center">
         <div className="col">
           <h2 className="mb-0">Parties</h2>
         </div>
