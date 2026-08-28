@@ -4,12 +4,13 @@ import {
   InvestigationAddress,
   InvestigationAlias,
   InvestigationBusiness,
+  InvestigationBusinessPerson,
   InvestigationContactMethod,
   InvestigationParty,
   InvestigationPerson,
 } from "@/generated/graphql";
 import React from "react";
-import { Badge, Button, Card, Dropdown } from "react-bootstrap";
+import { Badge, Button, Card } from "react-bootstrap";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CaseActivities } from "@/app/constants/case-activities";
@@ -17,6 +18,7 @@ import { ContactMethods } from "@/app/constants/contact-methods";
 import { formatPhoneNumber } from "react-phone-number-input";
 import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/common/methods";
 import { getPartyName } from "@/app/common/party-name";
+import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
 const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
@@ -54,6 +56,11 @@ const PartiesList: React.FC<Props> = ({
     currentActivityTypeCode = "INVSTGTN";
   }
 
+  const sortPartiesByName = (
+    list: (InvestigationParty | InspectionParty)[],
+  ): (InvestigationParty | InspectionParty)[] =>
+    [...list].sort((a, b) => getPartyName(a).localeCompare(getPartyName(b)));
+
   const getPartyKey = (party: InvestigationParty | InspectionParty): string =>
     party.person?.personGuid ?? party.business?.businessGuid ?? party.partyIdentifier;
 
@@ -63,16 +70,9 @@ const PartiesList: React.FC<Props> = ({
     return "-";
   };
 
-  const getAge = (person: InvestigationPerson): string => {
+  const getDateOfBirth = (person: InvestigationPerson): string => {
     if (person.dateOfBirth) {
-      const dateStr = String(person.dateOfBirth).slice(0, 10);
-      const [year, month, day] = dateStr.split("-").map(Number);
-      const today = new Date();
-      let age = today.getFullYear() - year;
-      if (today.getMonth() + 1 < month || (today.getMonth() + 1 === month && today.getDate() < day)) {
-        age--;
-      }
-      return `${age} (${dateStr})`;
+      return String(person.dateOfBirth).slice(0, 10);
     }
     if (person.approximateAgeCode) {
       return (
@@ -116,6 +116,14 @@ const PartiesList: React.FC<Props> = ({
       .map((id) => id!.identifierValue)
       .join(", ");
 
+  const getPrimaryContactName = (business: InvestigationBusiness): string => {
+    const contactPeople = (business.contactPeople ?? []).filter(Boolean) as InvestigationBusinessPerson[];
+    const primary = contactPeople.find((cp) => cp.isPrimary) ?? contactPeople[0];
+    const person = primary?.person;
+    if (!person) return "-";
+    return [person.firstName, person.lastName].filter(Boolean).join(", ") || "-";
+  };
+
   const isGlobalParty = (party: InvestigationParty | InspectionParty): boolean => {
     if (!isInvestigation) return false;
     const invParty = party as InvestigationParty;
@@ -143,41 +151,25 @@ const PartiesList: React.FC<Props> = ({
     return missing;
   };
 
-  const renderActionsDropdown = (party: InvestigationParty | InspectionParty) => {
+  const isPartyIncomplete = (party: InvestigationParty | InspectionParty): boolean => {
+    if (!isInvestigation) return false;
+    const invParty = party as InvestigationParty;
+    if (invParty.partyAssociationRole !== "PTYOFINTRST") return false;
+    if (invParty.person) return getPersonMissingFields(invParty).length > 0;
+    if (invParty.business) return getBusinessMissingFields(invParty).length > 0;
+    return false;
+  };
+
+  const renderRemoveButton = (party: InvestigationParty | InspectionParty) => {
     if (!onRemoveParty) return null;
     return (
-      <Dropdown
-        drop="start"
-        className="comp-action-dropdown"
+      <Button
+        size="sm"
+        variant="outline-primary"
+        onClick={() => onRemoveParty(party.partyIdentifier, getPartyRemoveName(party))}
       >
-        <Dropdown.Toggle
-          size="sm"
-          variant="outline-primary"
-          bsPrefix="btn btn-outline-primary btn-sm comp-kebab-toggle"
-        >
-          <i className="bi bi-three-dots-vertical ms-1 me-1"></i> Actions
-        </Dropdown.Toggle>
-        <Dropdown.Menu
-          renderOnMount
-          popperConfig={{
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, 13],
-                  placement: "start",
-                },
-              },
-            ],
-          }}
-        >
-          {onRemoveParty && (
-            <Dropdown.Item onClick={() => onRemoveParty(party.partyIdentifier, getPartyRemoveName(party))}>
-              <i className="bi bi-trash me-2"></i> Remove
-            </Dropdown.Item>
-          )}
-        </Dropdown.Menu>
-      </Dropdown>
+        <i className="bi bi-trash me-2"></i> Remove
+      </Button>
     );
   };
 
@@ -227,23 +219,28 @@ const PartiesList: React.FC<Props> = ({
       const sex = getSex(invParty.person);
       const phone = getPhone(invParty.contactMethods);
       const address = getPartyAddress(invParty.addresses);
-      const age = getAge(invParty.person);
+      const dateOfBirthText = getDateOfBirth(invParty.person);
       const missingFields = getPersonMissingFields(invParty);
       const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
       const dob = invParty.person.dateOfBirth ? new Date(String(invParty.person.dateOfBirth)) : null;
       const personIsYoung = isYoungPerson(dob, invParty.person.approximateAgeCode);
-      const ageDisplay = personIsYoung ? (
+      const dateOfBirthDisplay = personIsYoung ? (
         <>
-          {age} <Badge bg="species-badge comp-species-badge">Young person</Badge>
+          {dateOfBirthText} <Badge bg="species-badge comp-species-badge">Young person</Badge>
         </>
       ) : (
-        age
+        dateOfBirthText
       );
 
       return (
-        <Card.Body className="py-3 px-4">
-          {renderDetailRow("Sex as per ID", sex, "Age", ageDisplay)}
-          {renderDetailRow("Phone number", formatPhoneNumber(phone), "Address", address)}
+        <Card.Body className="pt-2 pb-3 px-4">
+          {renderDetailRow(
+            "Sex as per ID",
+            sex,
+            invParty.person.approximateAgeCode ? "Age range" : "Date of birth",
+            dateOfBirthDisplay,
+          )}
+          {renderDetailRow("Primary phone", formatPhoneNumber(phone), "Primary address", address)}
           {invParty.isUpToDate === false && renderNotUpToDateAlert(invParty.partyIdentifier)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
@@ -257,7 +254,7 @@ const PartiesList: React.FC<Props> = ({
 
     if (invParty.business) {
       const aliases = getAliases(invParty.aliases) || "-";
-      const phone = getPhone(invParty.contactMethods);
+      const primaryContact = getPrimaryContactName(invParty.business);
       const businessNumbers = getBusinessNumbers(invParty.business) || "-";
       const address = getPartyAddress(invParty.addresses);
       const missingFields = getBusinessMissingFields(invParty);
@@ -265,7 +262,7 @@ const PartiesList: React.FC<Props> = ({
       return (
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Doing business as", aliases, "Business number", businessNumbers)}
-          {renderDetailRow("Primary phone", formatPhoneNumber(phone), "Primary address", address)}
+          {renderDetailRow("Primary contact", primaryContact, "Primary address", address)}
           {invParty.isUpToDate === false && renderNotUpToDateAlert(invParty.partyIdentifier)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
@@ -286,30 +283,25 @@ const PartiesList: React.FC<Props> = ({
     const globalParty = isGlobalParty(party);
 
     return (
-      <div className="d-flex justify-content-between align-items-center py-3 px-4">
-        <div className="w-100 border-bottom d-flex justify-content-between pb-3">
-          <div className="d-flex align-items-center gap-2">
-            <i className={`bi ${icon} text-muted`} />
+      <div className="d-flex justify-content-between align-items-center pt-3 px-4">
+        <div className="w-100 border-bottom d-flex justify-content-between pb-2">
+          <div className="d-flex align-items-center gap-2 investigation-party-name">
+            <i className={`bi ${icon} text-muted party-icon`} />
             <Button
               variant="link"
               className="p-0"
               onClick={() => onViewParty?.(party.partyIdentifier)}
             >
-              {getPartyName(party)}
+              <h5>{getPartyName(party)}</h5>
             </Button>
             {((party?.person as InvestigationPerson)?.safetyConcernIndicator ||
               (party?.business as InvestigationBusiness)?.safetyConcernIndicator) && (
-              <div className="badge comp-status-badge-pending-review">
-                <i className="bi bi-exclamation-circle"></i> Safety concern
-              </div>
+              <PartyBadges isSafetyConcern={true} />
             )}
-            {globalParty && (
-              <span className="text-success small d-flex align-items-center gap-1">
-                <i className="bi bi-check-circle-fill"></i> Published
-              </span>
-            )}
+            {isPartyIncomplete(party) && <PartyBadges isIncomplete={true} />}
+            {globalParty && <PartyBadges isPublished={true} />}
           </div>
-          {renderActionsDropdown(party)}
+          {renderRemoveButton(party)}
         </div>
       </div>
     );
@@ -342,19 +334,19 @@ const PartiesList: React.FC<Props> = ({
               )?.shortDescription ?? role,
             ),
           );
-          const roleParties = grouped[role];
+          const roleParties = sortPartiesByName(grouped[role]);
           return (
             <div
               key={role}
               className="mb-3"
             >
-              <h4 className="fw-bold mt-4 mb-2">
+              <h4 className="fw-bold mt-4 mb-3">
                 {roleText} ({roleParties.length})
               </h4>
               {roleParties.map((party) => (
                 <Card
                   key={getPartyKey(party)}
-                  className={`mb-3 party-card${isGlobalParty(party) ? " party-card--linked" : ""}`}
+                  className="mb-3 party-card--linked"
                 >
                   {renderPartyHeader(party)}
                   {renderCardBody(party)}
@@ -375,10 +367,10 @@ const PartiesList: React.FC<Props> = ({
             <h6 className="text-muted mb-2">
               <i className="bi bi-people me-1"></i> People ({people!.length})
             </h6>
-            {people!.map((party) => (
+            {sortPartiesByName(people!).map((party) => (
               <Card
                 key={party.person?.personGuid}
-                className={`mb-2 party-card${isGlobalParty(party) ? " party-card--linked" : ""}`}
+                className="mb-2 party-card--linked"
               >
                 {renderPartyHeader(party)}
                 {renderCardBody(party)}
@@ -392,10 +384,10 @@ const PartiesList: React.FC<Props> = ({
             <h6 className="text-muted mb-2">
               <i className="bi bi-building me-1"></i> Companies ({companies!.length})
             </h6>
-            {companies!.map((party) => (
+            {sortPartiesByName(companies!).map((party) => (
               <Card
                 key={party.business?.businessGuid}
-                className={`mb-2 party-card${isGlobalParty(party) ? " party-card--linked" : ""}`}
+                className="mb-2 party-card--linked"
               >
                 {renderPartyHeader(party)}
                 {renderCardBody(party)}

@@ -7,7 +7,7 @@ const INVESTIGATION_TAB_ITEMS = {
   continuation: "Continuation report",
   tasks: "Tasks",
   parties: "Parties",
-  contraventions: "Outcomes",
+  contraventions: "Contraventions",
   documents: "Attachments",
   exhibits: "Exhibits",
 };
