@@ -609,7 +609,7 @@ export class InvestigationPartyService {
       throw new Error("Party not found on this investigation.");
     }
 
-    const isBusiness = party.partyTypeCode === PARTY_TYPES.Company;
+    const isBusiness = party.partyTypeCode === PARTY_TYPES.Organization;
     const { input, childGuids } = mapInvestigationPartyToPartyCreateInput(party);
 
     return {

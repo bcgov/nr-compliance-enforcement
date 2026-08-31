@@ -385,7 +385,7 @@ export class InvestigationService {
         },
         include,
       });
-    } else if (partyType == "CMP") {
+    } else if (partyType == "ORG") {
       prismaParties = await this.prisma.investigation_business.findMany({
         where: {
           business_guid_ref: partyId,

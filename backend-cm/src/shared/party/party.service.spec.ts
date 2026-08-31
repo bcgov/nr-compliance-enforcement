@@ -13,7 +13,7 @@ const personInput = (input: Partial<PartyMatchInput> = {}): PartyMatchInput => (
 });
 
 const businessInput = (input: Partial<PartyMatchInput> = {}): PartyMatchInput => ({
-  partyTypeCode: PARTY_TYPES.Company,
+  partyTypeCode: PARTY_TYPES.Organization,
   ...input,
 });
 
@@ -26,7 +26,7 @@ const personParty = (person: any = {}, party: any = {}): any => ({
 
 const businessParty = (business: any = {}, party: any = {}): any => ({
   party_guid: "party-1",
-  party_type: PARTY_TYPES.Company,
+  party_type: PARTY_TYPES.Organization,
   business: { name: "ABC Contracting Ltd", ...business },
   ...party,
 });

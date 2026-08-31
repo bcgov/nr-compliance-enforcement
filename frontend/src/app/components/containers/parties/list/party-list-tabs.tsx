@@ -15,7 +15,7 @@ type NavigationTab = {
 
 const TABS: Array<NavigationTab> = [
   { code: PartyTypeCodes.PERSON, name: "People", id: "people-tab" },
-  { code: PartyTypeCodes.BUSINESS, name: "Businesses", id: "businesses-tab" },
+  { code: PartyTypeCodes.ORGANIZATION, name: "Organizations", id: "businesses-tab" },
 ];
 
 export const PartyListTabs: FC<Props> = ({ partyTypeCode, onTabChange }) => {

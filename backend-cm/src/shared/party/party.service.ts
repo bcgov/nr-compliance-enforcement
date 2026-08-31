@@ -90,7 +90,7 @@ const MATCH_FIELD_WEIGHTS: Record<string, Record<string, number>> = {
     weightInKg: LOW_POINTS,
     youngPerson: LOW_POINTS,
   },
-  [PARTY_TYPES.Company]: {
+  [PARTY_TYPES.Organization]: {
     businessName: HIGH_POINTS,
     businessNumber: HIGH_POINTS,
     worksafeBCNumber: HIGH_POINTS,
@@ -540,7 +540,7 @@ export class PartyService {
     let data: any;
 
     try {
-      if (input.partyTypeCode === PARTY_TYPES.Company && input.business) {
+      if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
         this._validateBusinessInput(input.business);
       }
 
@@ -1432,8 +1432,8 @@ export class PartyService {
   /**
    * Compares two sets of contact methods and emits events for any differences.
    *
-   * @param labelFn - Returns the party history field label for a given type code e.g. "business phone number" or
-   *   "phone number in business contact John Doe".
+   * @param labelFn - Returns the party history field label for a given type code e.g. "phone number" or
+   *   "phone number in organization contact John Doe".
    */
   private _compareContactMethods(
     existingMethods: ContactMethod[],
@@ -1590,7 +1590,7 @@ export class PartyService {
   private _diffNewContact(incoming: BusinessPersonXrefInput, addEvent: AddEventFn): void {
     const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
     const methods = incoming.contactMethods ?? [];
-    addEvent("ADDED", "business contact", null, name, {
+    addEvent("ADDED", "organization contact", null, name, {
       phoneNumber: methods.find((cm) => cm?.typeCode === ContactMethods.PHONE)?.value ?? null,
       emailAddress: methods.find((cm) => cm?.typeCode === ContactMethods.EMAIL)?.value ?? null,
     });
@@ -1612,13 +1612,13 @@ export class PartyService {
       existingXref.person?.firstName !== incoming.person?.firstName ||
       existingXref.person?.lastName !== incoming.person?.lastName
     ) {
-      addEvent("EDITED", "business contact name", existingName || null, incomingName || null);
+      addEvent("EDITED", "organization contact name", existingName || null, incomingName || null);
     }
 
     this._compareContactMethods(
       existingXref.contactMethods ?? [],
       incoming.contactMethods ?? [],
-      (tc) => `${this._contactMethodLabel(tc)} in business contact ${contactLabel}`,
+      (tc) => `${this._contactMethodLabel(tc)} in organization contact ${contactLabel}`,
       addEvent,
     );
   }
@@ -1644,7 +1644,7 @@ export class PartyService {
       .forEach((x) => {
         const name = [x.person?.firstName, x.person?.lastName].filter(Boolean).join(" ");
         const methods = (x.contactMethods as ContactMethod[] | undefined) ?? [];
-        addEvent("REMOVED", "business contact", name, null, {
+        addEvent("REMOVED", "organization contact", name, null, {
           phoneNumber: methods.find((cm) => cm?.typeCode === ContactMethods.PHONE)?.value ?? null,
           emailAddress: methods.find((cm) => cm?.typeCode === ContactMethods.EMAIL)?.value ?? null,
         });
@@ -2004,7 +2004,7 @@ export class PartyService {
 
     const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
 
-    if (input.partyTypeCode === PARTY_TYPES.Company && input.business) {
+    if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
       this._validateBusinessInput(input.business);
     }
 
@@ -2234,7 +2234,7 @@ export class PartyService {
   async search(page: number = 1, pageSize: number = 25, filters?: PartyFilters): Promise<PartyResult> {
     const where: any = {
       party_type: {
-        in: [PARTY_TYPES.Person, PARTY_TYPES.Company],
+        in: [PARTY_TYPES.Person, PARTY_TYPES.Organization],
       },
     };
 
@@ -2307,7 +2307,7 @@ export class PartyService {
     if (filters?.sortBy && filters?.sortOrder) {
       const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
-      if (filters.partyTypeCode === PARTY_TYPES.Company) {
+      if (filters.partyTypeCode === PARTY_TYPES.Organization) {
         orderBy = { business: { name: validSortOrder } };
       } else {
         orderBy = [{ person: { last_name: validSortOrder } }, { person: { first_name: validSortOrder } }];
@@ -2517,7 +2517,7 @@ export class PartyService {
     party: party,
     comparisons?: MatchComparisons,
   ): PartyMatchedField[] {
-    const weights = MATCH_FIELD_WEIGHTS[PARTY_TYPES.Company];
+    const weights = MATCH_FIELD_WEIGHTS[PARTY_TYPES.Organization];
     const matched: PartyMatchedField[] = [];
 
     const businessName = scoreNameField(
@@ -2599,7 +2599,7 @@ export class PartyService {
     comparisons?: MatchComparisons,
   ): { score: number; matchedFields: PartyMatchedField[] } {
     const matchedFields =
-      input.partyTypeCode === PARTY_TYPES.Company
+      input.partyTypeCode === PARTY_TYPES.Organization
         ? this._scoreBusinessFields(input, party, comparisons)
         : this._scorePersonFields(input, party, comparisons);
 
@@ -2932,7 +2932,7 @@ export class PartyService {
    */
   private _buildMatchLookups(input: PartyMatchInput): MatchLookup[] {
     const typeLookups =
-      input.partyTypeCode === PARTY_TYPES.Company
+      input.partyTypeCode === PARTY_TYPES.Organization
         ? this._buildBusinessMatchLookups(input)
         : this._buildPersonMatchLookups(input);
 
@@ -3027,7 +3027,7 @@ export class PartyService {
       }
     };
 
-    if (input.partyTypeCode === PARTY_TYPES.Company) {
+    if (input.partyTypeCode === PARTY_TYPES.Organization) {
       const businessName = input.business?.name?.trim();
       const contact = businessMatchContact(input);
       const contactAggregates: Prisma.Sql[] = [];
@@ -3073,7 +3073,7 @@ export class PartyService {
     }
 
     // An alias row has no entered counterpart, so it is compared against the entered name
-    const aliasName = input.partyTypeCode === PARTY_TYPES.Company ? "" : personMatchName(input).trim();
+    const aliasName = input.partyTypeCode === PARTY_TYPES.Organization ? "" : personMatchName(input).trim();
     if (aliasName) {
       addBestOverRows(
         "al",
