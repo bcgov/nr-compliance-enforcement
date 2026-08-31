@@ -6,3 +6,7 @@ input AliasUpdateInput {
   aliasGuid: String
   name: String!
 }
+
+input AliasMatchInput {
+  name: String
+}
