@@ -43,7 +43,7 @@ jobs:
       - uses: bcgov/action-test-and-analyse@v1.4.0
         with:
           commands: |
-            npm ci ${{ startsWith(matrix.dir, 'backend') && '--legacy-peer-deps' || '' }}
+            npm ci
             ${{ matrix.dir == 'backend-cm' && 'npm run prisma-generate-all' || '' }}
             npm run test
           dir: ${{ matrix.dir }}
