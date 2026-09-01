@@ -148,9 +148,9 @@ cmd_install() {
   info "Installing $SVC_FE..."
   docker exec "$SVC_FE" npm install
   info "Installing $SVC_BE..."
-  docker exec "$SVC_BE" npm install --legacy-peer-deps
+  docker exec "$SVC_BE" npm install
   info "Installing $SVC_CM..."
-  docker exec "$SVC_CM" npm install --legacy-peer-deps
+  docker exec "$SVC_CM" npm install
   info "Done."
 }
 
