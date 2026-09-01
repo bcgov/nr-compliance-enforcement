@@ -183,6 +183,7 @@ export const GET_INVESTIGATION = gql`
             geoOrganizationUnitCode
             appUserIdentifier
             activeIndicator
+            comment
             ticket {
               ticketIdentifier
               ticketOutcomeCode

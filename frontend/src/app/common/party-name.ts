@@ -1,6 +1,7 @@
 import { InspectionParty, InvestigationParty, Party } from "@/generated/graphql";
 
-export const getPartyName = (party: InvestigationParty | InspectionParty | Party): string => {
+export const getPartyName = (party?: InvestigationParty | InspectionParty | Party | null): string => {
+  if (!party) return "Unknown party";
   if (party.person) {
     const { firstName, middleNames, lastName } = party.person;
     const givenNames = [firstName, middleNames].map((part) => part?.trim()).filter(Boolean).join(" ");
@@ -10,4 +11,19 @@ export const getPartyName = (party: InvestigationParty | InspectionParty | Party
   if (party.business?.name) return party.business.name;
   if ("placeholderName" in party && party.placeholderName) return party.placeholderName;
   return "-";
+};
+
+// A party's profile is "complete" enough to record a full enforcement decision against it -
+// otherwise (including no party at all, e.g. an unknown-party contravention) only the
+// comment-only decisions (Unfounded, Unresolved) are available.
+export const isPartyProfileComplete = (party?: InvestigationParty | null): boolean => {
+  if (!party) return false;
+  const primaryAddress = party.addresses?.find((addr) => addr?.isPrimary);
+  if (party.person) {
+    const rawDob = party.person?.dateOfBirth;
+    const rawPhone = party.contactMethods?.find((m) => m?.typeCode === "PHONE")?.value;
+    return !!primaryAddress && !!rawPhone && !!rawDob;
+  } else {
+    return !!primaryAddress;
+  }
 };

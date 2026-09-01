@@ -10,7 +10,7 @@ import { getPartyName } from "@/app/common/party-name";
 
 interface EnforcementActionViewEditContentReadOnlyProps {
   enforcementAction: EnforcementAction;
-  party: InvestigationParty;
+  party?: InvestigationParty;
   contraventionLabel: React.ReactNode;
   communityLabel: string;
   servingOfficerLabel: string;

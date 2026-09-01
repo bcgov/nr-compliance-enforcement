@@ -1,4 +1,4 @@
-import { GraphQLClient, type RequestOptions } from 'graphql-request';
+import { GraphQLClient, RequestOptions } from 'graphql-request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -592,12 +592,13 @@ export type CreateDecisionInput = {
 
 export type CreateEnforcementActionInput = {
   appUserIdentifier: Scalars['String']['input'];
+  comment?: InputMaybe<Scalars['String']['input']>;
   contraventionIdentifier: Scalars['String']['input'];
   dateIssued: Scalars['DateTime']['input'];
   enforcementActionCode: Scalars['String']['input'];
   geoOrganizationUnitCode: Scalars['String']['input'];
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
-  partyIdentifier: Scalars['String']['input'];
+  partyIdentifier?: InputMaybe<Scalars['String']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
@@ -1027,6 +1028,7 @@ export type EnforcementAction = {
   __typename?: 'EnforcementAction';
   activeIndicator: Scalars['Boolean']['output'];
   appUserIdentifier: Scalars['String']['output'];
+  comment?: Maybe<Scalars['String']['output']>;
   contraventionPartyXrefIdentifier: Scalars['String']['output'];
   dateIssued: Scalars['DateTime']['output'];
   enforcementActionCode: EnforcementActionCode;
@@ -2547,6 +2549,7 @@ export type Prevention = {
   actions?: Maybe<Array<Maybe<CaseFileAction>>>;
   id?: Maybe<Scalars['String']['output']>;
   outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
+  wacnAmount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type PreventionActionInput = {
@@ -2559,6 +2562,7 @@ export type PreventionActionInput = {
 export type PreventionInput = {
   actions: Array<InputMaybe<PreventionActionInput>>;
   id?: InputMaybe<Scalars['String']['input']>;
+  wacnAmount?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Query = {
@@ -3281,6 +3285,7 @@ export type UpdateDecisionInput = {
 
 export type UpdateEnforcementActionInput = {
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
   dateIssued?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
   enforcementActionIdentifier: Scalars['String']['input'];

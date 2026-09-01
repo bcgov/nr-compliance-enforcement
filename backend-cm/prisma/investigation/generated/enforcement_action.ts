@@ -37,6 +37,9 @@ export class enforcement_action {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  comment?: string;
+
   @ApiProperty({ type: () => contravention_party_xref })
   contravention_party_xref: contravention_party_xref;
 

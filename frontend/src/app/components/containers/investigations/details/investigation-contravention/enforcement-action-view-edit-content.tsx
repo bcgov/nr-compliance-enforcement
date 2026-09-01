@@ -12,10 +12,9 @@ import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 
 interface EnforcementActionViewEditContentProps {
-  currentStep: number;
   investigationGuid: string;
   contravention: Contravention;
-  party: InvestigationParty;
+  party?: InvestigationParty;
   enforcementAction?: EnforcementAction;
   isReadOnly?: boolean;
   handleChildDirtyChange: (index: number, isDirty: boolean) => void;
@@ -26,7 +25,7 @@ interface EnforcementActionViewEditContentProps {
   onIsSavingChange: (isSaving: boolean) => void;
 }
 
-const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ legislationIdentifierRef }) => {
+export const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ legislationIdentifierRef }) => {
   const legislation = useLegislation(legislationIdentifierRef, false);
   const legislationData = legislation?.data?.legislation;
   if (!legislationData) return <span>Loading...</span>;
@@ -39,7 +38,6 @@ const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ legislat
 };
 
 export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditContentProps> = ({
-  currentStep,
   investigationGuid,
   contravention,
   party,
@@ -80,42 +78,35 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   const servingOfficer = officers?.find((o) => o.app_user_guid === enforcementAction?.appUserIdentifier);
   const servingOfficerLabel = servingOfficer ? `${servingOfficer.last_name}, ${servingOfficer.first_name}` : "";
 
+  if (isReadOnly && enforcementAction) {
+    return (
+      <EnforcementActionViewEditContentReadOnly
+        enforcementAction={enforcementAction}
+        party={party}
+        contraventionLabel={<ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />}
+        communityLabel={communityLabel}
+        servingOfficerLabel={servingOfficerLabel}
+        enforcementActionLabel={enforcementActionLabel}
+        ticketOutcomeLabel={ticketOutcomeLabel}
+        attachments={existingAttachments}
+        isLoadingAttachments={attachmentsQuery.isLoading}
+      />
+    );
+  }
+
   return (
-    <>
-      <div className={currentStep === 0 && enforcementAction ? "" : "d-none"}>
-        {enforcementAction && (
-          <EnforcementActionViewEditContentReadOnly
-            enforcementAction={enforcementAction}
-            party={party}
-            contraventionLabel={
-              <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
-            }
-            communityLabel={communityLabel}
-            servingOfficerLabel={servingOfficerLabel}
-            enforcementActionLabel={enforcementActionLabel}
-            ticketOutcomeLabel={ticketOutcomeLabel}
-            attachments={existingAttachments}
-            isLoadingAttachments={attachmentsQuery.isLoading}
-          />
-        )}
-      </div>
-      {!isReadOnly && (
-        <div className={currentStep === 1 || !enforcementAction ? "" : "d-none"}>
-          <EnforcementActionForm
-            investigationGuid={investigationGuid}
-            party={party}
-            contravention={contravention}
-            enforcementAction={enforcementAction}
-            existingAttachments={existingAttachments}
-            onDirtyChange={handleChildDirtyChange}
-            onRequestValidate={onRequestValidate}
-            onRequestSave={onRequestSave}
-            onRequestDelete={onRequestDelete}
-            onIsSavingChange={onIsSavingChange}
-            onClose={onClose}
-          />
-        </div>
-      )}
-    </>
+    <EnforcementActionForm
+      investigationGuid={investigationGuid}
+      party={party}
+      contravention={contravention}
+      enforcementAction={enforcementAction}
+      existingAttachments={existingAttachments}
+      onDirtyChange={handleChildDirtyChange}
+      onRequestValidate={onRequestValidate}
+      onRequestSave={onRequestSave}
+      onRequestDelete={onRequestDelete}
+      onIsSavingChange={onIsSavingChange}
+      onClose={onClose}
+    />
   );
 };

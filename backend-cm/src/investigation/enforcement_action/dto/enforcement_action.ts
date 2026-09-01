@@ -6,19 +6,20 @@ import { EnforcementActionCode } from "../../../../src/investigation/enforcement
 export class EnforcementAction {
   enforcementActionIdentifier: string;
   contraventionIdentifier: string;
-  partyIdentifier: string;
+  partyIdentifier: string | null; // null unknown party
   enforcementActionCode: EnforcementActionCode;
   dateIssued: Date;
   geoOrganizationUnitCode: string;
   appUserIdentifier: string;
   activeIndicator: boolean;
   ticket?: [Ticket];
+  comment?: string;
   publishedPartyReference?: string; //For attachments in COMS
 }
 
 export class CreateEnforcementActionInput {
   contraventionIdentifier: string;
-  partyIdentifier: string;
+  partyIdentifier?: string;
   enforcementActionCode: string;
   dateIssued: Date;
   geoOrganizationUnitCode: string;
@@ -27,6 +28,7 @@ export class CreateEnforcementActionInput {
   ticketAmount?: number;
   ticketNumber?: string;
   paidDate?: Date;
+  comment?: string;
 }
 
 export class UpdateEnforcementActionInput {
@@ -39,6 +41,7 @@ export class UpdateEnforcementActionInput {
   ticketAmount?: number;
   ticketNumber?: string;
   paidDate?: Date;
+  comment?: string;
 }
 
 export const mapPrismaEnforcementActionToEnforcementAction = (mapper: Mapper) => {
@@ -87,6 +90,10 @@ export const mapPrismaEnforcementActionToEnforcementAction = (mapper: Mapper) =>
     forMember(
       (dest) => dest.ticket,
       mapFrom((src) => (src.ticket?.length ? mapper.map(src.ticket[0], "ticket", "Ticket") : null)),
+    ),
+    forMember(
+      (dest) => dest.comment,
+      mapFrom((src) => src.comment),
     ),
   );
 };

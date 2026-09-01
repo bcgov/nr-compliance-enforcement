@@ -83,10 +83,10 @@ export class EnforcementActionService {
 
   async create(input: CreateEnforcementActionInput): Promise<EnforcementAction> {
     try {
-      const xref = await this.prisma.contravention_party_xref.findFirst({
+      const existingXref = await this.prisma.contravention_party_xref.findFirst({
         where: {
           contravention_guid: input.contraventionIdentifier,
-          investigation_party_guid: input.partyIdentifier,
+          investigation_party_guid: input.partyIdentifier ?? null,
           active_ind: true,
         },
         include: {
@@ -94,22 +94,38 @@ export class EnforcementActionService {
         },
       });
 
-      if (!xref) {
+      if (!existingXref && input.partyIdentifier) {
         throw new Error(
           `No contravention party xref found for contravention ${input.contraventionIdentifier} and party ${input.partyIdentifier}`,
         );
       }
 
-      // Promoting investigation_party to shared schema when enforcement action is created
+      // Promoting investigation_party to shared schema when enforcement action is created against a known party
 
       // 1. Prepare the party for publishing with a random partyIdentifier
-      const preparedParty = await this.investigationPartyService.prepareSharedParty(input.partyIdentifier);
+      const preparedParty = input.partyIdentifier
+        ? await this.investigationPartyService.prepareSharedParty(input.partyIdentifier)
+        : null;
 
       let enforcementAction;
       let sharedParty;
 
       // 2. Create enforcement action and update refs to prepared party
       await withRlsTransaction(this.prisma, async (db) => {
+        const xref =
+          existingXref ??
+          (await db.contravention_party_xref.create({
+            data: {
+              contravention_guid: input.contraventionIdentifier,
+              investigation_party_guid: null,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+            },
+            include: {
+              contravention: true,
+            },
+          }));
+
         enforcementAction = await db.enforcement_action.create({
           data: {
             contravention_party_xref_guid: xref.contravention_party_xref_guid,
@@ -117,6 +133,7 @@ export class EnforcementActionService {
             date_issued: input.dateIssued,
             geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
             app_user_guid_ref: input.appUserIdentifier,
+            comment: input.comment ?? null,
             active_ind: true,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
@@ -139,11 +156,11 @@ export class EnforcementActionService {
 
         // 3. Create the shared party in the shared schema
         if (preparedParty) {
-          await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier, preparedParty);
+          await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier!, preparedParty);
           sharedParty = await this.investigationPartyService.createSharedParty(preparedParty);
           await this.investigationPartyService.stampSharedPartyUpdate(
             db,
-            input.partyIdentifier,
+            input.partyIdentifier!,
             sharedParty.updatedDateTime,
           );
         }
@@ -189,6 +206,7 @@ export class EnforcementActionService {
             date_issued: input.dateIssued,
             geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
             app_user_guid_ref: input.appUserIdentifier,
+            comment: input.comment ?? null,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
           },

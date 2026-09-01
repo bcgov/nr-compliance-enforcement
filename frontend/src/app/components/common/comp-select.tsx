@@ -23,7 +23,17 @@ type Props = {
 
 // Custom Option component to render labelElement or disabled items
 const CustomOption = (props: any) => {
-  const { data } = props;
+  const { data, innerRef } = props;
+
+  // A plain, non-interactive divider row
+  if (data.isSeparator) {
+    return (
+      <div
+        ref={innerRef}
+        className={data.className}
+      />
+    );
+  }
 
   // If there's a custom labelElement, use it
   if (data.labelElement) {
@@ -92,13 +102,15 @@ export const CompSelect: FC<Props> = ({
       items.push(value);
     }
 
-    // Map options to include label, labelElement, isDisabled, and isHeader
+    // Map options to include label, labelElement, isDisabled, isHeader, and isSeparator
     items = items.map((o) => ({
       label: o.label, //for searchability
       value: o.value,
       labelElement: o.labelElement,
       isDisabled: o.isDisabled ?? false,
       isHeader: o.isHeader ?? false,
+      isSeparator: o.isSeparator ?? false,
+      className: o.className,
     }));
   }
 
