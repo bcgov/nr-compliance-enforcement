@@ -176,7 +176,7 @@ services:
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "1000"
     hostname: backend
-    # automapper v9 is ESM-only, needs node >= 20.19 for require(esm)
+    # automapper v9 needs node >= 20.19 for require(esm)
     image: node:22-bookworm-slim
     links:
       - database
