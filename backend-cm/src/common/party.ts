@@ -28,6 +28,6 @@ export interface PartyDto {
 
 export const PARTY_TYPES = {
   Person: "PRS",
-  Company: "CMP",
+  Organization: "ORG",
   Contact: "CNT",
 };

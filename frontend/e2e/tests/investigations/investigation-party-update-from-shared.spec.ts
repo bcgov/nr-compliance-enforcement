@@ -57,8 +57,8 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await page.goto("/party/create");
     await waitForSpinner(page);
 
-    // Select party type - Business
-    await selectItemById("party-type-select", "Company", page);
+    // Select party type - Organization
+    await selectItemById("party-type-select", "Organization", page);
 
     const businessNameInput = page.locator("#businessName");
     await businessNameInput.fill(businessName);
@@ -80,7 +80,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await page.waitForURL(/\/investigation\/[^/]+\/party\/add$/);
 
     await selectItemById("party-role-select", "Party of Interest", page);
-    await selectItemById("party-type-select", "Company", page);
+    await selectItemById("party-type-select", "Organization", page);
 
     await page.locator("#businessName").fill(businessName);
     await page.locator("#businessNumber").fill(uniqueBusinessNumber);

@@ -358,6 +358,20 @@ export class InvestigationPartyService {
     };
   }
 
+  // run after the party update so there's no collision with the existing contact methods
+  private async _createContactMethods(
+    tx: any,
+    owner: { investigation_party_guid?: string; investigation_address_guid?: string },
+    contactMethods: UpdateInvestigationContactMethodInput[],
+  ) {
+    const toCreate = contactMethods.filter((cm) => !cm.contactMethodGuid);
+    if (!toCreate.length) return;
+
+    await tx.investigation_contact_method.createMany({
+      data: toCreate.map((cm) => ({ ...owner, ...this._contactMethodCreateData(cm) })),
+    });
+  }
+
   private async _createAddresses(
     tx: any,
     investigationPartyGuid: string,
@@ -609,7 +623,7 @@ export class InvestigationPartyService {
       throw new Error("Party not found on this investigation.");
     }
 
-    const isBusiness = party.partyTypeCode === PARTY_TYPES.Company;
+    const isBusiness = party.partyTypeCode === PARTY_TYPES.Organization;
     const { input, childGuids } = mapInvestigationPartyToPartyCreateInput(party);
 
     return {
@@ -966,8 +980,9 @@ export class InvestigationPartyService {
 
     const incomingAddresses = input.addresses ?? [];
     const existingAddressGuids = new Set((existingParty.addresses ?? []).map((a) => a.addressGuid));
+    const addressesToUpdate = incomingAddresses.filter((a) => a.addressGuid && existingAddressGuids.has(a.addressGuid));
     const addressOperations = this._buildInvestigationAddressOperations(
-      incomingAddresses.filter((a) => a.addressGuid && existingAddressGuids.has(a.addressGuid)),
+      addressesToUpdate,
       existingParty.addresses ?? [],
     );
 
@@ -997,6 +1012,20 @@ export class InvestigationPartyService {
         input.partyIdentifier,
         incomingAddresses.filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid)),
       );
+
+      await this._createContactMethods(
+        tx,
+        { investigation_party_guid: input.partyIdentifier },
+        input.contactMethods ?? [],
+      );
+
+      for (const address of addressesToUpdate) {
+        await this._createContactMethods(
+          tx,
+          { investigation_address_guid: address.addressGuid },
+          address.contactMethods ?? [],
+        );
+      }
 
       if (input.person && existingParty.person) {
         await this.updatePerson(tx, existingParty.person, input.person);
@@ -1185,6 +1214,12 @@ export class InvestigationPartyService {
           },
         });
       }
+
+      await this._createContactMethods(
+        tx,
+        { investigation_party_guid: contactPartyGuid },
+        contact.contactMethods ?? [],
+      );
     }
 
     await this._mapOfficeLinks(
@@ -1233,28 +1268,16 @@ export class InvestigationPartyService {
     return [...nonPrimary, ...primary];
   }
 
+  // updates and deletes only
   private _buildInvestigationContactMethodOperations(
     incoming: UpdateInvestigationContactMethodInput[],
     existing: InvestigationContactMethod[],
   ) {
-    const toCreate = incoming.filter((cm) => !cm.contactMethodGuid);
     const toUpdate = this._sortContactMethodsPrimaryLast(incoming.filter((cm) => cm.contactMethodGuid));
     const existingGuids = new Set(incoming.map((cm) => cm.contactMethodGuid).filter(Boolean));
     const toDelete = existing.filter((cm) => !existingGuids.has(cm.contactMethodGuid));
 
     const operations: any = {};
-
-    if (toCreate.length) {
-      operations.create = this._sortContactMethodsPrimaryLast(toCreate).map((cm) => ({
-        contact_method_type_code_ref: cm.typeCode,
-        contact_value: cm.value,
-        is_primary: cm.isPrimary,
-        active_ind: true,
-        contact_method_guid_ref: cm.contactMethodReference ?? null,
-        create_user_id: this.user.getIdirUsername(),
-        create_utc_timestamp: new Date(),
-      }));
-    }
 
     if (toUpdate.length || toDelete.length) {
       operations.update = [

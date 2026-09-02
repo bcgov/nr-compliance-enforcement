@@ -382,7 +382,7 @@ const PartiesList: React.FC<Props> = ({
         {(companies?.length ?? 0) > 0 && (
           <div className="mb-3">
             <h6 className="text-muted mb-2">
-              <i className="bi bi-building me-1"></i> Companies ({companies!.length})
+              <i className="bi bi-building me-1"></i> Organizations ({companies!.length})
             </h6>
             {sortPartiesByName(companies!).map((party) => (
               <Card

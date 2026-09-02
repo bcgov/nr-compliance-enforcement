@@ -81,6 +81,7 @@ input PartyMatchInput {
   partyTypeCode: String!
   person: PersonMatchInput
   business: BusinessMatchInput
+  aliases: [AliasMatchInput!]
   addresses: [AddressMatchInput!]
   contactMethods: [ContactMethodMatchInput!]
 }

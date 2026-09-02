@@ -219,7 +219,7 @@ export const mapPartyToInvestigationPartyUpdateInput = (
     ...children,
   };
 
-  return existingParty.partyTypeCode === PARTY_TYPES.Company
+  return existingParty.partyTypeCode === PARTY_TYPES.Organization
     ? { ...common, business: mapBusiness(sharedParty.business, existingParty.business, localAddressGuids) }
     : { ...common, person: mapPerson(sharedParty.person, existingParty.person) };
 };
@@ -233,11 +233,11 @@ export const mapPartyToInvestigationPartyCreateInput = (
   partyAssociationRole: string,
   attachmentReferences?: CreateInvestigationAttachmentReferenceInput[],
 ): CreateInvestigationPartyInput => {
-  const isBusiness = sharedParty.partyTypeCode === PARTY_TYPES.Company;
+  const isBusiness = sharedParty.partyTypeCode === PARTY_TYPES.Organization;
   const { localAddressGuids, ...children } = mapPartyChildren(sharedParty);
 
   const common: CreateInvestigationPartyInput = {
-    partyTypeCode: isBusiness ? PARTY_TYPES.Company : PARTY_TYPES.Person,
+    partyTypeCode: isBusiness ? PARTY_TYPES.Organization : PARTY_TYPES.Person,
     partyReference: sharedParty.partyIdentifier,
     // the role a party plays is not local to the investigation not global
     partyAssociationRole,
