@@ -4,7 +4,10 @@ export const getPartyName = (party?: InvestigationParty | InspectionParty | Part
   if (!party) return "Unknown party";
   if (party.person) {
     const { firstName, middleNames, lastName } = party.person;
-    const givenNames = [firstName, middleNames].map((part) => part?.trim()).filter(Boolean).join(" ");
+    const givenNames = [firstName, middleNames]
+      .map((part) => part?.trim())
+      .filter(Boolean)
+      .join(" ");
     const name = [lastName?.trim().toUpperCase(), givenNames].filter(Boolean).join(", ");
     if (name) return name;
   }
@@ -13,9 +16,6 @@ export const getPartyName = (party?: InvestigationParty | InspectionParty | Part
   return "-";
 };
 
-// A party's profile is "complete" enough to record a full enforcement decision against it -
-// otherwise (including no party at all, e.g. an unknown-party contravention) only the
-// comment-only decisions (Unfounded, Unresolved) are available.
 export const isPartyProfileComplete = (party?: InvestigationParty | null): boolean => {
   if (!party) return false;
   const primaryAddress = party.addresses?.find((addr) => addr?.isPrimary);

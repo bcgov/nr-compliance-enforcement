@@ -57,6 +57,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           titles: isEdit ? ["Edit contravention", "Edit party"] : ["Add contravention", "Add party"],
           totalSteps: isEdit ? 1 : 2,
           isEdit,
+          deleteEntityLabel: "contravention",
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
@@ -105,7 +106,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           totalSteps: 1,
           isEdit: false,
           content: (
-            _currentStep: number,
+            currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
             onRequestSave: (fn: () => Promise<void>) => void,
             onRequestDelete: (fn: () => Promise<void>) => void,
@@ -114,6 +115,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <EnforcementActionViewEditContent
+              currentStep={currentStep}
               investigationGuid={investigationGuid}
               contravention={contravention as Contravention}
               party={party as InvestigationParty | undefined}
@@ -148,12 +150,17 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: [isReadOnly ? "Decision details" : "Edit decision"],
-          totalSteps: 1,
+          titles: ["Decision details", "Edit decision"],
+          totalSteps: 2,
           isEdit: true,
+          deleteFromStep: 1,
+          skipValidateForSteps: [0],
+          nextButtonLabel: "Edit",
+          hidePreviousButton: true,
           isReadOnly,
+          deleteEntityLabel: "decision",
           content: (
-            _currentStep: number,
+            currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
             onRequestSave: (fn: () => Promise<void>) => void,
             onRequestDelete: (fn: () => Promise<void>) => void,
@@ -162,6 +169,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <EnforcementActionViewEditContent
+              currentStep={currentStep}
               investigationGuid={investigationGuid}
               contravention={contravention as Contravention}
               party={party as InvestigationParty | undefined}

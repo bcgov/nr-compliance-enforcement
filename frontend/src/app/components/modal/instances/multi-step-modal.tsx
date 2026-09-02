@@ -21,6 +21,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
     nextButtonLabel,
     hidePreviousButton,
     isReadOnly,
+    deleteEntityLabel = "item",
   } = modalData;
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -93,9 +94,9 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
             <div className="d-flex align-items-start gap-2">
               <i className="bi bi-info-circle mt-2" />
               <span>
-                <strong>Delete contravention</strong>
+                <strong>Delete {deleteEntityLabel}</strong>
                 <p className="mb-3">
-                  Are you sure you want to delete this contravention? This action cannot be undone.
+                  Are you sure you want to delete this {deleteEntityLabel}? This action cannot be undone.
                 </p>
               </span>
             </div>

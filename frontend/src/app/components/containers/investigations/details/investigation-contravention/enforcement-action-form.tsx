@@ -31,9 +31,9 @@ import {
 import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
 import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
+import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
 
 const VIOLATION_TICKET_CODES = new Set(["FDVT"]);
-const NON_EA_DECISION_CODES = new Set(["UNFD", "UNRS"]); // Unfounded, Unresolved
 const DIVIDER_BEFORE_CODE = "ADPN"; // Administrative Penalty
 
 // ticket_amount is stored as Decimal(10, 2) so enforce max amount
@@ -196,11 +196,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const [isViolationTicket, setIsViolationTicket] = useState(
     VIOLATION_TICKET_CODES.has(enforcementAction?.enforcementActionCode?.enforcementActionCode ?? ""),
   );
-  const [isCommentDecision, setIsCommentDecision] = useState(
+  const [isNonEADecision, setIsNonEADecision] = useState(
     NON_EA_DECISION_CODES.has(enforcementAction?.enforcementActionCode?.enforcementActionCode ?? ""),
   );
-  // Adding a new decision starts with just the decision dropdown - the rest of the fields only
-  // make sense once a decision has actually been picked, so they stay hidden until then.
+
   const [hasDecision, setHasDecision] = useState(!!enforcementAction?.enforcementActionCode?.enforcementActionCode);
 
   const saveMutation = useGraphQLMutation(CREATE_ENFORCEMENT_ACTION);
@@ -283,7 +282,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   // Comment only applies to Unfounded/Unresolved decisions. Always included (as null otherwise)
   // so switching away from one of those decisions clears out a stale comment.
   const buildCommentField = (value: FormValues) => ({
-    comment: isCommentDecision ? value.comment : null,
+    comment: isNonEADecision ? value.comment : null,
   });
 
   // Everything that follows a successful save. Best effort: a failure here is logged but never
@@ -389,7 +388,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     onRequestSave,
     isEdit,
     isViolationTicket,
-    isCommentDecision,
+    isNonEADecision,
     enforcementAction,
     contravention,
     party,
@@ -442,7 +441,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
               <i className="bi bi-info-circle-fill pe-2" />
               {party
                 ? "This profile is incomplete. Enforcement actions are unavailable."
-                : "The party is unknown. Some decisions are unavailable."}
+                : "The party is unknown. Enforcement actions are unavailable."}
             </Alert>
           )}
           <div className="text-muted small mb-1">Party</div>
@@ -474,7 +473,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 onChange={(option) => {
                   field.handleChange(option?.value ?? "");
                   setIsViolationTicket(VIOLATION_TICKET_CODES.has(option?.value ?? ""));
-                  setIsCommentDecision(NON_EA_DECISION_CODES.has(option?.value ?? ""));
+                  setIsNonEADecision(NON_EA_DECISION_CODES.has(option?.value ?? ""));
                   setHasDecision(!!option?.value);
                 }}
                 placeholder="Select"
@@ -488,7 +487,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         </div>
       </div>
 
-      {isCommentDecision && (
+      {isNonEADecision && (
         <div className="row mb-3">
           <div className="col-12">
             <FormField
@@ -512,7 +511,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         </div>
       )}
 
-      {!isCommentDecision && hasDecision && (
+      {!isNonEADecision && hasDecision && (
         <>
           <div className="row mb-3">
             <div className="col-6">

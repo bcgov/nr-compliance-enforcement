@@ -80,7 +80,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       },
     },
     {
-      label: "Enforcement action",
+      label: "Decisions",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       isSortable: false,

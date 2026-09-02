@@ -12,6 +12,7 @@ import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 
 interface EnforcementActionViewEditContentProps {
+  currentStep: number;
   investigationGuid: string;
   contravention: Contravention;
   party?: InvestigationParty;
@@ -39,6 +40,7 @@ export const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ l
 
 export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditContentProps> = ({
   investigationGuid,
+  currentStep,
   contravention,
   party,
   enforcementAction,
@@ -78,35 +80,42 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   const servingOfficer = officers?.find((o) => o.app_user_guid === enforcementAction?.appUserIdentifier);
   const servingOfficerLabel = servingOfficer ? `${servingOfficer.last_name}, ${servingOfficer.first_name}` : "";
 
-  if (isReadOnly && enforcementAction) {
-    return (
-      <EnforcementActionViewEditContentReadOnly
-        enforcementAction={enforcementAction}
-        party={party}
-        contraventionLabel={<ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />}
-        communityLabel={communityLabel}
-        servingOfficerLabel={servingOfficerLabel}
-        enforcementActionLabel={enforcementActionLabel}
-        ticketOutcomeLabel={ticketOutcomeLabel}
-        attachments={existingAttachments}
-        isLoadingAttachments={attachmentsQuery.isLoading}
-      />
-    );
-  }
-
   return (
-    <EnforcementActionForm
-      investigationGuid={investigationGuid}
-      party={party}
-      contravention={contravention}
-      enforcementAction={enforcementAction}
-      existingAttachments={existingAttachments}
-      onDirtyChange={handleChildDirtyChange}
-      onRequestValidate={onRequestValidate}
-      onRequestSave={onRequestSave}
-      onRequestDelete={onRequestDelete}
-      onIsSavingChange={onIsSavingChange}
-      onClose={onClose}
-    />
+    <>
+      <div className={currentStep === 0 && enforcementAction ? "" : "d-none"}>
+        {enforcementAction && (
+          <EnforcementActionViewEditContentReadOnly
+            enforcementAction={enforcementAction}
+            party={party}
+            contraventionLabel={
+              <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
+            }
+            communityLabel={communityLabel}
+            servingOfficerLabel={servingOfficerLabel}
+            enforcementActionLabel={enforcementActionLabel}
+            ticketOutcomeLabel={ticketOutcomeLabel}
+            attachments={existingAttachments}
+            isLoadingAttachments={attachmentsQuery.isLoading}
+          />
+        )}
+      </div>
+      {!isReadOnly && (
+        <div className={currentStep === 1 || !enforcementAction ? "" : "d-none"}>
+          <EnforcementActionForm
+            investigationGuid={investigationGuid}
+            party={party}
+            contravention={contravention}
+            enforcementAction={enforcementAction}
+            existingAttachments={existingAttachments}
+            onDirtyChange={handleChildDirtyChange}
+            onRequestValidate={onRequestValidate}
+            onRequestSave={onRequestSave}
+            onRequestDelete={onRequestDelete}
+            onIsSavingChange={onIsSavingChange}
+            onClose={onClose}
+          />
+        </div>
+      )}
+    </>
   );
 };
