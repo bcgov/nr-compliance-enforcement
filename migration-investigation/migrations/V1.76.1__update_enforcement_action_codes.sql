@@ -21,11 +21,19 @@ SET
 WHERE
     enforcement_action_code = 'WARN';
 
-DELETE FROM investigation.enforcement_action_code_agency_xref
+UPDATE investigation.enforcement_action_code_agency_xref
+SET
+    active_ind = false,
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = now ()
 WHERE
     enforcement_action_code IN ('LIAC', 'NOAC', 'PRVT');
 
-DELETE FROM investigation.enforcement_action_code
+UPDATE investigation.enforcement_action_code
+SET
+    active_ind = false,
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = now ()
 WHERE
     enforcement_action_code IN ('LIAC', 'NOAC', 'PRVT');
 
@@ -103,3 +111,8 @@ VALUES
         'FLYWAY',
         now ()
     );
+
+CREATE UNIQUE INDEX uq_contravention_party_xref_unknown_party ON investigation.contravention_party_xref (contravention_guid)
+WHERE
+    investigation_party_guid IS NULL
+    AND active_ind;

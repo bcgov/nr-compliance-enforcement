@@ -83,23 +83,6 @@ export class EnforcementActionService {
 
   async create(input: CreateEnforcementActionInput): Promise<EnforcementAction> {
     try {
-      const existingXref = await this.prisma.contravention_party_xref.findFirst({
-        where: {
-          contravention_guid: input.contraventionIdentifier,
-          investigation_party_guid: input.partyIdentifier ?? null,
-          active_ind: true,
-        },
-        include: {
-          contravention: true,
-        },
-      });
-
-      if (!existingXref && input.partyIdentifier) {
-        throw new Error(
-          `No contravention party xref found for contravention ${input.contraventionIdentifier} and party ${input.partyIdentifier}`,
-        );
-      }
-
       // Promoting investigation_party to shared schema when enforcement action is created against a known party
 
       // 1. Prepare the party for publishing with a random partyIdentifier
@@ -112,6 +95,26 @@ export class EnforcementActionService {
 
       // 2. Create enforcement action and update refs to prepared party
       await withRlsTransaction(this.prisma, async (db) => {
+        // Looked up inside the transaction (rather than before it) so a concurrent request can't
+        // race this read against the on-demand create below and produce two active null-party
+        // xref rows for the same contravention.
+        const existingXref = await db.contravention_party_xref.findFirst({
+          where: {
+            contravention_guid: input.contraventionIdentifier,
+            investigation_party_guid: input.partyIdentifier ?? null,
+            active_ind: true,
+          },
+          include: {
+            contravention: true,
+          },
+        });
+
+        if (!existingXref && input.partyIdentifier) {
+          throw new Error(
+            `No contravention party xref found for contravention ${input.contraventionIdentifier} and party ${input.partyIdentifier}`,
+          );
+        }
+
         const xref =
           existingXref ??
           (await db.contravention_party_xref.create({

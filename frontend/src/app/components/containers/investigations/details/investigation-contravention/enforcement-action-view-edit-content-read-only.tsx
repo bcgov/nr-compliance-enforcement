@@ -95,7 +95,7 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
           <Field label="Serving officer">{servingOfficerLabel || "—"}</Field>
         </div>
         <div className="col-6">
-          <Field label="Enforcement action">{enforcementActionLabel || "—"}</Field>
+          <Field label="Decision">{enforcementActionLabel || "—"}</Field>
         </div>
         {ticket && (
           <>

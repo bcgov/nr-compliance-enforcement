@@ -495,11 +495,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
               form={form}
               name="comment"
               label="Comment"
-              required
-              validators={{
-                onChange: z.string().min(1, "Comment is required"),
-                onSubmit: z.string().min(1, "Comment is required"),
-              }}
               render={(field) => (
                 <ValidationTextArea
                   id="enforcement-action-comment"
