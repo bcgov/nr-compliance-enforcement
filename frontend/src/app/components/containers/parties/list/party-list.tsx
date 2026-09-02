@@ -186,7 +186,7 @@ export const PartyList: FC<Props> = ({ parties, partyTypeCode, totalItems = 0, i
 
   const columns = useMemo(
     () =>
-      partyTypeCode === PartyTypeCodes.BUSINESS
+      partyTypeCode === PartyTypeCodes.ORGANIZATION
         ? getBusinessColumns(countrySubdivisions, countries)
         : getPersonColumns(countrySubdivisions, countries, approximateAgeCodes),
     [partyTypeCode],

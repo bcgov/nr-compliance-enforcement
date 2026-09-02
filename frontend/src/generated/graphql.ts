@@ -126,6 +126,10 @@ export type AliasInput = {
   name: Scalars['String']['input'];
 };
 
+export type AliasMatchInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AliasUpdateInput = {
   aliasGuid?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -2348,6 +2352,7 @@ export type PartyFilters = {
 
 export type PartyMatchInput = {
   addresses?: InputMaybe<Array<AddressMatchInput>>;
+  aliases?: InputMaybe<Array<AliasMatchInput>>;
   business?: InputMaybe<BusinessMatchInput>;
   contactMethods?: InputMaybe<Array<ContactMethodMatchInput>>;
   partyTypeCode: Scalars['String']['input'];

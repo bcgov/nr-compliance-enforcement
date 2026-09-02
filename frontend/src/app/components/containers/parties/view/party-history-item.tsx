@@ -116,16 +116,18 @@ const useEventDescription = (event: Event): string => {
     return [phone, content?.emailAddress];
   };
 
-  // Address and business contact events carry extra detail in the event content, so they render
+  // Address and organization contact events carry extra detail in the event content, so they render
   // as "<verb> <field> <name>: <details>" rather than the plain field/value form.
   const describeDetailedChange = (verbLabel: string, value: string | null | undefined): string | undefined => {
     if (field === "address") {
       const details = formatAddressDetails();
       return details ? `${verbLabel} address ${value}: ${details}` : `${verbLabel} address: ${value}`;
     }
-    if (field === "business contact") {
+    if (field === "organization contact") {
       const details = contactDetails().filter(Boolean).join(", ");
-      return details ? `${verbLabel} business contact ${value}: ${details}` : `${verbLabel} business contact: ${value}`;
+      return details
+        ? `${verbLabel} organization contact ${value}: ${details}`
+        : `${verbLabel} organization contact: ${value}`;
     }
     return undefined;
   };

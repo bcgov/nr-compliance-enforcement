@@ -129,6 +129,13 @@ const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populated
     populatedCount += 1;
   }
 
+  const aliases = (values.aliases ?? [])
+    .filter((alias: { name?: string | null }) => hasText(alias?.name))
+    .map((alias: { name?: string | null }) => ({ name: alias.name?.trim() }));
+  if (aliases.length) {
+    populatedCount += 1;
+  }
+
   Object.assign(person, buildPersonDescriptors(values));
 
   const shared = buildSharedMatchFields(values, true);
@@ -137,6 +144,7 @@ const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populated
   const input: PartyMatchInput = {
     partyTypeCode: PartyTypeCodes.PERSON,
     person,
+    ...(aliases.length ? { aliases } : {}),
     ...(shared.contactMethods?.length ? { contactMethods: shared.contactMethods } : {}),
     ...(shared.addresses?.length ? { addresses: shared.addresses } : {}),
   };
@@ -239,7 +247,7 @@ const buildBusinessMatchInput = (values: any): { input: PartyMatchInput; populat
   populatedCount += shared.populatedCount;
 
   const input: PartyMatchInput = {
-    partyTypeCode: PartyTypeCodes.BUSINESS,
+    partyTypeCode: PartyTypeCodes.ORGANIZATION,
     business,
     ...(shared.contactMethods?.length ? { contactMethods: shared.contactMethods } : {}),
     ...(shared.addresses?.length ? { addresses: shared.addresses } : {}),
@@ -253,7 +261,7 @@ export const usePartyMatchTrigger = (form: any, isLinkedParty: boolean) => {
 
   const values = useStore(form.store, (state: any) => state.values);
   const { input, populatedCount } =
-    values.partyType === PartyTypeCodes.BUSINESS ? buildBusinessMatchInput(values) : buildPersonMatchInput(values);
+    values.partyType === PartyTypeCodes.ORGANIZATION ? buildBusinessMatchInput(values) : buildPersonMatchInput(values);
 
   const timer = useRef<ReturnType<typeof setTimeout>>();
   const pendingInput = useRef<PartyMatchInput>();

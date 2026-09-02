@@ -15,6 +15,11 @@ export class AliasInput {
   name: string;
 }
 
+export class AliasMatchInput {
+  @Field(() => String, { nullable: true })
+  name?: string;
+}
+
 export const mapPrismaAliasToAlias = (mapper: Mapper) => {
   createMap<alias, Alias>(
     mapper,

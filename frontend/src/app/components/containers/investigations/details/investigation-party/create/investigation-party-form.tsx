@@ -299,7 +299,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const partyTypeCodes = partyTypes
     ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
-    .filter((party: any) => [PartyTypeCodes.PERSON, PartyTypeCodes.BUSINESS].includes(party.value))
+    .filter((party: any) => [PartyTypeCodes.PERSON, PartyTypeCodes.ORGANIZATION].includes(party.value))
     .map((code: any) => ({ value: code.value, label: code.label }));
 
   const partyRoleOptions = partyRoles
@@ -616,7 +616,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                 />
               )}
 
-              {partyTypeValue === PartyTypeCodes.BUSINESS && (
+              {partyTypeValue === PartyTypeCodes.ORGANIZATION && (
                 <BusinessFormFields
                   form={form}
                   isDisabled={isDisabled}

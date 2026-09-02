@@ -1,10 +1,10 @@
 export const PartyTypes = {
-  BUSINESS: "Business",
+  ORGANIZATION: "Organization",
   PERSON: "Person",
 };
 
 export const PartyTypeCodes = {
-  BUSINESS: "CMP",
+  ORGANIZATION: "ORG",
   PERSON: "PRS",
   CONTACT: "CNT",
 };

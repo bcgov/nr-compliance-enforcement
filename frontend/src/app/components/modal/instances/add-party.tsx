@@ -281,7 +281,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
   const partyTypeCodes = partyTypes
     ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
-    .filter((party: any) => [PartyTypeCodes.PERSON, PartyTypeCodes.BUSINESS].includes(party.value))
+    .filter((party: any) => [PartyTypeCodes.PERSON, PartyTypeCodes.ORGANIZATION].includes(party.value))
     .map((code: any) => ({
       value: code.value,
       label: code.label,
@@ -528,7 +528,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
               )}
               {selectedParty?.business && (
                 <>
-                  <h4>Business details</h4>
+                  <h4>Organization details</h4>
                   <div className="comp-details-form-row">
                     <div className="col-md-6">
                       <strong>Legal name:</strong>
@@ -613,7 +613,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                 />
               )}
 
-              {partyTypeValue === PartyTypeCodes.BUSINESS && (
+              {partyTypeValue === PartyTypeCodes.ORGANIZATION && (
                 <BusinessFormFields
                   form={partyForm}
                   isDisabled={false}
