@@ -9,4 +9,9 @@ export default interface Option {
   isDisabled?: boolean;
   // Used to style an option as a header while still being selectable
   isHeader?: boolean;
+  // Renders as a plain, non-interactive divider row - bypasses react-select's Option wrapper
+  // entirely so it never gets hover/focus/selected background styling
+  isSeparator?: boolean;
+  // CSS class applied to a separator row (ignored otherwise)
+  className?: string;
 }

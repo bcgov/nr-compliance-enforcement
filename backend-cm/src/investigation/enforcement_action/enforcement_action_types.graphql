@@ -7,12 +7,13 @@ type EnforcementAction {
   appUserIdentifier: String!
   activeIndicator: Boolean!
   ticket: Ticket
+  comment: String
   publishedPartyReference: String
 }
 
 input CreateEnforcementActionInput {
   contraventionIdentifier: String!
-  partyIdentifier: String!
+  partyIdentifier: String
   enforcementActionCode: String!
   dateIssued: DateTime!
   geoOrganizationUnitCode: String!
@@ -21,6 +22,7 @@ input CreateEnforcementActionInput {
   ticketAmount: Float
   ticketNumber: String
   paidDate: DateTime
+  comment: String
 }
 
 input UpdateEnforcementActionInput {
@@ -33,4 +35,5 @@ input UpdateEnforcementActionInput {
   ticketAmount: Float
   ticketNumber: String
   paidDate: DateTime
+  comment: String
 }

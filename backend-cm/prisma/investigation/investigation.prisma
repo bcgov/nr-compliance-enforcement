@@ -130,6 +130,7 @@ model enforcement_action {
   create_utc_timestamp                                                                        DateTime                 @default(now()) @db.Timestamp(6)
   update_user_id                                                                              String?                  @db.VarChar(32)
   update_utc_timestamp                                                                        DateTime?                @db.Timestamp(6)
+  comment                                                                                     String?
   contravention_party_xref                                                                    contravention_party_xref @relation(fields: [contravention_party_xref_guid], references: [contravention_party_xref_guid], onDelete: NoAction, onUpdate: NoAction)
   enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code enforcement_action_code  @relation("enforcement_action_enforcement_action_codeToenforcement_action_code", fields: [enforcement_action_code], references: [enforcement_action_code], onDelete: NoAction, onUpdate: NoAction)
   ticket                                                                                      ticket[]
