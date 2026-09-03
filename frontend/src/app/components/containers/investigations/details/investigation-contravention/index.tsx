@@ -1,20 +1,18 @@
 import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
-import { ContraventionViewEditModalContent } from "./contravention-read-only-panel";
 import { ContraventionTable } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-table";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import { selectCodeTable } from "@store/reducers/code-table";
-import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
 import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, EnforcementAction, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useMemo } from "react";
-import { formatPhoneNumber } from "react-phone-number-input/input";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";
 import { useEnforcementActionAttachmentIds } from "./hooks/use-enforcement-action-attachment-ids";
-import { getPartyName } from "@/app/common/party-name";
+import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
 
 interface InvestigationContraventionProps {
   investigationGuid: string;
@@ -28,22 +26,11 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
-  const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
+  const navigate = useNavigate();
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const enforcementActionsWithAttachments = useEnforcementActionAttachmentIds(investigationGuid);
   const contraventions = investigationData?.contraventions;
-  const parties = investigationData?.parties as InvestigationParty[];
-
-  const isPartyProfileComplete = (party: InvestigationParty): boolean => {
-    const primaryAddress = party.addresses?.find((addr) => addr?.isPrimary);
-    if (party.person) {
-      const rawDob = party.person?.dateOfBirth;
-      const rawPhone = party.contactMethods?.find((m) => m?.typeCode === "PHONE")?.value;
-      return !!primaryAddress && !!rawPhone && !!rawDob;
-    } else {
-      return !!primaryAddress;
-    }
-  };
+  const parties = (investigationData?.parties ?? []) as InvestigationParty[];
 
   const isPublishedParty = (party: InvestigationParty): boolean => {
     const invParty = party as InvestigationParty;
@@ -54,54 +41,6 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   };
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
-
-  const openViewContraventionModal = (contraventionId: string, partyGuid?: string | null) => {
-    const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
-    if (!contravention) return;
-
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: MULTI_STEP_MODAL,
-        data: {
-          titles: ["Contravention details", "Edit contravention"],
-          totalSteps: 2,
-          isEdit: true,
-          deleteFromStep: 1,
-          skipValidateForSteps: [0],
-          nextButtonLabel: "Edit",
-          hidePreviousButton: true,
-          isReadOnly: isReadOnly,
-          content: (
-            currentStep: number,
-            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
-            onRequestSave: (fn: () => Promise<void>) => void,
-            onRequestDelete: (fn: () => Promise<void>) => void,
-            onClose: () => void,
-            onIsSavingChange: (isSaving: boolean) => void,
-            // eslint-disable-next-line react/no-unstable-nested-components
-          ) => (
-            <ContraventionViewEditModalContent
-              currentStep={currentStep}
-              investigationGuid={investigationGuid}
-              investigationParties={investigationData?.parties as InvestigationParty[]}
-              contravention={contravention}
-              partyGuid={partyGuid}
-              isReadOnly={isReadOnly}
-              handleChildDirtyChange={handleChildDirtyChange}
-              onRequestValidate={onRequestValidate}
-              onRequestSave={onRequestSave}
-              onRequestDelete={onRequestDelete}
-              onClose={onClose}
-              onIsSavingChange={onIsSavingChange}
-            />
-          ),
-          handleChildDirtyChange,
-        },
-        hideCallback,
-      }),
-    );
-  };
 
   const openContraventionModal = (contraventionId?: string, partyGuid?: string | null) => {
     const contravention = contraventionId
@@ -118,6 +57,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           titles: isEdit ? ["Edit contravention", "Edit party"] : ["Add contravention", "Add party"],
           totalSteps: isEdit ? 1 : 2,
           isEdit,
+          deleteEntityLabel: "contravention",
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
@@ -150,17 +90,19 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     );
   };
 
-  const onAddEnforcementAction = (contraventionId: string, partyGuid: string) => {
+  const onAddEnforcementAction = (contraventionId: string, partyGuid: string | null) => {
     const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
-    const party = investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid);
-    if (!contravention || !party) return;
+    // No party at all for an unknown-party contravention - only the comment-only decisions
+    // (Unfounded, Unresolved) are available for those, enforced inside the form itself.
+    const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
+    if (!contravention || (partyGuid && !party)) return;
 
     dispatch(
       openModal({
         modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: ["Add enforcement action"],
+          titles: ["Add decision"],
           totalSteps: 1,
           isEdit: false,
           content: (
@@ -176,7 +118,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               currentStep={currentStep}
               investigationGuid={investigationGuid}
               contravention={contravention as Contravention}
-              party={party as InvestigationParty}
+              party={party as InvestigationParty | undefined}
               onRequestValidate={onRequestValidate}
               onRequestSave={onRequestSave}
               onRequestDelete={onRequestDelete}
@@ -192,21 +134,23 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     );
   };
 
-  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string) => {
+  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string | null) => {
     const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
-    const party = investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid);
-    const contraventionParty = contravention?.investigationParty?.find((p) => p?.partyIdentifier === partyGuid);
+    const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
+    const contraventionParty = contravention?.investigationParty?.find((p) =>
+      partyGuid ? p?.partyIdentifier === partyGuid : !p?.partyIdentifier,
+    );
     const enforcementAction = (contraventionParty?.enforcementActions as EnforcementAction[])?.find(
       (ea) => ea?.enforcementActionIdentifier === enforcementActionId,
     );
-    if (!contravention || !party || !enforcementAction) return;
+    if (!contravention || (partyGuid && !party) || !enforcementAction) return;
 
     dispatch(
       openModal({
         modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: ["Enforcement action details", "Edit enforcement action"],
+          titles: ["Decision details", "Edit decision"],
           totalSteps: 2,
           isEdit: true,
           deleteFromStep: 1,
@@ -214,6 +158,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           nextButtonLabel: "Edit",
           hidePreviousButton: true,
           isReadOnly,
+          deleteEntityLabel: "decision",
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
@@ -227,7 +172,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               currentStep={currentStep}
               investigationGuid={investigationGuid}
               contravention={contravention as Contravention}
-              party={party as InvestigationParty}
+              party={party as InvestigationParty | undefined}
               enforcementAction={enforcementAction}
               isReadOnly={isReadOnly}
               onRequestValidate={onRequestValidate}
@@ -252,32 +197,17 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     // Order by parties of interest
     const knownGroups = parties
       .filter((party) => party.partyAssociationRole === "PTYOFINTRST")
+      .sort((a, b) => getPartyName(a).localeCompare(getPartyName(b)))
       .map((party) => {
         const existing = groupedByPartyGuid.get(party.partyIdentifier ?? null);
-        const primaryAddress = party.addresses?.find((addr) => addr?.isPrimary);
-        const rawPhone = party.contactMethods?.find((m) => m?.typeCode === "PHONE")?.value ?? "";
-        const phone = formatPhoneNumber(rawPhone);
-        const rawDob = party.person?.dateOfBirth ?? "";
-        const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
-        const province =
-          primaryAddress?.province &&
-          countrySubdivisions?.find((code: any) => code.countrySubdivisionCode === primaryAddress.province)
-            ?.shortDescription;
+        const aliases = (party.aliases ?? [])
+          .filter(Boolean)
+          .map((a) => a!.name)
+          .join(", ");
         return {
-          partyName: getPartyName(party),
+          partyName: party.business && aliases ? `${getPartyName(party)} (${aliases})` : getPartyName(party),
           partyGuid: party.partyIdentifier ?? null,
           contraventions: existing?.contraventions ?? [],
-          phone,
-          dob,
-          primaryAddress: primaryAddress
-            ? {
-                address: primaryAddress?.address,
-                city: primaryAddress?.city,
-                province,
-                postalCode: primaryAddress?.postalCode,
-                country: primaryAddress?.country,
-              }
-            : undefined,
         };
       });
     // Unknown group always last
@@ -292,140 +222,93 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
       : [];
 
     return { knownGroups, unknownGroups };
-  }, [contraventions, parties, countrySubdivisions]);
+  }, [contraventions, parties]);
 
   const { knownGroups, unknownGroups } = allGroups;
 
-  const sortedKnownGroups = [...knownGroups].sort((a, b) => {
-    const aObj = parties.find((p) => p.partyIdentifier === a.partyGuid);
-    const bObj = parties.find((p) => p.partyIdentifier === b.partyGuid);
-    const aPublished = aObj ? isPublishedParty(aObj) : false;
-    const bPublished = bObj ? isPublishedParty(bObj) : false;
-    if (aPublished && !bPublished) return -1;
-    if (!aPublished && bPublished) return 1;
-    const aComplete = aObj ? isPartyProfileComplete(aObj) : false;
-    const bComplete = bObj ? isPartyProfileComplete(bObj) : false;
-    if (aComplete && !bComplete) return -1;
-    if (!aComplete && bComplete) return 1;
-    return a.partyName.localeCompare(b.partyName);
-  });
-
   return (
-    <div className="comp-details-view">
-      <div className="row">
-        <div
-          className={
-            knownGroups.length > 0 || unknownGroups.length > 0
-              ? "d-flex align-items-center justify-content-between my-2"
-              : "col-12"
-          }
-        >
-          <h2>Outcomes</h2>
+    <>
+      <div className="row align-items-center mb-4">
+        <div className="col">
+          <h2 className="mb-0">Contraventions</h2>
+        </div>
+        <div className="col-auto">
           <Button
+            id="details-screen-edit-button"
             variant="primary"
             size="sm"
-            id="details-screen-edit-button"
             onClick={() => openContraventionModal()}
             disabled={isReadOnly}
           >
-            <i className="bi bi-plus-circle"></i>
-            <span>Add contravention</span>
+            <i className="bi bi-plus-circle me-1" /> Add contravention
           </Button>
         </div>
       </div>
 
-      {knownGroups.length > 0 && (
-        <div className="row mb-4">
-          <h3>Known / Partially-known parties of interest</h3>
-        </div>
-      )}
-      {sortedKnownGroups.map(
-        ({ partyName, contraventions: groupedContraventions, partyGuid, phone, dob, primaryAddress }) => {
-          const partyObj = parties.find((p) => p.partyIdentifier === partyGuid);
-          const profileComplete = partyObj ? isPartyProfileComplete(partyObj) : false;
-          const publishedParty = partyObj ? isPublishedParty(partyObj) : false;
-          const details = [
-            dob,
-            primaryAddress
-              ? `${primaryAddress?.address ?? ""} ${primaryAddress?.city ?? ""} ${[primaryAddress?.province, primaryAddress?.country].filter(Boolean).join(", ")} ${primaryAddress?.postalCode ?? ""}`
-              : null,
-            phone,
-          ]
-            .filter(Boolean)
-            .join(" | ");
-          return (
-            <div
-              key={partyName}
-              className="mb-4"
-            >
-              <h5 className={`mb-0 fw-bold ${details ? "" : "mb-2"}`}>
-                <i className={profileComplete ? "bi bi-check-circle pe-2" : "bi bi-plus-circle-dotted pe-2"}></i>
-                {partyName} {groupedContraventions.length > 0 ? `(${groupedContraventions.length})` : ""}
-                {!profileComplete && (
-                  <OverlayTrigger
-                    placement="right"
-                    overlay={
-                      <Tooltip id="profile-incomplete-tooltip">
-                        Enforcement actions can only be taken against parties with sufficient information
-                      </Tooltip>
-                    }
-                  >
-                    <span className="brown-font small ps-2">
-                      <i className="bi bi-slash-circle-fill pe-1"></i>Incomplete
-                    </span>
-                  </OverlayTrigger>
-                )}
-                {publishedParty && (
-                  <span className="text-success small ps-2">
-                    <i className="bi bi-check-circle-fill pe-1"></i>Published
-                  </span>
-                )}
-              </h5>
-              <span className="text-muted fw-bold smaller-font">{details}</span>
-              <div className="comp-data-container">
-                <ContraventionTable
-                  contraventions={groupedContraventions}
-                  investigationGuid={investigationGuid}
-                  partyGuid={partyGuid}
-                  isReadOnly={isReadOnly}
-                  enforcementActionsWithAttachments={enforcementActionsWithAttachments}
-                  onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
-                  onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
-                  onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
-                  onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
-                    onEditEnforcementAction(eaId, contraventionId, pGuid)
-                  }
-                  isProfileComplete={profileComplete}
-                />
-              </div>
+      {knownGroups.map(({ partyName, contraventions: groupedContraventions, partyGuid }) => {
+        const partyObj = parties.find((p) => p.partyIdentifier === partyGuid);
+        const profileComplete = partyObj ? isPartyProfileComplete(partyObj) : false;
+        const publishedParty = partyObj ? isPublishedParty(partyObj) : false;
+        return (
+          <div
+            key={partyGuid ?? partyName}
+            className="mb-4"
+          >
+            <div className="mb-2 d-flex align-items-center gap-2 investigation-party-name">
+              <Button
+                variant="link"
+                className="p-0"
+                onClick={() =>
+                  navigate(`/investigation/${investigationGuid}/party/${partyGuid}`, {
+                    state: { from: "contraventions" },
+                  })
+                }
+              >
+                <h5>{partyName}</h5>
+              </Button>
+              {!profileComplete && <PartyBadges isIncomplete={true} />}
+              {publishedParty && <PartyBadges isPublished={true} />}
             </div>
-          );
-        },
-      )}
-
-      {(parties.length > 0 || unknownGroups.length > 0) && (
-        <div className="mb-4 mt-5">
-          <h3 className="mb-5 mt-5">Unknown parties of interest</h3>
-          {unknownGroups.length > 0 && (
             <div className="comp-data-container">
               <ContraventionTable
-                contraventions={unknownGroups.flatMap((g) => g.contraventions)}
+                contraventions={groupedContraventions}
                 investigationGuid={investigationGuid}
-                partyGuid={null}
+                partyGuid={partyGuid}
                 isReadOnly={isReadOnly}
                 enforcementActionsWithAttachments={enforcementActionsWithAttachments}
-                onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
-                onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
-                onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
+                onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
+                onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
                 onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
                   onEditEnforcementAction(eaId, contraventionId, pGuid)
                 }
               />
             </div>
-          )}
+          </div>
+        );
+      })}
+
+      {unknownGroups.length > 0 && (
+        <div className="mb-4">
+          <div className="mb-2 investigation-party-name">
+            <h5 className="fw-bold text-body">Unknown party</h5>
+          </div>
+          <div className="comp-data-container">
+            <ContraventionTable
+              contraventions={unknownGroups.flatMap((g) => g.contraventions)}
+              investigationGuid={investigationGuid}
+              partyGuid={null}
+              isReadOnly={isReadOnly}
+              enforcementActionsWithAttachments={enforcementActionsWithAttachments}
+              onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
+              onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
+              onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
+                onEditEnforcementAction(eaId, contraventionId, pGuid)
+              }
+            />
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
@@ -441,7 +324,7 @@ function groupContraventionsByParty(
 
     if (parties?.length) {
       for (const party of parties) {
-        const key = party.partyIdentifier ?? null;
+        const key = party.partyIdentifier || null;
         map.set(key, [...(map.get(key) ?? []), contravention]);
       }
     } else {

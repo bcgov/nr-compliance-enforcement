@@ -69,7 +69,7 @@ export const PartyListSearch: FC<Props> = ({ id = "partyListSearch", onChange = 
             <Highlighter
               search={props.text}
             >{`${option.business ? option.business.name : option.person?.firstName + " " + option.person?.lastName}`}</Highlighter>{" "}
-            <Badge bg="species-badge comp-species-badge">{`${option.business ? "Business" : "Person"}`}</Badge>
+            <Badge bg="species-badge comp-species-badge">{`${option.business ? "Organization" : "Person"}`}</Badge>
           </div>
         )}
       />

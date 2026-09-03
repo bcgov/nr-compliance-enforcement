@@ -57,6 +57,18 @@ export class AddressInput {
 export class AddressMatchInput {
   @Field(() => String, { nullable: true })
   address?: string;
+
+  @Field(() => String, { nullable: true })
+  city?: string;
+
+  @Field(() => String, { nullable: true })
+  province?: string;
+
+  @Field(() => String, { nullable: true })
+  postalCode?: string;
+
+  @Field(() => String, { nullable: true })
+  country?: string;
 }
 
 export const mapPrismaAddressToAddress = (mapper: Mapper) => {

@@ -188,7 +188,7 @@ export const mapInvestigationPartyToPartyCreateInput = (party: InvestigationPart
   };
 
   const input =
-    party.partyTypeCode === PARTY_TYPES.Company
+    party.partyTypeCode === PARTY_TYPES.Organization
       ? { ...common, business: mapBusiness(party.business, childGuids) }
       : { ...common, person: mapPerson(party.person, childGuids.facialHairStyleGuids) };
 

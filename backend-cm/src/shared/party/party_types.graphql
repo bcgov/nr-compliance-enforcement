@@ -64,11 +64,24 @@ input PartyFilters {
   sortOrder: String
 }
 
+type PartyMatchedField {
+  field: String!
+  exact: Boolean!
+  points: Int!
+}
+
+type PartyMatchResult {
+  party: Party!
+  score: Int!
+  matchedFields: [PartyMatchedField!]!
+}
+
 # Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
 input PartyMatchInput {
   partyTypeCode: String!
   person: PersonMatchInput
   business: BusinessMatchInput
+  aliases: [AliasMatchInput!]
   addresses: [AddressMatchInput!]
   contactMethods: [ContactMethodMatchInput!]
 }

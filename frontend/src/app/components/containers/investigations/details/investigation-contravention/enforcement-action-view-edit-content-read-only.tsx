@@ -7,10 +7,11 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
 import config from "@/config";
 import { getPartyName } from "@/app/common/party-name";
+import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
 
 interface EnforcementActionViewEditContentReadOnlyProps {
   enforcementAction: EnforcementAction;
-  party: InvestigationParty;
+  party?: InvestigationParty;
   contraventionLabel: React.ReactNode;
   communityLabel: string;
   servingOfficerLabel: string;
@@ -40,6 +41,7 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
 }) => {
   const dispatch = useAppDispatch();
   const ticket = enforcementAction.ticket;
+  const isNonEADecision = NON_EA_DECISION_CODES.has(enforcementAction.enforcementActionCode?.enforcementActionCode ?? "");
 
   const handleFileClick = async (e: React.MouseEvent<HTMLAnchorElement>, attachmentId: string) => {
     e.preventDefault();
@@ -82,39 +84,54 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
         <div>{contraventionLabel}</div>
       </div>
 
-      <div className="row">
-        <div className="col-6">
-          <Field label="Date issued">
-            {enforcementAction.dateIssued ? format(new Date(enforcementAction.dateIssued), "yyyy-MM-dd") : "—"}
-          </Field>
+      {isNonEADecision ? (
+        <div className="row">
+          <div className="col-6">
+            <Field label="Decision">{enforcementActionLabel || "—"}</Field>
+          </div>
+          {enforcementAction.comment && (
+            <div className="col-12">
+              <Field label="Comment">{enforcementAction.comment}</Field>
+            </div>
+          )}
         </div>
-        <div className="col-6">
-          <Field label="Community">{communityLabel || "—"}</Field>
-        </div>
-        <div className="col-6">
-          <Field label="Serving officer">{servingOfficerLabel || "—"}</Field>
-        </div>
-        <div className="col-6">
-          <Field label="Enforcement action">{enforcementActionLabel || "—"}</Field>
-        </div>
-        {ticket && (
-          <>
+      ) : (
+        <>
+          <div className="row">
             <div className="col-6">
-              <Field label="Ticket amount">{ticket.ticketAmount ? `${ticket.ticketAmount}` : "—"}</Field>
+              <Field label="Date issued">
+                {enforcementAction.dateIssued ? format(new Date(enforcementAction.dateIssued), "yyyy-MM-dd") : "—"}
+              </Field>
             </div>
             <div className="col-6">
-              <Field label="Ticket outcome">{ticketOutcomeLabel || "—"}</Field>
+              <Field label="Community">{communityLabel || "—"}</Field>
             </div>
             <div className="col-6">
-              <Field label="Ticket number">{ticket.ticketNumber || "—"}</Field>
+              <Field label="Serving officer">{servingOfficerLabel || "—"}</Field>
             </div>
-          </>
-        )}
-      </div>
+            <div className="col-6">
+              <Field label="Decision">{enforcementActionLabel || "—"}</Field>
+            </div>
+            {ticket && (
+              <>
+                <div className="col-6">
+                  <Field label="Ticket amount">{ticket.ticketAmount ? `${ticket.ticketAmount}` : "—"}</Field>
+                </div>
+                <div className="col-6">
+                  <Field label="Ticket outcome">{ticketOutcomeLabel || "—"}</Field>
+                </div>
+                <div className="col-6">
+                  <Field label="Ticket number">{ticket.ticketNumber || "—"}</Field>
+                </div>
+              </>
+            )}
+          </div>
 
-      <Field label="Attachments">
-        {isLoadingAttachments ? <span className="text-muted">Loading…</span> : attachmentContent}
-      </Field>
+          <Field label="Attachments">
+            {isLoadingAttachments ? <span className="text-muted">Loading…</span> : attachmentContent}
+          </Field>
+        </>
+      )}
     </>
   );
 };

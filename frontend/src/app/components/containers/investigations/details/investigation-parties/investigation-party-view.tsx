@@ -20,6 +20,7 @@ interface PartyDetailProps {
   investigationGuid: string;
   investigationLabel?: string;
   onBack: () => void;
+  backLabel: string;
   onEdit: () => void;
   editDisabledReason?: string;
   onUpdateParty?: () => void;
@@ -30,6 +31,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   investigationGuid,
   investigationLabel,
   onBack,
+  backLabel,
   onEdit,
   editDisabledReason,
   onUpdateParty,
@@ -84,7 +86,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
               onClick={onBack}
             >
               <i className="bi bi-arrow-left"></i>
-              <span>Parties</span>
+              <span>{backLabel}</span>
             </Button>
             {editDisabledReason ? (
               <OverlayTrigger
@@ -118,8 +120,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
                   <i className="bi bi-info-circle me-2" />
                   <span>
                     {onUpdateParty
-                      ? "This party has been edited as part of another investigation. Update the party to bring the " +
-                        "latest information into this investigation before making any new edits."
+                      ? "Party information have changed as part of another investigation. Update to the latest version of information prior to making additional edits."
                       : "This party includes the information available when the investigation was closed. See the " +
                         "published profile list to view the most up-to-date information."}
                   </span>

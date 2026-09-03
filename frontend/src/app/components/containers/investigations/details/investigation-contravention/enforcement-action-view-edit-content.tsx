@@ -15,7 +15,7 @@ interface EnforcementActionViewEditContentProps {
   currentStep: number;
   investigationGuid: string;
   contravention: Contravention;
-  party: InvestigationParty;
+  party?: InvestigationParty;
   enforcementAction?: EnforcementAction;
   isReadOnly?: boolean;
   handleChildDirtyChange: (index: number, isDirty: boolean) => void;
@@ -26,7 +26,7 @@ interface EnforcementActionViewEditContentProps {
   onIsSavingChange: (isSaving: boolean) => void;
 }
 
-const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ legislationIdentifierRef }) => {
+export const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ legislationIdentifierRef }) => {
   const legislation = useLegislation(legislationIdentifierRef, false);
   const legislationData = legislation?.data?.legislation;
   if (!legislationData) return <span>Loading...</span>;
@@ -39,8 +39,8 @@ const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ legislat
 };
 
 export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditContentProps> = ({
-  currentStep,
   investigationGuid,
+  currentStep,
   contravention,
   party,
   enforcementAction,

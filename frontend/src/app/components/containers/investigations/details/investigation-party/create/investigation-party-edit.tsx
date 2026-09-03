@@ -82,6 +82,7 @@ const InvestigationPartyEdit: FC = () => {
       investigationGuid={investigationGuid}
       editParty={editParty}
       investigationLabel={data?.getInvestigation?.name ?? undefined}
+      linkedPartyReferences={parties.map((party) => party.partyReference).filter(Boolean) as string[]}
     />
   );
 };

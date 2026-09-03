@@ -1,4 +1,4 @@
-import { GraphQLClient, type RequestOptions } from 'graphql-request';
+import { GraphQLClient, RequestOptions } from 'graphql-request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -78,6 +78,10 @@ export type AddressInput = {
 
 export type AddressMatchInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
+  province?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AddressUpdateInput = {
@@ -120,6 +124,10 @@ export type Alias = {
 
 export type AliasInput = {
   name: Scalars['String']['input'];
+};
+
+export type AliasMatchInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AliasUpdateInput = {
@@ -266,6 +274,7 @@ export type BusinessInput = {
 
 export type BusinessMatchInput = {
   businessIdentifiers?: InputMaybe<Array<BusinessIdentifierMatchInput>>;
+  contactPeople?: InputMaybe<Array<BusinessPersonMatchInput>>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -298,6 +307,12 @@ export type BusinessPersonInput = {
   officeAddressGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   person?: InputMaybe<PersonInput>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BusinessPersonMatchInput = {
+  contactMethods?: InputMaybe<Array<ContactMethodMatchInput>>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BusinessPersonUpdateInput = {
@@ -581,12 +596,13 @@ export type CreateDecisionInput = {
 
 export type CreateEnforcementActionInput = {
   appUserIdentifier: Scalars['String']['input'];
+  comment?: InputMaybe<Scalars['String']['input']>;
   contraventionIdentifier: Scalars['String']['input'];
   dateIssued: Scalars['DateTime']['input'];
   enforcementActionCode: Scalars['String']['input'];
   geoOrganizationUnitCode: Scalars['String']['input'];
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
-  partyIdentifier: Scalars['String']['input'];
+  partyIdentifier?: InputMaybe<Scalars['String']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
@@ -1016,6 +1032,7 @@ export type EnforcementAction = {
   __typename?: 'EnforcementAction';
   activeIndicator: Scalars['Boolean']['output'];
   appUserIdentifier: Scalars['String']['output'];
+  comment?: Maybe<Scalars['String']['output']>;
   contraventionPartyXrefIdentifier: Scalars['String']['output'];
   dateIssued: Scalars['DateTime']['output'];
   enforcementActionCode: EnforcementActionCode;
@@ -2335,10 +2352,25 @@ export type PartyFilters = {
 
 export type PartyMatchInput = {
   addresses?: InputMaybe<Array<AddressMatchInput>>;
+  aliases?: InputMaybe<Array<AliasMatchInput>>;
   business?: InputMaybe<BusinessMatchInput>;
   contactMethods?: InputMaybe<Array<ContactMethodMatchInput>>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonMatchInput>;
+};
+
+export type PartyMatchResult = {
+  __typename?: 'PartyMatchResult';
+  matchedFields: Array<PartyMatchedField>;
+  party: Party;
+  score: Scalars['Int']['output'];
+};
+
+export type PartyMatchedField = {
+  __typename?: 'PartyMatchedField';
+  exact: Scalars['Boolean']['output'];
+  field: Scalars['String']['output'];
+  points: Scalars['Int']['output'];
 };
 
 export type PartyResult = {
@@ -2464,12 +2496,23 @@ export type PersonInput = {
 };
 
 export type PersonMatchInput = {
+  approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
+  buildCode?: InputMaybe<Scalars['String']['input']>;
+  complexionCode?: InputMaybe<Scalars['String']['input']>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
+  eyeColourCode?: InputMaybe<Scalars['String']['input']>;
+  facialHairIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   genderCode?: InputMaybe<Scalars['String']['input']>;
+  hairColourCode?: InputMaybe<Scalars['String']['input']>;
+  hairLengthCode?: InputMaybe<Scalars['String']['input']>;
+  heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
+  middleNames?: InputMaybe<Scalars['String']['input']>;
   sexCode?: InputMaybe<Scalars['String']['input']>;
+  tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  weightInKg?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type PersonUpdateInput = {
@@ -2511,6 +2554,7 @@ export type Prevention = {
   actions?: Maybe<Array<Maybe<CaseFileAction>>>;
   id?: Maybe<Scalars['String']['output']>;
   outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
+  wacnAmount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type PreventionActionInput = {
@@ -2523,6 +2567,7 @@ export type PreventionActionInput = {
 export type PreventionInput = {
   actions: Array<InputMaybe<PreventionActionInput>>;
   id?: InputMaybe<Scalars['String']['input']>;
+  wacnAmount?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Query = {
@@ -2605,7 +2650,7 @@ export type Query = {
   legislationVersionContraventionStats: ContraventionStats;
   legislationVersions: Array<Maybe<LegislationVersion>>;
   legislations: Array<Maybe<Legislation>>;
-  matchParty: Array<Party>;
+  matchParty: Array<PartyMatchResult>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
   office?: Maybe<Office>;
   offices: Array<Maybe<Office>>;
@@ -3245,6 +3290,7 @@ export type UpdateDecisionInput = {
 
 export type UpdateEnforcementActionInput = {
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
   dateIssued?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
   enforcementActionIdentifier: Scalars['String']['input'];

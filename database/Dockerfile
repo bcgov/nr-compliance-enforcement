@@ -2,7 +2,12 @@
 FROM postgis/postgis:15-master@sha256:c1288c91f8671521bb7c7d3f08a3e2b537d48cdd1725c78bdf8fa34ac81225f4
 
 # Enable pgcrypto extension on startup
-RUN sed -i '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;\nCREATE EXTENSION IF NOT EXISTS "uuid-ossp";' \
+RUN sed -i \
+        -e '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;' \
+        -e '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' \
+        -e '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pg_trgm;' \
+        -e '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;' \
+        -e '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS unaccent;' \
         /docker-entrypoint-initdb.d/10_postgis.sh
 
 # Health check - recommended for local dev

@@ -32,19 +32,18 @@ test.describe("Investigation Party Update From Shared Party", () => {
   // Remove the party this spec added so the investigation doesn't accumulate duplicate parties
   const removeInvestigationParty = async (page: Page) => {
     await openPartiesTab(page);
-    const partyCard = page.locator(".party-card", { hasText: businessName }).first();
+    const partyCard = page.locator(".party-card--linked", { hasText: businessName }).first();
     if ((await partyCard.count()) === 0) {
       return;
     }
 
-    await partyCard.locator(".comp-kebab-toggle").click();
-    await partyCard.locator(".dropdown-item", { hasText: "Remove" }).click();
+    await partyCard.getByRole("button", { name: "Remove" }).click();
 
     const confirmModal = page.locator(".modal").first();
     await expect(confirmModal).toBeVisible();
     await confirmModal.locator("button", { hasText: "Yes, remove party" }).click();
 
-    await expect(page.locator(".party-card", { hasText: businessName })).toHaveCount(0, { timeout: 10000 });
+    await expect(page.locator(".party-card--linked", { hasText: businessName })).toHaveCount(0, { timeout: 10000 });
   };
 
   // Runs even when a test fails. The published party cannot be removed through the ui, so it is left behind
@@ -58,8 +57,8 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await page.goto("/party/create");
     await waitForSpinner(page);
 
-    // Select party type - Business
-    await selectItemById("party-type-select", "Company", page);
+    // Select party type - Organization
+    await selectItemById("party-type-select", "Organization", page);
 
     const businessNameInput = page.locator("#businessName");
     await businessNameInput.fill(businessName);
@@ -81,7 +80,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await page.waitForURL(/\/investigation\/[^/]+\/party\/add$/);
 
     await selectItemById("party-role-select", "Party of Interest", page);
-    await selectItemById("party-type-select", "Company", page);
+    await selectItemById("party-type-select", "Organization", page);
 
     await page.locator("#businessName").fill(businessName);
     await page.locator("#businessNumber").fill(uniqueBusinessNumber);
@@ -117,10 +116,10 @@ test.describe("Investigation Party Update From Shared Party", () => {
 
     await openPartiesTab(page);
 
-    const partyCard = page.locator(".party-card", { hasText: businessName }).first();
+    const partyCard = page.locator(".party-card--linked", { hasText: businessName }).first();
     const cardAlert = partyCard.locator("[id^=party-not-up-to-date-alert-]");
     await expect(cardAlert).toBeVisible();
-    await expect(cardAlert).toContainText("edited as part of another investigation");
+    await expect(cardAlert).toContainText("changed as part of another investigation");
 
     const partyButton = page.getByRole("button", { name: businessName }).first();
     await partyButton.click();

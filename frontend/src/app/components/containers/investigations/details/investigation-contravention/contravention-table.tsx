@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, Dropdown } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { Contravention, EnforcementAction } from "@/generated/graphql";
@@ -16,11 +16,9 @@ interface ContraventionTableProps {
   partyGuid: string | null;
   isReadOnly: boolean;
   enforcementActionsWithAttachments?: Set<string>;
-  onView?: (contraventionId: string, partyGuid: string | null) => void;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
-  onAddEnforcementAction: (contraventionId: string, partyId: string) => void;
-  onEditEnforcementAction: (enforcementActionId: string, contraventionId: string, partyGuid: string) => void;
-  isProfileComplete?: boolean;
+  onAddEnforcementAction: (contraventionId: string, partyId: string | null) => void;
+  onEditEnforcementAction: (enforcementActionId: string, contraventionId: string, partyGuid: string | null) => void;
 }
 
 // Thin wrapper so each row can call the legislation hook independently
@@ -44,11 +42,9 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   partyGuid,
   isReadOnly,
   enforcementActionsWithAttachments,
-  onView,
   onEdit,
   onAddEnforcementAction,
   onEditEnforcementAction,
-  isProfileComplete,
 }) => {
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const enforcementActionCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.ENFORCEMENT_ACTION_TYPE));
@@ -61,20 +57,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       cellClassName: "comp-cell-width-percent-50",
       isSortable: true,
       getValue: (c) => c.legislationIdentifierRef ?? "",
-      renderCell: (c) =>
-        onView ? (
-          <button
-            type="button"
-            className="btn btn-link p-0 text-start"
-            onClick={() => {
-              onView(c.contraventionIdentifier, partyGuid);
-            }}
-          >
-            <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />
-          </button>
-        ) : (
-          <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />
-        ),
+      renderCell: (c) => <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />,
     },
     {
       label: "Date",
@@ -97,50 +80,31 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       },
     },
     {
-      label: "Enforcement action",
+      label: "Decisions",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       isSortable: false,
       getValue: () => "",
       renderCell: (c) => {
-        if (!partyGuid) return <span></span>;
-
-        const party = c.investigationParty?.find((p) => p?.partyIdentifier === partyGuid);
+        // A known party matches by guid; an unknown party is the investigationParty entry with
+        // no partyIdentifier at all (a contravention_party_xref with no linked party).
+        const party = partyGuid
+          ? c.investigationParty?.find((p) => p?.partyIdentifier === partyGuid)
+          : c.investigationParty?.find((p) => !p?.partyIdentifier);
         const enforcementActions = (party?.enforcementActions ?? []) as EnforcementAction[];
 
         if (enforcementActions.length === 0) {
-          const addButton = (
-            <Button
-              id={`add-enforcement-action-${c.contraventionIdentifier}`}
-              variant="outline-primary"
-              size="sm"
-              onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
-              disabled={isReadOnly || !isProfileComplete}
-            >
-              <i className="bi bi-plus-circle" /> Add enforcement action
-            </Button>
-          );
           return (
             <div className="d-flex justify-content-center">
-              {isProfileComplete ? (
-                addButton
-              ) : (
-                <OverlayTrigger
-                  placement="left"
-                  overlay={
-                    <Tooltip id="profile-incomplete-tooltip">
-                      Enforcement actions can only be taken against parties with sufficient information
-                    </Tooltip>
-                  }
-                >
-                  <span
-                    className="d-inline-block"
-                    style={{ cursor: "not-allowed" }}
-                  >
-                    {addButton}
-                  </span>
-                </OverlayTrigger>
-              )}
+              <Button
+                id={`add-enforcement-action-${c.contraventionIdentifier}`}
+                variant="outline-primary"
+                size="sm"
+                onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
+                disabled={isReadOnly}
+              >
+                <i className="bi bi-plus-circle" /> Add decision
+              </Button>
             </div>
           );
         }
@@ -225,21 +189,19 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
                 ],
               }}
             >
-              {partyGuid && (
-                <Dropdown.Item
-                  id={`add-enforcement-contravention-${c.contraventionIdentifier}`}
-                  onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
-                  disabled={isReadOnly || !isProfileComplete}
-                >
-                  <i className="bi bi-plus-circle" /> Add enforcement action
-                </Dropdown.Item>
-              )}
+              <Dropdown.Item
+                id={`add-enforcement-contravention-${c.contraventionIdentifier}`}
+                onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
+                disabled={isReadOnly}
+              >
+                <i className="bi bi-plus-circle" /> Add decision
+              </Dropdown.Item>
               <Dropdown.Item
                 id={`edit-contravention-${c.contraventionIdentifier}`}
                 onClick={() => onEdit(c.contraventionIdentifier, partyGuid)}
                 disabled={isReadOnly}
               >
-                <i className="bi bi-pencil" /> Edit
+                <i className="bi bi-pencil" /> Edit contravention
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
@@ -257,7 +219,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       pageSize={5}
       columns={columns}
       getRowKey={(c) => c.contraventionIdentifier ?? ""}
-      emptyMessage="No contraventions added."
+      emptyMessage="No contraventions added"
       alwaysShowFooter={false}
     />
   );

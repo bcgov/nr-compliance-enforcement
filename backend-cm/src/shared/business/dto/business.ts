@@ -3,6 +3,7 @@ import { business } from "../../../../prisma/shared/generated/business";
 import { BusinessDto } from "../../../common/party";
 import { BusinessIdentifier, BusinessIdentifierMatchInput } from "../../business_identifier/dto/business_identifier";
 import { BusinessPersonXref, BusinessPersonXrefInput } from "src/shared/business_person_xref/dto/business_person_xref";
+import { ContactMethodMatchInput } from "src/shared/contact_method/dto/contact_method";
 import { Field, InputType } from "@nestjs/graphql";
 
 export class Business implements BusinessDto {
@@ -40,12 +41,27 @@ export class BusinessInput {
 }
 
 @InputType()
+export class BusinessPersonMatchInput {
+  @Field(() => String, { nullable: true })
+  firstName?: string;
+
+  @Field(() => String, { nullable: true })
+  lastName?: string;
+
+  @Field(() => [ContactMethodMatchInput], { nullable: true })
+  contactMethods?: ContactMethodMatchInput[];
+}
+
+@InputType()
 export class BusinessMatchInput {
   @Field(() => String, { nullable: true })
   name?: string;
 
   @Field(() => BusinessIdentifierMatchInput, { nullable: true })
   businessIdentifiers?: BusinessIdentifierMatchInput[];
+
+  @Field(() => [BusinessPersonMatchInput], { nullable: true })
+  contactPeople?: BusinessPersonMatchInput[];
 }
 
 export const mapPrismaBusinessToBusiness = (mapper: Mapper) => {

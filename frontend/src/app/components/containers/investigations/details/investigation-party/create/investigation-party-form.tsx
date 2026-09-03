@@ -34,7 +34,7 @@ import { isYoungPerson } from "@/app/common/methods";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
-import { Button } from "react-bootstrap";
+import { Alert, Button, Spinner } from "react-bootstrap";
 import { InvestigationPartyHeader } from "../investigation-party-header";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/use-party-match-trigger";
@@ -106,12 +106,15 @@ interface InvestigationPartyFormProps {
   editParty?: InvestigationParty;
   // Investigation shown in the breadcrumb
   investigationLabel?: string;
+  // Shared party guids already linked to this investigation
+  linkedPartyReferences?: string[];
 }
 
 export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   investigationGuid,
   editParty,
   investigationLabel,
+  linkedPartyReferences = [],
 }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -296,7 +299,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const partyTypeCodes = partyTypes
     ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
-    .filter((party: any) => [PartyTypeCodes.PERSON, PartyTypeCodes.BUSINESS].includes(party.value))
+    .filter((party: any) => [PartyTypeCodes.PERSON, PartyTypeCodes.ORGANIZATION].includes(party.value))
     .map((code: any) => ({ value: code.value, label: code.label }));
 
   const partyRoleOptions = partyRoles
@@ -362,7 +365,83 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending || copyPending || attachmentsSaving;
   const saveDisabled = formSubmitting || isDisabled;
 
-  const { matches, handleFieldBlur } = usePartyMatchTrigger(form, isLinkedParty);
+  const {
+    matches: allMatches,
+    isFetching: matchFetching,
+    hasSearched: matchSearched,
+    error: matchError,
+    handleFieldBlur,
+  } = usePartyMatchTrigger(form, isLinkedParty);
+
+  // A party already linked to this investigation is not a useful suggestion
+  const matches = allMatches.filter((match) => !linkedPartyReferences.includes(match.party.partyIdentifier ?? ""));
+
+  // Pulse every card except one showing the same party at the same position as the previous set
+  const matchGuids = matches.map((match) => match.party.partyIdentifier ?? "").join(",");
+  const prevMatchGuidsRef = useRef("");
+  const [pulseGuids, setPulseGuids] = useState(new Set<string>());
+
+  useEffect(() => {
+    const previous = prevMatchGuidsRef.current.split(",");
+    prevMatchGuidsRef.current = matchGuids;
+    setPulseGuids(new Set(matchGuids.split(",").filter((guid, index) => guid && guid !== previous[index])));
+    // Clear once the animation is done
+    const timer = setTimeout(() => setPulseGuids(new Set()), 2000);
+    return () => clearTimeout(timer);
+  }, [matchGuids]);
+
+  const [matchPaneStyle, setMatchPaneStyle] = useState<{ top: number; maxHeight: number }>();
+
+  useEffect(() => {
+    const layout = document.querySelector<HTMLElement>(".comp-party-form-layout");
+    const scroller = document.querySelector<HTMLElement>(".comp-main-content");
+    if (!layout || !scroller) return;
+
+    const measure = () => {
+      const layoutTop = layout.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+      const overflows = scroller.scrollHeight > scroller.clientHeight;
+      const below = overflows ? Math.max(0, scroller.scrollHeight - layoutTop - layout.offsetHeight) : 24;
+      const next = { top: layoutTop, maxHeight: scroller.clientHeight - layoutTop - below };
+      setMatchPaneStyle((prev) => (prev?.top === next.top && prev?.maxHeight === next.maxHeight ? prev : next));
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(layout);
+    return () => {
+      window.removeEventListener("resize", measure);
+      observer.disconnect();
+    };
+  }, []);
+
+  const [showMatchRules, setShowMatchRules] = useState(false);
+
+  // The pane scrolls its own results using overlay buttons page down and back up
+  const matchScrollRef = useRef<HTMLDivElement>(null);
+  const [matchScroll, setMatchScroll] = useState({ up: false, down: false });
+
+  const updateMatchScroll = () => {
+    const el = matchScrollRef.current;
+    if (!el) return;
+    const up = el.scrollTop > 0;
+    const down = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+    setMatchScroll((prev) => (prev.up === up && prev.down === down ? prev : { up, down }));
+  };
+
+  useEffect(() => {
+    updateMatchScroll();
+    const content = matchScrollRef.current?.firstElementChild;
+    if (!content) return;
+    const observer = new ResizeObserver(updateMatchScroll);
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, [matchGuids, matchError, matchFetching, matchPaneStyle]);
+
+  // A changed result set reads from the top
+  useEffect(() => {
+    matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [matchGuids]);
 
   const handleAddMatch = (party: Party) => {
     const partyAssociationRole = form.getFieldValue("partyAssociationRole");
@@ -463,11 +542,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       />
 
       <section className="comp-details-body comp-details-form comp-container">
-        <div className="comp-details-section-header">
-          <h3>Party details</h3>
-        </div>
-        <FormErrorBanner form={form} />
-
         <div className="comp-party-form-layout">
           <form
             className="comp-party-form"
@@ -477,6 +551,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               saveButtonClick();
             }}
           >
+            <div className="comp-details-section-header">
+              <h3>Party details</h3>
+            </div>
+            <FormErrorBanner form={form} />
             <fieldset disabled={isDisabled}>
               <FormField
                 form={form}
@@ -538,7 +616,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                 />
               )}
 
-              {partyTypeValue === PartyTypeCodes.BUSINESS && (
+              {partyTypeValue === PartyTypeCodes.ORGANIZATION && (
                 <BusinessFormFields
                   form={form}
                   isDisabled={isDisabled}
@@ -574,16 +652,127 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               </>
             )}
           </form>
-          {matches.length > 0 && (
-            <div className="comp-party-match-results">
-              {matches.map((match) => (
-                <PartyMatchCard
-                  key={match.partyIdentifier}
-                  party={match}
-                  onAdd={handleAddMatch}
-                  isDisabled={isDisabled}
-                />
-              ))}
+          {(matchError || matchFetching || matchSearched) && (
+            <div
+              className="comp-party-match-results"
+              style={matchPaneStyle && { top: matchPaneStyle.top }}
+            >
+              {matchError ? (
+                <Alert
+                  className="comp-complaint-details-alert"
+                  variant="warning"
+                >
+                  <i className="bi bi-info-circle-fill me-3"></i>
+                  <span>Matching profiles are unavailable right now.</span>
+                </Alert>
+              ) : (
+                <>
+                  <div
+                    className="comp-party-match-results-scroll"
+                    ref={matchScrollRef}
+                    onScroll={updateMatchScroll}
+                    style={matchPaneStyle && { maxHeight: matchPaneStyle.maxHeight }}
+                  >
+                    <div>
+                      <Alert
+                        className="comp-complaint-details-alert"
+                        variant="info"
+                      >
+                        <div className="d-flex align-items-center">
+                          {matchFetching ? (
+                            <>
+                              <Spinner
+                                animation="border"
+                                size="sm"
+                                className="me-3"
+                              />
+                              <span>Looking for matching published profiles...</span>
+                            </>
+                          ) : (
+                            <>
+                              <i className="bi bi-info-circle-fill me-3"></i>
+                              <span>
+                                {matches.length
+                                  ? "Potentially matching published profiles found."
+                                  : "No matching published profiles found."}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <Button
+                          variant="link"
+                          className="d-block p-0"
+                          aria-expanded={showMatchRules}
+                          onClick={() => setShowMatchRules((show) => !show)}
+                        >
+                          <i className={`bi bi-chevron-${showMatchRules ? "down" : "right"} me-1`} />
+                          <span>See matching rules</span>
+                        </Button>
+                        {showMatchRules && (
+                          <div className="comp-party-match-rules">
+                            <span>Identifier (licence, business number, WorkSafeBC, contact phone/email)</span>
+                            <span>1000</span>
+                            <span>Name, date of birth, phone, email, address, city</span>
+                            <span>50</span>
+                            <span>Descriptor (sex, age range, height, hair...)</span>
+                            <span>10</span>
+                            <span>Similar (typo, sound-alike, short form, close birthdate)</span>
+                            <span>&times; 0.5</span>
+                            <span>Cross-field (alias, first as middle, similar legal name)</span>
+                            <span>&times; 0.25</span>
+                            <span>First + last name bonus</span>
+                            <span>+100</span>
+                            <span>Name + date of birth bonus</span>
+                            <span>+850</span>
+                            <span>Shown / likely match / strong match</span>
+                            <span>&ge; 50 / 250 / 850</span>
+                          </div>
+                        )}
+                      </Alert>
+                      <div
+                        className={`comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""}`}
+                      >
+                        {matches.map((match) => (
+                          <PartyMatchCard
+                            key={match.party.partyIdentifier}
+                            party={match.party}
+                            score={match.score}
+                            matchedFields={match.matchedFields}
+                            onAdd={handleAddMatch}
+                            isDisabled={isDisabled}
+                            pulse={pulseGuids.has(match.party.partyIdentifier ?? "")}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  {matchScroll.up && (
+                    <Button
+                      variant="light"
+                      className="comp-party-match-scroll-button comp-party-match-scroll-button-up border shadow-sm"
+                      onClick={() => matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+                    >
+                      <i className="bi bi-arrow-up me-1" />
+                      <span>Back to top</span>
+                    </Button>
+                  )}
+                  {matchScroll.down && (
+                    <Button
+                      variant="light"
+                      className="comp-party-match-scroll-button comp-party-match-scroll-button-down border shadow-sm"
+                      onClick={() =>
+                        matchScrollRef.current?.scrollBy({
+                          top: matchScrollRef.current.clientHeight * 0.8,
+                          behavior: "smooth",
+                        })
+                      }
+                    >
+                      <i className="bi bi-arrow-down me-1" />
+                      <span>More profiles</span>
+                    </Button>
+                  )}
+                </>
+              )}
             </div>
           )}
         </div>

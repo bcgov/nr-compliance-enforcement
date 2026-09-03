@@ -174,18 +174,20 @@ export class ContraventionService {
         const investigationPartyGuid = input.investigationPartyGuids?.[0];
 
         if (investigationPartyGuid === null) {
-          await db.contravention_party_xref.updateMany({
-            where: {
-              contravention_guid: contraventionGuid,
-              active_ind: true,
-              investigation_party_guid: input.selectedPartyGuid,
-            },
-            data: {
-              active_ind: false,
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
-            },
-          });
+          if (input.selectedPartyGuid) {
+            await db.contravention_party_xref.updateMany({
+              where: {
+                contravention_guid: contraventionGuid,
+                active_ind: true,
+                investigation_party_guid: input.selectedPartyGuid,
+              },
+              data: {
+                active_ind: false,
+                update_user_id: this.user.getIdirUsername(),
+                update_utc_timestamp: new Date(),
+              },
+            });
+          }
         } else {
           const existingParty = originalContravention.contravention_party_xref.filter(
             (xref) => xref.investigation_party_guid == input.selectedPartyGuid,
