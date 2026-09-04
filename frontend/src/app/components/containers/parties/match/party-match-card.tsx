@@ -19,6 +19,7 @@ const MATCH_FIELD_LABELS: Record<string, string> = {
   lastName: "Last name",
   middleNames: "Middle name",
   alias: "Alias",
+  nickname: "Nickname",
   dateOfBirth: "Date of birth",
   phone: "Phone number",
   email: "Email",
@@ -172,7 +173,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
       <Card.Body className="py-2 px-3">
         {isBusiness ? (
           <>
-            {detailRow("Doing business as", aliases)}
+            {detailRow("Doing business as", aliases, anyMatched("alias"))}
             {detailRow("Business number", businessNumber, anyMatched("businessNumber"))}
             {detailRow("WorkSafeBC number", worksafeBCNumber, anyMatched("worksafeBCNumber"))}
             {detailRow("Primary phone", phone, anyMatched("phone"))}
@@ -235,7 +236,9 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
             {matchedFields.map((matchedField, index) => (
               <Fragment key={`${matchedField.field}-${index}`}>
                 <span>
-                  {MATCH_FIELD_LABELS[matchedField.field] ?? matchedField.field}
+                  {isBusiness && matchedField.field === "alias"
+                    ? "Doing business as"
+                    : (MATCH_FIELD_LABELS[matchedField.field] ?? matchedField.field)}
                   {!matchedField.exact && " (similar)"}
                 </span>
                 <span className="comp-party-match-card-score-points">{`+${matchedField.points}`}</span>

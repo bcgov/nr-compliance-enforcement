@@ -119,6 +119,15 @@ describe("_scoreMatch person fields", () => {
     ).toHaveLength(1);
   });
 
+  it("scores a dictionary nickname as its own field alongside the name fields", () => {
+    const input = personInput({ person: { firstName: "Bob" } });
+
+    expect(service._scoreMatch(input, personParty(), { nickname_eq: true }).matchedFields).toEqual([
+      { field: "nickname", exact: true, points: 50 },
+    ]);
+    expect(service._scoreMatch(input, personParty(), { nickname_eq: true, first_norm_eq: true }).score).toBe(100);
+  });
+
   it("scores an alias as its own field alongside the name fields", () => {
     const input = personInput({ person: { firstName: "Jon", lastName: "OBrien" } });
 
@@ -400,6 +409,7 @@ describe("_buildMatchLookups", () => {
       "lastNameSoundsLike",
       "firstName",
       "firstNameSoundsLike",
+      "firstNameNickname",
       "personNameSimilar",
       "dateOfBirth",
       "dateOfBirthSwapped",
@@ -469,8 +479,30 @@ describe("_buildMatchLookups", () => {
       "contactLastName",
       "contactNameSimilar",
       "contactEmail",
+      "aliasName",
+      "aliasNameSimilar",
       "email",
     ]);
+  });
+
+  it("searches a doing business as name against stored aliases and legal names", () => {
+    const input = businessInput({ aliases: [{ name: "Acme" }] });
+
+    expect(lookupNames(service, input)).toEqual([
+      "aliasBusinessName",
+      "aliasBusinessNameSimilar",
+      "aliasName",
+      "aliasNameSimilar",
+    ]);
+  });
+
+  it("scores a doing business as name as the organization's alias", () => {
+    const input = businessInput({ aliases: [{ name: "Acme" }] });
+
+    expect(service._scoreMatch(input, businessParty(), { alias_norm_eq: true }).matchedFields).toEqual([
+      { field: "alias", exact: true, points: 50 },
+    ]);
+    expect(service._scoreMatch(input, businessParty(), { alias_name_word_eq: true }).score).toBe(13);
   });
 
   it("binds a date of birth as a yyyy-mm-dd string cast to date", () => {
@@ -499,7 +531,7 @@ describe("_buildMatchLookups", () => {
   it("skips the trigram lookups for a name too short to make trigrams", () => {
     const input = personInput({ person: { firstName: "Li" } });
 
-    expect(lookupNames(service, input)).toEqual(["firstName", "firstNameSoundsLike", "aliasName"]);
+    expect(lookupNames(service, input)).toEqual(["firstName", "firstNameSoundsLike", "firstNameNickname", "aliasName"]);
   });
 
   it("joins party inside every lookup so contact parties cannot fill it", () => {
@@ -558,7 +590,7 @@ describe("_buildMatchComparisons", () => {
     expect(text).toContain("AS business_name_sim");
     expect(text).toContain("AS contact_first_dmeta_eq");
     expect(text).not.toContain("AS contact_last_norm_eq");
-    expect(text).not.toContain("AS alias_norm_eq");
+    expect(text).toContain("AS alias_norm_eq");
   });
 });
 

@@ -251,6 +251,13 @@ const buildBusinessMatchInput = (values: any): { input: PartyMatchInput; populat
     business.contactPeople = contacts.contactPeople;
   }
 
+  const aliases = (values.aliases ?? [])
+    .filter((alias: { name?: string | null }) => hasText(alias?.name))
+    .map((alias: { name?: string | null }) => ({ name: alias.name?.trim() }));
+  if (aliases.length) {
+    populatedCount += 1;
+  }
+
   const shared = buildSharedMatchFields(values, false);
   populatedCount += shared.populatedCount;
 
@@ -274,6 +281,7 @@ const buildBusinessMatchInput = (values: any): { input: PartyMatchInput; populat
   const input: PartyMatchInput = {
     partyTypeCode: PartyTypeCodes.ORGANIZATION,
     business,
+    ...(aliases.length ? { aliases } : {}),
     ...(contactMethods.length ? { contactMethods } : {}),
     ...(shared.addresses?.length ? { addresses: shared.addresses } : {}),
   };
