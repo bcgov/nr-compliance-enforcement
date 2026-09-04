@@ -397,6 +397,20 @@ describe("_buildMatchLookups", () => {
     ]);
   });
 
+  it("surfaces parties from descriptors alone, best overlap first", () => {
+    const input = personInput({ person: { sexCode: "M", buildCode: "MED", eyeColourCode: "BLU" } });
+    const lookup = lookupNamed(service, input, "descriptors");
+
+    expect(lookup.sql.text).toContain("ORDER BY");
+    expect(lookup.sql.values).toEqual(expect.arrayContaining(["M", "MED", "BLU"]));
+  });
+
+  it("emits address part lookups for city, province and country", () => {
+    const input = personInput({ addresses: [{ city: "Victoria", province: "CA-BC", country: "CA" }] });
+
+    expect(lookupNames(service, input)).toEqual(["city", "province", "country"]);
+  });
+
   it("emits the transposed date lookup only when the day can be a month", () => {
     const canSwap = personInput({ person: { dateOfBirth: new Date("1985-03-12T00:00:00.000Z") } });
     const cannotSwap = personInput({ person: { dateOfBirth: new Date("1985-03-25T00:00:00.000Z") } });
@@ -532,7 +546,7 @@ describe("matchParty", () => {
   it("returns nothing without querying when no lookup is emitted", async () => {
     const { service, prisma } = makeMatch([], []);
 
-    await expect(service.matchParty(personInput({ person: { sexCode: "M" } }))).resolves.toEqual([]);
+    await expect(service.matchParty(personInput({ person: { genderCode: "M" } }))).resolves.toEqual([]);
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 

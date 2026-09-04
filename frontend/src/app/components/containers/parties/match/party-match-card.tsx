@@ -8,6 +8,7 @@ import { ContactMethods } from "@/app/constants/contact-methods";
 import { Address, Alias, BusinessIdentifier, ContactMethod, Party, PartyMatchedField } from "@/generated/graphql";
 import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
+import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
@@ -88,11 +89,13 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
       .map((a) => a.name)
       .join(", ") || "-";
 
-  const businessNumbers =
-    (business?.businessIdentifiers ?? [])
-      .filter((bi): bi is BusinessIdentifier => bi != null)
-      .map((bi) => bi.identifierValue)
-      .join(", ") || "-";
+  const businessIdentifiers = (business?.businessIdentifiers ?? []).filter(
+    (bi): bi is BusinessIdentifier => bi != null,
+  );
+  const businessNumber =
+    businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER)?.identifierValue ?? "-";
+  const worksafeBCNumber =
+    businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER)?.identifierValue ?? "-";
 
   const contactMethods = (party.contactMethods ?? []).filter((cm): cm is ContactMethod => cm != null);
   const primaryPhone = contactMethods.find((cm) => cm.typeCode === ContactMethods.PHONE && cm.isPrimary)?.value;
@@ -170,7 +173,8 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
         {isBusiness ? (
           <>
             {detailRow("Doing business as", aliases)}
-            {detailRow("Business number", businessNumbers, anyMatched("businessNumber", "worksafeBCNumber"))}
+            {detailRow("Business number", businessNumber, anyMatched("businessNumber"))}
+            {detailRow("WorkSafeBC number", worksafeBCNumber, anyMatched("worksafeBCNumber"))}
             {detailRow("Primary phone", phone, anyMatched("phone"))}
             {detailRow("Primary address", address, anyMatched("addressLine", "city", "province", "country"))}
             {showMoreInfo && detailRow("Email", email, anyMatched("email"))}

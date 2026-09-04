@@ -2716,6 +2716,50 @@ export class PartyService {
       );
     }
 
+    // The sum of descriptors can also return high matching parties
+    const descriptorConditions: Prisma.Sql[] = [];
+    const descriptorCodes: [string | null | undefined, Prisma.Sql][] = [
+      [input.person?.sexCode, Prisma.sql`pe.sex_code`],
+      [input.person?.approximateAgeCode, Prisma.sql`pe.approximate_age_code`],
+      [input.person?.buildCode, Prisma.sql`pe.build_code`],
+      [input.person?.complexionCode, Prisma.sql`pe.complexion_code`],
+      [input.person?.eyeColourCode, Prisma.sql`pe.eye_colour_code`],
+      [input.person?.hairColourCode, Prisma.sql`pe.hair_colour_code`],
+      [input.person?.hairLengthCode, Prisma.sql`pe.hair_length_code`],
+    ];
+    for (const [value, column] of descriptorCodes) {
+      if (value) {
+        descriptorConditions.push(Prisma.sql`${column} = ${value}`);
+      }
+    }
+    if (input.person?.facialHairIndicator) {
+      descriptorConditions.push(Prisma.sql`pe.facial_hair_ind = true`);
+    }
+    if (input.person?.tattooIndicator) {
+      descriptorConditions.push(Prisma.sql`pe.tattoo_ind = true`);
+    }
+    if (input.person?.heightInCm != null) {
+      descriptorConditions.push(Prisma.sql`round(pe.height_cm, 1) = round(${input.person.heightInCm}::numeric, 1)`);
+    }
+    if (input.person?.weightInKg != null) {
+      descriptorConditions.push(Prisma.sql`round(pe.weight_kg, 1) = round(${input.person.weightInKg}::numeric, 1)`);
+    }
+    if (descriptorConditions.length) {
+      const descriptorHits = Prisma.join(
+        descriptorConditions.map((condition) => Prisma.sql`coalesce((${condition})::int, 0)`),
+        " + ",
+      );
+      lookups.push({
+        name: "descriptors",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.person pe
+          JOIN shared.party p ON p.party_guid = pe.party_guid AND p.party_type = ${partyType}
+          WHERE (${descriptorHits}) > 0
+          ORDER BY (${descriptorHits}) DESC
+          LIMIT ${Prisma.raw(String(MATCH_SIMILAR_LIMIT))}`,
+      });
+    }
+
     return [...lookups, ...this._buildAliasMatchLookups(partyType, fullName)];
   }
 
@@ -2921,6 +2965,36 @@ export class PartyService {
             LIMIT 25`,
         });
       }
+    }
+    for (const city of distinctMatchValues(addresses.map((address) => address.city))) {
+      lookups.push({
+        name: "city",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND shared.f_match_norm(ad.city) = shared.f_match_norm(${city})
+          LIMIT 25`,
+      });
+    }
+    for (const province of distinctMatchValues(addresses.map((address) => address.province))) {
+      lookups.push({
+        name: "province",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND ad.country_subdivision_code = ${province}
+          LIMIT 25`,
+      });
+    }
+    for (const country of distinctMatchValues(addresses.map((address) => address.country))) {
+      lookups.push({
+        name: "country",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND ad.country_code = ${country}
+          LIMIT 25`,
+      });
     }
 
     return lookups;
