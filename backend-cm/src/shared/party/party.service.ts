@@ -2752,73 +2752,8 @@ export class PartyService {
         ),
       );
     }
-    if (dateOfBirth) {
-      lookups.push(
-        personMatchLookup("dateOfBirth", partyType, Prisma.sql`pe.date_of_birth = ${dateOfBirth}::date`, 200),
-      );
-      // A transposed day and month is only a valid date when the day can be a month
-      const [year, month, day] = dateOfBirth.split("-");
-      const swappedDate = `${year}-${day}-${month}`;
-      const monthStart = `${year}-${month}-01`;
-      if (Number(day) <= 12 && day !== month) {
-        lookups.push(
-          personMatchLookup("dateOfBirthSwapped", partyType, Prisma.sql`pe.date_of_birth = ${swappedDate}::date`, 200),
-        );
-      }
-      lookups.push(
-        personMatchLookup(
-          "dateOfBirthMonth",
-          partyType,
-          Prisma.sql`pe.date_of_birth >= ${monthStart}::date
-            AND pe.date_of_birth < ${monthStart}::date + interval '1 month'`,
-          50,
-        ),
-      );
-    }
-
-    // The sum of descriptors can also return high matching parties
-    const descriptorConditions: Prisma.Sql[] = [];
-    const descriptorCodes: [string | null | undefined, Prisma.Sql][] = [
-      [input.person?.sexCode, Prisma.sql`pe.sex_code`],
-      [input.person?.approximateAgeCode, Prisma.sql`pe.approximate_age_code`],
-      [input.person?.buildCode, Prisma.sql`pe.build_code`],
-      [input.person?.complexionCode, Prisma.sql`pe.complexion_code`],
-      [input.person?.eyeColourCode, Prisma.sql`pe.eye_colour_code`],
-      [input.person?.hairColourCode, Prisma.sql`pe.hair_colour_code`],
-      [input.person?.hairLengthCode, Prisma.sql`pe.hair_length_code`],
-    ];
-    for (const [value, column] of descriptorCodes) {
-      if (value) {
-        descriptorConditions.push(Prisma.sql`${column} = ${value}`);
-      }
-    }
-    if (input.person?.facialHairIndicator) {
-      descriptorConditions.push(Prisma.sql`pe.facial_hair_ind = true`);
-    }
-    if (input.person?.tattooIndicator) {
-      descriptorConditions.push(Prisma.sql`pe.tattoo_ind = true`);
-    }
-    if (input.person?.heightInCm != null) {
-      descriptorConditions.push(Prisma.sql`round(pe.height_cm, 1) = round(${input.person.heightInCm}::numeric, 1)`);
-    }
-    if (input.person?.weightInKg != null) {
-      descriptorConditions.push(Prisma.sql`round(pe.weight_kg, 1) = round(${input.person.weightInKg}::numeric, 1)`);
-    }
-    if (descriptorConditions.length) {
-      const descriptorHits = Prisma.join(
-        descriptorConditions.map((condition) => Prisma.sql`coalesce((${condition})::int, 0)`),
-        " + ",
-      );
-      lookups.push({
-        name: "descriptors",
-        sql: Prisma.sql`SELECT p.party_guid
-          FROM shared.person pe
-          JOIN shared.party p ON p.party_guid = pe.party_guid AND p.party_type = ${partyType}
-          WHERE (${descriptorHits}) > 0
-          ORDER BY (${descriptorHits}) DESC
-          LIMIT ${Prisma.raw(String(MATCH_SIMILAR_LIMIT))}`,
-      });
-    }
+    lookups.push(...this._buildDateOfBirthMatchLookups(partyType, dateOfBirth));
+    lookups.push(...this._buildDescriptorMatchLookups(input, partyType));
 
     // An entered alias may be the name the party is stored under
     const aliasNames = matchAliasNames(input);
@@ -2858,6 +2793,86 @@ export class PartyService {
     }
 
     return [...lookups, ...this._buildAliasMatchLookups(partyType, [fullName, ...aliasNames])];
+  }
+
+  private _buildDateOfBirthMatchLookups(partyType: string, dateOfBirth?: string): MatchLookup[] {
+    if (!dateOfBirth) {
+      return [];
+    }
+
+    const lookups: MatchLookup[] = [
+      personMatchLookup("dateOfBirth", partyType, Prisma.sql`pe.date_of_birth = ${dateOfBirth}::date`, 200),
+    ];
+    // A transposed day and month is only a valid date when the day can be a month
+    const [year, month, day] = dateOfBirth.split("-");
+    const swappedDate = `${year}-${day}-${month}`;
+    const monthStart = `${year}-${month}-01`;
+    if (Number(day) <= 12 && day !== month) {
+      lookups.push(
+        personMatchLookup("dateOfBirthSwapped", partyType, Prisma.sql`pe.date_of_birth = ${swappedDate}::date`, 200),
+      );
+    }
+    lookups.push(
+      personMatchLookup(
+        "dateOfBirthMonth",
+        partyType,
+        Prisma.sql`pe.date_of_birth >= ${monthStart}::date
+            AND pe.date_of_birth < ${monthStart}::date + interval '1 month'`,
+        50,
+      ),
+    );
+
+    return lookups;
+  }
+
+  // The sum of descriptors can also return high matching parties
+  private _buildDescriptorMatchLookups(input: PartyMatchInput, partyType: string): MatchLookup[] {
+    const descriptorConditions: Prisma.Sql[] = [];
+    const descriptorCodes: [string | null | undefined, Prisma.Sql][] = [
+      [input.person?.sexCode, Prisma.sql`pe.sex_code`],
+      [input.person?.approximateAgeCode, Prisma.sql`pe.approximate_age_code`],
+      [input.person?.buildCode, Prisma.sql`pe.build_code`],
+      [input.person?.complexionCode, Prisma.sql`pe.complexion_code`],
+      [input.person?.eyeColourCode, Prisma.sql`pe.eye_colour_code`],
+      [input.person?.hairColourCode, Prisma.sql`pe.hair_colour_code`],
+      [input.person?.hairLengthCode, Prisma.sql`pe.hair_length_code`],
+    ];
+    for (const [value, column] of descriptorCodes) {
+      if (value) {
+        descriptorConditions.push(Prisma.sql`${column} = ${value}`);
+      }
+    }
+    if (input.person?.facialHairIndicator) {
+      descriptorConditions.push(Prisma.sql`pe.facial_hair_ind = true`);
+    }
+    if (input.person?.tattooIndicator) {
+      descriptorConditions.push(Prisma.sql`pe.tattoo_ind = true`);
+    }
+    if (input.person?.heightInCm != null) {
+      descriptorConditions.push(Prisma.sql`round(pe.height_cm, 1) = round(${input.person.heightInCm}::numeric, 1)`);
+    }
+    if (input.person?.weightInKg != null) {
+      descriptorConditions.push(Prisma.sql`round(pe.weight_kg, 1) = round(${input.person.weightInKg}::numeric, 1)`);
+    }
+    if (!descriptorConditions.length) {
+      return [];
+    }
+
+    const descriptorHits = Prisma.join(
+      descriptorConditions.map((condition) => Prisma.sql`coalesce((${condition})::int, 0)`),
+      " + ",
+    );
+    return [
+      {
+        name: "descriptors",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.person pe
+          JOIN shared.party p ON p.party_guid = pe.party_guid AND p.party_type = ${partyType}
+          WHERE (${descriptorHits}) > 0
+          ORDER BY (${descriptorHits}) DESC
+          LIMIT ${Prisma.raw(String(MATCH_SIMILAR_LIMIT))}`,
+      },
+    ];
   }
 
   private _buildBusinessMatchLookups(input: PartyMatchInput): MatchLookup[] {
