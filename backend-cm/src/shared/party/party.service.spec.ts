@@ -13,7 +13,7 @@ const personInput = (input: Partial<PartyMatchInput> = {}): PartyMatchInput => (
 });
 
 const businessInput = (input: Partial<PartyMatchInput> = {}): PartyMatchInput => ({
-  partyTypeCode: PARTY_TYPES.Company,
+  partyTypeCode: PARTY_TYPES.Organization,
   ...input,
 });
 
@@ -26,7 +26,7 @@ const personParty = (person: any = {}, party: any = {}): any => ({
 
 const businessParty = (business: any = {}, party: any = {}): any => ({
   party_guid: "party-1",
-  party_type: PARTY_TYPES.Company,
+  party_type: PARTY_TYPES.Organization,
   business: { name: "ABC Contracting Ltd", ...business },
   ...party,
 });
@@ -104,6 +104,19 @@ describe("_scoreMatch person fields", () => {
 
     expect(service._scoreMatch(input, personParty(), { first_prefix_eq: true }).score).toBe(25);
     expect(service._scoreMatch(input, personParty(), { first_norm_eq: true, first_prefix_eq: true }).score).toBe(50);
+  });
+
+  it("scores an entered alias against the stored name and aliases as one award", () => {
+    const input = personInput({ aliases: [{ name: "Bob" }] });
+
+    expect(service._scoreMatch(input, personParty(), { alias_name_norm_eq: true }).matchedFields).toEqual([
+      { field: "alias", exact: true, points: 50 },
+    ]);
+    expect(service._scoreMatch(input, personParty(), { alias_word_eq: true }).score).toBe(13);
+    expect(service._scoreMatch(input, personParty(), { alias_name_word_eq: true }).score).toBe(13);
+    expect(
+      service._scoreMatch(input, personParty(), { alias_norm_eq: true, alias_name_word_eq: true }).matchedFields,
+    ).toHaveLength(1);
   });
 
   it("scores an alias as its own field alongside the name fields", () => {
@@ -409,6 +422,25 @@ describe("_buildMatchLookups", () => {
     const input = personInput({ addresses: [{ city: "Victoria", province: "CA-BC", country: "CA" }] });
 
     expect(lookupNames(service, input)).toEqual(["city", "province", "country"]);
+  });
+
+  it("finds a single word alias inside the entered name", () => {
+    const input = personInput({ person: { firstName: "Jimbo", lastName: "Hubert" } });
+    const lookup = lookupNamed(service, input, "aliasName");
+
+    expect(lookup.sql.values).toContain("Jimbo");
+    expect(lookup.sql.values).toContain("Hubert");
+  });
+
+  it("searches entered aliases against stored aliases and person names", () => {
+    const input = personInput({ aliases: [{ name: "Bobby Smith" }] });
+
+    expect(lookupNames(service, input)).toEqual([
+      "aliasPersonName",
+      "aliasPersonNameSimilar",
+      "aliasName",
+      "aliasNameSimilar",
+    ]);
   });
 
   it("emits the transposed date lookup only when the day can be a month", () => {

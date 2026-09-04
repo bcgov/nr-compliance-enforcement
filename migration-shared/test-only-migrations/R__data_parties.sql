@@ -1,5 +1,5 @@
 INSERT INTO shared.party (party_guid,party_type,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp) VALUES
-	 ('827260a8-46b9-4a74-b30b-e9d64073483c','CMP','system',NOW(),'system',NOW()),
+	 ('827260a8-46b9-4a74-b30b-e9d64073483c','ORG','system',NOW(),'system',NOW()),
 	 ('b5f45562-099d-44b5-9de3-13f1f98b1b9e','PRS','system',NOW(),'system',NOW())
 ON CONFLICT DO NOTHING;
     
@@ -27,20 +27,20 @@ INSERT INTO shared.party (party_guid,party_type,create_user_id,create_utc_timest
    ('d7f734a3-988c-4420-945f-60e5a3c2f43f','PRS','system',NOW(),'system',NOW()),
    ('fb845379-e684-4598-9bed-ed9b81e51f41','PRS','system',NOW(),'system',NOW()),
    ('f3cb9906-e50a-48ca-93b3-5d21eb54eafb','PRS','system',NOW(),'system',NOW()),
-	 ('a5b8fad3-28cf-48b1-af7a-05d0c91fa4d9','CMP','system',NOW(),'system',NOW()),
-	 ('d8dd356d-db4d-4aed-9ca3-cb8ec02e87f4','CMP','system',NOW(),'system',NOW()),
-	 ('ca147576-5c02-414f-ae36-4eb49473bcb2','CMP','system',NOW(),'system',NOW()),
-	 ('191e012a-1fe9-4470-afb7-06f02613177c','CMP','system',NOW(),'system',NOW()),
-	 ('ebf4ad07-63d8-43e8-ad53-6b65fb3a0e08','CMP','system',NOW(),'system',NOW()),
-	 ('53bf7854-d7f1-4dff-9e63-95e15c6c02e7','CMP','system',NOW(),'system',NOW()),
-	 ('c204f78e-e19a-4587-82e7-960d9cae75bc','CMP','system',NOW(),'system',NOW()),
-	 ('7a81353b-dfb8-44a8-bcd9-b1e2261b476d','CMP','system',NOW(),'system',NOW()),
-	 ('5f7ab3df-c97a-4401-bd89-63dd539edf53','CMP','system',NOW(),'system',NOW()),
-	 ('b6205a63-1d7f-4414-a2ae-54e261285718','CMP','system',NOW(),'system',NOW()),
-	 ('5a443cd2-08c4-457a-960f-62320e13ba12','CMP','system',NOW(),'system',NOW()),
-	 ('6cd6c06b-0bba-4ce2-88af-d3e4e8a628f6','CMP','system',NOW(),'system',NOW()),
-	 ('e0b68653-e7da-4ea5-826a-41ed37c31fd6','CMP','system',NOW(),'system',NOW()),
-	 ('52a8a304-c20b-4cd1-8ee9-40cdfb5dc6f3','CMP','system',NOW(),'system',NOW())
+	 ('a5b8fad3-28cf-48b1-af7a-05d0c91fa4d9','ORG','system',NOW(),'system',NOW()),
+	 ('d8dd356d-db4d-4aed-9ca3-cb8ec02e87f4','ORG','system',NOW(),'system',NOW()),
+	 ('ca147576-5c02-414f-ae36-4eb49473bcb2','ORG','system',NOW(),'system',NOW()),
+	 ('191e012a-1fe9-4470-afb7-06f02613177c','ORG','system',NOW(),'system',NOW()),
+	 ('ebf4ad07-63d8-43e8-ad53-6b65fb3a0e08','ORG','system',NOW(),'system',NOW()),
+	 ('53bf7854-d7f1-4dff-9e63-95e15c6c02e7','ORG','system',NOW(),'system',NOW()),
+	 ('c204f78e-e19a-4587-82e7-960d9cae75bc','ORG','system',NOW(),'system',NOW()),
+	 ('7a81353b-dfb8-44a8-bcd9-b1e2261b476d','ORG','system',NOW(),'system',NOW()),
+	 ('5f7ab3df-c97a-4401-bd89-63dd539edf53','ORG','system',NOW(),'system',NOW()),
+	 ('b6205a63-1d7f-4414-a2ae-54e261285718','ORG','system',NOW(),'system',NOW()),
+	 ('5a443cd2-08c4-457a-960f-62320e13ba12','ORG','system',NOW(),'system',NOW()),
+	 ('6cd6c06b-0bba-4ce2-88af-d3e4e8a628f6','ORG','system',NOW(),'system',NOW()),
+	 ('e0b68653-e7da-4ea5-826a-41ed37c31fd6','ORG','system',NOW(),'system',NOW()),
+	 ('52a8a304-c20b-4cd1-8ee9-40cdfb5dc6f3','ORG','system',NOW(),'system',NOW())
 ON CONFLICT DO NOTHING;
 
 INSERT INTO shared.business (business_guid,"name",create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp,party_guid) VALUES

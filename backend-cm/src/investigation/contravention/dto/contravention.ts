@@ -55,17 +55,21 @@ export const mapPrismaContreventionToContravention = (mapper: Mapper) => {
     forMember(
       (dest) => dest.investigationParty,
       mapFrom((src) =>
-        (src.contravention_party_xref ?? []).map(
-          (x) =>
-            ({
-              ...mapper.map(x.investigation_party, "investigation_party", "InvestigationParty"),
-              enforcementActions: mapper.mapArray(
-                x.enforcement_action ?? [],
-                "enforcement_action",
-                "EnforcementAction",
-              ),
-            }) as InvestigationParty,
-        ),
+        (src.contravention_party_xref ?? []).map((x) => {
+          // Empty partyIdentifier and partyTypeCode for unknown party
+          const mappedParty = x.investigation_party
+            ? mapper.map(x.investigation_party, "investigation_party", "InvestigationParty")
+            : ({
+                partyIdentifier: "",
+                partyTypeCode: "",
+                investigationGuid: src.investigation_guid,
+              } as InvestigationParty);
+
+          return {
+            ...mappedParty,
+            enforcementActions: mapper.mapArray(x.enforcement_action ?? [], "enforcement_action", "EnforcementAction"),
+          } as InvestigationParty;
+        }),
       ),
     ),
     forMember(

@@ -12,7 +12,7 @@ import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";
 import { useEnforcementActionAttachmentIds } from "./hooks/use-enforcement-action-attachment-ids";
-import { getPartyName } from "@/app/common/party-name";
+import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
 
 interface InvestigationContraventionProps {
   investigationGuid: string;
@@ -30,18 +30,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const enforcementActionsWithAttachments = useEnforcementActionAttachmentIds(investigationGuid);
   const contraventions = investigationData?.contraventions;
-  const parties = investigationData?.parties as InvestigationParty[];
-
-  const isPartyProfileComplete = (party: InvestigationParty): boolean => {
-    const primaryAddress = party.addresses?.find((addr) => addr?.isPrimary);
-    if (party.person) {
-      const rawDob = party.person?.dateOfBirth;
-      const rawPhone = party.contactMethods?.find((m) => m?.typeCode === "PHONE")?.value;
-      return !!primaryAddress && !!rawPhone && !!rawDob;
-    } else {
-      return !!primaryAddress;
-    }
-  };
+  const parties = (investigationData?.parties ?? []) as InvestigationParty[];
 
   const isPublishedParty = (party: InvestigationParty): boolean => {
     const invParty = party as InvestigationParty;
@@ -68,6 +57,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           titles: isEdit ? ["Edit contravention", "Edit party"] : ["Add contravention", "Add party"],
           totalSteps: isEdit ? 1 : 2,
           isEdit,
+          deleteEntityLabel: "contravention",
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
@@ -100,17 +90,19 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     );
   };
 
-  const onAddEnforcementAction = (contraventionId: string, partyGuid: string) => {
+  const onAddEnforcementAction = (contraventionId: string, partyGuid: string | null) => {
     const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
-    const party = investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid);
-    if (!contravention || !party) return;
+    // No party at all for an unknown-party contravention - only the comment-only decisions
+    // (Unfounded, Unresolved) are available for those, enforced inside the form itself.
+    const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
+    if (!contravention || (partyGuid && !party)) return;
 
     dispatch(
       openModal({
         modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: ["Add enforcement action"],
+          titles: ["Add decision"],
           totalSteps: 1,
           isEdit: false,
           content: (
@@ -126,7 +118,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               currentStep={currentStep}
               investigationGuid={investigationGuid}
               contravention={contravention as Contravention}
-              party={party as InvestigationParty}
+              party={party as InvestigationParty | undefined}
               onRequestValidate={onRequestValidate}
               onRequestSave={onRequestSave}
               onRequestDelete={onRequestDelete}
@@ -142,21 +134,23 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     );
   };
 
-  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string) => {
+  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string | null) => {
     const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
-    const party = investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid);
-    const contraventionParty = contravention?.investigationParty?.find((p) => p?.partyIdentifier === partyGuid);
+    const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
+    const contraventionParty = contravention?.investigationParty?.find((p) =>
+      partyGuid ? p?.partyIdentifier === partyGuid : !p?.partyIdentifier,
+    );
     const enforcementAction = (contraventionParty?.enforcementActions as EnforcementAction[])?.find(
       (ea) => ea?.enforcementActionIdentifier === enforcementActionId,
     );
-    if (!contravention || !party || !enforcementAction) return;
+    if (!contravention || (partyGuid && !party) || !enforcementAction) return;
 
     dispatch(
       openModal({
         modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: ["Enforcement action details", "Edit enforcement action"],
+          titles: ["Decision details", "Edit decision"],
           totalSteps: 2,
           isEdit: true,
           deleteFromStep: 1,
@@ -164,6 +158,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           nextButtonLabel: "Edit",
           hidePreviousButton: true,
           isReadOnly,
+          deleteEntityLabel: "decision",
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
@@ -177,7 +172,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               currentStep={currentStep}
               investigationGuid={investigationGuid}
               contravention={contravention as Contravention}
-              party={party as InvestigationParty}
+              party={party as InvestigationParty | undefined}
               enforcementAction={enforcementAction}
               isReadOnly={isReadOnly}
               onRequestValidate={onRequestValidate}
@@ -286,7 +281,6 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                 onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
                   onEditEnforcementAction(eaId, contraventionId, pGuid)
                 }
-                isProfileComplete={profileComplete}
               />
             </div>
           </div>
@@ -330,7 +324,7 @@ function groupContraventionsByParty(
 
     if (parties?.length) {
       for (const party of parties) {
-        const key = party.partyIdentifier ?? null;
+        const key = party.partyIdentifier || null;
         map.set(key, [...(map.get(key) ?? []), contravention]);
       }
     } else {

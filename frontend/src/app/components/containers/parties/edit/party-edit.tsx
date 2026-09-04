@@ -128,7 +128,7 @@ const PartyEdit: FC = () => {
 
   const partyTypeCodes = partyTypes
     ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
-    .filter((party) => [PartyTypeCodes.PERSON, PartyTypeCodes.BUSINESS].includes(party.value))
+    .filter((party) => [PartyTypeCodes.PERSON, PartyTypeCodes.ORGANIZATION].includes(party.value))
     .map((code: any) => {
       return {
         value: code.value,
@@ -249,7 +249,7 @@ const PartyEdit: FC = () => {
     // fires only when a submission attempt is blocked by validation
     onSubmitInvalid: () => scrollToFirstFieldError(),
     onSubmit: async ({ value }) => {
-      if (value.partyType === PartyTypeCodes.BUSINESS) {
+      if (value.partyType === PartyTypeCodes.ORGANIZATION) {
         const validationError = await validateBusinessForm(value);
         if (validationError) {
           ToggleError(validationError);
@@ -265,7 +265,7 @@ const PartyEdit: FC = () => {
           aliases: buildAliases(value.aliases, true),
           images: pendingImagesRef.current,
           business:
-            value.partyType === "CMP"
+            value.partyType === "ORG"
               ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, true))
               : null,
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
@@ -278,7 +278,7 @@ const PartyEdit: FC = () => {
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
           aliases: buildAliases(value.aliases, false),
           business:
-            value.partyType === "CMP"
+            value.partyType === "ORG"
               ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, false))
               : null,
           person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
@@ -366,7 +366,7 @@ const PartyEdit: FC = () => {
 
   const saveButtonClick = useCallback(async () => {
     const currentValues = currentFormValues;
-    if (currentValues.partyType === PartyTypeCodes.BUSINESS) {
+    if (currentValues.partyType === PartyTypeCodes.ORGANIZATION) {
       const validationError = await validateBusinessForm(currentValues);
       if (validationError) {
         ToggleError(validationError);
@@ -465,7 +465,7 @@ const PartyEdit: FC = () => {
                 isDisabled={isDisabled}
               />
             )}
-            {partyTypeValue === "CMP" && (
+            {partyTypeValue === "ORG" && (
               <BusinessFormFields
                 form={form}
                 isDisabled={isDisabled}

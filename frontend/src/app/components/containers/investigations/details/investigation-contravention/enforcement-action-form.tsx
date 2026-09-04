@@ -13,6 +13,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
@@ -28,8 +29,12 @@ import {
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
 import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
+import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
+import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
+import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
 
-const VIOLATION_TICKET_CODES = new Set(["FDVT", "PRVT"]);
+const VIOLATION_TICKET_CODES = new Set(["FDVT"]);
+const DIVIDER_BEFORE_CODE = "ADPN"; // Administrative Penalty
 
 // ticket_amount is stored as Decimal(10, 2) so enforce max amount
 const ticketAmountValidator = z
@@ -65,6 +70,7 @@ const CREATE_ENFORCEMENT_ACTION = gql`
       geoOrganizationUnitCode
       appUserIdentifier
       activeIndicator
+      comment
       ticket {
         ticketIdentifier
         ticketOutcomeCode
@@ -88,6 +94,7 @@ const UPDATE_ENFORCEMENT_ACTION = gql`
       geoOrganizationUnitCode
       appUserIdentifier
       activeIndicator
+      comment
       ticket {
         ticketIdentifier
         ticketOutcomeCode
@@ -149,6 +156,33 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const enforcementActionOptions = useAppSelector(enforcementActionSelector);
   const ticketOutcomeOptions = useAppSelector(selectTicketOutcomes);
 
+  const isRestrictedToCommentDecisions = !isPartyProfileComplete(party);
+  const enforcementActionSelectOptions = useMemo(() => {
+    const options = enforcementActionOptions.map((opt) => {
+      const isDisabled = isRestrictedToCommentDecisions && !NON_EA_DECISION_CODES.has(opt.value ?? "");
+      if (!isDisabled) return opt;
+
+      return {
+        ...opt,
+        isDisabled,
+        labelElement: <span className="enforcement-action-decision-option-disabled">{opt.label}</span>,
+      };
+    });
+
+    const dividerIndex = options.findIndex((opt) => opt.value === DIVIDER_BEFORE_CODE);
+    if (dividerIndex === -1) return options;
+
+    const dividerOption = {
+      value: "__enforcement_action_divider__",
+      label: "",
+      isDisabled: true,
+      isSeparator: true,
+      className: "enforcement-action-decision-divider mx-2 my-1",
+    };
+
+    return [...options.slice(0, dividerIndex), dividerOption, ...options.slice(dividerIndex)];
+  }, [enforcementActionOptions, isRestrictedToCommentDecisions]);
+
   const communityOptions = areaCodes.map((c) => ({
     value: c.area ?? "",
     label: c.areaName ?? "",
@@ -162,6 +196,11 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const [isViolationTicket, setIsViolationTicket] = useState(
     VIOLATION_TICKET_CODES.has(enforcementAction?.enforcementActionCode?.enforcementActionCode ?? ""),
   );
+  const [isNonEADecision, setIsNonEADecision] = useState(
+    NON_EA_DECISION_CODES.has(enforcementAction?.enforcementActionCode?.enforcementActionCode ?? ""),
+  );
+
+  const [hasDecision, setHasDecision] = useState(!!enforcementAction?.enforcementActionCode?.enforcementActionCode);
 
   const saveMutation = useGraphQLMutation(CREATE_ENFORCEMENT_ACTION);
   const updateMutation = useGraphQLMutation(UPDATE_ENFORCEMENT_ACTION);
@@ -192,6 +231,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
       ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "ISUD",
       paidDate: enforcementAction?.ticket?.paidDate ? new Date(enforcementAction.ticket.paidDate) : null,
+      comment: enforcementAction?.comment ?? "",
     },
     onSubmit: async () => {},
   });
@@ -239,6 +279,12 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     };
   };
 
+  // Comment only applies to Unfounded/Unresolved decisions. Always included (as null otherwise)
+  // so switching away from one of those decisions clears out a stale comment.
+  const buildCommentField = (value: FormValues) => ({
+    comment: isNonEADecision ? value.comment : null,
+  });
+
   // Everything that follows a successful save. Best effort: a failure here is logged but never
   // reported as a failed save, because the enforcement action itself is already persisted.
   const runPostSaveSideEffects = async (
@@ -280,11 +326,11 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 
   const showSaveSuccessToast = () => {
     if (isEdit) {
-      ToggleSuccess("Enforcement action updated successfully");
+      ToggleSuccess("Decision updated successfully");
     } else if (willPublishParty) {
-      ToggleSuccess("Enforcement action and party details saved successfully");
+      ToggleSuccess("Decision and party details saved successfully");
     } else {
-      ToggleSuccess("Enforcement action saved successfully");
+      ToggleSuccess("Decision saved successfully");
     }
   };
 
@@ -307,18 +353,20 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             geoOrganizationUnitCode: value.community,
             appUserIdentifier: value.servingOfficer,
             ...buildTicketFields(value),
+            ...buildCommentField(value),
           };
           await updateMutation.mutateAsync({ input });
           enforcementActionId = enforcementAction!.enforcementActionIdentifier;
         } else {
           const input: CreateEnforcementActionInput = {
             contraventionIdentifier: contravention?.contraventionIdentifier ?? "",
-            partyIdentifier: party?.partyIdentifier ?? "",
+            partyIdentifier: party?.partyIdentifier,
             enforcementActionCode: value.enforcementActionCode,
             dateIssued: value.dateIssued,
             geoOrganizationUnitCode: value.community,
             appUserIdentifier: value.servingOfficer,
             ...buildTicketFields(value),
+            ...buildCommentField(value),
           };
           const created: any = await saveMutation.mutateAsync({ input });
           enforcementActionId = created.createEnforcementAction.enforcementActionIdentifier;
@@ -331,12 +379,21 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         onDirtyChange?.(0, false);
         onClose();
       } catch {
-        ToggleError(isEdit ? "Failed to update enforcement action" : "Failed to save enforcement action");
+        ToggleError(isEdit ? "Failed to update decision" : "Failed to save decision");
       } finally {
         onIsSavingChange?.(false);
       }
     });
-  }, [onRequestSave, isEdit, isViolationTicket, enforcementAction, contravention, party, investigationGuid]);
+  }, [
+    onRequestSave,
+    isEdit,
+    isViolationTicket,
+    isNonEADecision,
+    enforcementAction,
+    contravention,
+    party,
+    investigationGuid,
+  ]);
 
   // Expose delete to modal
   useEffect(() => {
@@ -350,11 +407,11 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           enforcementActionId: enforcementAction.enforcementActionIdentifier,
         });
         await updateTimestampMutation.mutateAsync({ investigationGuid });
-        ToggleSuccess("Enforcement action deleted successfully");
+        ToggleSuccess("Decision deleted successfully");
         onDirtyChange?.(0, false);
         onClose();
       } catch {
-        ToggleError("Failed to delete enforcement action");
+        ToggleError("Failed to delete decision");
       } finally {
         onIsSavingChange?.(false);
       }
@@ -368,115 +425,58 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           variant="warning"
           id="enforcement-action-publish-party-notice"
         >
-          <i className="bi bi-info-circle-fill pe-2" /> Saving this enforcement action will also save the details of the
-          party involved for use in future investigations.
+          <i className="bi bi-info-circle-fill pe-2" /> Saving this decision will also save the details of the party
+          involved for use in future investigations.
         </Alert>
       )}
 
+      {contravention && (
+        <div className="border rounded bg-bc-brand-background-light-gray text-dark px-3 py-3 mb-4">
+          {isRestrictedToCommentDecisions && (
+            <Alert
+              variant="warning"
+              id="enforcement-action-restricted-decisions-notice"
+              className="px-2 py-2"
+            >
+              <i className="bi bi-info-circle-fill pe-2" />
+              {party
+                ? "This profile is incomplete. Enforcement actions are unavailable."
+                : "The party is unknown. Enforcement actions are unavailable."}
+            </Alert>
+          )}
+          <div className="text-muted small mb-1">Party</div>
+          <div className="mb-2">{getPartyName(party)}</div>
+          <div className="text-muted small mb-1">Contravention</div>
+          <div>
+            <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
+          </div>
+        </div>
+      )}
       <div className="row mb-3">
-        <div className="col-6">
-          <FormField
-            form={form}
-            name="dateIssued"
-            label="Date issued"
-            required
-            validators={{
-              onChange: dateValidator,
-              onSubmit: dateValidator,
-            }}
-            render={(field) => (
-              <ValidationDatePicker
-                classNamePrefix="comp-details-edit-calendar-input"
-                className="comp-details-input full-width"
-                id="enforcement-action-date-issued"
-                maxDate={new Date()}
-                onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                selectedDate={field.state.value}
-                errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                vertical={true}
-              />
-            )}
-          />
-        </div>
-        <div className="col-6">
-          <FormField
-            form={form}
-            name="community"
-            label="Community"
-            required
-            validators={{
-              onChange: z.string().min(1, "Community is required"),
-              onSubmit: z.string().min(1, "Community is required"),
-            }}
-            render={(field) => (
-              <CompSelect
-                id="enforcement-action-community"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={communityOptions}
-                value={communityOptions.find((opt) => opt.value === field.state.value)}
-                onChange={(option) => field.handleChange(option?.value ?? "")}
-                placeholder="Select community"
-                isClearable
-                showInactive={false}
-                enableValidation
-                errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-              />
-            )}
-          />
-        </div>
-      </div>
-
-      <div className="row mb-3">
-        <div className="col-6">
-          <FormField
-            form={form}
-            name="servingOfficer"
-            label="Serving officer"
-            required
-            validators={{
-              onChange: z.string().min(1, "Serving officer is required"),
-              onSubmit: z.string().min(1, "Serving officer is required"),
-            }}
-            render={(field) => (
-              <CompSelect
-                id="enforcement-action-serving-officer"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={officerOptions}
-                value={officerOptions.find((opt) => opt.value === field.state.value)}
-                onChange={(option) => field.handleChange(option?.value ?? "")}
-                placeholder="Select officer"
-                isClearable
-                showInactive={false}
-                enableValidation
-                errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-              />
-            )}
-          />
-        </div>
         <div className="col-6">
           <FormField
             form={form}
             name="enforcementActionCode"
-            label="Enforcement action"
+            label="Decision"
             required
             validators={{
-              onChange: z.string().min(1, "Enforcement action is required"),
-              onSubmit: z.string().min(1, "Enforcement action is required"),
+              onChange: z.string().min(1, "Decision is required"),
+              onSubmit: z.string().min(1, "Decision is required"),
             }}
             render={(field) => (
               <CompSelect
                 id="enforcement-action-code"
                 classNamePrefix="comp-select"
                 className="comp-details-input"
-                options={enforcementActionOptions}
-                value={enforcementActionOptions.find((opt) => opt.value === field.state.value)}
+                options={enforcementActionSelectOptions}
+                value={enforcementActionSelectOptions.find((opt) => opt.value === field.state.value)}
                 onChange={(option) => {
                   field.handleChange(option?.value ?? "");
                   setIsViolationTicket(VIOLATION_TICKET_CODES.has(option?.value ?? ""));
+                  setIsNonEADecision(NON_EA_DECISION_CODES.has(option?.value ?? ""));
+                  setHasDecision(!!option?.value);
                 }}
-                placeholder="Select enforcement action"
+                placeholder="Select"
                 isClearable
                 showInactive={false}
                 enableValidation
@@ -487,34 +487,53 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         </div>
       </div>
 
-      {isViolationTicket && (
+      {isNonEADecision && (
+        <div className="row mb-3">
+          <div className="col-12">
+            <FormField
+              form={form}
+              name="comment"
+              label="Comment"
+              render={(field) => (
+                <ValidationTextArea
+                  id="enforcement-action-comment"
+                  className="comp-form-control comp-details-input"
+                  rows={4}
+                  value={field.state.value}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter a comment"
+                  maxLength={4000}
+                  errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+                />
+              )}
+            />
+          </div>
+        </div>
+      )}
+
+      {!isNonEADecision && hasDecision && (
         <>
           <div className="row mb-3">
             <div className="col-6">
               <FormField
                 form={form}
-                name="ticketAmount"
-                label="Ticket amount"
+                name="dateIssued"
+                label="Date issued"
                 required
                 validators={{
-                  onChange: ticketAmountValidator,
-                  onSubmit: ticketAmountValidator,
+                  onChange: dateValidator,
+                  onSubmit: dateValidator,
                 }}
                 render={(field) => (
-                  <CompInput
-                    id="enforcement-action-ticket-amount"
-                    divid="enforcement-action-ticket-amount-value"
-                    type="input"
-                    inputClass="comp-form-control"
-                    error={field.state.meta.errors?.[0]?.message ?? ""}
-                    onChange={(evt: any) => {
-                      const value = evt.target.value;
-                      if (/^\d*\.?\d{0,2}$/.test(value)) {
-                        field.handleChange(value);
-                      }
-                    }}
-                    value={field.state.value}
-                    placeholder="Enter ticket amount"
+                  <ValidationDatePicker
+                    classNamePrefix="comp-details-edit-calendar-input"
+                    className="comp-details-input full-width"
+                    id="enforcement-action-date-issued"
+                    maxDate={new Date()}
+                    onChange={(date: Date, _time: string | null) => field.handleChange(date)}
+                    selectedDate={field.state.value}
+                    errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+                    vertical={true}
                   />
                 )}
               />
@@ -522,23 +541,23 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <div className="col-6">
               <FormField
                 form={form}
-                name="ticketOutcomeCode"
-                label="Ticket outcome"
+                name="community"
+                label="Community"
                 required
                 validators={{
-                  onChange: z.string().min(1, "Ticket outcome is required"),
-                  onSubmit: z.string().min(1, "Ticket outcome is required"),
+                  onChange: z.string().min(1, "Community is required"),
+                  onSubmit: z.string().min(1, "Community is required"),
                 }}
                 render={(field) => (
                   <CompSelect
-                    id="enforcement-action-ticket-outcome"
+                    id="enforcement-action-community"
                     classNamePrefix="comp-select"
                     className="comp-details-input"
-                    options={ticketOutcomeOptions}
-                    value={ticketOutcomeOptions.find((opt) => opt.value === field.state.value)}
+                    options={communityOptions}
+                    value={communityOptions.find((opt) => opt.value === field.state.value)}
                     onChange={(option) => field.handleChange(option?.value ?? "")}
-                    placeholder="Select outcome"
-                    isClearable={false}
+                    placeholder="Select community"
+                    isClearable
                     showInactive={false}
                     enableValidation
                     errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
@@ -547,71 +566,164 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
               />
             </div>
           </div>
-          <div className="row">
+
+          <div className="row mb-3">
             <div className="col-6">
               <FormField
                 form={form}
-                name="ticketNumber"
-                label="Ticket number"
+                name="servingOfficer"
+                label="Serving officer"
                 required
                 validators={{
-                  onChange: z.string().min(1, "Ticket number is required"),
-                  onSubmit: z.string().min(1, "Ticket number is required"),
+                  onChange: z.string().min(1, "Serving officer is required"),
+                  onSubmit: z.string().min(1, "Serving officer is required"),
                 }}
                 render={(field) => (
-                  <CompInput
-                    id="enforcement-action-ticket-number"
-                    divid="enforcement-action-ticket-number-value"
-                    type="input"
-                    inputClass="comp-form-control"
-                    error={field.state.meta.errors?.[0]?.message ?? ""}
-                    onChange={(evt: any) => field.handleChange(evt.target.value)}
-                    value={field.state.value}
-                    placeholder="Enter ticket number"
+                  <CompSelect
+                    id="enforcement-action-serving-officer"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    options={officerOptions}
+                    value={officerOptions.find((opt) => opt.value === field.state.value)}
+                    onChange={(option) => field.handleChange(option?.value ?? "")}
+                    placeholder="Select officer"
+                    isClearable
+                    showInactive={false}
+                    enableValidation
+                    errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
                   />
                 )}
               />
             </div>
-            <form.Subscribe selector={(state) => state.values.ticketOutcomeCode}>
-              {(ticketOutcomeCode) =>
-                ticketOutcomeCode === "PAID" && (
-                  <div className="col-6">
-                    <FormField
-                      form={form}
-                      name="paidDate"
-                      label="Date paid"
-                      required
-                      validators={{
-                        onChange: dateValidator,
-                        onSubmit: dateValidator,
-                      }}
-                      render={(field) => (
-                        <ValidationDatePicker
-                          classNamePrefix="comp-details-edit-calendar-input"
-                          className="comp-details-input full-width"
-                          maxDate={new Date()}
-                          id="enforcement-action-date-paid"
-                          onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                          selectedDate={field.state.value}
-                          errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                          vertical={true}
-                        />
-                      )}
-                    />
-                  </div>
-                )
-              }
-            </form.Subscribe>
           </div>
+
+          {isViolationTicket && (
+            <>
+              <div className="row mb-3">
+                <div className="col-6">
+                  <FormField
+                    form={form}
+                    name="ticketAmount"
+                    label="Ticket amount"
+                    required
+                    validators={{
+                      onChange: ticketAmountValidator,
+                      onSubmit: ticketAmountValidator,
+                    }}
+                    render={(field) => (
+                      <CompInput
+                        id="enforcement-action-ticket-amount"
+                        divid="enforcement-action-ticket-amount-value"
+                        type="input"
+                        inputClass="comp-form-control"
+                        error={field.state.meta.errors?.[0]?.message ?? ""}
+                        onChange={(evt: any) => {
+                          const value = evt.target.value;
+                          if (/^\d*\.?\d{0,2}$/.test(value)) {
+                            field.handleChange(value);
+                          }
+                        }}
+                        value={field.state.value}
+                        placeholder="Enter ticket amount"
+                      />
+                    )}
+                  />
+                </div>
+                <div className="col-6">
+                  <FormField
+                    form={form}
+                    name="ticketOutcomeCode"
+                    label="Ticket outcome"
+                    required
+                    validators={{
+                      onChange: z.string().min(1, "Ticket outcome is required"),
+                      onSubmit: z.string().min(1, "Ticket outcome is required"),
+                    }}
+                    render={(field) => (
+                      <CompSelect
+                        id="enforcement-action-ticket-outcome"
+                        classNamePrefix="comp-select"
+                        className="comp-details-input"
+                        options={ticketOutcomeOptions}
+                        value={ticketOutcomeOptions.find((opt) => opt.value === field.state.value)}
+                        onChange={(option) => field.handleChange(option?.value ?? "")}
+                        placeholder="Select outcome"
+                        isClearable={false}
+                        showInactive={false}
+                        enableValidation
+                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-6">
+                  <FormField
+                    form={form}
+                    name="ticketNumber"
+                    label="Ticket number"
+                    required
+                    validators={{
+                      onChange: z.string().min(1, "Ticket number is required"),
+                      onSubmit: z.string().min(1, "Ticket number is required"),
+                    }}
+                    render={(field) => (
+                      <CompInput
+                        id="enforcement-action-ticket-number"
+                        divid="enforcement-action-ticket-number-value"
+                        type="input"
+                        inputClass="comp-form-control"
+                        error={field.state.meta.errors?.[0]?.message ?? ""}
+                        onChange={(evt: any) => field.handleChange(evt.target.value)}
+                        value={field.state.value}
+                        placeholder="Enter ticket number"
+                      />
+                    )}
+                  />
+                </div>
+                <form.Subscribe selector={(state) => state.values.ticketOutcomeCode}>
+                  {(ticketOutcomeCode) =>
+                    ticketOutcomeCode === "PAID" && (
+                      <div className="col-6">
+                        <FormField
+                          form={form}
+                          name="paidDate"
+                          label="Date paid"
+                          required
+                          validators={{
+                            onChange: dateValidator,
+                            onSubmit: dateValidator,
+                          }}
+                          render={(field) => (
+                            <ValidationDatePicker
+                              classNamePrefix="comp-details-edit-calendar-input"
+                              className="comp-details-input full-width"
+                              maxDate={new Date()}
+                              id="enforcement-action-date-paid"
+                              onChange={(date: Date, _time: string | null) => field.handleChange(date)}
+                              selectedDate={field.state.value}
+                              errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+                              vertical={true}
+                            />
+                          )}
+                        />
+                      </div>
+                    )
+                  }
+                </form.Subscribe>
+              </div>
+            </>
+          )}
+
+          <EnforcementActionAttachmentSection
+            ref={attachmentsRef}
+            investigationGuid={investigationGuid}
+            existingAttachments={existingAttachments}
+            onDirtyChange={setAttachmentsDirty}
+          />
         </>
       )}
-
-      <EnforcementActionAttachmentSection
-        ref={attachmentsRef}
-        investigationGuid={investigationGuid}
-        existingAttachments={existingAttachments}
-        onDirtyChange={setAttachmentsDirty}
-      />
     </form>
   );
 };

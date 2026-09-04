@@ -134,6 +134,7 @@ model app_user_team_xref_h {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model business {
   business_guid         String                 @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   name                  String                 @db.VarChar(128)
@@ -148,6 +149,7 @@ model business {
   business_identifier   business_identifier[]
   business_person_xref  business_person_xref[]
 
+  @@index([name(ops: raw("gin_trgm_ops"))], map: "idx_business_name_search", type: Gin)
   @@schema("shared")
 }
 
@@ -177,6 +179,7 @@ model business_identifier {
   business                                                                                        business                 @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_identifier_business_fk")
   business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code business_identifier_code @relation("business_identifier_business_identifier_codeTobusiness_identifier_code", fields: [business_identifier_code], references: [business_identifier_code], onDelete: NoAction, onUpdate: NoAction, map: "business_identifier_code_fk")
 
+  @@index([identifier_value(ops: raw("gin_trgm_ops"))], map: "idx_business_identifier_value_search", type: Gin)
   @@schema("shared")
 }
 
@@ -356,6 +359,7 @@ model contact_method {
   party                    party?                   @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_party_fk")
   contact_method_type_code contact_method_type_code @relation(fields: [contact_method_type], references: [contact_method_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_contact_method_type")
 
+  @@index([contact_value(ops: raw("gin_trgm_ops"))], map: "idx_contact_method_value_search", type: Gin)
   @@schema("shared")
 }
 
@@ -782,6 +786,7 @@ model party_type_code {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model person {
   person_guid                                                            String                          @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   first_name                                                             String                          @db.VarChar(128)
@@ -831,6 +836,9 @@ model person {
   sex_code_person_sex_codeTosex_code                                     sex_code?                       @relation("person_sex_codeTosex_code", fields: [sex_code], references: [sex_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__sex_code")
   person_facial_hair_style_code                                          person_facial_hair_style_code[]
 
+  @@index([date_of_birth], map: "idx_person_date_of_birth")
+  @@index([first_name(ops: raw("gin_trgm_ops"))], map: "idx_person_first_name_search", type: Gin)
+  @@index([last_name(ops: raw("gin_trgm_ops"))], map: "idx_person_last_name_search", type: Gin)
   @@schema("shared")
 }
 
@@ -1000,6 +1008,8 @@ model address {
   business_person_address_xref                                                        business_person_address_xref[]
   contact_method                                                                      contact_method[]
 
+  @@index([address(ops: raw("gin_trgm_ops"))], map: "idx_address_address_search", type: Gin)
+  @@index([city(ops: raw("gin_trgm_ops"))], map: "idx_address_city_search", type: Gin)
   @@schema("shared")
 }
 

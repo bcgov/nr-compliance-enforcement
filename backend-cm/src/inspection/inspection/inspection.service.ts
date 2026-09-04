@@ -169,7 +169,7 @@ export class InspectionService {
           },
         },
       });
-    } else if (partyType == "CMP") {
+    } else if (partyType == "ORG") {
       prismaParties = await this.prisma.inspection_business.findMany({
         where: {
           business_guid_ref: partyId,

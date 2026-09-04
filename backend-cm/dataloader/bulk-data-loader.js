@@ -990,7 +990,7 @@ const generateBusinessParty = (stem, category) => {
 
   return {
     party_guid: party_guid,
-    party_type: "CMP",
+    party_type: "ORG",
     business: { business_guid: business_guid, party_guid: party_guid, name: name },
     aliases: [],
     addresses: chance(80) ? [generateAddressRow(party_guid, "Business")] : [],
@@ -1134,7 +1134,7 @@ const fixtureBusiness = (name, attributes = {}) => {
 
   return {
     party_guid: party_guid,
-    party_type: "CMP",
+    party_type: "ORG",
     business: { business_guid: business_guid, party_guid: party_guid, name: name },
     aliases: [],
     addresses: [],

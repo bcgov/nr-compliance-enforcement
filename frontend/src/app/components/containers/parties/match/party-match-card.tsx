@@ -72,7 +72,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   pulse = false,
 }) => {
   const { person, business } = party;
-  const isBusiness = party.partyTypeCode === PartyTypeCodes.BUSINESS;
+  const isBusiness = party.partyTypeCode === PartyTypeCodes.ORGANIZATION;
 
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [showMatchScore, setShowMatchScore] = useState(false);

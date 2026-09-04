@@ -15,7 +15,7 @@ import {
   ContactMethodInput,
   ContactMethodMatchInput,
 } from "src/shared/contact_method/dto/contact_method";
-import { Alias, AliasInput } from "src/shared/alias/dto/alias";
+import { Alias, AliasInput, AliasMatchInput } from "src/shared/alias/dto/alias";
 import { PersonInput, PersonMatchInput } from "src/shared/person/dto/person.input";
 
 export class Party implements PartyDto {
@@ -102,6 +102,9 @@ export class PartyMatchInput {
 
   @Field(() => BusinessMatchInput)
   business?: BusinessMatchInput;
+
+  @Field(() => AliasMatchInput)
+  aliases?: AliasMatchInput[];
 
   @Field(() => AddressMatchInput)
   addresses?: AddressMatchInput[];

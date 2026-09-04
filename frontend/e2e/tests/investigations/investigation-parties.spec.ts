@@ -83,8 +83,8 @@ test.describe("Investigation Party Form", () => {
 
     await page.waitForURL(/\/investigation\/[^/]+\/party\/add$/);
 
-    // Select party type - Business
-    await selectItemById("party-type-select", "Company", page);
+    // Select party type - Organization
+    await selectItemById("party-type-select", "Organization", page);
 
     // Fill in business name
     const businessNameInput = page.locator("#businessName");
