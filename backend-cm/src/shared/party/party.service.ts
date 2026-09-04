@@ -2752,8 +2752,10 @@ export class PartyService {
         ),
       );
     }
-    lookups.push(...this._buildDateOfBirthMatchLookups(partyType, dateOfBirth));
-    lookups.push(...this._buildDescriptorMatchLookups(input, partyType));
+    lookups.push(
+      ...this._buildDateOfBirthMatchLookups(partyType, dateOfBirth),
+      ...this._buildDescriptorMatchLookups(input, partyType),
+    );
 
     // An entered alias may be the name the party is stored under
     const aliasNames = matchAliasNames(input);
