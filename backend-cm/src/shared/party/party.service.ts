@@ -69,6 +69,7 @@ const MATCH_FIELD_WEIGHTS: Record<string, Record<string, number>> = {
     lastName: MEDIUM_POINTS,
     middleNames: MEDIUM_POINTS,
     alias: MEDIUM_POINTS,
+    nickname: MEDIUM_POINTS,
     dateOfBirth: MEDIUM_POINTS,
     phone: MEDIUM_POINTS,
     email: MEDIUM_POINTS,
@@ -97,6 +98,7 @@ const MATCH_FIELD_WEIGHTS: Record<string, Record<string, number>> = {
     contactPhone: HIGH_POINTS,
     contactEmail: HIGH_POINTS,
     addressLine: MEDIUM_POINTS,
+    alias: MEDIUM_POINTS,
     city: MEDIUM_POINTS,
     contactFirstName: MEDIUM_POINTS,
     contactLastName: MEDIUM_POINTS,
@@ -202,9 +204,7 @@ const personMatchName = (input: PartyMatchInput): string =>
 
 // Entered aliases join the entered name as additional name strings for the alias comparisons
 const matchAliasNames = (input: PartyMatchInput): string[] =>
-  input.partyTypeCode === PARTY_TYPES.Organization
-    ? []
-    : (input.aliases ?? []).map((alias) => alias.name?.trim() ?? "").filter(Boolean);
+  (input.aliases ?? []).map((alias) => alias.name?.trim() ?? "").filter(Boolean);
 
 // Compares the input name (full name, or alias) against one party result. They match when every
 // word of one side side appears in the other's words. Checked in both directions, "Jimbo Hubert"
@@ -280,6 +280,21 @@ const scoreNameField = (
     matchFlag(comparisons, `${column}_prefix_eq`)
   ) {
     return { field, exact: false, points: Math.round(points * fuzzyModifier) };
+  }
+  return undefined;
+};
+
+const scoreAlias = (points: number, comparisons?: MatchComparisons): PartyMatchedField | undefined => {
+  if (matchFlag(comparisons, "alias_norm_eq") || matchFlag(comparisons, "alias_name_norm_eq")) {
+    return { field: "alias", exact: true, points };
+  }
+  if (
+    Number(comparisons?.["alias_sim"] ?? 0) >= MATCH_SIMILARITY_THRESHOLD_ALIAS ||
+    Number(comparisons?.["alias_name_sim"] ?? 0) >= MATCH_SIMILARITY_THRESHOLD_ALIAS ||
+    matchFlag(comparisons, "alias_word_eq") ||
+    matchFlag(comparisons, "alias_name_word_eq")
+  ) {
+    return { field: "alias", exact: false, points: Math.round(points * FUZZY_MODIFIER_CROSS_FIELD) };
   }
   return undefined;
 };
@@ -2432,16 +2447,14 @@ export class PartyService {
       ].filter(Boolean),
     );
 
-    // One alias award over every pairing of the entered and stored names and aliases
-    if (matchFlag(comparisons, "alias_norm_eq") || matchFlag(comparisons, "alias_name_norm_eq")) {
-      matched.push({ field: "alias", exact: true, points: weights.alias });
-    } else if (
-      Number(comparisons?.["alias_sim"] ?? 0) >= MATCH_SIMILARITY_THRESHOLD_ALIAS ||
-      Number(comparisons?.["alias_name_sim"] ?? 0) >= MATCH_SIMILARITY_THRESHOLD_ALIAS ||
-      matchFlag(comparisons, "alias_word_eq") ||
-      matchFlag(comparisons, "alias_name_word_eq")
-    ) {
-      matched.push({ field: "alias", exact: false, points: Math.round(weights.alias * FUZZY_MODIFIER_CROSS_FIELD) });
+    const alias = scoreAlias(weights.alias, comparisons);
+    if (alias) {
+      matched.push(alias);
+    }
+
+    // A nickname matching the first name is considered an exact match
+    if (matchFlag(comparisons, "nickname_eq")) {
+      matched.push({ field: "nickname", exact: true, points: weights.nickname });
     }
 
     // A name matching in the other name slot, or half of a compound surname, is fuzzy evidence at best
@@ -2588,6 +2601,11 @@ export class PartyService {
       ].filter(Boolean),
     );
 
+    const alias = scoreAlias(weights.alias, comparisons);
+    if (alias) {
+      matched.push(alias);
+    }
+
     // A phone or email matching both a contact person's rows and the business's own scores once
     const contactMethods = ((party.business?.business_person_xref as any[]) ?? []).flatMap(
       (xref) => xref.person?.party?.contact_method ?? [],
@@ -2714,6 +2732,13 @@ export class PartyService {
           Prisma.sql`public.dmetaphone(pe.first_name) = public.dmetaphone(${firstName})`,
           25,
         ),
+        personMatchLookup(
+          "firstNameNickname",
+          partyType,
+          Prisma.sql`shared.f_match_norm(pe.first_name) IN
+            (SELECT n.nickname FROM shared.nickname n WHERE n.name = shared.f_match_norm(${firstName}))`,
+          25,
+        ),
       );
     }
     if (fullName.trim().length >= MATCH_TRIGRAM_MIN_LENGTH) {
@@ -2727,29 +2752,10 @@ export class PartyService {
         ),
       );
     }
-    if (dateOfBirth) {
-      lookups.push(
-        personMatchLookup("dateOfBirth", partyType, Prisma.sql`pe.date_of_birth = ${dateOfBirth}::date`, 200),
-      );
-      // A transposed day and month is only a valid date when the day can be a month
-      const [year, month, day] = dateOfBirth.split("-");
-      const swappedDate = `${year}-${day}-${month}`;
-      const monthStart = `${year}-${month}-01`;
-      if (Number(day) <= 12 && day !== month) {
-        lookups.push(
-          personMatchLookup("dateOfBirthSwapped", partyType, Prisma.sql`pe.date_of_birth = ${swappedDate}::date`, 200),
-        );
-      }
-      lookups.push(
-        personMatchLookup(
-          "dateOfBirthMonth",
-          partyType,
-          Prisma.sql`pe.date_of_birth >= ${monthStart}::date
-            AND pe.date_of_birth < ${monthStart}::date + interval '1 month'`,
-          50,
-        ),
-      );
-    }
+    lookups.push(
+      ...this._buildDateOfBirthMatchLookups(partyType, dateOfBirth),
+      ...this._buildDescriptorMatchLookups(input, partyType),
+    );
 
     // An entered alias may be the name the party is stored under
     const aliasNames = matchAliasNames(input);
@@ -2789,6 +2795,86 @@ export class PartyService {
     }
 
     return [...lookups, ...this._buildAliasMatchLookups(partyType, [fullName, ...aliasNames])];
+  }
+
+  private _buildDateOfBirthMatchLookups(partyType: string, dateOfBirth?: string): MatchLookup[] {
+    if (!dateOfBirth) {
+      return [];
+    }
+
+    const lookups: MatchLookup[] = [
+      personMatchLookup("dateOfBirth", partyType, Prisma.sql`pe.date_of_birth = ${dateOfBirth}::date`, 200),
+    ];
+    // A transposed day and month is only a valid date when the day can be a month
+    const [year, month, day] = dateOfBirth.split("-");
+    const swappedDate = `${year}-${day}-${month}`;
+    const monthStart = `${year}-${month}-01`;
+    if (Number(day) <= 12 && day !== month) {
+      lookups.push(
+        personMatchLookup("dateOfBirthSwapped", partyType, Prisma.sql`pe.date_of_birth = ${swappedDate}::date`, 200),
+      );
+    }
+    lookups.push(
+      personMatchLookup(
+        "dateOfBirthMonth",
+        partyType,
+        Prisma.sql`pe.date_of_birth >= ${monthStart}::date
+            AND pe.date_of_birth < ${monthStart}::date + interval '1 month'`,
+        50,
+      ),
+    );
+
+    return lookups;
+  }
+
+  // The sum of descriptors can also return high matching parties
+  private _buildDescriptorMatchLookups(input: PartyMatchInput, partyType: string): MatchLookup[] {
+    const descriptorConditions: Prisma.Sql[] = [];
+    const descriptorCodes: [string | null | undefined, Prisma.Sql][] = [
+      [input.person?.sexCode, Prisma.sql`pe.sex_code`],
+      [input.person?.approximateAgeCode, Prisma.sql`pe.approximate_age_code`],
+      [input.person?.buildCode, Prisma.sql`pe.build_code`],
+      [input.person?.complexionCode, Prisma.sql`pe.complexion_code`],
+      [input.person?.eyeColourCode, Prisma.sql`pe.eye_colour_code`],
+      [input.person?.hairColourCode, Prisma.sql`pe.hair_colour_code`],
+      [input.person?.hairLengthCode, Prisma.sql`pe.hair_length_code`],
+    ];
+    for (const [value, column] of descriptorCodes) {
+      if (value) {
+        descriptorConditions.push(Prisma.sql`${column} = ${value}`);
+      }
+    }
+    if (input.person?.facialHairIndicator) {
+      descriptorConditions.push(Prisma.sql`pe.facial_hair_ind = true`);
+    }
+    if (input.person?.tattooIndicator) {
+      descriptorConditions.push(Prisma.sql`pe.tattoo_ind = true`);
+    }
+    if (input.person?.heightInCm != null) {
+      descriptorConditions.push(Prisma.sql`round(pe.height_cm, 1) = round(${input.person.heightInCm}::numeric, 1)`);
+    }
+    if (input.person?.weightInKg != null) {
+      descriptorConditions.push(Prisma.sql`round(pe.weight_kg, 1) = round(${input.person.weightInKg}::numeric, 1)`);
+    }
+    if (!descriptorConditions.length) {
+      return [];
+    }
+
+    const descriptorHits = Prisma.join(
+      descriptorConditions.map((condition) => Prisma.sql`coalesce((${condition})::int, 0)`),
+      " + ",
+    );
+    return [
+      {
+        name: "descriptors",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.person pe
+          JOIN shared.party p ON p.party_guid = pe.party_guid AND p.party_type = ${partyType}
+          WHERE (${descriptorHits}) > 0
+          ORDER BY (${descriptorHits}) DESC
+          LIMIT ${Prisma.raw(String(MATCH_SIMILAR_LIMIT))}`,
+      },
+    ];
   }
 
   private _buildBusinessMatchLookups(input: PartyMatchInput): MatchLookup[] {
@@ -2909,7 +2995,42 @@ export class PartyService {
       });
     }
 
-    return lookups;
+    // Search business as name as the organization name
+    const aliasNames = matchAliasNames(input);
+    if (aliasNames.length) {
+      lookups.push({
+        name: "aliasBusinessName",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.business b
+          JOIN shared.party p ON p.party_guid = b.party_guid AND p.party_type = ${partyType}
+          WHERE (${Prisma.join(
+            aliasNames.map((name) => Prisma.sql`shared.f_match_norm(b.name) = shared.f_match_norm(${name})`),
+            " OR ",
+          )})
+            AND b.party_guid IS NOT NULL
+          LIMIT 25`,
+      });
+      const trigramAliasNames = aliasNames.filter((name) => name.length >= MATCH_TRIGRAM_MIN_LENGTH);
+      if (trigramAliasNames.length) {
+        lookups.push({
+          name: "aliasBusinessNameSimilar",
+          sql: Prisma.sql`SELECT p.party_guid
+            FROM shared.business b
+            JOIN shared.party p ON p.party_guid = b.party_guid AND p.party_type = ${partyType}
+            WHERE (${Prisma.join(
+              trigramAliasNames.map(
+                (name) =>
+                  Prisma.sql`shared.f_unaccent(lower(b.name)) OPERATOR(public.%) shared.f_unaccent(lower(${name}))`,
+              ),
+              " OR ",
+            )})
+              AND b.party_guid IS NOT NULL
+            LIMIT ${Prisma.raw(String(MATCH_SIMILAR_LIMIT))}`,
+        });
+      }
+    }
+
+    return [...lookups, ...this._buildAliasMatchLookups(partyType, [businessName ?? "", ...aliasNames])];
   }
 
   private _buildAliasMatchLookups(partyType: string, names: string[]): MatchLookup[] {
@@ -3012,6 +3133,36 @@ export class PartyService {
         });
       }
     }
+    for (const city of distinctMatchValues(addresses.map((address) => address.city))) {
+      lookups.push({
+        name: "city",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND shared.f_match_norm(ad.city) = shared.f_match_norm(${city})
+          LIMIT 25`,
+      });
+    }
+    for (const province of distinctMatchValues(addresses.map((address) => address.province))) {
+      lookups.push({
+        name: "province",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND ad.country_subdivision_code = ${province}
+          LIMIT 25`,
+      });
+    }
+    for (const country of distinctMatchValues(addresses.map((address) => address.country))) {
+      lookups.push({
+        name: "country",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND ad.country_code = ${country}
+          LIMIT 25`,
+      });
+    }
 
     return lookups;
   }
@@ -3047,6 +3198,9 @@ export class PartyService {
         Prisma.sql`least(char_length(shared.f_match_norm(pe.first_name)), char_length(shared.f_match_norm(${firstName}))) >= ${MATCH_PREFIX_MIN_LENGTH}
             AND (starts_with(shared.f_match_norm(pe.first_name), shared.f_match_norm(${firstName}))
               OR starts_with(shared.f_match_norm(${firstName}), shared.f_match_norm(pe.first_name))) AS first_prefix_eq`,
+        Prisma.sql`EXISTS (SELECT 1 FROM shared.nickname n
+            WHERE n.name = shared.f_match_norm(${firstName})
+              AND n.nickname = shared.f_match_norm(pe.first_name)) AS nickname_eq`,
       );
     }
     if (lastName) {
@@ -3156,6 +3310,27 @@ export class PartyService {
           Prisma.sql`public.similarity(shared.f_unaccent(lower(b.name)), shared.f_unaccent(lower(${businessName}))) AS business_name_sim`,
         );
       }
+      // Search business as name as the organization name
+      const aliasNames = matchAliasNames(input);
+      if (aliasNames.length) {
+        columns.push(
+          Prisma.sql`(${Prisma.join(
+            aliasNames.map((name) => Prisma.sql`shared.f_match_norm(b.name) = shared.f_match_norm(${name})`),
+            " OR ",
+          )}) AS alias_name_norm_eq`,
+          Prisma.sql`greatest(${Prisma.join(
+            aliasNames.map(
+              (name) =>
+                Prisma.sql`public.similarity(shared.f_unaccent(lower(b.name)), shared.f_unaccent(lower(${name})))`,
+            ),
+            ", ",
+          )}) AS alias_name_sim`,
+          Prisma.sql`(${Prisma.join(
+            aliasNames.map((name) => nameContainmentSql(Prisma.sql`b.name`, name)),
+            " OR ",
+          )}) AS alias_name_word_eq`,
+        );
+      }
       if (contact.firstName) {
         contactAggregates.push(
           Prisma.sql`bool_or(shared.f_match_norm(cpe.first_name) = shared.f_match_norm(${contact.firstName})) AS contact_first_norm_eq`,
@@ -3190,10 +3365,11 @@ export class PartyService {
     }
 
     // Stored aliases are compared against every entered name string - the name and each entered alias
-    const aliasCandidates =
+    const aliasCandidates = (
       input.partyTypeCode === PARTY_TYPES.Organization
-        ? []
-        : [personMatchName(input).trim(), ...matchAliasNames(input)].filter(Boolean);
+        ? [input.business?.name?.trim() ?? "", ...matchAliasNames(input)]
+        : [personMatchName(input).trim(), ...matchAliasNames(input)]
+    ).filter(Boolean);
     if (aliasCandidates.length) {
       addBestOverRows(
         "al",

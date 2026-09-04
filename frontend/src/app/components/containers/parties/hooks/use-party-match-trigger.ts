@@ -76,12 +76,15 @@ const buildSharedMatchFields = (
     if (countPostalCode && hasText(firstAddress.postalCode)) {
       populatedCount += 1;
     }
+    if (hasText(firstAddress.city) || hasText(firstAddress.province) || hasText(firstAddress.country)) {
+      populatedCount += 1;
+    }
   }
 
   return { contactMethods, addresses, populatedCount };
 };
 
-// Scored but never searched on
+// Searched together then scored field by field
 const buildPersonDescriptors = (values: any): NonNullable<PartyMatchInput["person"]> => {
   const person: NonNullable<PartyMatchInput["person"]> = {};
   if (hasText(values.approximateAgeCode)) person.approximateAgeCode = values.approximateAgeCode;
@@ -136,7 +139,12 @@ const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populated
     populatedCount += 1;
   }
 
-  Object.assign(person, buildPersonDescriptors(values));
+  const descriptors = buildPersonDescriptors(values);
+  Object.assign(person, descriptors);
+  // genderCode does not score currently
+  if (Object.keys(descriptors).some((key) => key !== "genderCode")) {
+    populatedCount += 1;
+  }
 
   const shared = buildSharedMatchFields(values, true);
   populatedCount += shared.populatedCount;
@@ -243,13 +251,38 @@ const buildBusinessMatchInput = (values: any): { input: PartyMatchInput; populat
     business.contactPeople = contacts.contactPeople;
   }
 
+  const aliases = (values.aliases ?? [])
+    .filter((alias: { name?: string | null }) => hasText(alias?.name))
+    .map((alias: { name?: string | null }) => ({ name: alias.name?.trim() }));
+  if (aliases.length) {
+    populatedCount += 1;
+  }
+
   const shared = buildSharedMatchFields(values, false);
   populatedCount += shared.populatedCount;
+
+  // The organization form captures phone and email on its addresses, not in their own sections
+  const contactMethods = [...(shared.contactMethods ?? [])];
+  const officePhones = (values.addresses ?? []).filter((a: AddressFormValue) => hasText(a?.phoneNumber));
+  for (const address of officePhones) {
+    contactMethods.push({ typeCode: ContactMethods.PHONE, value: address.phoneNumber.trim() });
+  }
+  if (officePhones.length) {
+    populatedCount += 1;
+  }
+  const officeEmails = (values.addresses ?? []).filter((a: AddressFormValue) => hasText(a?.emailAddress));
+  for (const address of officeEmails) {
+    contactMethods.push({ typeCode: ContactMethods.EMAIL, value: address.emailAddress.trim() });
+  }
+  if (officeEmails.length) {
+    populatedCount += 1;
+  }
 
   const input: PartyMatchInput = {
     partyTypeCode: PartyTypeCodes.ORGANIZATION,
     business,
-    ...(shared.contactMethods?.length ? { contactMethods: shared.contactMethods } : {}),
+    ...(aliases.length ? { aliases } : {}),
+    ...(contactMethods.length ? { contactMethods } : {}),
     ...(shared.addresses?.length ? { addresses: shared.addresses } : {}),
   };
 
