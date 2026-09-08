@@ -669,8 +669,8 @@ export class InvestigationService {
    * Evaluates whether an investigation currently satisfies the criteria required to be closed:
    *     1) All contraventions have a documented decision
    *     2) All tasks have been closed
-   * A contravention is considered to have a documented decision when every active
-   * contravention_party_xref beneath it has at least one active enforcement action.
+   * A contravention is considered to have a documented decision when at least one xref exists for the contravention
+   * AND all xrefs have an enforcement action record.
    */
   async evaluateCloseEligibility(investigationGuid: string): Promise<InvestigationCloseEligibility> {
     const found = await withRlsTransaction(this.prisma, async (db) => {
@@ -702,9 +702,10 @@ export class InvestigationService {
       throw new NotFoundException(`Investigation with guid ${investigationGuid} not found.`);
     }
 
-    const contraventionsWithoutDecisionCount = found.contravention.filter(
-      (contravention) => !this.hasDocumentedDecision(contravention),
-    ).length;
+    const contraventionsWithoutDecisionCount = found.contravention.reduce(
+      (total, contravention) => total + this.countUndocumentedDecisions(contravention),
+      0,
+    );
 
     const openTaskCount = found.task.filter((task) => task.task_status_code !== TaskStatus.Closed).length;
 
@@ -716,12 +717,20 @@ export class InvestigationService {
   }
 
   /**
-   * Returns true if every xref row has an enforcement action attached.   False otherwise.
+   * Returns the count of undocumented decisions on an investigation.
+   * Each party on a contravention is counted separately: a contravention_party_xref without an
+   * active enforcement action (known party) counts as one outstanding decision, and a contravention with no
+   * active xref rows (Unknown party) at all counts as one.
    */
-  private hasDocumentedDecision(contravention: {
+  private countUndocumentedDecisions(contravention: {
     contravention_party_xref: Array<{ enforcement_action: Array<{ enforcement_action_guid: string }> }>;
-  }): boolean {
-    return contravention.contravention_party_xref.every((xref) => xref.enforcement_action.length > 0);
+  }): number {
+    // A contravention with no party xref rows has had no decision entered against it at all.
+    if (contravention.contravention_party_xref.length === 0) {
+      return 1;
+    }
+
+    return contravention.contravention_party_xref.filter((xref) => xref.enforcement_action.length === 0).length;
   }
 
   // ============================================================================
