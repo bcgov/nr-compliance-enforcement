@@ -8,6 +8,7 @@ import {
   CreateInvestigationInput,
   UpdateInvestigationInput,
   InvestigationFilters,
+  InvestigationCloseEligibility,
 } from "src/investigation/investigation/dto/investigation";
 import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 
@@ -152,5 +153,13 @@ export class InvestigationResolver {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
     }
+  }
+
+  @Query("investigationCloseEligibility")
+  @Roles(coreRoles)
+  async investigationCloseEligibility(
+    @Args("investigationGuid") investigationGuid: string,
+  ): Promise<InvestigationCloseEligibility> {
+    return this.investigationService.evaluateCloseEligibility(investigationGuid);
   }
 }
