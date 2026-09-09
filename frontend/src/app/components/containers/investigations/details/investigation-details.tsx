@@ -351,7 +351,7 @@ export const InvestigationDetails: FC = () => {
             <strong>
               {eligibility.openTaskCount} {eligibility.openTaskCount === 1 ? "task" : "tasks"}
             </strong>{" "}
-            {eligibility.openTaskCount === 1 ? "has" : "have"} not been addressed or closed yet.
+            {eligibility.openTaskCount === 1 ? "has" : "have"} not been closed yet.
           </>
         ),
       });

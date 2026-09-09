@@ -84,7 +84,7 @@ test.describe("Investigation Status Change", () => {
     await selectItemById("task-status-select", "Closed", page);
 
     await expect(modal.getByText("cannot be changed", { exact: false })).toBeVisible();
-    await expect(modal.getByText("not been addressed or closed yet", { exact: false })).toBeVisible();
+    await expect(modal.getByText("not been closed yet", { exact: false })).toBeVisible();
     await expect(modal.locator("button", { hasText: /^Update$/ })).toBeDisabled();
 
     await modal.locator("button", { hasText: /Cancel/i }).click();
@@ -117,7 +117,7 @@ test.describe("Investigation Status Change", () => {
     await selectItemById("task-status-select", "Closed", page);
 
     await expect(modal.getByText("will lock all sections", { exact: false })).toBeVisible();
-    await expect(modal.getByText("have not been addressed or closed yet", { exact: false })).toBeHidden();
+    await expect(modal.getByText("have not been closed yet", { exact: false })).toBeHidden();
 
     const updateButton = modal.locator("button", { hasText: /^Update$/ });
     await expect(updateButton).toBeEnabled();
