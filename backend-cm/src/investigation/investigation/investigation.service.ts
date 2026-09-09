@@ -1,6 +1,6 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { investigation } from "../../../prisma/investigation/investigation.unsupported_types";
 import {
   CreateInvestigationInput,
@@ -8,6 +8,7 @@ import {
   UpdateInvestigationInput,
   InvestigationFilters,
   InvestigationResult,
+  InvestigationCloseEligibility,
 } from "./dto/investigation";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
@@ -27,6 +28,8 @@ import { PARTY_TYPES } from "src/common/party";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
 import { CosGeoOrgUnitService } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.service";
+import { TaskStatus } from "src/enum/task-status.enum";
+import { InvestigationStatus } from "src/enum/investigation-status.enum";
 
 @Injectable()
 export class InvestigationService {
@@ -416,7 +419,7 @@ export class InvestigationService {
   async create(input: CreateInvestigationInput): Promise<Investigation> {
     let caseIdentifier = input.caseIdentifier;
     const leadAgency = input.leadAgency;
-    const investigationStatus = input.investigationStatus ?? "OPEN";
+    const investigationStatus = input.investigationStatus ?? InvestigationStatus.Open;
 
     // Automatically open a case file if one is not provided
     if (!caseIdentifier) {
@@ -545,6 +548,23 @@ export class InvestigationService {
     if (!existingInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found.`);
     }
+
+    // if the status is closed check the closure criteria
+    const isClosing =
+      input.investigationStatus === InvestigationStatus.Closed &&
+      existingInvestigation.investigation_status !== InvestigationStatus.Closed;
+
+    if (isClosing) {
+      const eligibility = await this.evaluateCloseEligibility(investigationGuid);
+
+      if (!eligibility.isEligible) {
+        throw new BadRequestException({
+          message: "Investigation does not meet the criteria required to be closed.",
+          eligibility,
+        });
+      }
+    }
+
     let updatedInvestigation;
     await withRlsTransaction(this.prisma, async (db) => {
       try {
@@ -643,6 +663,74 @@ export class InvestigationService {
       this.logger.error(`Error mapping investigation with guid ${investigationGuid}:`, error);
       throw error;
     }
+  }
+
+  /**
+   * Evaluates whether an investigation currently satisfies the criteria required to be closed:
+   *     1) All contraventions have a documented decision
+   *     2) All tasks have been closed
+   * A contravention is considered to have a documented decision when at least one xref exists for the contravention
+   * AND all xrefs have an enforcement action record.
+   */
+  async evaluateCloseEligibility(investigationGuid: string): Promise<InvestigationCloseEligibility> {
+    const found = await withRlsTransaction(this.prisma, async (db) => {
+      return db.investigation.findUnique({
+        where: { investigation_guid: investigationGuid },
+        select: {
+          contravention: {
+            where: { active_ind: true },
+            select: {
+              contravention_party_xref: {
+                where: { active_ind: true },
+                include: {
+                  enforcement_action: {
+                    where: { active_ind: true },
+                  },
+                },
+              },
+            },
+          },
+          task: {
+            where: { active_ind: true },
+            select: { task_status_code: true },
+          },
+        },
+      });
+    });
+
+    if (!found) {
+      throw new NotFoundException(`Investigation with guid ${investigationGuid} not found.`);
+    }
+
+    const contraventionsWithoutDecisionCount = found.contravention.reduce(
+      (total, contravention) => total + this.countUndocumentedDecisions(contravention),
+      0,
+    );
+
+    const openTaskCount = found.task.filter((task) => task.task_status_code !== TaskStatus.Closed).length;
+
+    return {
+      isEligible: contraventionsWithoutDecisionCount === 0 && openTaskCount === 0,
+      contraventionsWithoutDecisionCount,
+      openTaskCount,
+    };
+  }
+
+  /**
+   * Returns the count of undocumented decisions on an investigation.
+   * Each party on a contravention is counted separately: a contravention_party_xref without an
+   * active enforcement action (known party) counts as one outstanding decision, and a contravention with no
+   * active xref rows (Unknown party) at all counts as one.
+   */
+  private countUndocumentedDecisions(contravention: {
+    contravention_party_xref: Array<{ enforcement_action: Array<{ enforcement_action_guid: string }> }>;
+  }): number {
+    // A contravention with no party xref rows has had no decision entered against it at all.
+    if (contravention.contravention_party_xref.length === 0) {
+      return 1;
+    }
+
+    return contravention.contravention_party_xref.filter((xref) => xref.enforcement_action.length === 0).length;
   }
 
   // ============================================================================

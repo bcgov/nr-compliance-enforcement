@@ -104,3 +104,9 @@ type InvestigationResult {
   items: [Investigation!]!
   pageInfo: PageInfo!
 }
+
+type InvestigationCloseEligibility {
+  isEligible: Boolean!
+  contraventionsWithoutDecisionCount: Int!
+  openTaskCount: Int!
+}
