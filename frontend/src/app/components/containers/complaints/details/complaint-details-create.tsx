@@ -35,7 +35,7 @@ import { createComplaint, selectComplaintDetails, setComplaint } from "@store/re
 import { from } from "linq-to-typescript";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@common/toast";
 import { useNavigate } from "react-router-dom";
-import { Attachments } from "@components/common/attachments-carousel";
+import { Attachments } from "@/app/components/common/attachments";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments } from "@common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";

@@ -308,3 +308,29 @@ div[class^="slideInner"] {
     align-items: flex-start;
   }
 }
+
+// Carousel rendered inside a modal, where the container is much narrower than the viewport.
+// Columns follow the container width rather than viewport breakpoints, and tiles are shorter.
+.comp-carousel-modal {
+  .carousel__slider-tray {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .comp-attachment-upload-btn,
+  .comp-attachment-slide {
+    min-height: 160px;
+  }
+
+  .comp-attachment-slide-top img {
+    height: 100px;
+  }
+
+  .upload-icon {
+    font-size: 24px;
+  }
+
+  .upload-text {
+    font-size: 14px;
+    text-align: center;
+  }
+}

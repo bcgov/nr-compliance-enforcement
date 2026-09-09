@@ -1,13 +1,12 @@
 import { FC } from "react";
 import { Slide } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
-import { useAppDispatch } from "@hooks/hooks";
-import { generateApiParameters, get } from "@common/api";
 import { COMSObject } from "@apptypes/coms/object";
-import config from "@/config";
 import AttachmentIcon from "./attachment-icon";
 import { Button } from "react-bootstrap";
 import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { downloadAttachment } from "@/app/common/attachment-utils";
+import { useAppDispatch } from "@/app/hooks/hooks";
 
 type Props = {
   index: number;
@@ -19,18 +18,6 @@ type Props = {
 
 export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onFileRemove, showPreview }) => {
   const dispatch = useAppDispatch();
-
-  const handleAttachmentClick = async (objectid: string, filename: string) => {
-    const versionQuery = attachment.s3VersionId ? `&s3VersionId=${attachment.s3VersionId}` : "";
-    const parameters = generateApiParameters(`${config.COMS_URL}/object/${objectid}?download=url${versionQuery}`);
-    const response = await get<string>(dispatch, parameters);
-
-    const a = document.createElement("a");
-    a.href = response;
-    a.download = filename;
-    a.target = "_blank";
-    a.click();
-  };
 
   const getSlideClass = () => {
     let className = "";
@@ -49,7 +36,7 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
           variant="light"
           className="icon-btn comp-slide-download-btn"
           tabIndex={index}
-          onClick={() => handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)}
+          onClick={() => downloadAttachment(dispatch, attachment)}
         >
           <i className="bi bi-cloud-arrow-down"></i>
         </Button>

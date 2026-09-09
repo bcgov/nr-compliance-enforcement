@@ -6,8 +6,14 @@ import {
   fetchObjectsMetadata,
   getDisplayFilename,
   ParsedObjectMetadata,
+  getBucketForAttachmentType,
 } from "@common/attachment-utils";
 import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
+import { getAttachmentConfig } from "@/app/types/app/attachment-config";
+import { isImage } from "@/app/common/methods";
+import config from "@/config";
+import axios from "axios";
+import { AUTH_TOKEN } from "@/app/service/user-service";
 
 const FETCH_PAGE_SIZE = 100;
 
@@ -101,10 +107,65 @@ const mapWithMetadata = (
     };
   });
 
+/**
+ * Resolves the thumbnail image for each image attachment, mutating `imageIconString` / `imageIconId` in place.
+ * Non-image attachments are skipped — the UI falls back to a file-type placeholder icon.
+ */
+const resolveThumbnails = async (
+  attachments: COMSObject[],
+  identifier: string,
+  subIdentifier: string | undefined,
+  attachmentType: AttachmentEnum,
+): Promise<void> => {
+  const attachmentConfig = getAttachmentConfig(attachmentType);
+  const bucketId = getBucketForAttachmentType(attachmentType);
+  const authHeader = { Authorization: `Bearer ${localStorage.getItem(AUTH_TOKEN)}` };
+
+  for (const attachment of attachments) {
+    if (!isImage(attachment.name) || !attachment.id) continue;
+
+    try {
+      const lookupUrl = new URL(`${config.COMS_URL}/object`);
+      lookupUrl.searchParams.append("bucketId", bucketId);
+      lookupUrl.searchParams.append("latest", "true");
+
+      const lookupHeaders: Record<string, string> = {
+        ...authHeader,
+        [attachmentConfig.headerKey]: identifier,
+        "x-amz-meta-is-thumb": "Y",
+        "x-amz-meta-attachment-type": attachmentType.toString(),
+        "x-amz-meta-thumb-for": attachment.id,
+        "Content-Disposition": `attachment; filename="${attachment.name}"`,
+      };
+
+      if (attachmentConfig.subHeaderKey) {
+        // matches buildAttachmentHeader: a dummy value filters everything out when there is no sub identifier yet
+        lookupHeaders[attachmentConfig.subHeaderKey] = subIdentifier ?? "00000000-0000-0000-0000-000000000000";
+      }
+
+      const lookupResponse = await axios.get<COMSObject[]>(lookupUrl.toString(), { headers: lookupHeaders });
+
+      const thumbId = lookupResponse.data[0]?.id;
+      if (!thumbId) continue;
+
+      const downloadResponse = await axios.get<string>(`${config.COMS_URL}/object/${thumbId}?download=url`, {
+        headers: authHeader,
+      });
+
+      attachment.imageIconString = downloadResponse.data;
+      attachment.imageIconId = thumbId;
+    } catch (error) {
+      // A thumbnail failure must not fail the whole fetch — fall back to the placeholder icon.
+      console.error(`Unable to resolve thumbnail for attachment ${attachment.id}`, error);
+    }
+  }
+};
+
 /** Fetches all enforcement-action attachments for an investigation, optionally scoped to a single enforcement action. */
 export const fetchEnforcementActionAttachments = async (
   investigationGuid: string,
   enforcementActionId?: string,
+  includeThumbnails: boolean = false,
 ): Promise<EnforcementActionAttachment[]> => {
   const attachments: COMSObject[] = [];
   let currentPage = 1;
@@ -127,5 +188,15 @@ export const fetchEnforcementActionAttachments = async (
 
   const objectIds = attachments.map((a) => a.id).filter((id): id is string => !!id);
   const metadataMap = await fetchObjectsMetadata(objectIds, AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT);
+
+  if (includeThumbnails) {
+    await resolveThumbnails(
+      attachments,
+      investigationGuid,
+      enforcementActionId,
+      AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT,
+    );
+  }
+
   return mapWithMetadata(attachments, metadataMap);
 };

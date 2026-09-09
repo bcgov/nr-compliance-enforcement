@@ -5,11 +5,17 @@ import axios, { AxiosProgressEvent } from "axios";
 import config from "@/config";
 import { AUTH_TOKEN } from "@service/user-service";
 import { getAttachmentConfig, isSecureAttachmentType } from "@apptypes/app/attachment-config";
+import { generateApiParameters, get } from "@/app/common/api";
+import { useAppDispatch } from "@/app/hooks/hooks";
+import { getThumbnailDataURL, isImage } from "@/app/common/methods";
+import { Dispatch } from "@reduxjs/toolkit";
 
 export const RETRY_CONFIG = {
   MAX_RETRIES: 3,
   RETRY_DELAY_BASE_MS: 2000, // Base delay: 2s, 4s, 6s
 };
+
+export const MAX_ATTACHMENT_PREVIEWS = 4;
 
 interface CategorizedError {
   errorType: string;
@@ -220,7 +226,7 @@ export interface ParsedObjectMetadata {
 /**
  * Which bucket to use based on attachment type.
  */
-const getBucketForAttachmentType = (attachmentType: AttachmentEnum): string => {
+export const getBucketForAttachmentType = (attachmentType: AttachmentEnum): string => {
   return isSecureAttachmentType(attachmentType) ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
 };
 
@@ -367,4 +373,30 @@ export const fileListToCOMSObjects = (files: FileList | null): COMSObject[] => {
     size: f.size,
     pendingUpload: true,
   }));
+};
+
+/** Requests a download URL for the attachment from COMS and triggers the browser download. */
+export const downloadAttachment = async (dispatch: Dispatch, attachment: COMSObject): Promise<void> => {
+  const versionQuery = attachment.s3VersionId ? `&s3VersionId=${attachment.s3VersionId}` : "";
+  const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}?download=url${versionQuery}`);
+  const response = await get<string>(dispatch, parameters);
+
+  const a = document.createElement("a");
+  a.href = response;
+  a.download = `${attachment.name}`;
+  a.target = "_blank";
+  a.click();
+};
+
+/**
+ * Generates a data-URL thumbnail for a locally selected file that has not been uploaded yet.
+ * Returns undefined for non-image files, or when a thumbnail could not be produced.
+ */
+export const generateFileThumbnail = async (file: File): Promise<string | undefined> => {
+  if (!isImage(file.name)) {
+    return undefined;
+  }
+
+  const thumbnail = await getThumbnailDataURL(file);
+  return thumbnail || undefined;
 };
