@@ -13,7 +13,7 @@ import { InvestigationExhibits } from "@/app/components/containers/investigation
 import { InvestigationTasksNew } from "@/app/components/containers/investigations/details/investigation-task";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { StatusChangeAdvisory } from "@/app/components/common/change-status-modal";
+import { StatusChangeAdvisory, StatusChangeAdvisoryDetail } from "@/app/components/common/change-status-modal";
 import { InvestigationStatus } from "@/app/constants/investigation-status";
 
 export const GET_INVESTIGATION = gql`
@@ -245,7 +245,11 @@ export const InvestigationDetails: FC = () => {
     refetchInterval: 30 * 1000, // poll for shared party changes
   });
 
-  const { data: eligibilityData } = useGraphQLQuery<{
+  const {
+    data: eligibilityData,
+    isLoading: isEligibilityLoading,
+    isError: isEligibilityError,
+  } = useGraphQLQuery<{
     investigationCloseEligibility: InvestigationCloseEligibility;
   }>(GET_INVESTIGATION_CLOSE_ELIGIBILITY, {
     queryKey: ["investigationCloseEligibility", investigationGuid],
@@ -296,7 +300,15 @@ export const InvestigationDetails: FC = () => {
       return advisories;
     }
 
-    if (!eligibility) {
+    if (isEligibilityLoading || isEligibilityError || !eligibility) {
+      advisories[InvestigationStatus.Closed] = {
+        variant: "blocked",
+        heading: isEligibilityError ? (
+          <>Unable to check whether this investigation can be closed. Please refresh and try again.</>
+        ) : (
+          <>Checking whether this investigation can be closed&hellip;</>
+        ),
+      };
       return advisories;
     }
 
@@ -313,7 +325,7 @@ export const InvestigationDetails: FC = () => {
       return advisories;
     }
 
-    const details = [];
+    const details: StatusChangeAdvisoryDetail[] = [];
 
     if (eligibility.contraventionsWithoutDecisionCount > 0) {
       details.push({
@@ -357,7 +369,7 @@ export const InvestigationDetails: FC = () => {
     };
 
     return advisories;
-  }, [currentStatus, eligibility]);
+  }, [currentStatus, eligibility, isEligibilityLoading, isEligibilityError]);
 
   const renderTabContent = () => {
     if (currentTab === "summary") {

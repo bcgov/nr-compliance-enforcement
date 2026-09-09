@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
 import { InvestigationService } from "./investigation.service";
-import { Logger, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Logger, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -160,6 +160,21 @@ export class InvestigationResolver {
   async investigationCloseEligibility(
     @Args("investigationGuid") investigationGuid: string,
   ): Promise<InvestigationCloseEligibility> {
-    return this.investigationService.evaluateCloseEligibility(investigationGuid);
+    try {
+      return await this.investigationService.evaluateCloseEligibility(investigationGuid);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        const response = error.getResponse() as { message: string; eligibility: InvestigationCloseEligibility };
+        throw new GraphQLError(response.message, {
+          extensions: { code: "BAD_REQUEST", eligibility: response.eligibility },
+        });
+      }
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching data from investigation schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
   }
 }
