@@ -186,12 +186,30 @@ export const GET_INVESTIGATION = gql`
             appUserIdentifier
             activeIndicator
             comment
+            issuingOfficerIdentifier
+            dateServed
+            warningNumber
+            sanctionTypeCode
+            effectiveDate
+            endDate
+            sanctionStatusCode
+            orderTypeCode
+            orderStatusCode
+            remediationRequired
+            appealHearingDate
+            hearingDate
+            decisionDate
+            courtProsecutionStatusCode
+            administrativePenaltyStatusCode
+            approvalInd
             ticket {
               ticketIdentifier
               ticketOutcomeCode
               ticketAmount
               ticketNumber
               paidDate
+              ticketTypeCode
+              appealHearingDate
             }
           }
         }

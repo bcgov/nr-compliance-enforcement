@@ -910,6 +910,67 @@ export class CodeTableService {
         return results;
       }
 
+      case "ticket-type": {
+        const { data } = await get(token, {
+          query: "{ ticketTypeCodes { ticketTypeCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.ticketTypeCodes;
+        return results;
+      }
+
+      case "sanction-type": {
+        const { data } = await get(token, {
+          query:
+            "{ sanctionTypeCodes { sanctionTypeCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.sanctionTypeCodes;
+        return results;
+      }
+
+      case "sanction-status-type": {
+        const { data } = await get(token, {
+          query:
+            "{ sanctionStatusCodes { sanctionStatusCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.sanctionStatusCodes;
+        return results;
+      }
+
+      case "order-type": {
+        const { data } = await get(token, {
+          query: "{ orderTypeCodes { orderTypeCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.orderTypeCodes;
+        return results;
+      }
+
+      case "order-status-type": {
+        const { data } = await get(token, {
+          query:
+            "{ orderStatusCodes { orderStatusCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.orderStatusCodes;
+        return results;
+      }
+
+      case "court-prosecution-status-type": {
+        const { data } = await get(token, {
+          query:
+            "{ courtProsecutionStatusCodes { courtProsecutionStatusCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.courtProsecutionStatusCodes;
+        return results;
+      }
+
+      case "administrative-penalty-status-type": {
+        const { data } = await get(token, {
+          query:
+            "{ administrativePenaltyStatusCodes { administrativePenaltyStatusCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.administrativePenaltyStatusCodes;
+        return results;
+      }
+
       case "country-type": {
         const { data } = await get(token, {
           query: "{ countries { countryCode shortDescription longDescription displayOrder activeIndicator }}",

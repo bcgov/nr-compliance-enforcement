@@ -1,6 +1,12 @@
+import { administrative_penalty } from "./administrative_penalty";
+import { administrative_sanction } from "./administrative_sanction";
+import { court_prosecution } from "./court_prosecution";
 import { contravention_party_xref } from "./contravention_party_xref";
 import { enforcement_action_code } from "./enforcement_action_code";
+import { enforcement_order } from "./enforcement_order";
+import { restorative_justice } from "./restorative_justice";
 import { ticket } from "./ticket";
+import { warning } from "./warning";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class enforcement_action {
@@ -40,12 +46,36 @@ export class enforcement_action {
   @ApiPropertyOptional({ type: String })
   comment?: string;
 
+  @ApiPropertyOptional({ type: String })
+  issuing_officer_guid_ref?: string;
+
+  @ApiPropertyOptional({ type: Date })
+  date_served?: Date;
+
+  @ApiProperty({ isArray: true, type: () => administrative_penalty })
+  administrative_penalty: administrative_penalty[];
+
+  @ApiProperty({ isArray: true, type: () => administrative_sanction })
+  administrative_sanction: administrative_sanction[];
+
+  @ApiProperty({ isArray: true, type: () => court_prosecution })
+  court_prosecution: court_prosecution[];
+
   @ApiProperty({ type: () => contravention_party_xref })
   contravention_party_xref: contravention_party_xref;
 
   @ApiProperty({ type: () => enforcement_action_code })
   enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: enforcement_action_code;
 
+  @ApiProperty({ isArray: true, type: () => enforcement_order })
+  enforcement_order: enforcement_order[];
+
+  @ApiProperty({ isArray: true, type: () => restorative_justice })
+  restorative_justice: restorative_justice[];
+
   @ApiProperty({ isArray: true, type: () => ticket })
   ticket: ticket[];
+
+  @ApiProperty({ isArray: true, type: () => warning })
+  warning: warning[];
 }

@@ -129,6 +129,41 @@ export const selectTicketOutcomes = createSelector([selectCodeTables], (codeTabl
   return items.map(({ ticketOutcomeCode: value, longDescription: label }) => ({ label, value }));
 });
 
+export const selectTicketTypes = createSelector([selectCodeTables], (codeTables) => {
+  const { "ticket-type": items } = codeTables;
+  return items.map(({ ticketTypeCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectSanctionTypes = createSelector([selectCodeTables], (codeTables) => {
+  const { "sanction-type": items } = codeTables;
+  return items.map(({ sanctionTypeCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectSanctionStatuses = createSelector([selectCodeTables], (codeTables) => {
+  const { "sanction-status-type": items } = codeTables;
+  return items.map(({ sanctionStatusCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectOrderTypes = createSelector([selectCodeTables], (codeTables) => {
+  const { "order-type": items } = codeTables;
+  return items.map(({ orderTypeCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectOrderStatuses = createSelector([selectCodeTables], (codeTables) => {
+  const { "order-status-type": items } = codeTables;
+  return items.map(({ orderStatusCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectCourtProsecutionStatuses = createSelector([selectCodeTables], (codeTables) => {
+  const { "court-prosecution-status-type": items } = codeTables;
+  return items.map(({ courtProsecutionStatusCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectAdministrativePenaltyStatuses = createSelector([selectCodeTables], (codeTables) => {
+  const { "administrative-penalty-status-type": items } = codeTables;
+  return items.map(({ administrativePenaltyStatusCode: value, longDescription: label }) => ({ label, value }));
+});
+
 export const selectCountries = createSelector([selectCodeTables], (codeTables) => {
   const { "country-type": items } = codeTables;
   return [...items]

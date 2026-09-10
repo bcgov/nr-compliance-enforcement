@@ -69,6 +69,7 @@ import { legislation_configuration_h as _legislation_configuration_h } from "./l
 import { legislation_source_h as _legislation_source_h } from "./legislation_source_h";
 import { legislation_version as _legislation_version } from "./legislation_version";
 import { legislation_version_h as _legislation_version_h } from "./legislation_version_h";
+import { nickname as _nickname } from "./nickname";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -142,6 +143,7 @@ export namespace PrismaModel {
   export class legislation_source_h extends _legislation_source_h {}
   export class legislation_version extends _legislation_version {}
   export class legislation_version_h extends _legislation_version_h {}
+  export class nickname extends _nickname {}
 
   export const extraModels = [
     agency_code,
@@ -215,5 +217,6 @@ export namespace PrismaModel {
     legislation_source_h,
     legislation_version,
     legislation_version_h,
+    nickname,
   ];
 }

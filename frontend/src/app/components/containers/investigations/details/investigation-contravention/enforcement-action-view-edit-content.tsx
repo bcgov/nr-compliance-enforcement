@@ -16,6 +16,7 @@ interface EnforcementActionViewEditContentProps {
   investigationGuid: string;
   contravention: Contravention;
   party?: InvestigationParty;
+  primaryInvestigatorGuid?: string;
   enforcementAction?: EnforcementAction;
   isReadOnly?: boolean;
   handleChildDirtyChange: (index: number, isDirty: boolean) => void;
@@ -43,6 +44,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   currentStep,
   contravention,
   party,
+  primaryInvestigatorGuid,
   enforcementAction,
   isReadOnly,
   handleChildDirtyChange,
@@ -64,6 +66,15 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const enforcementActionCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.ENFORCEMENT_ACTION_TYPE));
   const ticketOutcomeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.TICKET_OUTCOME_TYPE));
+  const ticketTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.TICKET_TYPE));
+  const sanctionTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SANCTION_TYPE));
+  const sanctionStatusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SANCTION_STATUS_TYPE));
+  const orderTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.ORDER_TYPE));
+  const orderStatusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.ORDER_STATUS_TYPE));
+  const courtProsecutionStatusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COURT_PROSECUTION_STATUS_TYPE));
+  const administrativePenaltyStatusCodes = useAppSelector(
+    selectCodeTable(CODE_TABLE_TYPES.ADMINISTRATIVE_PENALTY_STATUS_TYPE),
+  );
   const officers = useAppSelector(selectOfficers);
 
   const communityLabel = areaCodes.find((c) => c.area === enforcementAction?.geoOrganizationUnitCode)?.areaName ?? "";
@@ -80,6 +91,32 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   const servingOfficer = officers?.find((o) => o.app_user_guid === enforcementAction?.appUserIdentifier);
   const servingOfficerLabel = servingOfficer ? `${servingOfficer.last_name}, ${servingOfficer.first_name}` : "";
 
+  const issuingOfficer = officers?.find((o) => o.app_user_guid === enforcementAction?.issuingOfficerIdentifier);
+  const issuingOfficerLabel = issuingOfficer ? `${issuingOfficer.last_name}, ${issuingOfficer.first_name}` : "";
+
+  const decisionDetailLabels = {
+    ticketType:
+      ticketTypeCodes.find((c) => c.ticketTypeCode === enforcementAction?.ticket?.ticketTypeCode)?.shortDescription ??
+      "",
+    sanctionType:
+      sanctionTypeCodes.find((c) => c.sanctionTypeCode === enforcementAction?.sanctionTypeCode)?.shortDescription ??
+      "",
+    sanctionStatus:
+      sanctionStatusCodes.find((c) => c.sanctionStatusCode === enforcementAction?.sanctionStatusCode)
+        ?.shortDescription ?? "",
+    orderType:
+      orderTypeCodes.find((c) => c.orderTypeCode === enforcementAction?.orderTypeCode)?.shortDescription ?? "",
+    orderStatus:
+      orderStatusCodes.find((c) => c.orderStatusCode === enforcementAction?.orderStatusCode)?.shortDescription ?? "",
+    courtProsecutionStatus:
+      courtProsecutionStatusCodes.find((c) => c.courtProsecutionStatusCode === enforcementAction?.courtProsecutionStatusCode)
+        ?.shortDescription ?? "",
+    administrativePenaltyStatus:
+      administrativePenaltyStatusCodes.find(
+        (c) => c.administrativePenaltyStatusCode === enforcementAction?.administrativePenaltyStatusCode,
+      )?.shortDescription ?? "",
+  };
+
   return (
     <>
       <div className={currentStep === 0 && enforcementAction ? "" : "d-none"}>
@@ -92,8 +129,10 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
             }
             communityLabel={communityLabel}
             servingOfficerLabel={servingOfficerLabel}
+            issuingOfficerLabel={issuingOfficerLabel}
             enforcementActionLabel={enforcementActionLabel}
             ticketOutcomeLabel={ticketOutcomeLabel}
+            decisionDetailLabels={decisionDetailLabels}
             attachments={existingAttachments}
             isLoadingAttachments={attachmentsQuery.isLoading}
           />
@@ -104,6 +143,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
           <EnforcementActionForm
             investigationGuid={investigationGuid}
             party={party}
+            primaryInvestigatorGuid={primaryInvestigatorGuid}
             contravention={contravention}
             enforcementAction={enforcementAction}
             existingAttachments={existingAttachments}

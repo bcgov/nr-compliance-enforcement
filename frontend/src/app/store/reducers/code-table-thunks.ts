@@ -21,6 +21,13 @@ import { InvestigationSourceCode } from "@/app/types/app/investigation/investiga
 import { LegislationType } from "@/app/types/app/code-tables/legislation-type";
 import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-action";
 import { TicketOutcomeType } from "@/app/types/app/code-tables/ticket-outcome";
+import { TicketType } from "@/app/types/app/code-tables/ticket-type";
+import { SanctionType } from "@/app/types/app/code-tables/sanction-type";
+import { SanctionStatusType } from "@/app/types/app/code-tables/sanction-status-type";
+import { OrderType } from "@/app/types/app/code-tables/order-type";
+import { OrderStatusType } from "@/app/types/app/code-tables/order-status-type";
+import { CourtProsecutionStatusType } from "@/app/types/app/code-tables/court-prosecution-status-type";
+import { AdministrativePenaltyStatusType } from "@/app/types/app/code-tables/administrative-penalty-status-type";
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
@@ -200,6 +207,77 @@ export const fetchTicketOutcomeTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<TicketOutcomeType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.TICKET_OUTCOME_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchTicketTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TICKET_TYPE}`);
+  const response = await get<Array<TicketType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.TICKET_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchSanctionTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SANCTION_TYPE}`);
+  const response = await get<Array<SanctionType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.SANCTION_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchSanctionStatusTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SANCTION_STATUS_TYPE}`,
+  );
+  const response = await get<Array<SanctionStatusType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.SANCTION_STATUS_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchOrderTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ORDER_TYPE}`);
+  const response = await get<Array<OrderType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.ORDER_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchOrderStatusTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ORDER_STATUS_TYPE}`,
+  );
+  const response = await get<Array<OrderStatusType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.ORDER_STATUS_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchCourtProsecutionStatusTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.COURT_PROSECUTION_STATUS_TYPE}`,
+  );
+  const response = await get<Array<CourtProsecutionStatusType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.COURT_PROSECUTION_STATUS_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchAdministrativePenaltyStatusTypeCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ADMINISTRATIVE_PENALTY_STATUS_TYPE}`,
+  );
+  const response = await get<Array<AdministrativePenaltyStatusType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.ADMINISTRATIVE_PENALTY_STATUS_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

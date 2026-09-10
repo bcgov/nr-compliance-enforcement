@@ -12,6 +12,31 @@ import { withRlsTransaction } from "../../pg-session-extension/with-rls-transact
 import { InvestigationService } from "../investigation/investigation.service";
 import { InvestigationPartyService } from "../investigation_party/investigation_party_service";
 
+// Every enforcement action code that has its own decision-detail table, and the table it maps
+// to. Unfounded/Unresolved (comment only) and Violation Ticket (the pre-existing ticket table,
+// handled separately) are intentionally excluded here.
+const DECISION_DETAIL_TABLES = [
+  "warning",
+  "administrative_sanction",
+  "enforcement_order",
+  "restorative_justice",
+  "court_prosecution",
+  "administrative_penalty",
+] as const;
+
+type DecisionDetailTable = (typeof DECISION_DETAIL_TABLES)[number];
+
+const activeDetailInclude = { where: { active_ind: true } };
+
+const DECISION_DETAIL_INCLUDE = {
+  warning: activeDetailInclude,
+  administrative_sanction: activeDetailInclude,
+  enforcement_order: activeDetailInclude,
+  restorative_justice: activeDetailInclude,
+  court_prosecution: activeDetailInclude,
+  administrative_penalty: activeDetailInclude,
+};
+
 @Injectable()
 export class EnforcementActionService {
   constructor(
@@ -23,6 +48,119 @@ export class EnforcementActionService {
   ) {}
 
   private readonly logger = new Logger(EnforcementActionService.name);
+
+  // Maps a decision code to the fields for its decision-detail table, given a flat
+  // create/update input. Returns null for decisions with no dedicated table (Unfounded,
+  // Unresolved, Violation Ticket - ticket is handled by the existing ticket-specific logic).
+  private buildDecisionDetailData(
+    code: string | undefined,
+    input: CreateEnforcementActionInput | UpdateEnforcementActionInput,
+  ): { table: DecisionDetailTable; data: Record<string, unknown> } | null {
+    switch (code) {
+      case "WARN":
+        return { table: "warning", data: { warning_number: input.warningNumber } };
+      case "ADSN":
+        return {
+          table: "administrative_sanction",
+          data: {
+            sanction_type_code: input.sanctionTypeCode,
+            effective_date: input.effectiveDate,
+            end_date: input.endDate,
+            sanction_status_code: input.sanctionStatusCode,
+            comment: input.comment ?? null,
+          },
+        };
+      case "ORDR":
+        return {
+          table: "enforcement_order",
+          data: {
+            order_type_code: input.orderTypeCode ?? null,
+            remediation_required_ind: input.remediationRequired ?? null,
+            appeal_hearing_date: input.appealHearingDate ?? null,
+            order_status_code: input.orderStatusCode,
+          },
+        };
+      case "RJUS":
+        return {
+          table: "restorative_justice",
+          data: {
+            hearing_date: input.hearingDate ?? null,
+            decision_date: input.decisionDate ?? null,
+            remediation_required_ind: input.remediationRequired ?? null,
+            comment: input.comment ?? null,
+          },
+        };
+      case "CTPR":
+        return {
+          table: "court_prosecution",
+          data: {
+            approval_ind: input.approvalInd ?? null,
+            remediation_required_ind: input.remediationRequired ?? null,
+            court_prosecution_status_code: input.courtProsecutionStatusCode,
+          },
+        };
+      case "ADPN":
+        return {
+          table: "administrative_penalty",
+          data: {
+            approval_ind: input.approvalInd ?? null,
+            remediation_required_ind: input.remediationRequired ?? null,
+            administrative_penalty_status_code: input.administrativePenaltyStatusCode,
+            comment: input.comment ?? null,
+          },
+        };
+      default:
+        return null;
+    }
+  }
+
+  // Soft-deletes any active row in every decision-detail table except the one currently
+  // applicable (so switching decision types doesn't leave a stale detail row active), then
+  // upserts the applicable one, if any.
+  private async syncDecisionDetail(
+    db: any,
+    enforcementActionGuid: string,
+    decisionDetail: { table: DecisionDetailTable; data: Record<string, unknown> } | null,
+  ): Promise<void> {
+    for (const table of DECISION_DETAIL_TABLES) {
+      if (decisionDetail?.table === table) continue;
+      await db[table].updateMany({
+        where: { enforcement_action_guid: enforcementActionGuid, active_ind: true },
+        data: {
+          active_ind: false,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    }
+
+    if (!decisionDetail) return;
+
+    const existing = await db[decisionDetail.table].findFirst({
+      where: { enforcement_action_guid: enforcementActionGuid, active_ind: true },
+    });
+
+    if (existing) {
+      await db[decisionDetail.table].update({
+        where: { [`${decisionDetail.table}_guid`]: existing[`${decisionDetail.table}_guid`] },
+        data: {
+          ...decisionDetail.data,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    } else {
+      await db[decisionDetail.table].create({
+        data: {
+          enforcement_action_guid: enforcementActionGuid,
+          ...decisionDetail.data,
+          active_ind: true,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+        },
+      });
+    }
+  }
 
   async findMany(contraventionIdentifier: string, partyIdentifier: string): Promise<EnforcementAction[]> {
     const xref = await this.prisma.contravention_party_xref.findFirst({
@@ -49,6 +187,7 @@ export class EnforcementActionService {
             active_ind: true,
           },
         },
+        ...DECISION_DETAIL_INCLUDE,
         enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
         contravention_party_xref: {
           include: {
@@ -75,6 +214,7 @@ export class EnforcementActionService {
             active_ind: true,
           },
         },
+        ...DECISION_DETAIL_INCLUDE,
       },
     });
 
@@ -137,6 +277,8 @@ export class EnforcementActionService {
             geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
             app_user_guid_ref: input.appUserIdentifier,
             comment: input.comment ?? null,
+            issuing_officer_guid_ref: input.issuingOfficerIdentifier ?? null,
+            date_served: input.dateServed ?? null,
             active_ind: true,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
@@ -148,6 +290,8 @@ export class EnforcementActionService {
                     ticket_amount: input.ticketAmount,
                     ticket_number: input.ticketNumber,
                     paid_date: input.paidDate,
+                    ticket_type_code: input.ticketTypeCode ?? null,
+                    appeal_hearing_date: input.appealHearingDate ?? null,
                     active_ind: true,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
@@ -156,6 +300,19 @@ export class EnforcementActionService {
               }),
           },
         });
+
+        const decisionDetail = this.buildDecisionDetailData(input.enforcementActionCode, input);
+        if (decisionDetail) {
+          await db[decisionDetail.table].create({
+            data: {
+              enforcement_action_guid: enforcementAction.enforcement_action_guid,
+              ...decisionDetail.data,
+              active_ind: true,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+            },
+          });
+        }
 
         // 3. Create the shared party in the shared schema
         if (preparedParty) {
@@ -210,6 +367,8 @@ export class EnforcementActionService {
             geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
             app_user_guid_ref: input.appUserIdentifier,
             comment: input.comment ?? null,
+            issuing_officer_guid_ref: input.issuingOfficerIdentifier ?? null,
+            date_served: input.dateServed ?? null,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
           },
@@ -233,6 +392,8 @@ export class EnforcementActionService {
                 ticket_amount: input.ticketAmount,
                 ticket_number: input.ticketNumber,
                 paid_date: input.paidDate,
+                ticket_type_code: input.ticketTypeCode ?? null,
+                appeal_hearing_date: input.appealHearingDate ?? null,
                 update_user_id: this.user.getIdirUsername(),
                 update_utc_timestamp: new Date(),
               },
@@ -245,6 +406,8 @@ export class EnforcementActionService {
                 ticket_amount: input.ticketAmount,
                 ticket_number: input.ticketNumber,
                 paid_date: input.paidDate,
+                ticket_type_code: input.ticketTypeCode ?? null,
+                appeal_hearing_date: input.appealHearingDate ?? null,
                 active_ind: true,
                 create_user_id: this.user.getIdirUsername(),
                 create_utc_timestamp: new Date(),
@@ -265,6 +428,9 @@ export class EnforcementActionService {
             },
           });
         }
+
+        const decisionDetail = this.buildDecisionDetailData(input.enforcementActionCode, input);
+        await this.syncDecisionDetail(db, input.enforcementActionIdentifier, decisionDetail);
       });
 
       await this.investigationService.updateInvestigationTimestamp(
@@ -298,7 +464,7 @@ export class EnforcementActionService {
       }
 
       await withRlsTransaction(this.prisma, async (db) => {
-        // Soft delete any associated ticket first
+        // Soft delete any associated ticket and decision-detail rows first
         await db.ticket.updateMany({
           where: {
             enforcement_action_guid: enforcementActionIdentifier,
@@ -310,6 +476,20 @@ export class EnforcementActionService {
             update_utc_timestamp: new Date(),
           },
         });
+
+        for (const table of DECISION_DETAIL_TABLES) {
+          await db[table].updateMany({
+            where: {
+              enforcement_action_guid: enforcementActionIdentifier,
+              active_ind: true,
+            },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
+        }
 
         await db.enforcement_action.update({
           where: {

@@ -186,6 +186,12 @@ export class InvestigationService {
                           active_ind: true,
                         },
                       },
+                      warning: { where: { active_ind: true } },
+                      administrative_sanction: { where: { active_ind: true } },
+                      enforcement_order: { where: { active_ind: true } },
+                      restorative_justice: { where: { active_ind: true } },
+                      court_prosecution: { where: { active_ind: true } },
+                      administrative_penalty: { where: { active_ind: true } },
                       enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
                       contravention_party_xref: {
                         include: {

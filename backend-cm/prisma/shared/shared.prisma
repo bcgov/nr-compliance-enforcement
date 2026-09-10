@@ -1240,3 +1240,14 @@ model legislation_version_h {
 
   @@schema("shared")
 }
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model nickname {
+  name                 String   @db.VarChar(50)
+  nickname             String   @db.VarChar(50)
+  create_user_id       String   @db.VarChar(32)
+  create_utc_timestamp DateTime @default(now()) @db.Timestamp(6)
+
+  @@id([name, nickname], map: "nickname_pk")
+  @@schema("shared")
+}
