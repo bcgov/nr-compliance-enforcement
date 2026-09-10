@@ -15,6 +15,7 @@ import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date
 
 const MATCH_FIELD_LABELS: Record<string, string> = {
   driversLicenseNumber: "Driver's licence",
+  externalId: "External ID",
   firstName: "First name",
   lastName: "Last name",
   middleNames: "Middle name",

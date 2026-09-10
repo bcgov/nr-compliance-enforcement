@@ -53,6 +53,7 @@ import { PartyModule } from "./shared/party/party.module";
 import { InspectionModule } from "./inspection/inspection/inspection.module";
 import { PrismaModuleInspection } from "./prisma/inspection/prisma.inspection.module";
 import { PartyTypeCodeModule } from "./shared/party_type_code/party_type_code.module";
+import { PartyExternalIdCodeModule } from "./shared/party_external_id_code/party_external_id_code.module";
 import { CaseActivityModule } from "src/shared/case_activity/case_activity.module";
 import { EventModule } from "./shared/event/event.module";
 import { EventPublisherModule } from "./event_publisher/event_publisher.module";
@@ -144,6 +145,7 @@ import { InvestigationAttachmentReferenceModule } from "src/investigation/invest
     PartyModule,
     InspectionModule,
     PartyTypeCodeModule,
+    PartyExternalIdCodeModule,
     CaseActivityModule,
     EventModule,
     EventPublisherModule,

@@ -14,6 +14,8 @@ import { investigation_address as _investigation_address } from "./investigation
 import { investigation_alias as _investigation_alias } from "./investigation_alias";
 import { investigation_alias_h as _investigation_alias_h } from "./investigation_alias_h";
 import { investigation_attachment_reference as _investigation_attachment_reference } from "./investigation_attachment_reference";
+import { investigation_party_external_id as _investigation_party_external_id } from "./investigation_party_external_id";
+import { investigation_party_external_id_h as _investigation_party_external_id_h } from "./investigation_party_external_id_h";
 import { investigation_business as _investigation_business } from "./investigation_business";
 import { investigation_business_h as _investigation_business_h } from "./investigation_business_h";
 import { investigation_business_identifier as _investigation_business_identifier } from "./investigation_business_identifier";
@@ -63,6 +65,8 @@ export namespace PrismaModel {
   export class investigation_alias extends _investigation_alias {}
   export class investigation_alias_h extends _investigation_alias_h {}
   export class investigation_attachment_reference extends _investigation_attachment_reference {}
+  export class investigation_party_external_id extends _investigation_party_external_id {}
+  export class investigation_party_external_id_h extends _investigation_party_external_id_h {}
   export class investigation_business extends _investigation_business {}
   export class investigation_business_h extends _investigation_business_h {}
   export class investigation_business_identifier extends _investigation_business_identifier {}
@@ -112,6 +116,8 @@ export namespace PrismaModel {
     investigation_alias,
     investigation_alias_h,
     investigation_attachment_reference,
+    investigation_party_external_id,
+    investigation_party_external_id_h,
     investigation_business,
     investigation_business_h,
     investigation_business_identifier,

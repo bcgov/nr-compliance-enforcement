@@ -1,0 +1,5 @@
+type InvestigationPartyExternalId {
+  partyExternalIdGuid: String!
+  externalIdCode: String!
+  externalIdValue: String!
+}
