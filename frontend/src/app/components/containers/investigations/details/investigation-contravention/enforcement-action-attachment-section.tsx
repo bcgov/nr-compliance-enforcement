@@ -1,6 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useState, useCallback } from "react";
 import { Alert, Button } from "react-bootstrap";
-import { getDisplayFilename, handlePersistAttachments, MAX_ATTACHMENT_PREVIEWS } from "@/app/common/attachment-utils";
+import {
+  Attachment,
+  fetchAttachmentsWithMetadata,
+  getDisplayFilename,
+  handlePersistAttachments,
+  MAX_ATTACHMENT_PREVIEWS,
+} from "@/app/common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
@@ -8,8 +14,6 @@ import { DismissToast, ToggleInformation } from "@/app/common/toast";
 import {
   buildEnforcementActionMeta,
   computeSequenceNumbers,
-  fetchEnforcementActionAttachments,
-  EnforcementActionAttachment,
   EnforcementActionAttachmentFieldValues,
 } from "@/app/common/enforcement-action-attachment-utils";
 import { useAppDispatch } from "@/app/hooks/hooks";
@@ -28,7 +32,7 @@ export interface EnforcementActionAttachmentSectionHandle {
 interface EnforcementActionAttachmentSectionProps {
   investigationGuid: string;
   /** Existing attachments already in COMS for this EA (empty for a brand-new EA). */
-  existingAttachments: EnforcementActionAttachment[];
+  existingAttachments: Attachment[];
   onDirtyChange?: (isDirty: boolean) => void;
 }
 
@@ -41,7 +45,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
   const [filesToAdd, setFilesToAdd] = useState<File[]>([]);
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
   // existing (already-saved) attachment awaiting delete confirmation
-  const [pendingRemove, setPendingRemove] = useState<(EnforcementActionAttachment & { id: string }) | null>(null);
+  const [pendingRemove, setPendingRemove] = useState<(Attachment & { id: string }) | null>(null);
 
   const handleFilesSelected = useCallback((files: File[]) => {
     setFilesToAdd((prev) => mergeNewFiles(prev, files));
@@ -72,7 +76,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
   };
 
   const visibleExisting = existingAttachments.filter(
-    (a): a is EnforcementActionAttachment & { id: string } => !!a.id && !removedIds.has(a.id),
+    (a): a is Attachment & { id: string } => !!a.id && !removedIds.has(a.id),
   );
 
   // staged files first, matching the carousel's own ordering when new files are staged
@@ -95,7 +99,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
     persist: async (enforcementActionId, fieldValues) => {
       const meta = buildEnforcementActionMeta(fieldValues, { investigationGuid, enforcementActionId });
 
-      const current = await fetchEnforcementActionAttachments(investigationGuid, enforcementActionId);
+      const current = await fetchAttachmentsWithMetadata(investigationGuid, undefined, enforcementActionId);
 
       // Deletes
       const toDelete = current.filter((a) => a.id && removedIds.has(a.id));
@@ -114,9 +118,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
       }
 
       // Sync metadata onto retained attachments
-      const toSync = current.filter(
-        (a): a is EnforcementActionAttachment & { id: string } => !!a.id && !removedIds.has(a.id),
-      );
+      const toSync = current.filter((a): a is Attachment & { id: string } => !!a.id && !removedIds.has(a.id));
       if (toSync.length > 0) {
         await Promise.all(
           toSync.map((a) =>

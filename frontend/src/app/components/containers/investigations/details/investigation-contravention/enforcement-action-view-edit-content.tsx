@@ -5,11 +5,11 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { selectOfficers } from "@/app/store/reducers/officer";
-import { fetchEnforcementActionAttachments } from "@/app/common/enforcement-action-attachment-utils";
 import { EnforcementActionViewEditContentReadOnly } from "./enforcement-action-view-edit-content-read-only";
 import { EnforcementActionForm } from "./enforcement-action-form";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
+import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
 
 interface EnforcementActionViewEditContentProps {
   currentStep: number;
@@ -56,9 +56,10 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
 
   const attachmentsQuery = useQuery({
     queryKey: ["enforcement-action-attachments", investigationGuid, eaId],
-    queryFn: () => fetchEnforcementActionAttachments(investigationGuid, eaId, true),
+    queryFn: () => fetchAttachmentsWithMetadata(investigationGuid, undefined, eaId, true),
     enabled: !!eaId,
   });
+
   const existingAttachments = attachmentsQuery.data ?? [];
 
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));

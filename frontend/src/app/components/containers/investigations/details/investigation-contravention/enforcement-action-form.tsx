@@ -28,10 +28,10 @@ import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
-import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
 import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
 import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
+import { Attachment } from "@/app/common/attachment-utils";
 
 const VIOLATION_TICKET_CODES = new Set(["FDVT"]);
 const DIVIDER_BEFORE_CODE = "ADPN"; // Administrative Penalty
@@ -119,7 +119,7 @@ interface EnforcementActionFormProps {
   contravention?: Contravention;
   party?: InvestigationParty;
   enforcementAction?: EnforcementAction;
-  existingAttachments: EnforcementActionAttachment[];
+  existingAttachments: Attachment[];
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
   onRequestSave: (fn: () => Promise<void>) => void;

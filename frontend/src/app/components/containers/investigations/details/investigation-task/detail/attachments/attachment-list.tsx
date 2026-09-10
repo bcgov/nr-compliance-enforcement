@@ -4,7 +4,7 @@ import { editColumn } from "@components/common/comp-table-edit-column";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
-import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { Attachment } from "@/app/common/attachment-utils";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { generateApiParameters, get } from "@/app/common/api";

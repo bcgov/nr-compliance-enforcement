@@ -20,7 +20,7 @@ import { getUserAgency } from "@/app/service/user-service";
 import { COMSObject } from "@/app/types/coms/object";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { Attachment } from "@/app/common/attachment-utils";
 import { fileTypeOptions } from "@/app/components/common/file-type-options";
 import { parseISO } from "date-fns";
 import { gql } from "graphql-request";

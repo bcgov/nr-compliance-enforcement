@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { format } from "date-fns";
 import { EnforcementAction, InvestigationParty } from "@/generated/graphql";
-import { MAX_ATTACHMENT_PREVIEWS } from "@/app/common/attachment-utils";
-import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
+import { Attachment, MAX_ATTACHMENT_PREVIEWS } from "@/app/common/attachment-utils";
 import { getPartyName } from "@/app/common/party-name";
 import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
@@ -15,7 +14,7 @@ interface EnforcementActionViewEditContentReadOnlyProps {
   servingOfficerLabel: string;
   enforcementActionLabel: string;
   ticketOutcomeLabel?: string;
-  attachments: EnforcementActionAttachment[];
+  attachments: Attachment[];
   isLoadingAttachments: boolean;
 }
 

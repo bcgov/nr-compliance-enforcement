@@ -1,14 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  searchAttachments,
-  fetchObjectsMetadata,
-  ParsedObjectMetadata,
-  getDisplayFilename,
-} from "@common/attachment-utils";
-import { COMSObject } from "@apptypes/coms/object";
+import { getDisplayFilename, Attachment, fetchAttachmentsWithMetadata } from "@common/attachment-utils";
 import { Task } from "@/generated/graphql";
-import AttachmentEnum from "@constants/attachment-enum";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { selectOfficers } from "@/app/store/reducers/officer";
@@ -28,19 +21,6 @@ interface UseInvestigationAttachmentsParams {
   taskId?: string;
 }
 
-export interface Attachment extends COMSObject {
-  taskId: string | null;
-  enforcementActionId: string | null;
-  taskNumber?: number;
-  takenBy?: string | null;
-  sequenceNumber?: string | null;
-  fileType?: string | null;
-  description?: string | null;
-  title?: string | null;
-  date?: string | null;
-  location?: string | null;
-}
-
 export interface InvestigationAttachmentsResult {
   attachments: Attachment[];
   filteredAttachments: Attachment[];
@@ -49,65 +29,6 @@ export interface InvestigationAttachmentsResult {
   isError: boolean;
   error: Error | null;
 }
-
-const FETCH_PAGE_SIZE = 100;
-
-/**
- * Fetches attachments for an investigation by iterating through pages, then fetches metadata in bulk
- */
-export const fetchAttachmentsWithMetadata = async (
-  investigationIdentifier: string,
-  taskId?: string,
-): Promise<Attachment[]> => {
-  const fetchByType = async (attachmentType: AttachmentEnum): Promise<COMSObject[]> => {
-    const collected: COMSObject[] = [];
-    let currentPage = 1;
-    let hasMorePages = true;
-    while (hasMorePages) {
-      const searchResult = await searchAttachments({
-        headerId: investigationIdentifier,
-        subHeaderId: attachmentType === AttachmentEnum.TASK_ATTACHMENT ? taskId : undefined,
-        page: currentPage,
-        limit: FETCH_PAGE_SIZE,
-        attachmentType,
-      });
-      collected.push(...searchResult.attachments);
-      hasMorePages = searchResult.attachments.length === FETCH_PAGE_SIZE;
-      currentPage++;
-    }
-    return collected;
-  };
-
-  // don't include enforcement action attachments for tasks
-  const fetchAttachments = [fetchByType(AttachmentEnum.TASK_ATTACHMENT)];
-  if (!taskId) {
-    fetchAttachments.push(fetchByType(AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT));
-  }
-
-  const attachments = (await Promise.all(fetchAttachments)).flat();
-  if (attachments.length === 0) return [];
-
-  const objectIds = attachments.map((a) => a.id).filter((id): id is string => !!id);
-  const metadataMap = await fetchObjectsMetadata(objectIds, AttachmentEnum.TASK_ATTACHMENT);
-
-  return attachments.map((attachment) => {
-    const metadata: ParsedObjectMetadata | undefined = attachment.id ? metadataMap.get(attachment.id) : undefined;
-    return {
-      ...attachment,
-      taskId: metadata?.taskId ?? null,
-      enforcementActionId: metadata?.enforcementActionId ?? null,
-      type: metadata?.attachmentType ?? null,
-      takenBy: metadata?.takenBy ?? null,
-      sequenceNumber: metadata?.sequenceNumber ?? null,
-      fileType: metadata?.fileType ?? null,
-      description: metadata?.description ?? null,
-      title: metadata?.title ?? null,
-      date: metadata?.date ?? null,
-      location: metadata?.location ?? null,
-      size: metadata?.size ?? attachment.size,
-    };
-  });
-};
 
 /**
  * TanStack Query hook for fetching and processing investigation attachments

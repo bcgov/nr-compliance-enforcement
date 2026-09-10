@@ -1,7 +1,4 @@
-import {
-  Attachment,
-  fetchAttachmentsWithMetadata,
-} from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { Attachment, fetchAttachmentsWithMetadata } from "./attachment-utils";
 
 /**
  * Returns the highest sequence number currently in use for a given file type
