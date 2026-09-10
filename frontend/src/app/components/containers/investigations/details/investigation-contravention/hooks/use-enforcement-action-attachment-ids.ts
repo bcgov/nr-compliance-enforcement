@@ -9,7 +9,7 @@ export const useEnforcementActionAttachmentIds = (investigationGuid: string): Se
 
   const query = useQuery({
     queryKey: ["investigation-attachments-all", investigationGuid, undefined],
-    queryFn: () => fetchAttachmentsWithMetadata(investigationGuid),
+    queryFn: () => fetchAttachmentsWithMetadata(investigationGuid, undefined, undefined, true),
     enabled: !!investigationGuid,
     staleTime: 5 * 60 * 1000,
   });

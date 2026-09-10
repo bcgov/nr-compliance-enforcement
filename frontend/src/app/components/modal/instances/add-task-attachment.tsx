@@ -9,8 +9,12 @@ import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import AttachmentUpload from "@/app/components/common/attachment-upload";
-import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
+import {
+  getDisplayFilename,
+  handlePersistAttachments,
+  Attachment,
+  MAX_ATTACHMENT_PREVIEWS,
+} from "@/app/common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
@@ -20,12 +24,13 @@ import { getUserAgency } from "@/app/service/user-service";
 import { COMSObject } from "@/app/types/coms/object";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { Attachment } from "@/app/common/attachment-utils";
 import { fileTypeOptions } from "@/app/components/common/file-type-options";
 import { parseISO } from "date-fns";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
+import { useAttachmentStaging } from "@/app/hooks/use-attachment-staging";
+import AttachmentCarousel from "@/app/components/common/attachment-carousel";
 
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
@@ -84,6 +89,17 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     onError: () => {
       ToggleError("Failed to update investigation timestamp");
     },
+  });
+
+  const {
+    slides,
+    setSlides,
+    onFileSelect: stageFiles,
+    onFileRemove,
+  } = useAttachmentStaging({
+    attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+    identifier: investigationIdentifier,
+    confirmDuplicates: false,
   });
 
   // State
@@ -157,8 +173,9 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         .map((f) => f.name);
       setDuplicateFileNames(duplicates);
       setShowDuplicateConfirm(duplicates.length > 0);
+      stageFiles(files);
     },
-    [form, existingAttachments],
+    [form, existingAttachments, stageFiles],
   );
 
   // Functions
@@ -293,6 +310,12 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     form.setFieldValue("originalFileName", updatedFiles.map((f) => f.name).join("\n"));
   };
 
+  // a staged slide was removed from the carousel, so drop the matching file from the form selection
+  const handleSlideRemove = (attachment: COMSObject) => {
+    onFileRemove(attachment);
+    handleRemoveFile(decodeURIComponent(attachment.name));
+  };
+
   return (
     <>
       {title && (
@@ -319,9 +342,15 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 }}
                 render={(field) => (
                   <>
-                    <AttachmentUpload
+                    <AttachmentCarousel
+                      slides={slides}
+                      showPreview={true}
                       onFileSelect={onFileSelect}
-                      previousValues={fileListToCOMSObjects(field.state.value)}
+                      onFileRemove={handleSlideRemove}
+                      allowUpload={true}
+                      allowDelete={true}
+                      variant="comp-carousel-modal"
+                      maxPreviews={MAX_ATTACHMENT_PREVIEWS}
                     />
                     {field.state.meta.errors?.[0]?.message && (
                       <span className="error-message">{field.state.meta.errors[0].message}</span>
@@ -331,40 +360,21 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               />
             )}
 
-            {/* Original File Name */}
-            <FormField
-              form={form}
-              name="originalFileName"
-              label={
-                form.getFieldValue("originalFileName")?.includes("\n") ? "Original file names" : "Original file name"
-              }
-              render={(field) => (
-                <div className="comp-details-input">
-                  {field.state.value ? (
-                    field.state.value.split("\n").map((name: string, i: number) => (
-                      <div
-                        key={name + "-" + i}
-                        className="d-flex align-items-center gap-2"
-                      >
-                        <span>{name}</span>
-                        {!attachment && (
-                          <button
-                            type="button"
-                            className="btn btn-link p-0 border-0 text-body"
-                            onClick={() => handleRemoveFile(name)}
-                            aria-label={`Remove ${name}`}
-                          >
-                            <i className="bi bi-trash" />
-                          </button>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <span className="text-muted">No files selected</span>
-                  )}
-                </div>
-              )}
-            />
+            {/* Existing attachment preview - edit mode only */}
+            {attachment && (
+              <FormField
+                form={form}
+                name="originalFileName"
+                label="Original file name"
+                render={() => (
+                  <AttachmentCarousel
+                    slides={[attachment]}
+                    showPreview={true}
+                    variant="comp-carousel-modal"
+                  />
+                )}
+              />
+            )}
 
             {/* Duplicate Warning */}
             {showDuplicateConfirm && (
@@ -415,6 +425,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                       setDuplicateFileNames([]);
                       form.setFieldValue("file", null);
                       form.setFieldValue("originalFileName", "");
+                      setSlides([]);
                     }}
                   >
                     Cancel

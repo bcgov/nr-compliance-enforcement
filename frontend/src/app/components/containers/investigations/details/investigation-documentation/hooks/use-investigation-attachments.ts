@@ -59,7 +59,7 @@ export const useInvestigationAttachments = (
 
   const query = useQuery({
     queryKey: ["investigation-attachments-all", investigationIdentifier, taskId],
-    queryFn: () => fetchAttachmentsWithMetadata(investigationIdentifier, taskId),
+    queryFn: () => fetchAttachmentsWithMetadata(investigationIdentifier, taskId, undefined, true),
     enabled: enabled && !!investigationIdentifier,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
