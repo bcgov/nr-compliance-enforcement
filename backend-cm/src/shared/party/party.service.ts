@@ -33,7 +33,6 @@ import { EventPublisherService } from "../../event_publisher/event_publisher.ser
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
 import { BusinessIdentifiers } from "src/enum/business-identifier.enum";
-import { PartyExternalIds } from "src/enum/party-external-id.enum";
 import { PartyExternalId, PartyExternalIdInput } from "src/shared/party_external_id/dto/party_external_id";
 import { ContactMethods } from "src/enum/contact-method.enum";
 import { toDateString } from "src/common/custom_scalars";
@@ -2616,8 +2615,8 @@ export class PartyService {
       matched.push({ field: "driversLicenseNumber", exact: true, points: weights.driversLicenseNumber });
     }
 
-    matched.push(...this._scoreExternalIdFields(input, party, weights));
     matched.push(
+      ...this._scoreExternalIdFields(input, party, weights),
       ...[
         scoreNameField("firstName", weights.firstName, comparisons, "first"),
         scoreNameField("lastName", weights.lastName, comparisons, "last"),
@@ -2648,8 +2647,7 @@ export class PartyService {
     }
 
     const dateOfBirthExact = isSameUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
-    const dateOfBirthClose =
-      !dateOfBirthExact && isCloseUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
+    const dateOfBirthClose = isCloseUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
     if (dateOfBirthExact) {
       matched.push({ field: "dateOfBirth", exact: true, points: weights.dateOfBirth });
     } else if (dateOfBirthClose) {
@@ -2799,8 +2797,10 @@ export class PartyService {
       }
     }
 
-    matched.push(...this._scoreAddressFields(input, party, weights, comparisons));
-    matched.push(...this._scoreExternalIdFields(input, party, weights));
+    matched.push(
+      ...this._scoreAddressFields(input, party, weights, comparisons),
+      ...this._scoreExternalIdFields(input, party, weights),
+    );
 
     return matched;
   }

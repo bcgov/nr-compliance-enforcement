@@ -1,4 +1,4 @@
-import { createMap, forMember, mapFrom, mapWithArguments, Mapper } from "@automapper/core";
+import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { Field, InputType } from "@nestjs/graphql";
 import { party_external_id } from "prisma/shared/generated/party_external_id";
 
