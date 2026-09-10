@@ -98,13 +98,17 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   const worksafeBCNumber =
     businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER)?.identifierValue ?? "-";
 
-  const contactMethods = (party.contactMethods ?? []).filter((cm): cm is ContactMethod => cm != null);
+  const addresses = (party.addresses ?? []).filter((a): a is Address => a != null);
+  const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0];
+
+  // A contact method belongs to the party both directly or through one of its addresses
+  const contactMethods = [
+    ...(party.contactMethods ?? []),
+    ...addresses.flatMap((address) => address.contactMethods ?? []),
+  ].filter((cm): cm is ContactMethod => cm != null);
   const primaryPhone = contactMethods.find((cm) => cm.typeCode === ContactMethods.PHONE && cm.isPrimary)?.value;
   const phone = primaryPhone ? formatPhoneNumber(primaryPhone) || primaryPhone : "-";
   const email = contactMethods.find((cm) => cm.typeCode === ContactMethods.EMAIL && cm.isPrimary)?.value ?? "-";
-
-  const addresses = (party.addresses ?? []).filter((a): a is Address => a != null);
-  const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0];
   const address = primaryAddress
     ? [
         primaryAddress.address,
