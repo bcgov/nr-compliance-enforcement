@@ -1,4 +1,4 @@
-import { GraphQLClient, RequestOptions } from 'graphql-request';
+import { GraphQLClient, type RequestOptions } from 'graphql-request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1500,6 +1500,13 @@ export type InvestigationBusinessPersonAddress = {
   businessPersonAddressXrefGuid: Scalars['String']['output'];
 };
 
+export type InvestigationCloseEligibility = {
+  __typename?: 'InvestigationCloseEligibility';
+  contraventionsWithoutDecisionCount: Scalars['Int']['output'];
+  isEligible: Scalars['Boolean']['output'];
+  openTaskCount: Scalars['Int']['output'];
+};
+
 export type InvestigationContactMethod = {
   __typename?: 'InvestigationContactMethod';
   contactMethodGuid: Scalars['String']['output'];
@@ -2698,6 +2705,7 @@ export type Query = {
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
+  investigationCloseEligibility: InvestigationCloseEligibility;
   investigationSourceCodes: Array<Maybe<InvestigationSourceCode>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   legislation?: Maybe<Legislation>;
@@ -2957,6 +2965,11 @@ export type QuerygetParksByAreaArgs = {
 
 export type QueryinactionJustificationCodesArgs = {
   outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryinvestigationCloseEligibilityArgs = {
+  investigationGuid: Scalars['ID']['input'];
 };
 
 
