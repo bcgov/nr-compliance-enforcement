@@ -7,6 +7,7 @@ import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import {
   AddressFormValue,
+  buildExternalIds,
   ContactMethodFormValue,
   ContactPersonFormValue,
 } from "@/app/components/containers/parties/form/party-form-utils";
@@ -147,15 +148,7 @@ const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populated
   }
 
   const shared = buildSharedMatchFields(values, true);
-  const externalIds = (values.externalIds ?? [])
-    .filter(
-      (eid: { externalIdCode?: string | null; externalIdValue?: string | null }) =>
-        hasText(eid?.externalIdCode) && hasText(eid?.externalIdValue),
-    )
-    .map((eid: { externalIdCode?: string | null; externalIdValue?: string | null }) => ({
-      externalIdCode: eid.externalIdCode!.trim(),
-      externalIdValue: eid.externalIdValue!.trim(),
-    }));
+  const externalIds = buildExternalIds(values.externalIds, false);
   if (externalIds.length) {
     populatedCount += 1;
   }
@@ -274,15 +267,7 @@ const buildBusinessMatchInput = (values: any): { input: PartyMatchInput; populat
   const shared = buildSharedMatchFields(values, false);
   populatedCount += shared.populatedCount;
 
-  const externalIds = (values.externalIds ?? [])
-    .filter(
-      (eid: { externalIdCode?: string | null; externalIdValue?: string | null }) =>
-        hasText(eid?.externalIdCode) && hasText(eid?.externalIdValue),
-    )
-    .map((eid: { externalIdCode?: string | null; externalIdValue?: string | null }) => ({
-      externalIdCode: eid.externalIdCode!.trim(),
-      externalIdValue: eid.externalIdValue!.trim(),
-    }));
+  const externalIds = buildExternalIds(values.externalIds, false);
   if (externalIds.length) {
     populatedCount += 1;
   }

@@ -101,6 +101,10 @@ export class InvestigationPartyService {
     return [...nonPrimary, ...primary];
   }
 
+  private _normalizeExternalIdValue(value?: string): string {
+    return value?.trim().toUpperCase() ?? "";
+  }
+
   private _validateExternalIdInput(
     externalIds?: { externalIdCode?: string | null; externalIdValue?: string | null }[],
   ): void {
@@ -218,7 +222,7 @@ export class InvestigationPartyService {
                 investigation_party_external_id: {
                   create: input.externalIds.map((eid) => ({
                     party_external_id_code_ref: eid.externalIdCode,
-                    external_id_value: eid.externalIdValue?.trim() ?? "",
+                    external_id_value: this._normalizeExternalIdValue(eid.externalIdValue),
                     party_external_id_guid_ref: eid.partyExternalIdReference ?? null,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
@@ -414,7 +418,7 @@ export class InvestigationPartyService {
       data: externalIds.map((eid) => ({
         investigation_party_guid: investigationPartyGuid,
         party_external_id_code_ref: eid.externalIdCode,
-        external_id_value: eid.externalIdValue?.trim() ?? "",
+        external_id_value: this._normalizeExternalIdValue(eid.externalIdValue),
         party_external_id_guid_ref: eid.partyExternalIdReference ?? null,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
@@ -1513,6 +1517,8 @@ export class InvestigationPartyService {
     const toUpdate = incoming.filter((eid) => eid.partyExternalIdGuid);
     const existingGuids = new Set(incoming.map((eid) => eid.partyExternalIdGuid).filter(Boolean));
     const toDelete = existing.filter((eid) => !existingGuids.has(eid.partyExternalIdGuid));
+    const existingCodes = new Map(existing.map((eid) => [eid.partyExternalIdGuid, eid.externalIdCode]));
+    const retyped = toUpdate.filter((eid) => existingCodes.get(eid.partyExternalIdGuid!) !== eid.externalIdCode);
 
     const operations: any = {};
 
@@ -1520,7 +1526,7 @@ export class InvestigationPartyService {
       operations.update = [
         // Deactivations must come before the updates to avoid violating the one-active-identifier
         // -per-type constraint when an identifier takes the type of one being removed.
-        ...toDelete.map((eid) => ({
+        ...[...toDelete, ...retyped].map((eid) => ({
           where: { investigation_party_external_id_guid: eid.partyExternalIdGuid },
           data: {
             active_ind: false,
@@ -1532,7 +1538,7 @@ export class InvestigationPartyService {
           where: { investigation_party_external_id_guid: eid.partyExternalIdGuid },
           data: {
             party_external_id_code_ref: eid.externalIdCode,
-            external_id_value: eid.externalIdValue?.trim() ?? "",
+            external_id_value: this._normalizeExternalIdValue(eid.externalIdValue),
             active_ind: true,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),

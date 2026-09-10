@@ -1074,6 +1074,11 @@ export class PartyService {
     const externalIdsToDelete = existingExternalIds.filter(
       (i) => !new Set(incomingExternalIds.map((ei) => ei.partyExternalIdGuid)).has(i.partyExternalIdGuid),
     );
+    const existingCodes = new Map(existingExternalIds.map((i) => [i.partyExternalIdGuid, i.externalIdCode]));
+    const retypedExternalIds = externalIdsToUpdate.filter((i) => {
+      const currentCode = existingCodes.get(i.partyExternalIdGuid!);
+      return currentCode && currentCode !== i.externalIdCode;
+    });
 
     const operations: any = {};
 
@@ -1081,7 +1086,7 @@ export class PartyService {
       operations.update = [
         // Deactivations must come before the updates to avoid violating the one-active-identifier
         // -per-type constraint when an identifier takes the type of one being removed.
-        ...externalIdsToDelete.map((i) => ({
+        ...[...externalIdsToDelete, ...retypedExternalIds].map((i) => ({
           where: { party_external_id_guid: i.partyExternalIdGuid },
           data: {
             active_ind: false,
@@ -1883,6 +1888,9 @@ export class PartyService {
       // value to avoid reporting an edit for a value that is already stored in a different case.
       const incomingValue = this._normalizeExternalIdValue(incoming.externalIdValue);
       if (!existing) {
+        addEvent("ADDED", `external ID (${incoming.externalIdCode})`, null, incomingValue);
+      } else if (existing.externalIdCode !== incoming.externalIdCode) {
+        addEvent("REMOVED", `external ID (${existing.externalIdCode})`, existing.externalIdValue, null);
         addEvent("ADDED", `external ID (${incoming.externalIdCode})`, null, incomingValue);
       } else if (existing.externalIdValue !== incomingValue) {
         addEvent("EDITED", `external ID (${incoming.externalIdCode})`, existing.externalIdValue, incomingValue);
