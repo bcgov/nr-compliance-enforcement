@@ -22,6 +22,7 @@ import { COMSObject } from "@/app/types/coms/object";
 import { useAttachmentStaging } from "@/app/hooks/use-attachment-staging";
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
 import AttachmentDuplicateWarning from "@/app/components/common/attachment-duplicate-warning";
+import { useDuplicateFileWarning } from "@/app/hooks/use-duplicate-file-warning";
 
 export interface EnforcementActionAttachmentSectionHandle {
   // True if files are staged to add or existing attachments are staged to remove.
@@ -49,8 +50,6 @@ export const EnforcementActionAttachmentSection = forwardRef<
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
   // existing (already-saved) attachment awaiting delete confirmation
   const [pendingRemove, setPendingRemove] = useState<(Attachment & { id: string }) | null>(null);
-  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
-  const [duplicateFileNames, setDuplicateFileNames] = useState<string[]>([]);
 
   const handleFilesSelected = useCallback((files: File[]) => {
     setFilesToAdd((prev) => mergeNewFiles(prev, files));
@@ -81,10 +80,6 @@ export const EnforcementActionAttachmentSection = forwardRef<
     onDirtyChange?.(isSectionDirty);
   }, [isSectionDirty, onDirtyChange]);
 
-  useEffect(() => {
-    onBlockedChange?.(showDuplicateConfirm);
-  }, [showDuplicateConfirm, onBlockedChange]);
-
   const handleRemoveExisting = (id: string) => {
     setRemovedIds((prev) => new Set(prev).add(id));
   };
@@ -93,8 +88,23 @@ export const EnforcementActionAttachmentSection = forwardRef<
     (a): a is Attachment & { id: string } => !!a.id && !removedIds.has(a.id),
   );
 
-  // staged files first, matching the carousel's own ordering when new files are staged
-  const mergedSlides: COMSObject[] = [...slides, ...visibleExisting];
+  const { duplicateFileNames, isBlocked, confirm, reset } = useDuplicateFileWarning({
+    stagedNames: slides.map((s) => getDisplayFilename(s.name)),
+    existingNames: visibleExisting.map((a) => getDisplayFilename(a.name)),
+  });
+
+  useEffect(() => {
+    onBlockedChange?.(isBlocked);
+  }, [isBlocked, onBlockedChange]);
+
+  // staged files first, matching the carousel's own ordering when new files are staged.
+  // A staged file supersedes the saved attachment of the same name, since it will replace it in
+  // COMS on save, so the saved one is dropped from the display rather than shown alongside it.
+  const stagedNames = new Set(slides.map((s) => getDisplayFilename(s.name)));
+  const mergedSlides: COMSObject[] = [
+    ...slides,
+    ...visibleExisting.filter((a) => !stagedNames.has(getDisplayFilename(a.name))),
+  ];
 
   const handleSlideRemove = (attachment: COMSObject) => {
     if (attachment.pendingUpload) {
@@ -178,23 +188,6 @@ export const EnforcementActionAttachmentSection = forwardRef<
     },
   }));
 
-  const handleFileSelect = useCallback(
-    (files: FileList) => {
-      const incoming = Array.from<File>(files);
-      const existingNames = new Set([
-        ...visibleExisting.map((a) => getDisplayFilename(a.name)),
-        ...filesToAdd.map((f) => f.name),
-      ]);
-
-      const duplicates = incoming.filter((f) => existingNames.has(f.name)).map((f) => f.name);
-      setDuplicateFileNames(duplicates);
-      setShowDuplicateConfirm(duplicates.length > 0);
-
-      stageFiles(files);
-    },
-    [visibleExisting, filesToAdd, stageFiles],
-  );
-
   return (
     <fieldset className="mt-3">
       <h5>Attachments</h5>
@@ -236,16 +229,15 @@ export const EnforcementActionAttachmentSection = forwardRef<
         </Alert>
       )}
 
-      {showDuplicateConfirm && (
+      {isBlocked && (
         <AttachmentDuplicateWarning
           fileNames={duplicateFileNames}
           onCancel={() => {
-            setShowDuplicateConfirm(false);
-            setDuplicateFileNames([]);
+            reset();
             setFilesToAdd([]);
             setSlides([]);
           }}
-          onConfirm={() => setShowDuplicateConfirm(false)}
+          onConfirm={confirm}
         />
       )}
 
@@ -253,7 +245,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
       <AttachmentCarousel
         slides={mergedSlides}
         showPreview={true}
-        onFileSelect={handleFileSelect}
+        onFileSelect={stageFiles}
         onFileRemove={handleSlideRemove}
         allowUpload={true}
         allowDelete={true}
@@ -265,13 +257,6 @@ export const EnforcementActionAttachmentSection = forwardRef<
 });
 
 EnforcementActionAttachmentSection.displayName = "EnforcementActionAttachmentSection";
-
-// convert to FileList for fileListToCOMSObjects
-function toFileList(files: File[]): FileList {
-  const dt = new DataTransfer();
-  files.forEach((f) => dt.items.add(f));
-  return dt.files;
-}
 
 // merge new files into the list, replacing any already present by name
 function mergeNewFiles(existing: File[], incoming: File[]): File[] {

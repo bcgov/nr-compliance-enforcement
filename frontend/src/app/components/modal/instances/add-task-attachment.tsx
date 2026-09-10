@@ -32,6 +32,7 @@ import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-uti
 import { useAttachmentStaging } from "@/app/hooks/use-attachment-staging";
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
 import AttachmentDuplicateWarning from "@/app/components/common/attachment-duplicate-warning";
+import { useDuplicateFileWarning } from "@/app/hooks/use-duplicate-file-warning";
 
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
@@ -105,8 +106,6 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
   // State
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
-  const [duplicateFileNames, setDuplicateFileNames] = useState<string[]>([]);
 
   // Form Definition
   const form = useForm({
@@ -148,6 +147,11 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     }
   }, [isFormDirty, markDirty]);
 
+  const { duplicateFileNames, isBlocked, confirm, reset } = useDuplicateFileWarning({
+    stagedNames: slides.map((s) => getDisplayFilename(s.name)),
+    existingNames: (existingAttachments ?? []).map((a: COMSObject) => getDisplayFilename(a.name)),
+  });
+
   // Orchestrates integration with TanStack Form and contains logic for tracking duplicates
   const onFileSelect = useCallback(
     (files: FileList) => {
@@ -169,11 +173,6 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       form.setFieldValue("file", mergedFileList);
       form.setFieldValue("originalFileName", mergedFiles.map((f) => f.name).join("\n"));
 
-      const duplicates = newFilesArray
-        .filter((f) => existingAttachments.some((a: COMSObject) => getDisplayFilename(a.name) === f.name))
-        .map((f) => f.name);
-      setDuplicateFileNames(duplicates);
-      setShowDuplicateConfirm(duplicates.length > 0);
       stageFiles(files);
     },
     [form, existingAttachments, stageFiles],
@@ -371,17 +370,16 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             )}
 
             {/* Duplicate Warning */}
-            {showDuplicateConfirm && (
+            {isBlocked && (
               <AttachmentDuplicateWarning
                 fileNames={duplicateFileNames}
                 onCancel={() => {
-                  setShowDuplicateConfirm(false);
-                  setDuplicateFileNames([]);
+                  reset();
                   form.setFieldValue("file", null);
                   form.setFieldValue("originalFileName", "");
                   setSlides([]);
                 }}
-                onConfirm={() => setShowDuplicateConfirm(false)}
+                onConfirm={confirm}
               />
             )}
 
@@ -586,14 +584,14 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             <Button
               variant="outline-primary"
               onClick={close}
-              disabled={showDuplicateConfirm || showDeleteConfirm}
+              disabled={isBlocked || showDeleteConfirm}
             >
               Cancel
             </Button>
             <Button
               variant="primary"
               onClick={handleSubmit}
-              disabled={showDuplicateConfirm || showDeleteConfirm}
+              disabled={isBlocked || showDeleteConfirm}
             >
               <span>Save and close</span>
             </Button>

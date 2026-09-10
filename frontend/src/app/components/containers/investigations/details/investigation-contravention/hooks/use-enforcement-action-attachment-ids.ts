@@ -16,7 +16,7 @@ export const useEnforcementActionAttachmentIds = (investigationGuid: string): Se
 
   useEffect(() => {
     const subscription = attachmentUploadComplete$.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ["enforcement-action-attachment-ids", investigationGuid] });
+      queryClient.invalidateQueries({ queryKey: ["investigation-attachments-all", investigationGuid] });
     });
     return () => subscription.unsubscribe();
   }, [queryClient, investigationGuid]);
