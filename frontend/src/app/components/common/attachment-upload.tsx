@@ -51,7 +51,7 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled, previousVa
           </div>
           <div className="upload-text">
             <div>
-              {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"} selected
+              {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"}
             </div>
             <div>{formatFileSize(totalSize)}</div>
           </div>

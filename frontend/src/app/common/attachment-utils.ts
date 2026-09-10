@@ -155,7 +155,7 @@ export async function handlePersistAttachments({
 }: PersistAttachmentsParams): Promise<void> {
   const tasks: Promise<unknown>[] = [];
   if (attachmentsToDelete) {
-    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType)));
+    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType, subIdentifier)));
   }
 
   if (attachmentsToAdd) {

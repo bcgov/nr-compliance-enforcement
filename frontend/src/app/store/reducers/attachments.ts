@@ -33,6 +33,7 @@ interface DeleteAttachmentParams {
   dispatch: any;
   attachment: COMSObject;
   identifier: string | null;
+  subIdentifier: string | undefined;
   isComplaintAttachment: boolean;
   attachmentType: AttachmentEnum;
 }
@@ -222,10 +223,49 @@ const safeDecodeFilename = (name: string): string => {
   }
 };
 
+/**
+ * Finds the thumbnail object belonging to an attachment. Used at delete time, when the attachment
+ * may have been fetched without thumbnails resolved and so carries no imageIconId.
+ */
+const findThumbnailId = async (
+  dispatch: any,
+  attachment: COMSObject,
+  identifier: string | null,
+  subIdentifier: string | undefined,
+  attachmentType: AttachmentEnum,
+): Promise<string | undefined> => {
+  if (attachment.imageIconId) {
+    return attachment.imageIconId;
+  }
+
+  if (!identifier || !attachment.id) {
+    return undefined;
+  }
+
+  const attachmentConfig = getAttachmentConfig(attachmentType);
+  const bucketId = isSecureAttachmentType(attachmentType) ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+  const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}&latest=true`);
+
+  const header = buildAttachmentHeader({
+    attachmentConfig,
+    identifier,
+    subIdentifier,
+    attachmentType,
+    contentType: "",
+    isThumb: true,
+    attachmentName: attachment.name,
+    attachmentId: attachment.id,
+  });
+
+  const thumbs = await get<Array<COMSObject>>(dispatch, parameters, header);
+  return thumbs[0]?.id;
+};
+
 const deleteSingleAttachment = async ({
   dispatch,
   attachment,
   identifier,
+  subIdentifier,
   isComplaintAttachment,
   attachmentType,
 }: DeleteAttachmentParams) => {
@@ -234,22 +274,30 @@ const deleteSingleAttachment = async ({
   const response = await deleteMethod<string>(dispatch, parameters);
 
   if (response) {
-    if (isComplaintAttachment || attachmentType === AttachmentEnum.PARTY_ATTACHMENT) {
-      if (isImage(attachment.name)) {
-        const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
+    if (isImage(attachment.name)) {
+      const thumbId = await findThumbnailId(dispatch, attachment, identifier, subIdentifier, attachmentType);
+      if (thumbId) {
+        const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${thumbId}`);
         await deleteMethod<string>(dispatch, thumbParameters);
       }
-      if (isComplaintAttachment) {
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
-        await patch<string>(dispatch, parameters);
-      }
     }
+
+    if (isComplaintAttachment) {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
+      await patch<string>(dispatch, parameters);
+    }
+
     ToggleSuccess(`Attachment ${safeDecodeFilename(attachment.name)} has been removed`);
   }
 };
 
 export const deleteAttachments =
-  (attachments: COMSObject[], identifier: string | null, attachmentType: AttachmentEnum): AppThunk =>
+  (
+    attachments: COMSObject[],
+    identifier: string | null,
+    attachmentType: AttachmentEnum,
+    subIdentifier?: string,
+  ): AppThunk =>
   async (dispatch) => {
     const isComplaintAttachment =
       attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT || attachmentType === AttachmentEnum.OUTCOME_ATTACHMENT;
@@ -261,6 +309,7 @@ export const deleteAttachments =
             dispatch,
             attachment,
             identifier,
+            subIdentifier,
             isComplaintAttachment,
             attachmentType,
           });

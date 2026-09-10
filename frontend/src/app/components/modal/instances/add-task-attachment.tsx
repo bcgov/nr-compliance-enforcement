@@ -363,17 +363,10 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
             {/* Existing attachment preview - edit mode only */}
             {attachment && (
-              <FormField
-                form={form}
-                name="originalFileName"
-                label="Original file name"
-                render={() => (
-                  <AttachmentCarousel
-                    slides={[attachment]}
-                    showPreview={true}
-                    variant="comp-carousel-modal"
-                  />
-                )}
+              <AttachmentCarousel
+                slides={[attachment]}
+                showPreview={true}
+                variant="comp-carousel-modal"
               />
             )}
 
