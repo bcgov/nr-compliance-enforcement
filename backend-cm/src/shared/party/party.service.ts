@@ -1057,6 +1057,7 @@ export class PartyService {
     }
   }
 
+  // updates and deletes only
   private _buildExternalIdOperations(
     incomingExternalIds: PartyExternalIdInput[],
     existingExternalIds: PartyExternalId[],
@@ -1070,26 +1071,24 @@ export class PartyService {
         i.partyExternalIdGuid &&
         (existingGuids.has(i.partyExternalIdGuid) || inactiveExternalIdGuids.has(i.partyExternalIdGuid)),
     );
-    const externalIdsToCreate = incomingExternalIds.filter((i) => !externalIdsToUpdate.includes(i));
     const externalIdsToDelete = existingExternalIds.filter(
       (i) => !new Set(incomingExternalIds.map((ei) => ei.partyExternalIdGuid)).has(i.partyExternalIdGuid),
     );
 
     const operations: any = {};
 
-    if (externalIdsToCreate.length) {
-      operations.create = externalIdsToCreate.map((i) => ({
-        ...(i.partyExternalIdGuid ? { party_external_id_guid: i.partyExternalIdGuid } : {}),
-        party_external_id_code: i.externalIdCode,
-        external_id_value: this._normalizeExternalIdValue(i.externalIdValue),
-        active_ind: true,
-        create_user_id: this.user.getIdirUsername(),
-        create_utc_timestamp: new Date(),
-      }));
-    }
-
     if (externalIdsToUpdate.length || externalIdsToDelete.length) {
       operations.update = [
+        // Deactivations must come before the updates to avoid violating the one-active-identifier
+        // -per-type constraint when an identifier takes the type of one being removed.
+        ...externalIdsToDelete.map((i) => ({
+          where: { party_external_id_guid: i.partyExternalIdGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
         ...externalIdsToUpdate.map((i) => ({
           where: { party_external_id_guid: i.partyExternalIdGuid },
           data: {
@@ -1100,18 +1099,27 @@ export class PartyService {
             update_utc_timestamp: new Date(),
           },
         })),
-        ...externalIdsToDelete.map((i) => ({
-          where: { party_external_id_guid: i.partyExternalIdGuid },
-          data: {
-            active_ind: false,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        })),
       ];
     }
 
     return operations;
+  }
+
+  // run after the party update so there's no collision with the identifiers it deactivates
+  private async _createPartyExternalIds(tx: any, partyGuid: string, externalIds: PartyExternalIdInput[]) {
+    if (!externalIds.length) return;
+
+    await tx.party_external_id.createMany({
+      data: externalIds.map((i) => ({
+        ...(i.partyExternalIdGuid ? { party_external_id_guid: i.partyExternalIdGuid } : {}),
+        party_guid: partyGuid,
+        party_external_id_code: i.externalIdCode,
+        external_id_value: this._normalizeExternalIdValue(i.externalIdValue),
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      })),
+    });
   }
 
   private _sortAddressesPrimaryLast(addresses: AddressInput[]): AddressInput[] {
@@ -2219,6 +2227,15 @@ export class PartyService {
     const newAddresses = isBusiness
       ? (input.addresses ?? []).filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid))
       : [];
+    const incomingExternalIds = input.externalIds ?? [];
+    const existingExternalIds = existingPartyDto.externalIds ?? [];
+    const knownExternalIdGuids = new Set([
+      ...existingExternalIds.map((i) => i.partyExternalIdGuid),
+      ...inactiveGuids.partyExternalId,
+    ]);
+    const newExternalIds = incomingExternalIds.filter(
+      (i) => !i.partyExternalIdGuid || !knownExternalIdGuids.has(i.partyExternalIdGuid),
+    );
     const existingXrefGuids = new Set(
       (existingPartyDto.business?.contactPeople ?? []).map((c) => c.businessPersonXrefGuid),
     );
@@ -2271,6 +2288,8 @@ export class PartyService {
             business: true,
           },
         });
+
+        await this._createPartyExternalIds(tx, partyIdentifier, newExternalIds);
 
         if (isBusiness && updated.business) {
           await this._createPartyAddresses(tx, partyIdentifier, newAddresses);

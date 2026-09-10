@@ -112,8 +112,7 @@ EXECUTE FUNCTION audit_history (
   'party_external_id_guid'
 );
 
-
--- A party holds one identifier per external system at a time
+-- One identifier per external system per party, enforced while active.
 CREATE UNIQUE INDEX party_external_id_active_unique
 ON party_external_id (party_guid, party_external_id_code)
 WHERE active_ind = true;

@@ -402,6 +402,27 @@ export class InvestigationPartyService {
     };
   }
 
+  // run after the party update so there's no collision with the identifiers it deactivates
+  private async _createExternalIds(
+    tx: any,
+    investigationPartyGuid: string,
+    externalIds: UpdateInvestigationPartyExternalIdInput[],
+  ) {
+    if (!externalIds.length) return;
+
+    await tx.investigation_party_external_id.createMany({
+      data: externalIds.map((eid) => ({
+        investigation_party_guid: investigationPartyGuid,
+        party_external_id_code_ref: eid.externalIdCode,
+        external_id_value: eid.externalIdValue?.trim() ?? "",
+        party_external_id_guid_ref: eid.partyExternalIdReference ?? null,
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      })),
+    });
+  }
+
   // run after the party update so there's no collision with the existing contact methods
   private async _createContactMethods(
     tx: any,
@@ -1037,6 +1058,7 @@ export class InvestigationPartyService {
 
     const incomingExternalIds = input.externalIds ?? [];
     const existingExternalIds = existingParty.externalIds ?? [];
+    const externalIdsToCreate = incomingExternalIds.filter((eid) => !eid.partyExternalIdGuid);
     const externalIdOperations = this._buildInvestigationPartyExternalIdOperations(
       incomingExternalIds,
       existingExternalIds,
@@ -1073,6 +1095,8 @@ export class InvestigationPartyService {
           update_utc_timestamp: new Date(),
         },
       });
+
+      await this._createExternalIds(tx, input.partyIdentifier, externalIdsToCreate);
 
       await this._createAddresses(
         tx,
@@ -1481,30 +1505,29 @@ export class InvestigationPartyService {
     return operations;
   }
 
+  // updates and deletes only
   private _buildInvestigationPartyExternalIdOperations(
     incoming: UpdateInvestigationPartyExternalIdInput[],
     existing: InvestigationPartyExternalId[],
   ) {
-    const toCreate = incoming.filter((eid) => !eid.partyExternalIdGuid);
     const toUpdate = incoming.filter((eid) => eid.partyExternalIdGuid);
     const existingGuids = new Set(incoming.map((eid) => eid.partyExternalIdGuid).filter(Boolean));
     const toDelete = existing.filter((eid) => !existingGuids.has(eid.partyExternalIdGuid));
 
     const operations: any = {};
 
-    if (toCreate.length) {
-      operations.create = toCreate.map((eid) => ({
-        party_external_id_code_ref: eid.externalIdCode,
-        external_id_value: eid.externalIdValue?.trim() ?? "",
-        party_external_id_guid_ref: eid.partyExternalIdReference ?? null,
-        active_ind: true,
-        create_user_id: this.user.getIdirUsername(),
-        create_utc_timestamp: new Date(),
-      }));
-    }
-
     if (toUpdate.length || toDelete.length) {
       operations.update = [
+        // Deactivations must come before the updates to avoid violating the one-active-identifier
+        // -per-type constraint when an identifier takes the type of one being removed.
+        ...toDelete.map((eid) => ({
+          where: { investigation_party_external_id_guid: eid.partyExternalIdGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
         ...toUpdate.map((eid) => ({
           where: { investigation_party_external_id_guid: eid.partyExternalIdGuid },
           data: {
@@ -1515,21 +1538,12 @@ export class InvestigationPartyService {
             update_utc_timestamp: new Date(),
           },
         })),
-        ...toDelete.map((eid) => ({
-          where: { investigation_party_external_id_guid: eid.partyExternalIdGuid },
-          data: {
-            active_ind: false,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        })),
       ];
     }
 
     return operations;
   }
 
-  // updates and deletes only
   private _buildInvestigationAddressOperations(
     incoming: CreateInvestigationAddressInput[],
     existing: InvestigationAddress[],
