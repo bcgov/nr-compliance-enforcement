@@ -1031,24 +1031,28 @@ export class InvestigationPartyService {
     existingParty: InvestigationParty,
     input: UpdateInvestigationPartyInput,
   ) {
-    const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
+    const incomingAliases = input.aliases ?? [];
+    const existingAliases = existingParty.aliases ?? [];
+    const aliasOperations = this._buildInvestigationAliasOperations(incomingAliases, existingAliases);
 
+    const incomingExternalIds = input.externalIds ?? [];
+    const existingExternalIds = existingParty.externalIds ?? [];
     const externalIdOperations = this._buildInvestigationPartyExternalIdOperations(
-      input.externalIds ?? [],
-      existingParty.externalIds ?? [],
+      incomingExternalIds,
+      existingExternalIds,
     );
 
     const incomingAddresses = input.addresses ?? [];
-    const existingAddressGuids = new Set((existingParty.addresses ?? []).map((a) => a.addressGuid));
+    const existingAddresses = existingParty.addresses ?? [];
+    const existingAddressGuids = new Set(existingAddresses.map((a) => a.addressGuid));
     const addressesToUpdate = incomingAddresses.filter((a) => a.addressGuid && existingAddressGuids.has(a.addressGuid));
-    const addressOperations = this._buildInvestigationAddressOperations(
-      addressesToUpdate,
-      existingParty.addresses ?? [],
-    );
+    const addressOperations = this._buildInvestigationAddressOperations(addressesToUpdate, existingAddresses);
 
+    const incomingContactMethods = input.contactMethods ?? [];
+    const existingContactMethods = existingParty.contactMethods ?? [];
     const contactMethodOperations = this._buildInvestigationContactMethodOperations(
-      input.contactMethods ?? [],
-      existingParty.contactMethods ?? [],
+      incomingContactMethods,
+      existingContactMethods,
     );
 
     try {
@@ -1076,41 +1080,18 @@ export class InvestigationPartyService {
         incomingAddresses.filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid)),
       );
 
-      await this._createContactMethods(
-        tx,
-        { investigation_party_guid: input.partyIdentifier },
-        input.contactMethods ?? [],
-      );
+      await this._createContactMethods(tx, { investigation_party_guid: input.partyIdentifier }, incomingContactMethods);
 
       for (const address of addressesToUpdate) {
+        const addressContactMethods = address.contactMethods ?? [];
         await this._createContactMethods(
           tx,
           { investigation_address_guid: address.addressGuid },
-          address.contactMethods ?? [],
+          addressContactMethods,
         );
       }
 
-      if (input.person && existingParty.person) {
-        await this.updatePerson(tx, existingParty.person, input.person);
-
-        if (this._hasName(input.person)) {
-          if (existingParty.placeholderName) {
-            await tx.investigation_party.update({
-              where: { investigation_party_guid: input.partyIdentifier },
-              data: {
-                placeholder_name: null,
-                update_user_id: this.user.getIdirUsername(),
-                update_utc_timestamp: new Date(),
-              },
-            });
-          }
-        } else if (
-          !existingParty.placeholderName ||
-          input.partyAssociationRole !== existingParty.partyAssociationRole
-        ) {
-          await this._assignPlaceholder(tx, investigationGuid, input.partyIdentifier, input.partyAssociationRole);
-        }
-      }
+      await this._applyPersonUpdate(tx, investigationGuid, existingParty, input);
 
       if (input.business && existingParty.business) {
         await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
@@ -1118,6 +1099,34 @@ export class InvestigationPartyService {
     } catch (error) {
       this.logger.error("Error updating investigation party:", error);
       throw error;
+    }
+  }
+
+  private async _applyPersonUpdate(
+    tx: any,
+    investigationGuid: string,
+    existingParty: InvestigationParty,
+    input: UpdateInvestigationPartyInput,
+  ) {
+    if (!input.person || !existingParty.person) {
+      return;
+    }
+
+    await this.updatePerson(tx, existingParty.person, input.person);
+
+    if (this._hasName(input.person)) {
+      if (existingParty.placeholderName) {
+        await tx.investigation_party.update({
+          where: { investigation_party_guid: input.partyIdentifier },
+          data: {
+            placeholder_name: null,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      }
+    } else if (!existingParty.placeholderName || input.partyAssociationRole !== existingParty.partyAssociationRole) {
+      await this._assignPlaceholder(tx, investigationGuid, input.partyIdentifier, input.partyAssociationRole);
     }
   }
 
