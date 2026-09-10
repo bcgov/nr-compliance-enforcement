@@ -1,0 +1,38 @@
+import { party_external_id_code } from "./party_external_id_code";
+import { party } from "./party";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+export class party_external_id {
+  @ApiProperty({ type: String })
+  party_external_id_guid: string;
+
+  @ApiProperty({ type: String })
+  party_guid: string;
+
+  @ApiProperty({ type: String })
+  party_external_id_code: string;
+
+  @ApiProperty({ type: String })
+  external_id_value: string;
+
+  @ApiProperty({ type: Boolean })
+  active_ind: boolean = true;
+
+  @ApiProperty({ type: String })
+  create_user_id: string;
+
+  @ApiProperty({ type: Date })
+  create_utc_timestamp: Date;
+
+  @ApiPropertyOptional({ type: String })
+  update_user_id?: string;
+
+  @ApiPropertyOptional({ type: Date })
+  update_utc_timestamp?: Date;
+
+  @ApiProperty({ type: () => party_external_id_code })
+  party_external_id_code_party_external_id_party_external_id_codeToparty_external_id_code: party_external_id_code;
+
+  @ApiProperty({ type: () => party })
+  party: party;
+}

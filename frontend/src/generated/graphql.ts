@@ -722,12 +722,19 @@ export type CreateInvestigationInput = {
   supervisorGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateInvestigationPartyExternalIdInput = {
+  externalIdCode: Scalars['String']['input'];
+  externalIdValue: Scalars['String']['input'];
+  partyExternalIdReference?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateInvestigationPartyInput = {
   addresses?: InputMaybe<Array<InputMaybe<CreateInvestigationAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<CreateInvestigationAliasInput>>>;
   attachmentReferences?: InputMaybe<Array<InputMaybe<CreateAttachmentReferenceInput>>>;
   business?: InputMaybe<CreateInvestigationBusinessInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<CreateInvestigationContactMethodInput>>>;
+  externalIds?: InputMaybe<Array<InputMaybe<CreateInvestigationPartyExternalIdInput>>>;
   partyAssociationRole?: InputMaybe<Scalars['String']['input']>;
   partyReference?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
@@ -1525,6 +1532,7 @@ export type InvestigationParty = {
   business?: Maybe<InvestigationBusiness>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   enforcementActions?: Maybe<Array<Maybe<EnforcementAction>>>;
+  externalIds?: Maybe<Array<Maybe<InvestigationPartyExternalId>>>;
   investigationGuid: Scalars['String']['output'];
   isUpToDate?: Maybe<Scalars['Boolean']['output']>;
   partyAssociationRole?: Maybe<Scalars['String']['output']>;
@@ -1533,6 +1541,13 @@ export type InvestigationParty = {
   partyTypeCode: Scalars['String']['output'];
   person?: Maybe<InvestigationPerson>;
   placeholderName?: Maybe<Scalars['String']['output']>;
+};
+
+export type InvestigationPartyExternalId = {
+  __typename?: 'InvestigationPartyExternalId';
+  externalIdCode: Scalars['String']['output'];
+  externalIdValue: Scalars['String']['output'];
+  partyExternalIdGuid: Scalars['String']['output'];
 };
 
 export type InvestigationPerson = {
@@ -2314,12 +2329,49 @@ export type Party = {
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   createdByUserGuid?: Maybe<Scalars['String']['output']>;
   createdDateTime?: Maybe<Scalars['DateTime']['output']>;
+  externalIds?: Maybe<Array<Maybe<PartyExternalId>>>;
   longDescription?: Maybe<Scalars['String']['output']>;
   partyIdentifier?: Maybe<Scalars['String']['output']>;
   partyTypeCode?: Maybe<Scalars['String']['output']>;
   person?: Maybe<Person>;
   shortDescription?: Maybe<Scalars['String']['output']>;
   updatedDateTime?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type PartyExternalId = {
+  __typename?: 'PartyExternalId';
+  externalIdCode: Scalars['String']['output'];
+  externalIdValue: Scalars['String']['output'];
+  partyExternalIdGuid?: Maybe<Scalars['String']['output']>;
+  partyGuid?: Maybe<Scalars['String']['output']>;
+};
+
+export type PartyExternalIdCode = {
+  __typename?: 'PartyExternalIdCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  partyExternalIdCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type PartyExternalIdInput = {
+  externalIdCode: Scalars['String']['input'];
+  externalIdValue: Scalars['String']['input'];
+  partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
+  partyGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PartyExternalIdMatchInput = {
+  externalIdCode: Scalars['String']['input'];
+  externalIdValue?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PartyExternalIdUpdateInput = {
+  externalIdCode: Scalars['String']['input'];
+  externalIdValue: Scalars['String']['input'];
+  partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
+  partyGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PartyAssociationRole = {
@@ -2337,6 +2389,7 @@ export type PartyCreateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   business?: InputMaybe<BusinessInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  externalIds?: InputMaybe<Array<PartyExternalIdInput>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonInput>;
@@ -2355,6 +2408,7 @@ export type PartyMatchInput = {
   aliases?: InputMaybe<Array<AliasMatchInput>>;
   business?: InputMaybe<BusinessMatchInput>;
   contactMethods?: InputMaybe<Array<ContactMethodMatchInput>>;
+  externalIds?: InputMaybe<Array<PartyExternalIdMatchInput>>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonMatchInput>;
 };
@@ -2388,11 +2442,14 @@ export type PartyTypeCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+/* eslint-disable */
+
 export type PartyUpdateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressUpdateInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  externalIds?: InputMaybe<Array<PartyExternalIdUpdateInput>>;
   images?: InputMaybe<Array<InputMaybe<ImageUpdateInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
@@ -2661,6 +2718,7 @@ export type Query = {
   parkAreas: Array<Maybe<ParkArea>>;
   parks?: Maybe<Array<Maybe<Park>>>;
   party?: Maybe<Party>;
+  partyExternalIdCodes: Array<Maybe<PartyExternalIdCode>>;
   partyAssociationRoles: Array<Maybe<PartyAssociationRole>>;
   partyHistoryCaseFiles?: Maybe<Array<Maybe<CaseFile>>>;
   partyHistoryInspections?: Maybe<Array<Maybe<Inspection>>>;
@@ -3387,11 +3445,19 @@ export type UpdateInvestigationInput = {
   supervisorGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateInvestigationPartyExternalIdInput = {
+  externalIdCode: Scalars['String']['input'];
+  externalIdValue: Scalars['String']['input'];
+  partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
+  partyExternalIdReference?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateInvestigationPartyInput = {
   addresses?: InputMaybe<Array<InputMaybe<UpdateInvestigationAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<UpdateInvestigationAliasInput>>>;
   business?: InputMaybe<UpdateInvestigationBusinessInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<UpdateInvestigationContactMethodInput>>>;
+  externalIds?: InputMaybe<Array<InputMaybe<UpdateInvestigationPartyExternalIdInput>>>;
   images?: InputMaybe<Array<InputMaybe<ImageUpdateInput>>>;
   partyAssociationRole: Scalars['String']['input'];
   partyIdentifier: Scalars['String']['input'];

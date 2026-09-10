@@ -14,6 +14,7 @@ import {
   InvestigationAddress,
 } from "../investigation_address/dto/investigation_address";
 import { UpdateInvestigationAliasInput } from "../investigation_alias/dto/investigation_alias";
+import { UpdateInvestigationPartyExternalIdInput } from "../investigation_party_external_id/dto/investigation_party_external_id";
 import { CreateInvestigationAttachmentReferenceInput } from "../investigation_attachment_reference/dto/investigation_attachment_reference";
 import {
   CreateInvestigationBusinessInput,
@@ -176,6 +177,7 @@ const mapPartyChildren = (sharedParty: Party, existingParty?: InvestigationParty
   const sharedAddresses: Address[] = sharedParty.addresses ?? [];
   const sharedContactMethods: ContactMethod[] = sharedParty.contactMethods ?? [];
   const sharedAliases: Alias[] = sharedParty.aliases ?? [];
+  const sharedExternalIds = sharedParty.externalIds ?? [];
   const existingAddresses: InvestigationAddress[] = existingParty?.addresses ?? [];
 
   const localAddressGuids = new Map<string, string>();
@@ -194,11 +196,21 @@ const mapPartyChildren = (sharedParty: Party, existingParty?: InvestigationParty
     name: alias.name,
   }));
 
+  const externalIds: UpdateInvestigationPartyExternalIdInput[] = sharedExternalIds.map((eid) => ({
+    partyExternalIdGuid: (existingParty?.externalIds ?? []).find(
+      (e) => e.partyExternalIdReference === eid.partyExternalIdGuid,
+    )?.partyExternalIdGuid,
+    partyExternalIdReference: eid.partyExternalIdGuid,
+    externalIdCode: eid.externalIdCode,
+    externalIdValue: eid.externalIdValue,
+  }));
+
   return {
     localAddressGuids,
     addresses,
     contactMethods: mapContactMethods(sharedContactMethods, existingParty?.contactMethods ?? []),
     aliases,
+    externalIds,
   };
 };
 

@@ -64,6 +64,11 @@ export class InvestigationService {
                   active_ind: true,
                 },
               },
+              investigation_party_external_id: {
+                where: {
+                  active_ind: true,
+                },
+              },
               investigation_attachment_reference: {
                 where: {
                   active_ind: true,

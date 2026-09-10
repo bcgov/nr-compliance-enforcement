@@ -23,6 +23,10 @@ import {
 } from "../investigation_business/dto/investigation_business";
 import { InvestigationAlias, UpdateInvestigationAliasInput } from "../investigation_alias/dto/investigation_alias";
 import {
+  InvestigationPartyExternalId,
+  UpdateInvestigationPartyExternalIdInput,
+} from "../investigation_party_external_id/dto/investigation_party_external_id";
+import {
   InvestigationBusinessIdentifier,
   UpdateInvestigationBusinessIdentifierInput,
 } from "../investigation_business_identifier/dto/investigation_business_identifier";
@@ -97,6 +101,31 @@ export class InvestigationPartyService {
     return [...nonPrimary, ...primary];
   }
 
+  private _validateExternalIdInput(
+    externalIds?: { externalIdCode?: string | null; externalIdValue?: string | null }[],
+  ): void {
+    const seenCodes = new Set<string>();
+
+    for (const externalId of externalIds ?? []) {
+      const code = externalId.externalIdCode?.trim();
+
+      if (!code) {
+        throw new Error("External ID type is required.");
+      }
+
+      if (!externalId.externalIdValue?.trim()) {
+        throw new Error("External ID value is required.");
+      }
+
+      // A party may hold only one active identifier of each type
+      if (seenCodes.has(code)) {
+        throw new Error("Only one external ID of each type can be recorded for a party.");
+      }
+
+      seenCodes.add(code);
+    }
+  }
+
   private ensurePartyNotAlreadyOnInvestigation(
     investigation: Investigation,
     input: CreateInvestigationPartyInput,
@@ -121,6 +150,8 @@ export class InvestigationPartyService {
       if (input.business) {
         this._validateBusinessInput(input.business);
       }
+
+      this._validateExternalIdInput(input.externalIds);
     }
 
     const investigation = await this.investigationService.findOne(investigationGuid);
@@ -176,6 +207,19 @@ export class InvestigationPartyService {
                   create: input.aliases.map((a) => ({
                     name: a.name,
                     alias_guid_ref: a.aliasReference ?? null,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.externalIds?.length
+            ? {
+                investigation_party_external_id: {
+                  create: input.externalIds.map((eid) => ({
+                    party_external_id_code_ref: eid.externalIdCode,
+                    external_id_value: eid.externalIdValue?.trim() ?? "",
+                    party_external_id_guid_ref: eid.partyExternalIdReference ?? null,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
                   })),
@@ -559,6 +603,8 @@ export class InvestigationPartyService {
       this._validateBusinessInput(input.business);
     }
 
+    this._validateExternalIdInput(input.externalIds);
+
     const investigation = await this.investigationService.findOne(investigationGuid);
     const existingParty = investigation.parties.some((p) => p.partyIdentifier === partyIdentifier && p.isActive);
 
@@ -709,6 +755,13 @@ export class InvestigationPartyService {
     );
     await this._linkChildRows(
       db,
+      "investigation_party_external_id",
+      "investigation_party_external_id_guid",
+      "party_external_id_guid_ref",
+      prepared.identifiers.partyExternalIdGuids,
+    );
+    await this._linkChildRows(
+      db,
       "investigation_business_identifier",
       "investigation_business_identifier_guid",
       "business_identifier_guid_ref",
@@ -836,6 +889,8 @@ export class InvestigationPartyService {
     if (input.business) {
       this._validateBusinessInput(input.business);
     }
+
+    this._validateExternalIdInput(input.externalIds);
 
     resolveSharedReferences(existingParty, input);
 
@@ -978,6 +1033,11 @@ export class InvestigationPartyService {
   ) {
     const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
 
+    const externalIdOperations = this._buildInvestigationPartyExternalIdOperations(
+      input.externalIds ?? [],
+      existingParty.externalIds ?? [],
+    );
+
     const incomingAddresses = input.addresses ?? [];
     const existingAddressGuids = new Set((existingParty.addresses ?? []).map((a) => a.addressGuid));
     const addressesToUpdate = incomingAddresses.filter((a) => a.addressGuid && existingAddressGuids.has(a.addressGuid));
@@ -997,6 +1057,9 @@ export class InvestigationPartyService {
         where: { investigation_party_guid: input.partyIdentifier },
         data: {
           ...(Object.keys(aliasOperations).length ? { investigation_alias: aliasOperations } : {}),
+          ...(Object.keys(externalIdOperations).length
+            ? { investigation_party_external_id: externalIdOperations }
+            : {}),
           ...(Object.keys(addressOperations).length ? { investigation_address: addressOperations } : {}),
           ...(Object.keys(contactMethodOperations).length
             ? { investigation_contact_method: contactMethodOperations }
@@ -1397,6 +1460,54 @@ export class InvestigationPartyService {
         })),
         ...toDelete.map((a) => ({
           where: { investigation_alias_guid: a.aliasGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
+  private _buildInvestigationPartyExternalIdOperations(
+    incoming: UpdateInvestigationPartyExternalIdInput[],
+    existing: InvestigationPartyExternalId[],
+  ) {
+    const toCreate = incoming.filter((eid) => !eid.partyExternalIdGuid);
+    const toUpdate = incoming.filter((eid) => eid.partyExternalIdGuid);
+    const existingGuids = new Set(incoming.map((eid) => eid.partyExternalIdGuid).filter(Boolean));
+    const toDelete = existing.filter((eid) => !existingGuids.has(eid.partyExternalIdGuid));
+
+    const operations: any = {};
+
+    if (toCreate.length) {
+      operations.create = toCreate.map((eid) => ({
+        party_external_id_code_ref: eid.externalIdCode,
+        external_id_value: eid.externalIdValue?.trim() ?? "",
+        party_external_id_guid_ref: eid.partyExternalIdReference ?? null,
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      }));
+    }
+
+    if (toUpdate.length || toDelete.length) {
+      operations.update = [
+        ...toUpdate.map((eid) => ({
+          where: { investigation_party_external_id_guid: eid.partyExternalIdGuid },
+          data: {
+            party_external_id_code_ref: eid.externalIdCode,
+            external_id_value: eid.externalIdValue?.trim() ?? "",
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...toDelete.map((eid) => ({
+          where: { investigation_party_external_id_guid: eid.partyExternalIdGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),

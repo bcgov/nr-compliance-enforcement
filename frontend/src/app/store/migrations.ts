@@ -48,6 +48,7 @@ import { PersonProfileUpdates } from "@/app/store/migrations/migration-48";
 import { InvestigationSourceCodes } from "./migrations/migration-49";
 import { RemoveTaskSubCategories } from "@/app/store/migrations/migration-50";
 import { RenamePartyTypeToOrganization } from "@/app/store/migrations/migration-51";
+import { AddPartyExternalIdType } from "@/app/store/migrations/migration-52";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -110,6 +111,7 @@ migration = {
   ...InvestigationSourceCodes,
   ...RemoveTaskSubCategories,
   ...RenamePartyTypeToOrganization,
+  ...AddPartyExternalIdType,
 };
 
 export default migration;
