@@ -31,6 +31,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
 import { useAttachmentStaging } from "@/app/hooks/use-attachment-staging";
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
+import AttachmentDuplicateWarning from "@/app/components/common/attachment-duplicate-warning";
 
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
@@ -378,66 +379,17 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
             {/* Duplicate Warning */}
             {showDuplicateConfirm && (
-              <Alert
-                variant="warning"
-                className="comp-complaint-details-alert mt-3"
-              >
-                <div className="d-flex align-items-start gap-2">
-                  <i className="bi bi-exclamation-triangle mt-1" />
-                  <span>
-                    <strong>Duplicate file detected</strong>
-                    <p>
-                      {duplicateFileNames.length === 1 ? (
-                        <>
-                          An attachment with the name <strong>{duplicateFileNames[0]}</strong> already exists. If this
-                          is the latest version of that document, please click <strong>"Update document"</strong>. If
-                          this is intended to be a new, separate document, please click <strong>"Cancel"</strong> and
-                          rename the file before uploading it.
-                        </>
-                      ) : (
-                        <>
-                          <span>Attachments with the following names already exist.</span>
-                          <ul className="mt-3 list-unstyled">
-                            {duplicateFileNames.map((fileName) => (
-                              <li
-                                key={fileName}
-                                className="py-1 px-4"
-                              >
-                                {fileName}
-                              </li>
-                            ))}
-                          </ul>
-                          <span>
-                            If this is the latest version of the documents, please click{" "}
-                            <strong>"Update document"</strong>. If they are intended to be new, separate documents,
-                            please click <strong>"Cancel"</strong> and rename the files before uploading them.
-                          </span>
-                        </>
-                      )}
-                    </p>
-                  </span>
-                </div>
-                <div className="d-flex justify-content-end gap-2 mt-2">
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => {
-                      setShowDuplicateConfirm(false);
-                      setDuplicateFileNames([]);
-                      form.setFieldValue("file", null);
-                      form.setFieldValue("originalFileName", "");
-                      setSlides([]);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="warning"
-                    onClick={() => setShowDuplicateConfirm(false)}
-                  >
-                    Update document
-                  </Button>
-                </div>
-              </Alert>
+              <AttachmentDuplicateWarning
+                fileNames={duplicateFileNames}
+                onCancel={() => {
+                  setShowDuplicateConfirm(false);
+                  setDuplicateFileNames([]);
+                  form.setFieldValue("file", null);
+                  form.setFieldValue("originalFileName", "");
+                  setSlides([]);
+                }}
+                onConfirm={() => setShowDuplicateConfirm(false)}
+              />
             )}
 
             {/* File Type */}

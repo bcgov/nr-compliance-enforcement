@@ -126,6 +126,7 @@ interface EnforcementActionFormProps {
   onRequestDelete?: (fn: () => Promise<void>) => void;
   onIsSavingChange?: (isSaving: boolean) => void;
   onClose: () => void;
+  onIsBlockedChange?: (isBlocked: boolean) => void;
 }
 
 export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
@@ -140,6 +141,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   onRequestDelete,
   onIsSavingChange,
   onClose,
+  onIsBlockedChange,
 }) => {
   const isEdit = !!enforcementAction;
   const attachmentsRef = useRef<EnforcementActionAttachmentSectionHandle>(null);
@@ -157,6 +159,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const ticketOutcomeOptions = useAppSelector(selectTicketOutcomes);
 
   const isRestrictedToCommentDecisions = !isPartyProfileComplete(party);
+
+  const [attachmentsDirty, setAttachmentsDirty] = useState(false);
+  const [attachmentsBlocked, setAttachmentsBlocked] = useState(false);
+
   const enforcementActionSelectOptions = useMemo(() => {
     const options = enforcementActionOptions.map((opt) => {
       const isDisabled = isRestrictedToCommentDecisions && !NON_EA_DECISION_CODES.has(opt.value ?? "");
@@ -242,7 +248,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     return !hasErrors;
   };
 
-  const [attachmentsDirty, setAttachmentsDirty] = useState(false);
   const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
@@ -251,6 +256,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   useEffect(() => {
     onDirtyChange?.(0, isDirty);
   }, [isDirty, onDirtyChange]);
+
+  useEffect(() => {
+    onIsBlockedChange?.(attachmentsBlocked);
+  }, [attachmentsBlocked, onIsBlockedChange]);
 
   useEffect(() => {
     return () => {
@@ -721,6 +730,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             investigationGuid={investigationGuid}
             existingAttachments={existingAttachments}
             onDirtyChange={setAttachmentsDirty}
+            onBlockedChange={setAttachmentsBlocked}
           />
         </>
       )}

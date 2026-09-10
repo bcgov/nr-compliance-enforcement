@@ -21,31 +21,36 @@ import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
 import { COMSObject } from "@/app/types/coms/object";
 import { useAttachmentStaging } from "@/app/hooks/use-attachment-staging";
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
+import AttachmentDuplicateWarning from "@/app/components/common/attachment-duplicate-warning";
 
 export interface EnforcementActionAttachmentSectionHandle {
-  /** True if files are staged to add or existing attachments are staged to remove. */
+  // True if files are staged to add or existing attachments are staged to remove.
   isDirty: () => boolean;
-  /** Persist staged adds/removes against the given enforcement action id. */
+  // Persist staged adds/removes against the given enforcement action id.
   persist: (enforcementActionId: string, fieldValues: EnforcementActionAttachmentFieldValues) => Promise<void>;
 }
 
 interface EnforcementActionAttachmentSectionProps {
   investigationGuid: string;
-  /** Existing attachments already in COMS for this EA (empty for a brand-new EA). */
+  // Existing attachments already in COMS for this EA (empty for a brand-new EA).
   existingAttachments: Attachment[];
   onDirtyChange?: (isDirty: boolean) => void;
+  // Reports when a pending duplicate-file decision should block saving.
+  onBlockedChange?: (isBlocked: boolean) => void;
 }
 
 export const EnforcementActionAttachmentSection = forwardRef<
   EnforcementActionAttachmentSectionHandle,
   EnforcementActionAttachmentSectionProps
->(({ investigationGuid, existingAttachments, onDirtyChange }, ref) => {
+>(({ investigationGuid, existingAttachments, onDirtyChange, onBlockedChange }, ref) => {
   const dispatch = useAppDispatch();
 
   const [filesToAdd, setFilesToAdd] = useState<File[]>([]);
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
   // existing (already-saved) attachment awaiting delete confirmation
   const [pendingRemove, setPendingRemove] = useState<(Attachment & { id: string }) | null>(null);
+  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
+  const [duplicateFileNames, setDuplicateFileNames] = useState<string[]>([]);
 
   const handleFilesSelected = useCallback((files: File[]) => {
     setFilesToAdd((prev) => mergeNewFiles(prev, files));
@@ -57,7 +62,12 @@ export const EnforcementActionAttachmentSection = forwardRef<
     setFilesToAdd((prev) => prev.filter((f) => f.name !== removedName));
   }, []);
 
-  const { slides, onFileSelect, onFileRemove } = useAttachmentStaging({
+  const {
+    slides,
+    setSlides,
+    onFileSelect: stageFiles,
+    onFileRemove,
+  } = useAttachmentStaging({
     attachmentType: AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT,
     identifier: investigationGuid,
     onFilesSelected: handleFilesSelected,
@@ -70,6 +80,10 @@ export const EnforcementActionAttachmentSection = forwardRef<
   useEffect(() => {
     onDirtyChange?.(isSectionDirty);
   }, [isSectionDirty, onDirtyChange]);
+
+  useEffect(() => {
+    onBlockedChange?.(showDuplicateConfirm);
+  }, [showDuplicateConfirm, onBlockedChange]);
 
   const handleRemoveExisting = (id: string) => {
     setRemovedIds((prev) => new Set(prev).add(id));
@@ -164,6 +178,23 @@ export const EnforcementActionAttachmentSection = forwardRef<
     },
   }));
 
+  const handleFileSelect = useCallback(
+    (files: FileList) => {
+      const incoming = Array.from<File>(files);
+      const existingNames = new Set([
+        ...visibleExisting.map((a) => getDisplayFilename(a.name)),
+        ...filesToAdd.map((f) => f.name),
+      ]);
+
+      const duplicates = incoming.filter((f) => existingNames.has(f.name)).map((f) => f.name);
+      setDuplicateFileNames(duplicates);
+      setShowDuplicateConfirm(duplicates.length > 0);
+
+      stageFiles(files);
+    },
+    [visibleExisting, filesToAdd, stageFiles],
+  );
+
   return (
     <fieldset className="mt-3">
       <h5>Attachments</h5>
@@ -205,11 +236,24 @@ export const EnforcementActionAttachmentSection = forwardRef<
         </Alert>
       )}
 
+      {showDuplicateConfirm && (
+        <AttachmentDuplicateWarning
+          fileNames={duplicateFileNames}
+          onCancel={() => {
+            setShowDuplicateConfirm(false);
+            setDuplicateFileNames([]);
+            setFilesToAdd([]);
+            setSlides([]);
+          }}
+          onConfirm={() => setShowDuplicateConfirm(false)}
+        />
+      )}
+
       <div className="comp-details-input-label">Add attachments</div>
       <AttachmentCarousel
         slides={mergedSlides}
         showPreview={true}
-        onFileSelect={onFileSelect}
+        onFileSelect={handleFileSelect}
         onFileRemove={handleSlideRemove}
         allowUpload={true}
         allowDelete={true}

@@ -24,6 +24,7 @@ interface EnforcementActionViewEditContentProps {
   onRequestDelete: (fn: () => Promise<void>) => void;
   onClose: () => void;
   onIsSavingChange: (isSaving: boolean) => void;
+  onIsBlockedChange?: (isBlocked: boolean) => void;
 }
 
 export const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ legislationIdentifierRef }) => {
@@ -51,6 +52,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   onRequestDelete,
   onClose,
   onIsSavingChange,
+  onIsBlockedChange,
 }) => {
   const eaId = enforcementAction?.enforcementActionIdentifier;
 
@@ -114,6 +116,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
             onRequestDelete={onRequestDelete}
             onIsSavingChange={onIsSavingChange}
             onClose={onClose}
+            onIsBlockedChange={onIsBlockedChange}
           />
         </div>
       )}
