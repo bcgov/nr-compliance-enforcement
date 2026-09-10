@@ -2,6 +2,7 @@ import {
   Address,
   InvestigationParty,
   InvestigationPersonFacialHairStyleCodeRef,
+  PartyExternalId,
   PersonFacialHairStyleCode,
   PersonInput,
   PersonUpdateInput,
@@ -39,6 +40,12 @@ export type AddressFormValue = {
   emailAddressGuid?: string;
   emailAddressReference?: string;
   addressReference?: string;
+};
+
+export type PartyExternalIdFormValue = {
+  partyExternalIdGuid?: string;
+  externalIdCode?: string;
+  externalIdValue?: string;
 };
 
 export type ContactPersonFormValue = {
@@ -191,6 +198,17 @@ export const mapAddressesFromPartyData = (addresses: Array<Address | null> | nul
   return mapped;
 };
 
+export const mapExternalIdsFromPartyData = (
+  externalIds: Array<PartyExternalId | null> | null | undefined,
+): PartyExternalIdFormValue[] =>
+  (externalIds ?? [])
+    .filter((eid): eid is PartyExternalId => eid != null)
+    .map((eid) => ({
+      partyExternalIdGuid: eid.partyExternalIdGuid ?? undefined,
+      externalIdCode: eid.externalIdCode ?? "",
+      externalIdValue: eid.externalIdValue ?? "",
+    }));
+
 export const mapAliasesFromPartyData = (
   aliases: Array<{ aliasGuid?: string | null; name?: string | null } | null> | null | undefined,
 ): Array<{ aliasGuid?: string; name: string }> => {
@@ -335,6 +353,32 @@ export const buildAliases = (
       ...(a.aliasReference ? { aliasReference: a.aliasReference } : {}),
     }));
 
+export const buildExternalIds = (externalIds: PartyExternalIdFormValue[] | undefined, includeGuid: boolean) =>
+  (externalIds ?? [])
+    .filter((eid) => hasValue(eid.externalIdCode) && hasValue(eid.externalIdValue))
+    .map((eid) => ({
+      ...(includeGuid && eid.partyExternalIdGuid ? { partyExternalIdGuid: eid.partyExternalIdGuid } : {}),
+      externalIdCode: eid.externalIdCode!,
+      externalIdValue: eid.externalIdValue!.trim(),
+    }));
+
+export const validateExternalIdRows = (externalIds?: PartyExternalIdFormValue[]): string | null => {
+  for (const externalId of externalIds ?? []) {
+    const hasCode = hasValue(externalId?.externalIdCode);
+    const hasIdValue = hasValue(externalId?.externalIdValue);
+
+    if (hasCode && !hasIdValue) {
+      return "External ID value is required.";
+    }
+
+    if (!hasCode && hasIdValue) {
+      return "External ID type is required.";
+    }
+  }
+
+  return null;
+};
+
 export const buildContactPeople = (
   contacts: ContactPersonFormValue[] | undefined,
   isUpdate: boolean,
@@ -419,6 +463,11 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
     return "Address name is required.";
   }
 
+  const externalIdError = validateExternalIdRows(value.externalIds);
+  if (externalIdError) {
+    return externalIdError;
+  }
+
   const contacts = (value.contacts as ContactPersonFormValue[] | undefined) ?? [];
   for (const contact of contacts) {
     if (!contact.person?.firstName?.trim()) return "Contact first name is required.";
@@ -430,6 +479,11 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
 
 // at least one field must be entered
 export const validatePersonForm = (value: any): string | null => {
+  const externalIdError = validateExternalIdRows(value.externalIds);
+  if (externalIdError) {
+    return externalIdError;
+  }
+
   const hasSomeText = [
     value.firstName,
     value.middleNames,
@@ -463,6 +517,7 @@ export const validatePersonForm = (value: any): string | null => {
     !!value.safetyConcernIndicator ||
     (value.facialHairStyleCodes ?? []).length > 0 ||
     (value.aliases ?? []).some((a: any) => hasValue(a?.name)) ||
+    (value.externalIds ?? []).some((eid: any) => hasValue(eid?.externalIdValue)) ||
     (value.phoneNumbers ?? []).some((p: any) => hasValue(p?.value)) ||
     (value.emailAddresses ?? []).some((e: any) => hasValue(e?.value)) ||
     (value.addresses ?? []).some((a: AddressFormValue) => !isDefaultAddress(a));
@@ -569,6 +624,7 @@ export const createEmptyPartyFormValues = () => ({
   businessNumber: {} as any,
   worksafeBCNumber: {} as any,
   aliases: [{ aliasGuid: undefined, name: "" }] as Array<{ aliasGuid?: string; name: string }>,
+  externalIds: [] as PartyExternalIdFormValue[],
   phoneNumbers: [createEmptyContactMethod(true)] as ContactMethodFormValue[],
   emailAddresses: [createEmptyContactMethod(true)] as ContactMethodFormValue[],
   addresses: [] as AddressFormValue[],
@@ -647,6 +703,7 @@ export const mapInvestigationPartyToDefaultValues = (
       : { identifierValue: "" };
   })(),
   aliases: mapAliasesFromPartyData(editParty.aliases),
+  externalIds: mapExternalIdsFromPartyData(editParty.externalIds as PartyExternalId[]),
   phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
   emailAddresses: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.EMAIL),
   addresses: mapAddressesFromPartyData(editParty.addresses as Address[]),

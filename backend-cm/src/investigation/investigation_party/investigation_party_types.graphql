@@ -12,5 +12,6 @@ type InvestigationParty {
   addresses: [InvestigationAddress]
   contactMethods: [InvestigationContactMethod]
   aliases: [InvestigationAlias]
+  externalIds: [InvestigationPartyExternalId]
   attachmentReferences: [InvestigationAttachmentReference]
 }

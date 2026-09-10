@@ -4,6 +4,7 @@ import { business } from "./business";
 import { contact_method } from "./contact_method";
 import { app_user } from "./app_user";
 import { party_type_code } from "./party_type_code";
+import { party_external_id } from "./party_external_id";
 import { person } from "./person";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -46,6 +47,9 @@ export class party {
 
   @ApiPropertyOptional({ type: () => party_type_code })
   party_type_code?: party_type_code;
+
+  @ApiProperty({ isArray: true, type: () => party_external_id })
+  party_external_id: party_external_id[];
 
   @ApiPropertyOptional({ type: () => person })
   person?: person;
