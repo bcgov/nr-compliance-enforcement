@@ -2162,6 +2162,7 @@ export class PartyService {
         },
         contact_method: { where: { active_ind: true } },
         alias: { where: { active_ind: true } },
+        party_external_id: { where: { active_ind: true } },
         person: {
           include: {
             person_facial_hair_style_code: { where: { active_ind: true } },
