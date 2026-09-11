@@ -39,6 +39,7 @@ import {
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
 import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
+import Option from "@apptypes/app/option";
 import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
 import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
@@ -52,9 +53,12 @@ const CODE_COURT_PROSECUTION = "CTPR";
 const CODE_ADMINISTRATIVE_PENALTY = "ADPN";
 const DIVIDER_BEFORE_CODE = "ADPN"; // Administrative Penalty
 
-// Decisions that record a "Comments" field, alongside Unfounded/Unresolved (which have no
-// other fields at all).
-const COMMENT_DECISION_CODES = new Set([CODE_ADMINISTRATIVE_SANCTION, CODE_RESTORATIVE_JUSTICE, CODE_ADMINISTRATIVE_PENALTY]);
+// Decisions that record a "Comments" field
+const COMMENT_DECISION_CODES = new Set([
+  CODE_ADMINISTRATIVE_SANCTION,
+  CODE_RESTORATIVE_JUSTICE,
+  CODE_ADMINISTRATIVE_PENALTY,
+]);
 
 const YES_NO_OPTIONS = [
   { value: "true", label: "Yes" },
@@ -85,8 +89,6 @@ const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   }
 `;
 
-// Shared by both mutations - every decision-detail field is flattened onto EnforcementAction
-// itself (only the ones matching the chosen decision code end up populated).
 const ENFORCEMENT_ACTION_FIELDS = `
   enforcementActionIdentifier
   enforcementActionCode {
@@ -237,11 +239,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     label: `${o.last_name}, ${o.first_name}`,
   }));
 
-  // Single source of truth for which decision is currently selected - every other flag below is
-  // derived from it, rather than tracked as its own separate piece of state.
   const [selectedCode, setSelectedCode] = useState(
     enforcementAction?.enforcementActionCode?.enforcementActionCode ?? "",
-  );
+  ); //selected decision code
   const [hasDecision, setHasDecision] = useState(!!selectedCode);
 
   const isNonEADecision = NON_EA_DECISION_CODES.has(selectedCode);
@@ -368,9 +368,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     };
   };
 
-  // Fields for whichever decision-detail table matches the currently selected decision. The
-  // backend only reads the fields relevant to that decision's code, so nothing else needs to be
-  // explicitly cleared here.
   const buildDecisionDetailFields = (value: FormValues) => {
     switch (selectedCode) {
       case CODE_WARNING:
@@ -412,21 +409,18 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     }
   };
 
-  // Comment applies to Unfounded/Unresolved plus a handful of other decisions. Always included
-  // (as null otherwise) so switching away from one of those decisions clears out a stale comment.
+  // Comment applies to Unfounded/Unresolved plus other decisions
   const buildCommentField = (value: FormValues) => ({
     comment: hasCommentField ? value.comment : null,
   });
 
-  // Issuing officer/date served apply to every decision except Unfounded/Unresolved. Always
-  // included (as null otherwise), same reasoning as the comment field above.
+  // Issuing officer/date served apply to every decision except Unfounded/Unresolved
   const buildMutualFields = (value: FormValues) => ({
     issuingOfficerIdentifier: isNonEADecision ? null : value.issuingOfficer,
     dateServed: isNonEADecision || !value.dateServed ? null : new Date(value.dateServed).toISOString(),
   });
 
-  // Everything that follows a successful save. Best effort: a failure here is logged but never
-  // reported as a failed save, because the enforcement action itself is already persisted.
+  // Everything that follows a successful save
   const runPostSaveSideEffects = async (
     enforcementActionId: string,
     value: FormValues,
@@ -577,6 +571,107 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     </div>
   );
 
+  const renderSelectField = (
+    name: string,
+    label: string,
+    options: Option[],
+    config: { id: string; required?: boolean; placeholder?: string; isClearable?: boolean },
+  ) => {
+    const { id, required = false, placeholder = "Select", isClearable = true } = config;
+    return (
+      <FormField
+        form={form}
+        name={name}
+        label={label}
+        required={required}
+        validators={
+          required
+            ? {
+                onChange: z.string().min(1, `${label} is required`),
+                onSubmit: z.string().min(1, `${label} is required`),
+              }
+            : undefined
+        }
+        render={(field) => (
+          <CompSelect
+            id={id}
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={options}
+            value={options.find((opt) => opt.value === field.state.value)}
+            onChange={(option) => field.handleChange(option?.value ?? "")}
+            placeholder={placeholder}
+            isClearable={isClearable}
+            showInactive={false}
+            enableValidation
+            errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
+          />
+        )}
+      />
+    );
+  };
+
+  const renderYesNoField = (name: string, label: string, id: string) =>
+    renderSelectField(name, label, YES_NO_OPTIONS, { id });
+
+  const renderDateField = (name: string, label: string, id: string, config: { required?: boolean } = {}) => {
+    const { required = false } = config;
+    const validator = required ? dateValidator : optionalDateValidator;
+    return (
+      <FormField
+        form={form}
+        name={name}
+        label={label}
+        required={required}
+        validators={{ onChange: validator, onSubmit: validator }}
+        render={(field) => (
+          <ValidationDatePicker
+            classNamePrefix="comp-details-edit-calendar-input"
+            className="comp-details-input full-width"
+            maxDate={new Date()}
+            id={id}
+            onChange={(date: Date, _time: string | null) => field.handleChange(date)}
+            selectedDate={field.state.value}
+            errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+            vertical={true}
+          />
+        )}
+      />
+    );
+  };
+
+  const renderTextField = (name: string, label: string, placeholder: string, config: { required?: boolean } = {}) => {
+    const { required = false } = config;
+    return (
+      <FormField
+        form={form}
+        name={name}
+        label={label}
+        required={required}
+        validators={
+          required
+            ? {
+                onChange: z.string().min(1, `${label} is required`),
+                onSubmit: z.string().min(1, `${label} is required`),
+              }
+            : undefined
+        }
+        render={(field) => (
+          <CompInput
+            id={`enforcement-action-${name}`}
+            divid={`enforcement-action-${name}-value`}
+            type="input"
+            inputClass="comp-form-control"
+            error={field.state.meta.errors?.[0]?.message ?? ""}
+            onChange={(evt: any) => field.handleChange(evt.target.value)}
+            value={field.state.value}
+            placeholder={placeholder}
+          />
+        )}
+      />
+    );
+  };
+
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       {willPublishParty && (
@@ -651,167 +746,44 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         <>
           <div className="row mb-3">
             <div className="col-6">
-              <FormField
-                form={form}
-                name="dateIssued"
-                label="Date issued"
-                required
-                validators={{
-                  onChange: dateValidator,
-                  onSubmit: dateValidator,
-                }}
-                render={(field) => (
-                  <ValidationDatePicker
-                    classNamePrefix="comp-details-edit-calendar-input"
-                    className="comp-details-input full-width"
-                    id="enforcement-action-date-issued"
-                    maxDate={new Date()}
-                    onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                    selectedDate={field.state.value}
-                    errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                    vertical={true}
-                  />
-                )}
-              />
+              {renderDateField("dateIssued", "Date issued", "enforcement-action-date-issued", { required: true })}
             </div>
             <div className="col-6">
-              <FormField
-                form={form}
-                name="issuingOfficer"
-                label="Issuing officer"
-                required
-                validators={{
-                  onChange: z.string().min(1, "Issuing officer is required"),
-                  onSubmit: z.string().min(1, "Issuing officer is required"),
-                }}
-                render={(field) => (
-                  <CompSelect
-                    id="enforcement-action-issuing-officer"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={officerOptions}
-                    value={officerOptions.find((opt) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value ?? "")}
-                    placeholder="Select officer"
-                    isClearable
-                    showInactive={false}
-                    enableValidation
-                    errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                  />
-                )}
-              />
+              {renderSelectField("issuingOfficer", "Issuing officer", officerOptions, {
+                id: "enforcement-action-issuing-officer",
+                required: true,
+                placeholder: "Select officer",
+              })}
             </div>
           </div>
 
           <div className="row mb-3">
             <div className="col-6">
-              <FormField
-                form={form}
-                name="dateServed"
-                label="Date served"
-                required
-                validators={{
-                  onChange: dateValidator,
-                  onSubmit: dateValidator,
-                }}
-                render={(field) => (
-                  <ValidationDatePicker
-                    classNamePrefix="comp-details-edit-calendar-input"
-                    className="comp-details-input full-width"
-                    id="enforcement-action-date-served"
-                    maxDate={new Date()}
-                    onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                    selectedDate={field.state.value}
-                    errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                    vertical={true}
-                  />
-                )}
-              />
+              {renderDateField("dateServed", "Date served", "enforcement-action-date-served", { required: true })}
             </div>
             <div className="col-6">
-              <FormField
-                form={form}
-                name="servingOfficer"
-                label="Serving officer"
-                required
-                validators={{
-                  onChange: z.string().min(1, "Serving officer is required"),
-                  onSubmit: z.string().min(1, "Serving officer is required"),
-                }}
-                render={(field) => (
-                  <CompSelect
-                    id="enforcement-action-serving-officer"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={officerOptions}
-                    value={officerOptions.find((opt) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value ?? "")}
-                    placeholder="Select officer"
-                    isClearable
-                    showInactive={false}
-                    enableValidation
-                    errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                  />
-                )}
-              />
+              {renderSelectField("servingOfficer", "Serving officer", officerOptions, {
+                id: "enforcement-action-serving-officer",
+                required: true,
+                placeholder: "Select officer",
+              })}
             </div>
           </div>
 
           <div className="row mb-3">
             <div className="col-6">
-              <FormField
-                form={form}
-                name="community"
-                label="Community"
-                required
-                validators={{
-                  onChange: z.string().min(1, "Community is required"),
-                  onSubmit: z.string().min(1, "Community is required"),
-                }}
-                render={(field) => (
-                  <CompSelect
-                    id="enforcement-action-community"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={communityOptions}
-                    value={communityOptions.find((opt) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value ?? "")}
-                    placeholder="Select community"
-                    isClearable
-                    showInactive={false}
-                    enableValidation
-                    errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                  />
-                )}
-              />
+              {renderSelectField("community", "Community", communityOptions, {
+                id: "enforcement-action-community",
+                required: true,
+                placeholder: "Select community",
+              })}
             </div>
           </div>
 
           {isWarning && (
             <div className="row mb-3">
               <div className="col-6">
-                <FormField
-                  form={form}
-                  name="warningNumber"
-                  label="Warning number"
-                  required
-                  validators={{
-                    onChange: z.string().min(1, "Warning number is required"),
-                    onSubmit: z.string().min(1, "Warning number is required"),
-                  }}
-                  render={(field) => (
-                    <CompInput
-                      id="enforcement-action-warning-number"
-                      divid="enforcement-action-warning-number-value"
-                      type="input"
-                      inputClass="comp-form-control"
-                      error={field.state.meta.errors?.[0]?.message ?? ""}
-                      onChange={(evt: any) => field.handleChange(evt.target.value)}
-                      value={field.state.value}
-                      placeholder="Enter warning number"
-                    />
-                  )}
-                />
+                {renderTextField("warningNumber", "Warning number", "Enter warning number", { required: true })}
               </div>
             </div>
           )}
@@ -820,55 +792,14 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="ticketTypeCode"
-                    label="Ticket type"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Ticket type is required"),
-                      onSubmit: z.string().min(1, "Ticket type is required"),
-                    }}
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-ticket-type"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={ticketTypeOptions}
-                        value={ticketTypeOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select ticket type"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("ticketTypeCode", "Ticket type", ticketTypeOptions, {
+                    id: "enforcement-action-ticket-type",
+                    required: true,
+                    placeholder: "Select ticket type",
+                  })}
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="ticketNumber"
-                    label="Ticket number"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Ticket number is required"),
-                      onSubmit: z.string().min(1, "Ticket number is required"),
-                    }}
-                    render={(field) => (
-                      <CompInput
-                        id="enforcement-action-ticket-number"
-                        divid="enforcement-action-ticket-number-value"
-                        type="input"
-                        inputClass="comp-form-control"
-                        error={field.state.meta.errors?.[0]?.message ?? ""}
-                        onChange={(evt: any) => field.handleChange(evt.target.value)}
-                        value={field.state.value}
-                        placeholder="Enter ticket number"
-                      />
-                    )}
-                  />
+                  {renderTextField("ticketNumber", "Ticket number", "Enter ticket number", { required: true })}
                 </div>
               </div>
               <div className="row mb-3">
@@ -902,52 +833,21 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                   />
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="ticketOutcomeCode"
-                    label="Status"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Status is required"),
-                      onSubmit: z.string().min(1, "Status is required"),
-                    }}
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-ticket-outcome"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={ticketOutcomeOptions}
-                        value={ticketOutcomeOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select status"
-                        isClearable={false}
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("ticketOutcomeCode", "Status", ticketOutcomeOptions, {
+                    id: "enforcement-action-ticket-outcome",
+                    required: true,
+                    placeholder: "Select status",
+                    isClearable: false,
+                  })}
                 </div>
               </div>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="appealHearingDate"
-                    label="Appeal hearing date"
-                    render={(field) => (
-                      <ValidationDatePicker
-                        classNamePrefix="comp-details-edit-calendar-input"
-                        className="comp-details-input full-width"
-                        maxDate={new Date()}
-                        id="enforcement-action-ticket-appeal-hearing-date"
-                        onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                        selectedDate={field.state.value}
-                        errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                        vertical={true}
-                      />
-                    )}
-                  />
+                  {renderDateField(
+                    "appealHearingDate",
+                    "Appeal hearing date",
+                    "enforcement-action-ticket-appeal-hearing-date",
+                  )}
                 </div>
               </div>
             </>
@@ -957,108 +857,28 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="sanctionTypeCode"
-                    label="Sanction type"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Sanction type is required"),
-                      onSubmit: z.string().min(1, "Sanction type is required"),
-                    }}
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-sanction-type"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={sanctionTypeOptions}
-                        value={sanctionTypeOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select sanction type"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("sanctionTypeCode", "Sanction type", sanctionTypeOptions, {
+                    id: "enforcement-action-sanction-type",
+                    required: true,
+                    placeholder: "Select sanction type",
+                  })}
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="effectiveDate"
-                    label="Effective date"
-                    required
-                    validators={{
-                      onChange: dateValidator,
-                      onSubmit: dateValidator,
-                    }}
-                    render={(field) => (
-                      <ValidationDatePicker
-                        classNamePrefix="comp-details-edit-calendar-input"
-                        className="comp-details-input full-width"
-                        maxDate={new Date()}
-                        id="enforcement-action-effective-date"
-                        onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                        selectedDate={field.state.value}
-                        errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                        vertical={true}
-                      />
-                    )}
-                  />
+                  {renderDateField("effectiveDate", "Effective date", "enforcement-action-effective-date", {
+                    required: true,
+                  })}
                 </div>
               </div>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="endDate"
-                    label="End date"
-                    required
-                    validators={{
-                      onChange: dateValidator,
-                      onSubmit: dateValidator,
-                    }}
-                    render={(field) => (
-                      <ValidationDatePicker
-                        classNamePrefix="comp-details-edit-calendar-input"
-                        className="comp-details-input full-width"
-                        maxDate={new Date()}
-                        id="enforcement-action-end-date"
-                        onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                        selectedDate={field.state.value}
-                        errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                        vertical={true}
-                      />
-                    )}
-                  />
+                  {renderDateField("endDate", "End date", "enforcement-action-end-date", { required: true })}
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="sanctionStatusCode"
-                    label="Status"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Status is required"),
-                      onSubmit: z.string().min(1, "Status is required"),
-                    }}
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-sanction-status"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={sanctionStatusOptions}
-                        value={sanctionStatusOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select status"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("sanctionStatusCode", "Status", sanctionStatusOptions, {
+                    id: "enforcement-action-sanction-status",
+                    required: true,
+                    placeholder: "Select status",
+                  })}
                 </div>
               </div>
             </>
@@ -1068,96 +888,33 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="orderTypeCode"
-                    label="Order type"
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-order-type"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={orderTypeOptions}
-                        value={orderTypeOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select order type"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("orderTypeCode", "Order type", orderTypeOptions, {
+                    id: "enforcement-action-order-type",
+                    placeholder: "Select order type",
+                  })}
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="remediationRequired"
-                    label="Remediation required"
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-order-remediation-required"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={YES_NO_OPTIONS}
-                        value={YES_NO_OPTIONS.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderYesNoField(
+                    "remediationRequired",
+                    "Remediation required",
+                    "enforcement-action-order-remediation-required",
+                  )}
                 </div>
               </div>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="appealHearingDate"
-                    label="Appeal hearing date"
-                    render={(field) => (
-                      <ValidationDatePicker
-                        classNamePrefix="comp-details-edit-calendar-input"
-                        className="comp-details-input full-width"
-                        maxDate={new Date()}
-                        id="enforcement-action-order-appeal-hearing-date"
-                        onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                        selectedDate={field.state.value}
-                        errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                        vertical={true}
-                      />
-                    )}
-                  />
+                  {renderDateField(
+                    "appealHearingDate",
+                    "Appeal hearing date",
+                    "enforcement-action-order-appeal-hearing-date",
+                  )}
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="orderStatusCode"
-                    label="Status"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Status is required"),
-                      onSubmit: z.string().min(1, "Status is required"),
-                    }}
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-order-status"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={orderStatusOptions}
-                        value={orderStatusOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select status"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("orderStatusCode", "Status", orderStatusOptions, {
+                    id: "enforcement-action-order-status",
+                    required: true,
+                    placeholder: "Select status",
+                  })}
                 </div>
               </div>
             </>
@@ -1167,74 +924,19 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="hearingDate"
-                    label="Hearing date"
-                    validators={{
-                      onChange: optionalDateValidator,
-                      onSubmit: optionalDateValidator,
-                    }}
-                    render={(field) => (
-                      <ValidationDatePicker
-                        classNamePrefix="comp-details-edit-calendar-input"
-                        className="comp-details-input full-width"
-                        maxDate={new Date()}
-                        id="enforcement-action-rj-hearing-date"
-                        onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                        selectedDate={field.state.value}
-                        errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                        vertical={true}
-                      />
-                    )}
-                  />
+                  {renderDateField("hearingDate", "Hearing date", "enforcement-action-rj-hearing-date")}
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="decisionDate"
-                    label="Decision date"
-                    validators={{
-                      onChange: optionalDateValidator,
-                      onSubmit: optionalDateValidator,
-                    }}
-                    render={(field) => (
-                      <ValidationDatePicker
-                        classNamePrefix="comp-details-edit-calendar-input"
-                        className="comp-details-input full-width"
-                        maxDate={new Date()}
-                        id="enforcement-action-rj-decision-date"
-                        onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                        selectedDate={field.state.value}
-                        errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                        vertical={true}
-                      />
-                    )}
-                  />
+                  {renderDateField("decisionDate", "Decision date", "enforcement-action-rj-decision-date")}
                 </div>
               </div>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="remediationRequired"
-                    label="Remediation required"
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-rj-remediation-required"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={YES_NO_OPTIONS}
-                        value={YES_NO_OPTIONS.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderYesNoField(
+                    "remediationRequired",
+                    "Remediation required",
+                    "enforcement-action-rj-remediation-required",
+                  )}
                 </div>
               </div>
             </>
@@ -1244,77 +946,23 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="approvalInd"
-                    label="Approval"
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-cp-approval"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={YES_NO_OPTIONS}
-                        value={YES_NO_OPTIONS.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderYesNoField("approvalInd", "Approval", "enforcement-action-cp-approval")}
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="remediationRequired"
-                    label="Remediation required"
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-cp-remediation-required"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={YES_NO_OPTIONS}
-                        value={YES_NO_OPTIONS.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderYesNoField(
+                    "remediationRequired",
+                    "Remediation required",
+                    "enforcement-action-cp-remediation-required",
+                  )}
                 </div>
               </div>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="courtProsecutionStatusCode"
-                    label="Status"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Status is required"),
-                      onSubmit: z.string().min(1, "Status is required"),
-                    }}
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-cp-status"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={courtProsecutionStatusOptions}
-                        value={courtProsecutionStatusOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select status"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("courtProsecutionStatusCode", "Status", courtProsecutionStatusOptions, {
+                    id: "enforcement-action-cp-status",
+                    required: true,
+                    placeholder: "Select status",
+                  })}
                 </div>
               </div>
             </>
@@ -1324,77 +972,23 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="approvalInd"
-                    label="Approval"
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-ap-approval"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={YES_NO_OPTIONS}
-                        value={YES_NO_OPTIONS.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderYesNoField("approvalInd", "Approval", "enforcement-action-ap-approval")}
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="remediationRequired"
-                    label="Remediation required"
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-ap-remediation-required"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={YES_NO_OPTIONS}
-                        value={YES_NO_OPTIONS.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderYesNoField(
+                    "remediationRequired",
+                    "Remediation required",
+                    "enforcement-action-ap-remediation-required",
+                  )}
                 </div>
               </div>
               <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="administrativePenaltyStatusCode"
-                    label="Status"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Status is required"),
-                      onSubmit: z.string().min(1, "Status is required"),
-                    }}
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-ap-status"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={administrativePenaltyStatusOptions}
-                        value={administrativePenaltyStatusOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select status"
-                        isClearable
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("administrativePenaltyStatusCode", "Status", administrativePenaltyStatusOptions, {
+                    id: "enforcement-action-ap-status",
+                    required: true,
+                    placeholder: "Select status",
+                  })}
                 </div>
               </div>
             </>

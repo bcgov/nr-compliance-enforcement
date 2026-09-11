@@ -43,9 +43,7 @@ export class EnforcementAction {
   approvalInd?: boolean;
 }
 
-export class CreateEnforcementActionInput {
-  contraventionIdentifier: string;
-  partyIdentifier?: string;
+type EnforcementActionDecisionFields = {
   enforcementActionCode: string;
   dateIssued: Date;
   geoOrganizationUnitCode: string;
@@ -72,37 +70,16 @@ export class CreateEnforcementActionInput {
   courtProsecutionStatusCode?: string;
   administrativePenaltyStatusCode?: string;
   approvalInd?: boolean;
-}
+};
 
-export class UpdateEnforcementActionInput {
+export type CreateEnforcementActionInput = EnforcementActionDecisionFields & {
+  contraventionIdentifier: string;
+  partyIdentifier?: string;
+};
+
+export type UpdateEnforcementActionInput = Partial<EnforcementActionDecisionFields> & {
   enforcementActionIdentifier: string;
-  enforcementActionCode?: string;
-  dateIssued?: Date;
-  geoOrganizationUnitCode?: string;
-  appUserIdentifier?: string;
-  ticketOutcomeCode?: string;
-  ticketAmount?: number;
-  ticketNumber?: string;
-  paidDate?: Date;
-  comment?: string;
-  issuingOfficerIdentifier?: string;
-  dateServed?: Date;
-  ticketTypeCode?: string;
-  warningNumber?: string;
-  sanctionTypeCode?: string;
-  effectiveDate?: Date;
-  endDate?: Date;
-  sanctionStatusCode?: string;
-  orderTypeCode?: string;
-  remediationRequired?: boolean;
-  appealHearingDate?: Date;
-  orderStatusCode?: string;
-  hearingDate?: Date;
-  decisionDate?: Date;
-  courtProsecutionStatusCode?: string;
-  administrativePenaltyStatusCode?: string;
-  approvalInd?: boolean;
-}
+};
 
 export const mapPrismaEnforcementActionToEnforcementAction = (mapper: Mapper) => {
   createMap<enforcement_action, EnforcementAction>(
@@ -233,7 +210,9 @@ export const mapPrismaEnforcementActionToEnforcementAction = (mapper: Mapper) =>
     ),
     forMember(
       (dest) => dest.approvalInd,
-      mapFrom((src) => src.court_prosecution?.[0]?.approval_ind ?? src.administrative_penalty?.[0]?.approval_ind ?? null),
+      mapFrom(
+        (src) => src.court_prosecution?.[0]?.approval_ind ?? src.administrative_penalty?.[0]?.approval_ind ?? null,
+      ),
     ),
   );
 };

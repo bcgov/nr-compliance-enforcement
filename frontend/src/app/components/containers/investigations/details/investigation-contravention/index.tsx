@@ -90,76 +90,39 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     );
   };
 
-  const onAddEnforcementAction = (contraventionId: string, partyGuid: string | null) => {
+  // Shared by add/edit decision - a contravention must exist, and if a party guid was given, a
+  // matching party must be found too (no party at all is valid - the unknown-party case).
+  const resolveContraventionAndParty = (contraventionId: string, partyGuid: string | null) => {
     const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
-    // No party at all for an unknown-party contravention - only the comment-only decisions
-    // (Unfounded, Unresolved) are available for those, enforced inside the form itself.
     const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
-    if (!contravention || (partyGuid && !party)) return;
+    if (!contravention || (partyGuid && !party)) return null;
 
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: MULTI_STEP_MODAL,
-        data: {
-          titles: ["Add decision"],
-          totalSteps: 1,
-          isEdit: false,
-          content: (
-            currentStep: number,
-            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
-            onRequestSave: (fn: () => Promise<void>) => void,
-            onRequestDelete: (fn: () => Promise<void>) => void,
-            onClose: () => void,
-            onIsSavingChange: (isSaving: boolean) => void,
-            // eslint-disable-next-line react/no-unstable-nested-components
-          ) => (
-            <EnforcementActionViewEditContent
-              currentStep={currentStep}
-              investigationGuid={investigationGuid}
-              contravention={contravention as Contravention}
-              party={party as InvestigationParty | undefined}
-              primaryInvestigatorGuid={investigationData?.primaryInvestigatorGuid ?? undefined}
-              onRequestValidate={onRequestValidate}
-              onRequestSave={onRequestSave}
-              onRequestDelete={onRequestDelete}
-              onClose={onClose}
-              onIsSavingChange={onIsSavingChange}
-              handleChildDirtyChange={handleChildDirtyChange}
-            />
-          ),
-          handleChildDirtyChange,
-        },
-        hideCallback,
-      }),
-    );
+    return { contravention: contravention as Contravention, party: party as InvestigationParty | undefined };
   };
 
-  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string | null) => {
-    const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
-    const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
-    const contraventionParty = contravention?.investigationParty?.find((p) =>
-      partyGuid ? p?.partyIdentifier === partyGuid : !p?.partyIdentifier,
-    );
-    const enforcementAction = (contraventionParty?.enforcementActions as EnforcementAction[])?.find(
-      (ea) => ea?.enforcementActionIdentifier === enforcementActionId,
-    );
-    if (!contravention || (partyGuid && !party) || !enforcementAction) return;
+  // Shared by add/edit decision
+  const openEnforcementActionModal = (options: {
+    titles: string[];
+    totalSteps: number;
+    isEdit: boolean;
+    deleteFromStep?: number;
+    skipValidateForSteps?: number[];
+    nextButtonLabel?: string;
+    hidePreviousButton?: boolean;
+    contravention: Contravention;
+    party?: InvestigationParty;
+    enforcementAction?: EnforcementAction;
+  }) => {
+    const { contravention, party, enforcementAction, ...modalOptions } = options;
 
     dispatch(
       openModal({
         modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: ["Decision details", "Edit decision"],
-          totalSteps: 2,
-          isEdit: true,
-          deleteFromStep: 1,
-          skipValidateForSteps: [0],
-          nextButtonLabel: "Edit",
-          hidePreviousButton: true,
-          isReadOnly,
+          ...modalOptions,
           deleteEntityLabel: "decision",
+          isReadOnly,
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
@@ -172,8 +135,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             <EnforcementActionViewEditContent
               currentStep={currentStep}
               investigationGuid={investigationGuid}
-              contravention={contravention as Contravention}
-              party={party as InvestigationParty | undefined}
+              contravention={contravention}
+              party={party}
               primaryInvestigatorGuid={investigationData?.primaryInvestigatorGuid ?? undefined}
               enforcementAction={enforcementAction}
               isReadOnly={isReadOnly}
@@ -190,6 +153,45 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         hideCallback,
       }),
     );
+  };
+
+  const onAddEnforcementAction = (contraventionId: string, partyGuid: string | null) => {
+    // No party at all for an unknown-party contravention - only the comment-only decisions
+    // (Unfounded, Unresolved) are available for those, enforced inside the form itself.
+    const resolved = resolveContraventionAndParty(contraventionId, partyGuid);
+    if (!resolved) return;
+
+    openEnforcementActionModal({
+      titles: ["Add decision"],
+      totalSteps: 1,
+      isEdit: false,
+      ...resolved,
+    });
+  };
+
+  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string | null) => {
+    const resolved = resolveContraventionAndParty(contraventionId, partyGuid);
+    if (!resolved) return;
+
+    const contraventionParty = resolved.contravention.investigationParty?.find((p) =>
+      partyGuid ? p?.partyIdentifier === partyGuid : !p?.partyIdentifier,
+    );
+    const enforcementAction = (contraventionParty?.enforcementActions as EnforcementAction[])?.find(
+      (ea) => ea?.enforcementActionIdentifier === enforcementActionId,
+    );
+    if (!enforcementAction) return;
+
+    openEnforcementActionModal({
+      titles: ["Decision details", "Edit decision"],
+      totalSteps: 2,
+      isEdit: true,
+      deleteFromStep: 1,
+      skipValidateForSteps: [0],
+      nextButtonLabel: "Edit",
+      hidePreviousButton: true,
+      enforcementAction,
+      ...resolved,
+    });
   };
 
   // Group contraventions by party name

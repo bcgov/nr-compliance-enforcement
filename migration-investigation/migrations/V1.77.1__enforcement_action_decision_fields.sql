@@ -12,7 +12,6 @@ COMMENT ON COLUMN investigation.enforcement_action.date_served IS 'The date the 
 -- ==========================================
 -- WARNING
 -- ==========================================
--- Warning type is out of scope for now (no option list provided) - not captured here.
 CREATE TABLE
     investigation.warning (
         warning_guid UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
