@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
+import { useAppSelector } from "@hooks/hooks";
 import { BusinessPerson } from "@/generated/graphql";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
@@ -9,6 +10,8 @@ import { Button, Form } from "react-bootstrap";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyContactFields } from "@/app/components/containers/parties/form/party-contact-fields";
 import { PartyAliasFields } from "@/app/components/containers/parties/form/party-alias-fields";
+import { PartyExternalIdFields } from "@/app/components/containers/parties/form/party-external-id-fields";
+import { selectPartyExternalIdTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 
 type BusinessFormFieldsProps = {
@@ -28,6 +31,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
   showInvestigationFields = false,
   showDisplayInInvestigation = false,
 }) => {
+  const externalIdOptions = useAppSelector(selectPartyExternalIdTypeDropdown);
   const {
     addresses,
     handleAddAddress,
@@ -44,6 +48,9 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
     aliases,
     handleAddAlias,
     handleRemoveAlias,
+    externalIds,
+    handleAddExternalId,
+    handleRemoveExternalId,
     contacts,
     handleAddContact,
     handleRemoveContact,
@@ -180,6 +187,15 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
             disabled={isDisabled}
           />
         )}
+      />
+      <PartyExternalIdFields
+        form={form}
+        isDisabled={isDisabled}
+        externalIds={externalIds}
+        externalIdOptions={externalIdOptions}
+        label="External ID"
+        onAdd={handleAddExternalId}
+        onRemove={handleRemoveExternalId}
       />
       <PartyContactFields
         form={form}

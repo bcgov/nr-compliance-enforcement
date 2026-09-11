@@ -33,6 +33,7 @@ import { EventPublisherService } from "../../event_publisher/event_publisher.ser
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
 import { BusinessIdentifiers } from "src/enum/business-identifier.enum";
+import { PartyExternalId, PartyExternalIdInput } from "src/shared/party_external_id/dto/party_external_id";
 import { ContactMethods } from "src/enum/contact-method.enum";
 import { toDateString } from "src/common/custom_scalars";
 import { PersonInput } from "src/shared/person/dto/person.input";
@@ -53,6 +54,7 @@ export interface PreparedPartyIdentifiers extends PartyIdentifiers {
   addressGuids: Map<string, string>;
   contactMethodGuids: Map<string, string>;
   aliasGuids: Map<string, string>;
+  partyExternalIdGuids: Map<string, string>;
   businessIdentifierGuids: Map<string, string>;
   businessPersonXrefGuids: Map<string, string>;
   facialHairStyleGuids: Map<string, string>;
@@ -65,10 +67,12 @@ const LOW_POINTS = 10;
 const MATCH_FIELD_WEIGHTS: Record<string, Record<string, number>> = {
   [PARTY_TYPES.Person]: {
     driversLicenseNumber: HIGH_POINTS,
+    externalId: HIGH_POINTS,
     firstName: MEDIUM_POINTS,
     lastName: MEDIUM_POINTS,
     middleNames: MEDIUM_POINTS,
     alias: MEDIUM_POINTS,
+    nickname: MEDIUM_POINTS,
     dateOfBirth: MEDIUM_POINTS,
     phone: MEDIUM_POINTS,
     email: MEDIUM_POINTS,
@@ -94,9 +98,11 @@ const MATCH_FIELD_WEIGHTS: Record<string, Record<string, number>> = {
     businessName: HIGH_POINTS,
     businessNumber: HIGH_POINTS,
     worksafeBCNumber: HIGH_POINTS,
+    externalId: HIGH_POINTS,
     contactPhone: HIGH_POINTS,
     contactEmail: HIGH_POINTS,
     addressLine: MEDIUM_POINTS,
+    alias: MEDIUM_POINTS,
     city: MEDIUM_POINTS,
     contactFirstName: MEDIUM_POINTS,
     contactLastName: MEDIUM_POINTS,
@@ -202,9 +208,7 @@ const personMatchName = (input: PartyMatchInput): string =>
 
 // Entered aliases join the entered name as additional name strings for the alias comparisons
 const matchAliasNames = (input: PartyMatchInput): string[] =>
-  input.partyTypeCode === PARTY_TYPES.Organization
-    ? []
-    : (input.aliases ?? []).map((alias) => alias.name?.trim() ?? "").filter(Boolean);
+  (input.aliases ?? []).map((alias) => alias.name?.trim() ?? "").filter(Boolean);
 
 // Compares the input name (full name, or alias) against one party result. They match when every
 // word of one side side appears in the other's words. Checked in both directions, "Jimbo Hubert"
@@ -259,6 +263,12 @@ const hasContactValue = (rows: any[] | undefined, typeCode: ContactMethods, valu
   );
 };
 
+// A contact method belongs to the party both directly or through one of its addresses
+const partyContactMethods = (party: party): any[] => [
+  ...((party.contact_method as any[]) ?? []),
+  ...((party.address as any[]) ?? []).flatMap((address: any) => address.contact_method ?? []),
+];
+
 const matchFlag = (comparisons: MatchComparisons | undefined, column: string): boolean =>
   comparisons?.[column] === true;
 
@@ -280,6 +290,21 @@ const scoreNameField = (
     matchFlag(comparisons, `${column}_prefix_eq`)
   ) {
     return { field, exact: false, points: Math.round(points * fuzzyModifier) };
+  }
+  return undefined;
+};
+
+const scoreAlias = (points: number, comparisons?: MatchComparisons): PartyMatchedField | undefined => {
+  if (matchFlag(comparisons, "alias_norm_eq") || matchFlag(comparisons, "alias_name_norm_eq")) {
+    return { field: "alias", exact: true, points };
+  }
+  if (
+    Number(comparisons?.["alias_sim"] ?? 0) >= MATCH_SIMILARITY_THRESHOLD_ALIAS ||
+    Number(comparisons?.["alias_name_sim"] ?? 0) >= MATCH_SIMILARITY_THRESHOLD_ALIAS ||
+    matchFlag(comparisons, "alias_word_eq") ||
+    matchFlag(comparisons, "alias_name_word_eq")
+  ) {
+    return { field: "alias", exact: false, points: Math.round(points * FUZZY_MODIFIER_CROSS_FIELD) };
   }
   return undefined;
 };
@@ -326,6 +351,7 @@ interface InactiveGuids {
   businessIdentifier: Set<string>;
   businessPersonXref: Set<string>;
   facialHairStyle: Set<string>;
+  partyExternalId: Set<string>;
   // Deactivating a business contact leaves the person's own contact methods active, since they
   // remain valid — only the link to the business is removed. Reactivating the xref therefore has
   // to match against those still-active rows, which the active-only party load doesn't carry.
@@ -457,6 +483,17 @@ export class PartyService {
             active_ind: true,
           },
         },
+        party_external_id: {
+          select: {
+            party_external_id_guid: true,
+            party_guid: true,
+            party_external_id_code: true,
+            external_id_value: true,
+          },
+          where: {
+            active_ind: true,
+          },
+        },
         business: {
           include: {
             business_identifier: {
@@ -571,6 +608,7 @@ export class PartyService {
     let data: any;
 
     try {
+      this._validateExternalIdInput(input.externalIds);
       if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
         this._validateBusinessInput(input.business);
       }
@@ -657,6 +695,19 @@ export class PartyService {
               create: input.aliases.map((a) => ({
                 ...(a.aliasGuid ? { alias_guid: a.aliasGuid } : {}),
                 name: a.name,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
+      ...(input.externalIds?.length
+        ? {
+            party_external_id: {
+              create: input.externalIds.map((eid) => ({
+                ...(eid.partyExternalIdGuid ? { party_external_id_guid: eid.partyExternalIdGuid } : {}),
+                party_external_id_code: eid.externalIdCode,
+                external_id_value: this._normalizeExternalIdValue(eid.externalIdValue),
                 create_user_id: this.user.getIdirUsername(),
                 create_utc_timestamp: new Date(),
               })),
@@ -787,6 +838,12 @@ export class PartyService {
       inactiveGuids.facialHairStyle,
     );
 
+    const externalIdOperations = this._buildExternalIdOperations(
+      input.externalIds ?? [],
+      existingPartyDto.externalIds ?? [],
+      inactiveGuids.partyExternalId,
+    );
+
     return {
       party_type: input.partyTypeCode,
       update_user_id: this.user.getIdirUsername(),
@@ -794,6 +851,7 @@ export class PartyService {
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
       ...(Object.keys(personContactMethodOperations).length ? { contact_method: personContactMethodOperations } : {}),
       ...(Object.keys(personAliasOperations).length ? { alias: personAliasOperations } : {}),
+      ...(Object.keys(externalIdOperations).length ? { party_external_id: externalIdOperations } : {}),
       person: {
         update: {
           ...this._buildPersonFieldData(input.person),
@@ -845,10 +903,17 @@ export class PartyService {
       inactiveGuids.inactiveXrefContactMethods,
     );
 
+    const externalIdOperations = this._buildExternalIdOperations(
+      input.externalIds ?? [],
+      existingPartyDto.externalIds ?? [],
+      inactiveGuids.partyExternalId,
+    );
+
     return {
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
       ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
       ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+      ...(Object.keys(externalIdOperations).length ? { party_external_id: externalIdOperations } : {}),
       update_user_id: this.user.getIdirUsername(),
       update_utc_timestamp: new Date(),
       business: {
@@ -924,8 +989,7 @@ export class PartyService {
     inactiveBusinessIdentifierGuids: Set<string>,
   ): any {
     const existingGuids = new Set(existingIdentifiers.map((i) => i.businessIdentifierGuid));
-    // A supplied guid may belong to a deactivated row, which is reactivated in place rather than
-    // created, since creating it would violate the primary key.
+    // Check for inactivated identifiers that should be reactivated instead of created.
     const identifiersToUpdate = incomingIdentifiers.filter(
       (i) =>
         i.businessIdentifierGuid &&
@@ -973,6 +1037,100 @@ export class PartyService {
     }
 
     return operations;
+  }
+
+  private _normalizeExternalIdValue(value?: string): string {
+    return value?.trim().toUpperCase() ?? "";
+  }
+
+  private _validateExternalIdInput(externalIds?: PartyExternalIdInput[]): void {
+    const seenCodes = new Set<string>();
+
+    for (const eid of externalIds ?? []) {
+      const code = eid.externalIdCode?.trim();
+
+      if (!code) {
+        throw new Error("External ID type is required.");
+      }
+      if (!this._normalizeExternalIdValue(eid.externalIdValue)) {
+        throw new Error("External ID value is required.");
+      }
+      // A party may hold only one active identifier of each type
+      if (seenCodes.has(code)) {
+        throw new Error("Only one external ID of each type can be recorded for a party.");
+      }
+      seenCodes.add(code);
+    }
+  }
+
+  // updates and deletes only
+  private _buildExternalIdOperations(
+    incomingExternalIds: PartyExternalIdInput[],
+    existingExternalIds: PartyExternalId[],
+    inactiveExternalIdGuids: Set<string>,
+  ): any {
+    const existingGuids = new Set(existingExternalIds.map((i) => i.partyExternalIdGuid));
+    // A supplied guid may belong to a deactivated row, which is reactivated in place rather than
+    // created, since creating it would violate the primary key.
+    const externalIdsToUpdate = incomingExternalIds.filter(
+      (i) =>
+        i.partyExternalIdGuid &&
+        (existingGuids.has(i.partyExternalIdGuid) || inactiveExternalIdGuids.has(i.partyExternalIdGuid)),
+    );
+    const externalIdsToDelete = existingExternalIds.filter(
+      (i) => !new Set(incomingExternalIds.map((ei) => ei.partyExternalIdGuid)).has(i.partyExternalIdGuid),
+    );
+    const existingCodes = new Map(existingExternalIds.map((i) => [i.partyExternalIdGuid, i.externalIdCode]));
+    const retypedExternalIds = externalIdsToUpdate.filter((i) => {
+      const currentCode = existingCodes.get(i.partyExternalIdGuid!);
+      return currentCode && currentCode !== i.externalIdCode;
+    });
+
+    const operations: any = {};
+
+    if (externalIdsToUpdate.length || externalIdsToDelete.length) {
+      operations.update = [
+        // Deactivations must come before the updates to avoid violating the one-active-identifier
+        // -per-type constraint when an identifier takes the type of one being removed.
+        ...[...externalIdsToDelete, ...retypedExternalIds].map((i) => ({
+          where: { party_external_id_guid: i.partyExternalIdGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...externalIdsToUpdate.map((i) => ({
+          where: { party_external_id_guid: i.partyExternalIdGuid },
+          data: {
+            party_external_id_code: i.externalIdCode,
+            external_id_value: this._normalizeExternalIdValue(i.externalIdValue),
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
+  // run after the party update so there's no collision with the identifiers it deactivates
+  private async _createPartyExternalIds(tx: any, partyGuid: string, externalIds: PartyExternalIdInput[]) {
+    if (!externalIds.length) return;
+
+    await tx.party_external_id.createMany({
+      data: externalIds.map((i) => ({
+        ...(i.partyExternalIdGuid ? { party_external_id_guid: i.partyExternalIdGuid } : {}),
+        party_guid: partyGuid,
+        party_external_id_code: i.externalIdCode,
+        external_id_value: this._normalizeExternalIdValue(i.externalIdValue),
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      })),
+    });
   }
 
   private _sortAddressesPrimaryLast(addresses: AddressInput[]): AddressInput[] {
@@ -1720,6 +1878,36 @@ export class PartyService {
       addEvent,
     );
     this._diffAddresses(oldParty.addresses ?? [], newParty.addresses ?? [], addEvent);
+    this._diffExternalIds(oldParty.externalIds ?? [], newParty.externalIds ?? [], addEvent);
+  }
+
+  private _diffExternalIds(
+    existingExternalIds: PartyExternalId[],
+    incomingExternalIds: PartyExternalIdInput[],
+    addEvent: AddEventFn,
+  ): void {
+    for (const incoming of incomingExternalIds) {
+      const existing = incoming.partyExternalIdGuid
+        ? existingExternalIds.find((i) => i.partyExternalIdGuid === incoming.partyExternalIdGuid)
+        : undefined;
+      // Stored values are normalized on write, so compare (and report) the normalized incoming
+      // value to avoid reporting an edit for a value that is already stored in a different case.
+      const incomingValue = this._normalizeExternalIdValue(incoming.externalIdValue);
+      if (!existing) {
+        addEvent("ADDED", `external ID (${incoming.externalIdCode})`, null, incomingValue);
+      } else if (existing.externalIdCode !== incoming.externalIdCode) {
+        addEvent("REMOVED", `external ID (${existing.externalIdCode})`, existing.externalIdValue, null);
+        addEvent("ADDED", `external ID (${incoming.externalIdCode})`, null, incomingValue);
+      } else if (existing.externalIdValue !== incomingValue) {
+        addEvent("EDITED", `external ID (${incoming.externalIdCode})`, existing.externalIdValue, incomingValue);
+      }
+    }
+    const incomingGuids = new Set(incomingExternalIds.map((i) => i.partyExternalIdGuid));
+    existingExternalIds
+      .filter((i) => !incomingGuids.has(i.partyExternalIdGuid))
+      .forEach((i) => {
+        addEvent("REMOVED", `external ID (${i.externalIdCode})`, i.externalIdValue, null);
+      });
   }
 
   private _diffPersonChanges(
@@ -1886,6 +2074,10 @@ export class PartyService {
           where: { active_ind: false },
           select: { alias_guid: true },
         },
+        party_external_id: {
+          where: { active_ind: false },
+          select: { party_external_id_guid: true },
+        },
         person: {
           select: {
             person_facial_hair_style_code: {
@@ -1957,6 +2149,7 @@ export class PartyService {
         ...businessContactMethods.map((cm) => cm.contact_method_guid),
       ]),
       alias: new Set<string>((party?.alias ?? []).map((a: any) => a.alias_guid)),
+      partyExternalId: new Set<string>((party?.party_external_id ?? []).map((eid: any) => eid.party_external_id_guid)),
       businessIdentifier: new Set<string>(
         (party?.business?.business_identifier ?? []).map((bi: any) => bi.business_identifier_guid),
       ),
@@ -1991,6 +2184,7 @@ export class PartyService {
         },
         contact_method: { where: { active_ind: true } },
         alias: { where: { active_ind: true } },
+        party_external_id: { where: { active_ind: true } },
         person: {
           include: {
             person_facial_hair_style_code: { where: { active_ind: true } },
@@ -2035,6 +2229,8 @@ export class PartyService {
 
     const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
 
+    this._validateExternalIdInput(input.externalIds);
+
     if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
       this._validateBusinessInput(input.business);
     }
@@ -2045,6 +2241,15 @@ export class PartyService {
     const newAddresses = isBusiness
       ? (input.addresses ?? []).filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid))
       : [];
+    const incomingExternalIds = input.externalIds ?? [];
+    const existingExternalIds = existingPartyDto.externalIds ?? [];
+    const knownExternalIdGuids = new Set([
+      ...existingExternalIds.map((i) => i.partyExternalIdGuid),
+      ...inactiveGuids.partyExternalId,
+    ]);
+    const newExternalIds = incomingExternalIds.filter(
+      (i) => !i.partyExternalIdGuid || !knownExternalIdGuids.has(i.partyExternalIdGuid),
+    );
     const existingXrefGuids = new Set(
       (existingPartyDto.business?.contactPeople ?? []).map((c) => c.businessPersonXrefGuid),
     );
@@ -2097,6 +2302,8 @@ export class PartyService {
             business: true,
           },
         });
+
+        await this._createPartyExternalIds(tx, partyIdentifier, newExternalIds);
 
         if (isBusiness && updated.business) {
           await this._createPartyAddresses(tx, partyIdentifier, newAddresses);
@@ -2197,6 +2404,14 @@ export class PartyService {
         drivers_license_number: true,
       },
     },
+    party_external_id: {
+      where: { active_ind: true },
+      select: {
+        party_external_id_guid: true,
+        party_external_id_code: true,
+        external_id_value: true,
+      },
+    },
   };
 
   // The summary shape plus everything a score is calculated from
@@ -2222,6 +2437,14 @@ export class PartyService {
         ...this._partySummaryInclude.address.select,
         postal_code: true,
         country_code: true,
+        contact_method: {
+          where: { active_ind: true },
+          select: {
+            contact_method_type: true,
+            contact_value: true,
+            is_primary: true,
+          },
+        },
       },
       orderBy: [{ is_primary: "desc" }, { create_utc_timestamp: "asc" }],
     },
@@ -2322,6 +2545,16 @@ export class PartyService {
           },
           { person: { first_name: { contains: term, mode: "insensitive" } } },
           { person: { last_name: { contains: term, mode: "insensitive" } } },
+          {
+            party_external_id: {
+              some: {
+                external_id_value: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
         ],
       }));
     }
@@ -2411,6 +2644,45 @@ export class PartyService {
     return matched;
   }
 
+  private _scoreNameFields(weights: Record<string, number>, comparisons?: MatchComparisons): PartyMatchedField[] {
+    const matched: PartyMatchedField[] = [];
+
+    // Only the highest pointed match per for a single name field. Nicknames are considered fuzzy matches.
+    const nickname = matchFlag(comparisons, "nickname_eq")
+      ? { field: "nickname", exact: false, points: Math.round(weights.nickname * FUZZY_MODIFIER) }
+      : undefined;
+    const firstName = scoreNameField("firstName", weights.firstName, comparisons, "first");
+
+    matched.push(
+      ...[
+        firstName && firstName.points >= (nickname?.points ?? 0) ? firstName : nickname,
+        scoreNameField("lastName", weights.lastName, comparisons, "last"),
+        scoreNameField("middleNames", weights.middleNames, comparisons, "middle"),
+      ].filter(Boolean),
+    );
+
+    const alias = scoreAlias(weights.alias, comparisons);
+    if (alias) {
+      matched.push(alias);
+    }
+
+    // A name matching in the other name slot, or half of a compound surname, is fuzzy evidence at best
+    const nameFallbacks: [string, number, string, number][] = [
+      ["firstName", weights.firstName, "first_middle_eq", FUZZY_MODIFIER_CROSS_FIELD],
+      ["middleNames", weights.middleNames, "middle_first_eq", FUZZY_MODIFIER_CROSS_FIELD],
+      ["lastName", weights.lastName, "last_part_eq", FUZZY_MODIFIER],
+    ];
+    for (const [field, points, column, modifier] of nameFallbacks) {
+      const occupied =
+        matched.some((matchedField) => matchedField.field === field) || (field === "firstName" && nickname);
+      if (!occupied && matchFlag(comparisons, column)) {
+        matched.push({ field, exact: false, points: Math.round(points * modifier) });
+      }
+    }
+
+    return matched;
+  }
+
   private _scorePersonFields(
     input: PartyMatchInput,
     party: party,
@@ -2424,41 +2696,10 @@ export class PartyService {
       matched.push({ field: "driversLicenseNumber", exact: true, points: weights.driversLicenseNumber });
     }
 
-    matched.push(
-      ...[
-        scoreNameField("firstName", weights.firstName, comparisons, "first"),
-        scoreNameField("lastName", weights.lastName, comparisons, "last"),
-        scoreNameField("middleNames", weights.middleNames, comparisons, "middle"),
-      ].filter(Boolean),
-    );
-
-    // One alias award over every pairing of the entered and stored names and aliases
-    if (matchFlag(comparisons, "alias_norm_eq") || matchFlag(comparisons, "alias_name_norm_eq")) {
-      matched.push({ field: "alias", exact: true, points: weights.alias });
-    } else if (
-      Number(comparisons?.["alias_sim"] ?? 0) >= MATCH_SIMILARITY_THRESHOLD_ALIAS ||
-      Number(comparisons?.["alias_name_sim"] ?? 0) >= MATCH_SIMILARITY_THRESHOLD_ALIAS ||
-      matchFlag(comparisons, "alias_word_eq") ||
-      matchFlag(comparisons, "alias_name_word_eq")
-    ) {
-      matched.push({ field: "alias", exact: false, points: Math.round(weights.alias * FUZZY_MODIFIER_CROSS_FIELD) });
-    }
-
-    // A name matching in the other name slot, or half of a compound surname, is fuzzy evidence at best
-    const nameFallbacks: [string, number, string, number][] = [
-      ["firstName", weights.firstName, "first_middle_eq", FUZZY_MODIFIER_CROSS_FIELD],
-      ["middleNames", weights.middleNames, "middle_first_eq", FUZZY_MODIFIER_CROSS_FIELD],
-      ["lastName", weights.lastName, "last_part_eq", FUZZY_MODIFIER],
-    ];
-    for (const [field, points, column, modifier] of nameFallbacks) {
-      if (!matched.some((matchedField) => matchedField.field === field) && matchFlag(comparisons, column)) {
-        matched.push({ field, exact: false, points: Math.round(points * modifier) });
-      }
-    }
+    matched.push(...this._scoreExternalIdFields(input, party, weights), ...this._scoreNameFields(weights, comparisons));
 
     const dateOfBirthExact = isSameUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
-    const dateOfBirthClose =
-      !dateOfBirthExact && isCloseUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
+    const dateOfBirthClose = isCloseUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
     if (dateOfBirthExact) {
       matched.push({ field: "dateOfBirth", exact: true, points: weights.dateOfBirth });
     } else if (dateOfBirthClose) {
@@ -2492,14 +2733,15 @@ export class PartyService {
     weights: Record<string, number>,
   ): PartyMatchedField[] {
     const matched: PartyMatchedField[] = [];
+    const contactRows = partyContactMethods(party);
 
     for (const phone of pooledContactValues(input, ContactMethods.PHONE)) {
-      if (hasContactValue(party.contact_method, ContactMethods.PHONE, phone)) {
+      if (hasContactValue(contactRows, ContactMethods.PHONE, phone)) {
         matched.push({ field: "phone", exact: true, points: weights.phone });
       }
     }
     for (const email of pooledContactValues(input, ContactMethods.EMAIL)) {
-      if (hasContactValue(party.contact_method, ContactMethods.EMAIL, email)) {
+      if (hasContactValue(contactRows, ContactMethods.EMAIL, email)) {
         matched.push({ field: "email", exact: true, points: weights.email });
       }
     }
@@ -2588,6 +2830,11 @@ export class PartyService {
       ].filter(Boolean),
     );
 
+    const alias = scoreAlias(weights.alias, comparisons);
+    if (alias) {
+      matched.push(alias);
+    }
+
     // A phone or email matching both a contact person's rows and the business's own scores once
     const contactMethods = ((party.business?.business_person_xref as any[]) ?? []).flatMap(
       (xref) => xref.person?.party?.contact_method ?? [],
@@ -2597,13 +2844,45 @@ export class PartyService {
       for (const value of pooledContactValues(input, typeCode)) {
         if (hasContactValue(contactMethods, typeCode, value)) {
           matched.push({ field: contactField, exact: true, points: weights[contactField] });
-        } else if (hasContactValue(party.contact_method, typeCode, value)) {
+        } else if (hasContactValue(partyContactMethods(party), typeCode, value)) {
           matched.push({ field: businessField, exact: true, points: weights[businessField] });
         }
       }
     }
 
-    matched.push(...this._scoreAddressFields(input, party, weights, comparisons));
+    matched.push(
+      ...this._scoreAddressFields(input, party, weights, comparisons),
+      ...this._scoreExternalIdFields(input, party, weights),
+    );
+
+    return matched;
+  }
+
+  private _scoreExternalIdFields(
+    input: PartyMatchInput,
+    party: party,
+    weights: Record<string, number>,
+  ): PartyMatchedField[] {
+    if (!weights.externalId) {
+      return [];
+    }
+
+    const matched: PartyMatchedField[] = [];
+    for (const externalId of input.externalIds ?? []) {
+      const inputCode = externalId.externalIdCode;
+      const inputValue = normalizeMatchValue(externalId.externalIdValue);
+      if (!inputCode || !inputValue) {
+        continue;
+      }
+      const hasMatch = (party.party_external_id ?? []).some(
+        (partyExternalId: any) =>
+          partyExternalId.party_external_id_code === inputCode &&
+          normalizeMatchValue(partyExternalId.external_id_value) === inputValue,
+      );
+      if (hasMatch) {
+        matched.push({ field: "externalId", exact: true, points: weights.externalId });
+      }
+    }
 
     return matched;
   }
@@ -2714,6 +2993,13 @@ export class PartyService {
           Prisma.sql`public.dmetaphone(pe.first_name) = public.dmetaphone(${firstName})`,
           25,
         ),
+        personMatchLookup(
+          "firstNameNickname",
+          partyType,
+          Prisma.sql`shared.f_match_norm(pe.first_name) IN
+            (SELECT n.nickname FROM shared.nickname n WHERE n.name = shared.f_match_norm(${firstName}))`,
+          25,
+        ),
       );
     }
     if (fullName.trim().length >= MATCH_TRIGRAM_MIN_LENGTH) {
@@ -2727,29 +3013,10 @@ export class PartyService {
         ),
       );
     }
-    if (dateOfBirth) {
-      lookups.push(
-        personMatchLookup("dateOfBirth", partyType, Prisma.sql`pe.date_of_birth = ${dateOfBirth}::date`, 200),
-      );
-      // A transposed day and month is only a valid date when the day can be a month
-      const [year, month, day] = dateOfBirth.split("-");
-      const swappedDate = `${year}-${day}-${month}`;
-      const monthStart = `${year}-${month}-01`;
-      if (Number(day) <= 12 && day !== month) {
-        lookups.push(
-          personMatchLookup("dateOfBirthSwapped", partyType, Prisma.sql`pe.date_of_birth = ${swappedDate}::date`, 200),
-        );
-      }
-      lookups.push(
-        personMatchLookup(
-          "dateOfBirthMonth",
-          partyType,
-          Prisma.sql`pe.date_of_birth >= ${monthStart}::date
-            AND pe.date_of_birth < ${monthStart}::date + interval '1 month'`,
-          50,
-        ),
-      );
-    }
+    lookups.push(
+      ...this._buildDateOfBirthMatchLookups(partyType, dateOfBirth),
+      ...this._buildDescriptorMatchLookups(input, partyType),
+    );
 
     // An entered alias may be the name the party is stored under
     const aliasNames = matchAliasNames(input);
@@ -2789,6 +3056,86 @@ export class PartyService {
     }
 
     return [...lookups, ...this._buildAliasMatchLookups(partyType, [fullName, ...aliasNames])];
+  }
+
+  private _buildDateOfBirthMatchLookups(partyType: string, dateOfBirth?: string): MatchLookup[] {
+    if (!dateOfBirth) {
+      return [];
+    }
+
+    const lookups: MatchLookup[] = [
+      personMatchLookup("dateOfBirth", partyType, Prisma.sql`pe.date_of_birth = ${dateOfBirth}::date`, 200),
+    ];
+    // A transposed day and month is only a valid date when the day can be a month
+    const [year, month, day] = dateOfBirth.split("-");
+    const swappedDate = `${year}-${day}-${month}`;
+    const monthStart = `${year}-${month}-01`;
+    if (Number(day) <= 12 && day !== month) {
+      lookups.push(
+        personMatchLookup("dateOfBirthSwapped", partyType, Prisma.sql`pe.date_of_birth = ${swappedDate}::date`, 200),
+      );
+    }
+    lookups.push(
+      personMatchLookup(
+        "dateOfBirthMonth",
+        partyType,
+        Prisma.sql`pe.date_of_birth >= ${monthStart}::date
+            AND pe.date_of_birth < ${monthStart}::date + interval '1 month'`,
+        50,
+      ),
+    );
+
+    return lookups;
+  }
+
+  // The sum of descriptors can also return high matching parties
+  private _buildDescriptorMatchLookups(input: PartyMatchInput, partyType: string): MatchLookup[] {
+    const descriptorConditions: Prisma.Sql[] = [];
+    const descriptorCodes: [string | null | undefined, Prisma.Sql][] = [
+      [input.person?.sexCode, Prisma.sql`pe.sex_code`],
+      [input.person?.approximateAgeCode, Prisma.sql`pe.approximate_age_code`],
+      [input.person?.buildCode, Prisma.sql`pe.build_code`],
+      [input.person?.complexionCode, Prisma.sql`pe.complexion_code`],
+      [input.person?.eyeColourCode, Prisma.sql`pe.eye_colour_code`],
+      [input.person?.hairColourCode, Prisma.sql`pe.hair_colour_code`],
+      [input.person?.hairLengthCode, Prisma.sql`pe.hair_length_code`],
+    ];
+    for (const [value, column] of descriptorCodes) {
+      if (value) {
+        descriptorConditions.push(Prisma.sql`${column} = ${value}`);
+      }
+    }
+    if (input.person?.facialHairIndicator) {
+      descriptorConditions.push(Prisma.sql`pe.facial_hair_ind = true`);
+    }
+    if (input.person?.tattooIndicator) {
+      descriptorConditions.push(Prisma.sql`pe.tattoo_ind = true`);
+    }
+    if (input.person?.heightInCm != null) {
+      descriptorConditions.push(Prisma.sql`round(pe.height_cm, 1) = round(${input.person.heightInCm}::numeric, 1)`);
+    }
+    if (input.person?.weightInKg != null) {
+      descriptorConditions.push(Prisma.sql`round(pe.weight_kg, 1) = round(${input.person.weightInKg}::numeric, 1)`);
+    }
+    if (!descriptorConditions.length) {
+      return [];
+    }
+
+    const descriptorHits = Prisma.join(
+      descriptorConditions.map((condition) => Prisma.sql`coalesce((${condition})::int, 0)`),
+      " + ",
+    );
+    return [
+      {
+        name: "descriptors",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.person pe
+          JOIN shared.party p ON p.party_guid = pe.party_guid AND p.party_type = ${partyType}
+          WHERE (${descriptorHits}) > 0
+          ORDER BY (${descriptorHits}) DESC
+          LIMIT ${Prisma.raw(String(MATCH_SIMILAR_LIMIT))}`,
+      },
+    ];
   }
 
   private _buildBusinessMatchLookups(input: PartyMatchInput): MatchLookup[] {
@@ -2909,7 +3256,42 @@ export class PartyService {
       });
     }
 
-    return lookups;
+    // Search business as name as the organization name
+    const aliasNames = matchAliasNames(input);
+    if (aliasNames.length) {
+      lookups.push({
+        name: "aliasBusinessName",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.business b
+          JOIN shared.party p ON p.party_guid = b.party_guid AND p.party_type = ${partyType}
+          WHERE (${Prisma.join(
+            aliasNames.map((name) => Prisma.sql`shared.f_match_norm(b.name) = shared.f_match_norm(${name})`),
+            " OR ",
+          )})
+            AND b.party_guid IS NOT NULL
+          LIMIT 25`,
+      });
+      const trigramAliasNames = aliasNames.filter((name) => name.length >= MATCH_TRIGRAM_MIN_LENGTH);
+      if (trigramAliasNames.length) {
+        lookups.push({
+          name: "aliasBusinessNameSimilar",
+          sql: Prisma.sql`SELECT p.party_guid
+            FROM shared.business b
+            JOIN shared.party p ON p.party_guid = b.party_guid AND p.party_type = ${partyType}
+            WHERE (${Prisma.join(
+              trigramAliasNames.map(
+                (name) =>
+                  Prisma.sql`shared.f_unaccent(lower(b.name)) OPERATOR(public.%) shared.f_unaccent(lower(${name}))`,
+              ),
+              " OR ",
+            )})
+              AND b.party_guid IS NOT NULL
+            LIMIT ${Prisma.raw(String(MATCH_SIMILAR_LIMIT))}`,
+        });
+      }
+    }
+
+    return [...lookups, ...this._buildAliasMatchLookups(partyType, [businessName ?? "", ...aliasNames])];
   }
 
   private _buildAliasMatchLookups(partyType: string, names: string[]): MatchLookup[] {
@@ -2971,10 +3353,10 @@ export class PartyService {
         name: "phone",
         sql: Prisma.sql`SELECT p.party_guid
           FROM shared.contact_method cm
-          JOIN shared.party p ON p.party_guid = cm.party_guid AND p.party_type = ${partyType}
+          LEFT JOIN shared.address ad ON ad.address_guid = cm.address_guid
+          JOIN shared.party p ON p.party_guid = coalesce(cm.party_guid, ad.party_guid) AND p.party_type = ${partyType}
           WHERE cm.active_ind = true AND cm.contact_method_type = ${contactMethodTypeSql(ContactMethods.PHONE)}
             AND right(shared.f_match_norm(cm.contact_value), 10) = right(shared.f_match_norm(${phone}), 10)
-            AND cm.party_guid IS NOT NULL
           LIMIT 25`,
       });
     }
@@ -2983,10 +3365,10 @@ export class PartyService {
         name: "email",
         sql: Prisma.sql`SELECT p.party_guid
           FROM shared.contact_method cm
-          JOIN shared.party p ON p.party_guid = cm.party_guid AND p.party_type = ${partyType}
+          LEFT JOIN shared.address ad ON ad.address_guid = cm.address_guid
+          JOIN shared.party p ON p.party_guid = coalesce(cm.party_guid, ad.party_guid) AND p.party_type = ${partyType}
           WHERE cm.active_ind = true AND cm.contact_method_type = ${contactMethodTypeSql(ContactMethods.EMAIL)}
             AND lower(cm.contact_value) = lower(${email})
-            AND cm.party_guid IS NOT NULL
           LIMIT 25`,
       });
     }
@@ -3012,6 +3394,36 @@ export class PartyService {
         });
       }
     }
+    for (const city of distinctMatchValues(addresses.map((address) => address.city))) {
+      lookups.push({
+        name: "city",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND shared.f_match_norm(ad.city) = shared.f_match_norm(${city})
+          LIMIT 25`,
+      });
+    }
+    for (const province of distinctMatchValues(addresses.map((address) => address.province))) {
+      lookups.push({
+        name: "province",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND ad.country_subdivision_code = ${province}
+          LIMIT 25`,
+      });
+    }
+    for (const country of distinctMatchValues(addresses.map((address) => address.country))) {
+      lookups.push({
+        name: "country",
+        sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.address ad
+          JOIN shared.party p ON p.party_guid = ad.party_guid AND p.party_type = ${partyType}
+          WHERE ad.active_ind = true AND ad.country_code = ${country}
+          LIMIT 25`,
+      });
+    }
 
     return lookups;
   }
@@ -3026,7 +3438,29 @@ export class PartyService {
         ? this._buildBusinessMatchLookups(input)
         : this._buildPersonMatchLookups(input);
 
-    return [...typeLookups, ...this._buildContactMatchLookups(input)];
+    const externalIdLookups: MatchLookup[] = (input.externalIds ?? []).map(
+      ({ externalIdCode, externalIdValue }, index) => {
+        const value = externalIdValue?.trim();
+        if (!externalIdCode || !value) {
+          return null;
+        }
+        return {
+          name: `externalId${index > 0 ? index : ""}`,
+          sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.party_external_id pei
+          JOIN shared.party p ON p.party_guid = pei.party_guid AND p.party_type = ${input.partyTypeCode}
+          WHERE pei.active_ind = true AND pei.party_external_id_code = ${externalIdCode}
+            AND shared.f_match_norm(pei.external_id_value) = shared.f_match_norm(${value})
+          LIMIT 10`,
+        };
+      },
+    );
+
+    return [
+      ...typeLookups,
+      ...externalIdLookups.filter((lookup) => lookup != null),
+      ...this._buildContactMatchLookups(input),
+    ];
   }
 
   /**
@@ -3047,6 +3481,9 @@ export class PartyService {
         Prisma.sql`least(char_length(shared.f_match_norm(pe.first_name)), char_length(shared.f_match_norm(${firstName}))) >= ${MATCH_PREFIX_MIN_LENGTH}
             AND (starts_with(shared.f_match_norm(pe.first_name), shared.f_match_norm(${firstName}))
               OR starts_with(shared.f_match_norm(${firstName}), shared.f_match_norm(pe.first_name))) AS first_prefix_eq`,
+        Prisma.sql`EXISTS (SELECT 1 FROM shared.nickname n
+            WHERE n.name = shared.f_match_norm(${firstName})
+              AND n.nickname = shared.f_match_norm(pe.first_name)) AS nickname_eq`,
       );
     }
     if (lastName) {
@@ -3156,6 +3593,27 @@ export class PartyService {
           Prisma.sql`public.similarity(shared.f_unaccent(lower(b.name)), shared.f_unaccent(lower(${businessName}))) AS business_name_sim`,
         );
       }
+      // Search business as name as the organization name
+      const aliasNames = matchAliasNames(input);
+      if (aliasNames.length) {
+        columns.push(
+          Prisma.sql`(${Prisma.join(
+            aliasNames.map((name) => Prisma.sql`shared.f_match_norm(b.name) = shared.f_match_norm(${name})`),
+            " OR ",
+          )}) AS alias_name_norm_eq`,
+          Prisma.sql`greatest(${Prisma.join(
+            aliasNames.map(
+              (name) =>
+                Prisma.sql`public.similarity(shared.f_unaccent(lower(b.name)), shared.f_unaccent(lower(${name})))`,
+            ),
+            ", ",
+          )}) AS alias_name_sim`,
+          Prisma.sql`(${Prisma.join(
+            aliasNames.map((name) => nameContainmentSql(Prisma.sql`b.name`, name)),
+            " OR ",
+          )}) AS alias_name_word_eq`,
+        );
+      }
       if (contact.firstName) {
         contactAggregates.push(
           Prisma.sql`bool_or(shared.f_match_norm(cpe.first_name) = shared.f_match_norm(${contact.firstName})) AS contact_first_norm_eq`,
@@ -3190,10 +3648,11 @@ export class PartyService {
     }
 
     // Stored aliases are compared against every entered name string - the name and each entered alias
-    const aliasCandidates =
+    const aliasCandidates = (
       input.partyTypeCode === PARTY_TYPES.Organization
-        ? []
-        : [personMatchName(input).trim(), ...matchAliasNames(input)].filter(Boolean);
+        ? [input.business?.name?.trim() ?? "", ...matchAliasNames(input)]
+        : [personMatchName(input).trim(), ...matchAliasNames(input)]
+    ).filter(Boolean);
     if (aliasCandidates.length) {
       addBestOverRows(
         "al",

@@ -31,6 +31,7 @@ import {
   buildBusinessCreateUpdate,
   buildContactMethods,
   buildPersonBase,
+  buildExternalIds,
   createEmptyPartyFormValues,
   mapInvestigationPartyToDefaultValues,
 } from "@/app/components/containers/parties/form/party-form-utils";
@@ -177,6 +178,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           partyIdentifier: editParty.partyIdentifier,
           partyAssociationRole: value.partyAssociationRole,
           aliases: buildAliases(value.aliases, true),
+          externalIds: buildExternalIds(value.externalIds, true),
           addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
         };
@@ -194,6 +196,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           partyTypeCode: value.partyType,
           partyAssociationRole: value.partyAssociationRole,
           aliases: buildAliases(value.aliases, false),
+          externalIds: buildExternalIds(value.externalIds, false),
           addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
         };

@@ -8,16 +8,19 @@ import { ContactMethods } from "@/app/constants/contact-methods";
 import { Address, Alias, BusinessIdentifier, ContactMethod, Party, PartyMatchedField } from "@/generated/graphql";
 import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
+import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 const MATCH_FIELD_LABELS: Record<string, string> = {
   driversLicenseNumber: "Driver's licence",
+  externalId: "External ID",
   firstName: "First name",
   lastName: "Last name",
   middleNames: "Middle name",
   alias: "Alias",
+  nickname: "Nickname",
   dateOfBirth: "Date of birth",
   phone: "Phone number",
   email: "Email",
@@ -88,19 +91,25 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
       .map((a) => a.name)
       .join(", ") || "-";
 
-  const businessNumbers =
-    (business?.businessIdentifiers ?? [])
-      .filter((bi): bi is BusinessIdentifier => bi != null)
-      .map((bi) => bi.identifierValue)
-      .join(", ") || "-";
-
-  const contactMethods = (party.contactMethods ?? []).filter((cm): cm is ContactMethod => cm != null);
-  const primaryPhone = contactMethods.find((cm) => cm.typeCode === ContactMethods.PHONE && cm.isPrimary)?.value;
-  const phone = primaryPhone ? formatPhoneNumber(primaryPhone) || primaryPhone : "-";
-  const email = contactMethods.find((cm) => cm.typeCode === ContactMethods.EMAIL && cm.isPrimary)?.value ?? "-";
+  const businessIdentifiers = (business?.businessIdentifiers ?? []).filter(
+    (bi): bi is BusinessIdentifier => bi != null,
+  );
+  const businessNumber =
+    businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER)?.identifierValue ?? "-";
+  const worksafeBCNumber =
+    businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER)?.identifierValue ?? "-";
 
   const addresses = (party.addresses ?? []).filter((a): a is Address => a != null);
   const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0];
+
+  // A contact method belongs to the party both directly or through one of its addresses
+  const contactMethods = [
+    ...(party.contactMethods ?? []),
+    ...addresses.flatMap((address) => address.contactMethods ?? []),
+  ].filter((cm): cm is ContactMethod => cm != null);
+  const primaryPhone = contactMethods.find((cm) => cm.typeCode === ContactMethods.PHONE && cm.isPrimary)?.value;
+  const phone = primaryPhone ? formatPhoneNumber(primaryPhone) || primaryPhone : "-";
+  const email = contactMethods.find((cm) => cm.typeCode === ContactMethods.EMAIL && cm.isPrimary)?.value ?? "-";
   const address = primaryAddress
     ? [
         primaryAddress.address,
@@ -169,8 +178,9 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
       <Card.Body className="py-2 px-3">
         {isBusiness ? (
           <>
-            {detailRow("Doing business as", aliases)}
-            {detailRow("Business number", businessNumbers, anyMatched("businessNumber", "worksafeBCNumber"))}
+            {detailRow("Doing business as", aliases, anyMatched("alias"))}
+            {detailRow("Business number", businessNumber, anyMatched("businessNumber"))}
+            {detailRow("WorkSafeBC number", worksafeBCNumber, anyMatched("worksafeBCNumber"))}
             {detailRow("Primary phone", phone, anyMatched("phone"))}
             {detailRow("Primary address", address, anyMatched("addressLine", "city", "province", "country"))}
             {showMoreInfo && detailRow("Email", email, anyMatched("email"))}
@@ -231,7 +241,9 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
             {matchedFields.map((matchedField, index) => (
               <Fragment key={`${matchedField.field}-${index}`}>
                 <span>
-                  {MATCH_FIELD_LABELS[matchedField.field] ?? matchedField.field}
+                  {isBusiness && matchedField.field === "alias"
+                    ? "Doing business as"
+                    : (MATCH_FIELD_LABELS[matchedField.field] ?? matchedField.field)}
                   {!matchedField.exact && " (similar)"}
                 </span>
                 <span className="comp-party-match-card-score-points">{`+${matchedField.points}`}</span>
