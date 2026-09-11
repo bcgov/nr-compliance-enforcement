@@ -23,7 +23,10 @@ const COMMENT_DECISION_CODES = new Set([
 ]);
 
 const formatDate = (value?: string | Date | null): string => (value ? format(new Date(value), "yyyy-MM-dd") : "—");
-const formatYesNo = (value?: boolean | null): string => (value == null ? "—" : value ? "Yes" : "No");
+const formatYesNo = (value?: boolean | null): string => {
+  if (value == null) return "—";
+  return value ? "Yes" : "No";
+};
 
 interface DecisionDetailLabels {
   ticketType: string;

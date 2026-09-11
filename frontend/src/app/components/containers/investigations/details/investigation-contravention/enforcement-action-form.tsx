@@ -65,8 +65,12 @@ const YES_NO_OPTIONS = [
   { value: "false", label: "No" },
 ];
 
-const boolToOption = (value: boolean | null | undefined): string => (value == null ? "" : value ? "true" : "false");
+const boolToOption = (value: boolean | null | undefined): string => {
+  if (value == null) return "";
+  return value ? "true" : "false";
+};
 const optionToBool = (value: string): boolean | null => (value === "" ? null : value === "true");
+const toDateOrNull = (value?: string | Date | null): Date | null => (value ? new Date(value) : null);
 
 // ticket_amount is stored as Decimal(10, 2) so enforce max amount
 const ticketAmountValidator = z
@@ -187,7 +191,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const willPublishParty = !isEdit && !!party && !party.partyReference;
 
   const dispatch = useAppDispatch();
-  const currentUserGuid = useAppSelector(selectAppUserGuid);
   const agency = useAppSelector(selectOfficerAgency);
   const officersInAgency = useAppSelector((state) => selectOfficersByAgency(state, agency));
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
@@ -304,11 +307,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       orderTypeCode: enforcementAction?.orderTypeCode ?? "",
       orderStatusCode: enforcementAction?.orderStatusCode ?? "",
       // Shared: Order/Violation Ticket appeal hearing date
-      appealHearingDate: enforcementAction?.ticket?.appealHearingDate
-        ? new Date(enforcementAction.ticket.appealHearingDate)
-        : enforcementAction?.appealHearingDate
-          ? new Date(enforcementAction.appealHearingDate)
-          : null,
+      appealHearingDate: toDateOrNull(
+        enforcementAction?.ticket?.appealHearingDate ?? enforcementAction?.appealHearingDate,
+      ),
       // Shared: Order/Restorative Justice/Court Prosecution/Administrative Penalty
       remediationRequired: boolToOption(enforcementAction?.remediationRequired),
       // Restorative Justice
