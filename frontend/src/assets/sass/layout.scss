@@ -177,9 +177,12 @@ a {
   outline-offset: -2px;
   transition: all ease-out 0.2s;
 
-  &:hover {
-    color: $white;
-    background-color: $bc-gov-primary;
+  // Don't apply the hover style to ipads or touch devices
+  @media (hover: hover) {
+    &:hover {
+      color: $white;
+      background-color: $bc-gov-primary;
+    }
   }
 
   &:active {

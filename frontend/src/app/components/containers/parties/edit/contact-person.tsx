@@ -220,7 +220,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           }}
           render={(field) => (
             <>
-              <div className="comp-details-form-row">
+              <div className="party-contact-header">
                 <label htmlFor={`contact-phone-primary-${contactIndex}-${originalIndex}`}>
                   <input
                     type="radio"
@@ -299,7 +299,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           }}
           render={(field) => (
             <>
-              <div className="comp-details-form-row">
+              <div className="party-contact-header">
                 <label htmlFor={`contact-email-primary-${contactIndex}-${originalIndex}`}>
                   <input
                     type="radio"

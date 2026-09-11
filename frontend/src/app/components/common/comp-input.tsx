@@ -97,7 +97,6 @@ export const CompInput: FC<Props> = ({
       <input
         {...props}
         type={type}
-        inputMode="numeric"
       />
     );
   }
