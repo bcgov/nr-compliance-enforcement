@@ -53,6 +53,13 @@ import {
   fetchLegislationTypes,
   fetchEnforcementActionTypes,
   fetchTicketOutcomeTypes,
+  fetchTicketTypeCodes,
+  fetchSanctionTypeCodes,
+  fetchSanctionStatusTypeCodes,
+  fetchOrderTypeCodes,
+  fetchOrderStatusTypeCodes,
+  fetchCourtProsecutionStatusTypeCodes,
+  fetchAdministrativePenaltyStatusTypeCodes,
   fetchCountryTypes,
   fetchCountrySubdivisionTypes,
   fetchApproximateAgeTypes,
@@ -122,6 +129,13 @@ const initialState: CodeTableState = {
   "legislation-type": [],
   "enforcement-action-type": [],
   "ticket-outcome-type": [],
+  "ticket-type": [],
+  "sanction-type": [],
+  "sanction-status-type": [],
+  "order-type": [],
+  "order-status-type": [],
+  "court-prosecution-status-type": [],
+  "administrative-penalty-status-type": [],
   "country-type": [],
   "country-subdivision-type": [],
   "approximate-age-type": [],
@@ -209,6 +223,13 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "legislation-type": legislationType,
       "enforcement-action-type": enforcementActionType,
       "ticket-outcome-type": ticketOutcomeType,
+      "ticket-type": ticketType,
+      "sanction-type": sanctionType,
+      "sanction-status-type": sanctionStatusType,
+      "order-type": orderType,
+      "order-status-type": orderStatusType,
+      "court-prosecution-status-type": courtProsecutionStatusType,
+      "administrative-penalty-status-type": administrativePenaltyStatusType,
       "country-type": countryType,
       "country-subdivision-type": countrySubdivisionType,
       "approximate-age-type": approximateAgeType,
@@ -386,6 +407,27 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(ticketOutcomeType).any()) {
       dispatch(fetchTicketOutcomeTypes());
     }
+    if (!from(ticketType).any()) {
+      dispatch(fetchTicketTypeCodes());
+    }
+    if (!from(sanctionType).any()) {
+      dispatch(fetchSanctionTypeCodes());
+    }
+    if (!from(sanctionStatusType).any()) {
+      dispatch(fetchSanctionStatusTypeCodes());
+    }
+    if (!from(orderType).any()) {
+      dispatch(fetchOrderTypeCodes());
+    }
+    if (!from(orderStatusType).any()) {
+      dispatch(fetchOrderStatusTypeCodes());
+    }
+    if (!from(courtProsecutionStatusType).any()) {
+      dispatch(fetchCourtProsecutionStatusTypeCodes());
+    }
+    if (!from(administrativePenaltyStatusType).any()) {
+      dispatch(fetchAdministrativePenaltyStatusTypeCodes());
+    }
     if (!from(countryType).any()) {
       dispatch(fetchCountryTypes());
     }
@@ -480,6 +522,13 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchLegislationTypes());
     dispatch(fetchEnforcementActionTypes());
     dispatch(fetchTicketOutcomeTypes());
+    dispatch(fetchTicketTypeCodes());
+    dispatch(fetchSanctionTypeCodes());
+    dispatch(fetchSanctionStatusTypeCodes());
+    dispatch(fetchOrderTypeCodes());
+    dispatch(fetchOrderStatusTypeCodes());
+    dispatch(fetchCourtProsecutionStatusTypeCodes());
+    dispatch(fetchAdministrativePenaltyStatusTypeCodes());
     dispatch(fetchCountryTypes());
     dispatch(fetchCountrySubdivisionTypes());
     dispatch(fetchApproximateAgeTypes());

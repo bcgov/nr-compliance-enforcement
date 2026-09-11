@@ -47,6 +47,25 @@ import { ticket as _ticket } from "./ticket";
 import { ticket_h as _ticket_h } from "./ticket_h";
 import { ticket_outcome_code as _ticket_outcome_code } from "./ticket_outcome_code";
 import { investigation_source_code as _investigation_source_code } from "./investigation_source_code";
+import { administrative_penalty as _administrative_penalty } from "./administrative_penalty";
+import { administrative_penalty_h as _administrative_penalty_h } from "./administrative_penalty_h";
+import { administrative_penalty_status_code as _administrative_penalty_status_code } from "./administrative_penalty_status_code";
+import { administrative_sanction as _administrative_sanction } from "./administrative_sanction";
+import { administrative_sanction_h as _administrative_sanction_h } from "./administrative_sanction_h";
+import { court_prosecution as _court_prosecution } from "./court_prosecution";
+import { court_prosecution_h as _court_prosecution_h } from "./court_prosecution_h";
+import { court_prosecution_status_code as _court_prosecution_status_code } from "./court_prosecution_status_code";
+import { enforcement_order as _enforcement_order } from "./enforcement_order";
+import { enforcement_order_h as _enforcement_order_h } from "./enforcement_order_h";
+import { order_status_code as _order_status_code } from "./order_status_code";
+import { order_type_code as _order_type_code } from "./order_type_code";
+import { restorative_justice as _restorative_justice } from "./restorative_justice";
+import { restorative_justice_h as _restorative_justice_h } from "./restorative_justice_h";
+import { sanction_status_code as _sanction_status_code } from "./sanction_status_code";
+import { sanction_type_code as _sanction_type_code } from "./sanction_type_code";
+import { ticket_type_code as _ticket_type_code } from "./ticket_type_code";
+import { warning as _warning } from "./warning";
+import { warning_h as _warning_h } from "./warning_h";
 
 export namespace PrismaModel {
   export class activity_note extends _activity_note {}
@@ -98,6 +117,25 @@ export namespace PrismaModel {
   export class ticket_h extends _ticket_h {}
   export class ticket_outcome_code extends _ticket_outcome_code {}
   export class investigation_source_code extends _investigation_source_code {}
+  export class administrative_penalty extends _administrative_penalty {}
+  export class administrative_penalty_h extends _administrative_penalty_h {}
+  export class administrative_penalty_status_code extends _administrative_penalty_status_code {}
+  export class administrative_sanction extends _administrative_sanction {}
+  export class administrative_sanction_h extends _administrative_sanction_h {}
+  export class court_prosecution extends _court_prosecution {}
+  export class court_prosecution_h extends _court_prosecution_h {}
+  export class court_prosecution_status_code extends _court_prosecution_status_code {}
+  export class enforcement_order extends _enforcement_order {}
+  export class enforcement_order_h extends _enforcement_order_h {}
+  export class order_status_code extends _order_status_code {}
+  export class order_type_code extends _order_type_code {}
+  export class restorative_justice extends _restorative_justice {}
+  export class restorative_justice_h extends _restorative_justice_h {}
+  export class sanction_status_code extends _sanction_status_code {}
+  export class sanction_type_code extends _sanction_type_code {}
+  export class ticket_type_code extends _ticket_type_code {}
+  export class warning extends _warning {}
+  export class warning_h extends _warning_h {}
 
   export const extraModels = [
     activity_note,
@@ -149,5 +187,24 @@ export namespace PrismaModel {
     ticket_h,
     ticket_outcome_code,
     investigation_source_code,
+    administrative_penalty,
+    administrative_penalty_h,
+    administrative_penalty_status_code,
+    administrative_sanction,
+    administrative_sanction_h,
+    court_prosecution,
+    court_prosecution_h,
+    court_prosecution_status_code,
+    enforcement_order,
+    enforcement_order_h,
+    order_status_code,
+    order_type_code,
+    restorative_justice,
+    restorative_justice_h,
+    sanction_status_code,
+    sanction_type_code,
+    ticket_type_code,
+    warning,
+    warning_h,
   ];
 }

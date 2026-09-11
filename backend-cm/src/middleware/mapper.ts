@@ -52,6 +52,13 @@ import { mapPrismaPartyExternalIdCodeToPartyExternalIdCode } from "../shared/par
 import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "../shared/business_person_xref/dto/business_person_xref";
 import { mapPrismaExhibitToExhibit } from "../investigation/exhibit/dto/exhibit";
 import { mapPrismaTicketOutcomeCodeToTicketOutcomeCode } from "../investigation/ticket_outcome_code/dto/ticket_outcome_code";
+import { mapPrismaTicketTypeCodeToTicketTypeCode } from "../investigation/ticket_type_code/dto/ticket_type_code";
+import { mapPrismaSanctionTypeCodeToSanctionTypeCode } from "../investigation/sanction_type_code/dto/sanction_type_code";
+import { mapPrismaSanctionStatusCodeToSanctionStatusCode } from "../investigation/sanction_status_code/dto/sanction_status_code";
+import { mapPrismaOrderTypeCodeToOrderTypeCode } from "../investigation/order_type_code/dto/order_type_code";
+import { mapPrismaOrderStatusCodeToOrderStatusCode } from "../investigation/order_status_code/dto/order_status_code";
+import { mapPrismaCourtProsecutionStatusCodeToCourtProsecutionStatusCode } from "../investigation/court_prosecution_status_code/dto/court_prosecution_status_code";
+import { mapPrismaAdministrativePenaltyStatusCodeToAdministrativePenaltyStatusCode } from "../investigation/administrative_penalty_status_code/dto/administrative_penalty_status_code";
 import { mapPrismaEnforcementActionCodeToEnforcementActionCode } from "../investigation/enforcement_action_code/dto/enforcement_action_code";
 import { mapPrismaTicketToTicket } from "../investigation/ticket/dto/ticket";
 import { mapPrismaEnforcementActionToEnforcementAction } from "../investigation/enforcement_action/dto/enforcement_action";
@@ -142,6 +149,13 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaDiaryDateToDiaryDate(mapper);
   mapPrismaExhibitToExhibit(mapper);
   mapPrismaTicketOutcomeCodeToTicketOutcomeCode(mapper);
+  mapPrismaTicketTypeCodeToTicketTypeCode(mapper);
+  mapPrismaSanctionTypeCodeToSanctionTypeCode(mapper);
+  mapPrismaSanctionStatusCodeToSanctionStatusCode(mapper);
+  mapPrismaOrderTypeCodeToOrderTypeCode(mapper);
+  mapPrismaOrderStatusCodeToOrderStatusCode(mapper);
+  mapPrismaCourtProsecutionStatusCodeToCourtProsecutionStatusCode(mapper);
+  mapPrismaAdministrativePenaltyStatusCodeToAdministrativePenaltyStatusCode(mapper);
   mapPrismaEnforcementActionCodeToEnforcementActionCode(mapper);
   mapPrismaTicketToTicket(mapper);
   mapPrismaEnforcementActionToEnforcementAction(mapper);

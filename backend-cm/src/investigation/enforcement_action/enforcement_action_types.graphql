@@ -9,6 +9,22 @@ type EnforcementAction {
   ticket: Ticket
   comment: String
   publishedPartyReference: String
+  issuingOfficerIdentifier: String
+  dateServed: DateTime
+  warningNumber: String
+  sanctionTypeCode: String
+  effectiveDate: DateTime
+  endDate: DateTime
+  sanctionStatusCode: String
+  orderTypeCode: String
+  remediationRequired: Boolean
+  appealHearingDate: DateTime
+  orderStatusCode: String
+  hearingDate: DateTime
+  decisionDate: DateTime
+  courtProsecutionStatusCode: String
+  administrativePenaltyStatusCode: String
+  approvalInd: Boolean
 }
 
 input CreateEnforcementActionInput {
@@ -23,6 +39,23 @@ input CreateEnforcementActionInput {
   ticketNumber: String
   paidDate: DateTime
   comment: String
+  issuingOfficerIdentifier: String
+  dateServed: DateTime
+  ticketTypeCode: String
+  warningNumber: String
+  sanctionTypeCode: String
+  effectiveDate: DateTime
+  endDate: DateTime
+  sanctionStatusCode: String
+  orderTypeCode: String
+  remediationRequired: Boolean
+  appealHearingDate: DateTime
+  orderStatusCode: String
+  hearingDate: DateTime
+  decisionDate: DateTime
+  courtProsecutionStatusCode: String
+  administrativePenaltyStatusCode: String
+  approvalInd: Boolean
 }
 
 input UpdateEnforcementActionInput {
@@ -36,4 +69,21 @@ input UpdateEnforcementActionInput {
   ticketNumber: String
   paidDate: DateTime
   comment: String
+  issuingOfficerIdentifier: String
+  dateServed: DateTime
+  ticketTypeCode: String
+  warningNumber: String
+  sanctionTypeCode: String
+  effectiveDate: DateTime
+  endDate: DateTime
+  sanctionStatusCode: String
+  orderTypeCode: String
+  remediationRequired: Boolean
+  appealHearingDate: DateTime
+  orderStatusCode: String
+  hearingDate: DateTime
+  decisionDate: DateTime
+  courtProsecutionStatusCode: String
+  administrativePenaltyStatusCode: String
+  approvalInd: Boolean
 }

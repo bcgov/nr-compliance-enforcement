@@ -1,0 +1,34 @@
+import { administrative_sanction } from "./administrative_sanction";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+export class sanction_type_code {
+  @ApiProperty({ type: String })
+  sanction_type_code: string;
+
+  @ApiProperty({ type: String })
+  short_description: string;
+
+  @ApiPropertyOptional({ type: String })
+  long_description?: string;
+
+  @ApiPropertyOptional({ type: Number })
+  display_order?: number;
+
+  @ApiProperty({ type: Boolean })
+  active_ind: boolean = true;
+
+  @ApiProperty({ type: String })
+  create_user_id: string;
+
+  @ApiProperty({ type: Date })
+  create_utc_timestamp: Date;
+
+  @ApiPropertyOptional({ type: String })
+  update_user_id?: string;
+
+  @ApiPropertyOptional({ type: Date })
+  update_utc_timestamp?: Date;
+
+  @ApiProperty({ isArray: true, type: () => administrative_sanction })
+  administrative_sanction_administrative_sanction_sanction_type_codeTosanction_type_code: administrative_sanction[];
+}

@@ -50,6 +50,13 @@ import { LegislationType } from "../app/code-tables/legislation-type";
 import { InvestigationSourceCode } from "@/app/types/app/investigation/investigation-source-code";
 import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-action";
 import { TicketOutcomeType } from "@/app/types/app/code-tables/ticket-outcome";
+import { TicketType } from "@/app/types/app/code-tables/ticket-type";
+import { SanctionType } from "@/app/types/app/code-tables/sanction-type";
+import { SanctionStatusType } from "@/app/types/app/code-tables/sanction-status-type";
+import { OrderType } from "@/app/types/app/code-tables/order-type";
+import { OrderStatusType } from "@/app/types/app/code-tables/order-status-type";
+import { CourtProsecutionStatusType } from "@/app/types/app/code-tables/court-prosecution-status-type";
+import { AdministrativePenaltyStatusType } from "@/app/types/app/code-tables/administrative-penalty-status-type";
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
@@ -114,6 +121,13 @@ export interface CodeTableState {
     | Array<LegislationType>
     | Array<EnforcementActionType>
     | Array<TicketOutcomeType>
+    | Array<TicketType>
+    | Array<SanctionType>
+    | Array<SanctionStatusType>
+    | Array<OrderType>
+    | Array<OrderStatusType>
+    | Array<CourtProsecutionStatusType>
+    | Array<AdministrativePenaltyStatusType>
     | Array<CountryType>
     | Array<CountrySubdivisionType>
     | Array<ApproximateAgeType>
@@ -177,6 +191,13 @@ export interface CodeTableState {
   "legislation-type": Array<LegislationType>;
   "enforcement-action-type": Array<EnforcementActionType>;
   "ticket-outcome-type": Array<TicketOutcomeType>;
+  "ticket-type": Array<TicketType>;
+  "sanction-type": Array<SanctionType>;
+  "sanction-status-type": Array<SanctionStatusType>;
+  "order-type": Array<OrderType>;
+  "order-status-type": Array<OrderStatusType>;
+  "court-prosecution-status-type": Array<CourtProsecutionStatusType>;
+  "administrative-penalty-status-type": Array<AdministrativePenaltyStatusType>;
   "country-type": Array<CountryType>;
   "country-subdivision-type": Array<CountrySubdivisionType>;
   "approximate-age-type": Array<ApproximateAgeType>;

@@ -1,0 +1,7 @@
+type AdministrativePenaltyStatusCode {
+  administrativePenaltyStatusCode: String
+  shortDescription: String
+  longDescription: String
+  displayOrder: Int
+  activeIndicator: Boolean
+}
