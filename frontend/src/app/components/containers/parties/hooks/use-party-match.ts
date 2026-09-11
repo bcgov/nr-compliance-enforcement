@@ -28,6 +28,11 @@ const MATCH_PARTY = gql`
           city
           province
           isPrimary
+          contactMethods {
+            typeCode
+            value
+            isPrimary
+          }
         }
         person {
           personGuid
