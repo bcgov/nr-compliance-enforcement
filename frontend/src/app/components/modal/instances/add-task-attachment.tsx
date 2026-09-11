@@ -9,8 +9,12 @@ import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import AttachmentUpload from "@/app/components/common/attachment-upload";
-import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
+import {
+  getDisplayFilename,
+  handlePersistAttachments,
+  Attachment,
+  MAX_ATTACHMENT_PREVIEWS,
+} from "@/app/common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
@@ -20,12 +24,15 @@ import { getUserAgency } from "@/app/service/user-service";
 import { COMSObject } from "@/app/types/coms/object";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 import { fileTypeOptions } from "@/app/components/common/file-type-options";
 import { parseISO } from "date-fns";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
+import { useAttachmentStaging } from "@/app/hooks/use-attachment-staging";
+import AttachmentCarousel from "@/app/components/common/attachment-carousel";
+import AttachmentDuplicateWarning from "@/app/components/common/attachment-duplicate-warning";
+import { useDuplicateFileWarning } from "@/app/hooks/use-duplicate-file-warning";
 
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
@@ -86,10 +93,19 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     },
   });
 
+  const {
+    slides,
+    setSlides,
+    onFileSelect: stageFiles,
+    onFileRemove,
+  } = useAttachmentStaging({
+    attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+    identifier: investigationIdentifier,
+    confirmDuplicates: false,
+  });
+
   // State
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
-  const [duplicateFileNames, setDuplicateFileNames] = useState<string[]>([]);
 
   // Form Definition
   const form = useForm({
@@ -131,6 +147,11 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     }
   }, [isFormDirty, markDirty]);
 
+  const { duplicateFileNames, isBlocked, confirm, reset } = useDuplicateFileWarning({
+    stagedNames: slides.map((s) => getDisplayFilename(s.name)),
+    existingNames: (existingAttachments ?? []).map((a: COMSObject) => getDisplayFilename(a.name)),
+  });
+
   // Orchestrates integration with TanStack Form and contains logic for tracking duplicates
   const onFileSelect = useCallback(
     (files: FileList) => {
@@ -152,13 +173,9 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       form.setFieldValue("file", mergedFileList);
       form.setFieldValue("originalFileName", mergedFiles.map((f) => f.name).join("\n"));
 
-      const duplicates = newFilesArray
-        .filter((f) => existingAttachments.some((a: COMSObject) => getDisplayFilename(a.name) === f.name))
-        .map((f) => f.name);
-      setDuplicateFileNames(duplicates);
-      setShowDuplicateConfirm(duplicates.length > 0);
+      stageFiles(files);
     },
-    [form, existingAttachments],
+    [form, existingAttachments, stageFiles],
   );
 
   // Functions
@@ -293,6 +310,12 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     form.setFieldValue("originalFileName", updatedFiles.map((f) => f.name).join("\n"));
   };
 
+  // a staged slide was removed from the carousel, so drop the matching file from the form selection
+  const handleSlideRemove = (attachment: COMSObject) => {
+    onFileRemove(attachment);
+    handleRemoveFile(decodeURIComponent(attachment.name));
+  };
+
   return (
     <>
       {title && (
@@ -319,9 +342,15 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 }}
                 render={(field) => (
                   <>
-                    <AttachmentUpload
+                    <AttachmentCarousel
+                      slides={slides}
+                      showPreview={true}
                       onFileSelect={onFileSelect}
-                      previousValues={fileListToCOMSObjects(field.state.value)}
+                      onFileRemove={handleSlideRemove}
+                      allowUpload={true}
+                      allowDelete={true}
+                      variant="comp-carousel-modal"
+                      maxPreviews={MAX_ATTACHMENT_PREVIEWS}
                     />
                     {field.state.meta.errors?.[0]?.message && (
                       <span className="error-message">{field.state.meta.errors[0].message}</span>
@@ -331,102 +360,27 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               />
             )}
 
-            {/* Original File Name */}
-            <FormField
-              form={form}
-              name="originalFileName"
-              label={
-                form.getFieldValue("originalFileName")?.includes("\n") ? "Original file names" : "Original file name"
-              }
-              render={(field) => (
-                <div className="comp-details-input">
-                  {field.state.value ? (
-                    field.state.value.split("\n").map((name: string, i: number) => (
-                      <div
-                        key={name + "-" + i}
-                        className="d-flex align-items-center gap-2"
-                      >
-                        <span>{name}</span>
-                        {!attachment && (
-                          <button
-                            type="button"
-                            className="btn btn-link p-0 border-0 text-body"
-                            onClick={() => handleRemoveFile(name)}
-                            aria-label={`Remove ${name}`}
-                          >
-                            <i className="bi bi-trash" />
-                          </button>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <span className="text-muted">No files selected</span>
-                  )}
-                </div>
-              )}
-            />
+            {/* Existing attachment preview - edit mode only */}
+            {attachment && (
+              <AttachmentCarousel
+                slides={[attachment]}
+                showPreview={true}
+                variant="comp-carousel-modal"
+              />
+            )}
 
             {/* Duplicate Warning */}
-            {showDuplicateConfirm && (
-              <Alert
-                variant="warning"
-                className="comp-complaint-details-alert mt-3"
-              >
-                <div className="d-flex align-items-start gap-2">
-                  <i className="bi bi-exclamation-triangle mt-1" />
-                  <span>
-                    <strong>Duplicate file detected</strong>
-                    <p>
-                      {duplicateFileNames.length === 1 ? (
-                        <>
-                          An attachment with the name <strong>{duplicateFileNames[0]}</strong> already exists. If this
-                          is the latest version of that document, please click <strong>"Update document"</strong>. If
-                          this is intended to be a new, separate document, please click <strong>"Cancel"</strong> and
-                          rename the file before uploading it.
-                        </>
-                      ) : (
-                        <>
-                          <span>Attachments with the following names already exist.</span>
-                          <ul className="mt-3 list-unstyled">
-                            {duplicateFileNames.map((fileName) => (
-                              <li
-                                key={fileName}
-                                className="py-1 px-4"
-                              >
-                                {fileName}
-                              </li>
-                            ))}
-                          </ul>
-                          <span>
-                            If this is the latest version of the documents, please click{" "}
-                            <strong>"Update document"</strong>. If they are intended to be new, separate documents,
-                            please click <strong>"Cancel"</strong> and rename the files before uploading them.
-                          </span>
-                        </>
-                      )}
-                    </p>
-                  </span>
-                </div>
-                <div className="d-flex justify-content-end gap-2 mt-2">
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => {
-                      setShowDuplicateConfirm(false);
-                      setDuplicateFileNames([]);
-                      form.setFieldValue("file", null);
-                      form.setFieldValue("originalFileName", "");
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="warning"
-                    onClick={() => setShowDuplicateConfirm(false)}
-                  >
-                    Update document
-                  </Button>
-                </div>
-              </Alert>
+            {isBlocked && (
+              <AttachmentDuplicateWarning
+                fileNames={duplicateFileNames}
+                onCancel={() => {
+                  reset();
+                  form.setFieldValue("file", null);
+                  form.setFieldValue("originalFileName", "");
+                  setSlides([]);
+                }}
+                onConfirm={confirm}
+              />
             )}
 
             {/* File Type */}
@@ -630,14 +584,14 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             <Button
               variant="outline-primary"
               onClick={close}
-              disabled={showDuplicateConfirm || showDeleteConfirm}
+              disabled={isBlocked || showDeleteConfirm}
             >
               Cancel
             </Button>
             <Button
               variant="primary"
               onClick={handleSubmit}
-              disabled={showDuplicateConfirm || showDeleteConfirm}
+              disabled={isBlocked || showDeleteConfirm}
             >
               <span>Save and close</span>
             </Button>

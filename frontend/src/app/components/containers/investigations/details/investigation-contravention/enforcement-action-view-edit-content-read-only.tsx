@@ -1,13 +1,10 @@
 import { FC } from "react";
 import { format } from "date-fns";
 import { EnforcementAction, InvestigationParty } from "@/generated/graphql";
-import { getDisplayFilename } from "@/app/common/attachment-utils";
-import { generateApiParameters, get } from "@/app/common/api";
-import { useAppDispatch } from "@/app/hooks/hooks";
-import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
-import config from "@/config";
+import { Attachment, MAX_ATTACHMENT_PREVIEWS } from "@/app/common/attachment-utils";
 import { getPartyName } from "@/app/common/party-name";
 import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
+import AttachmentCarousel from "@/app/components/common/attachment-carousel";
 
 interface EnforcementActionViewEditContentReadOnlyProps {
   enforcementAction: EnforcementAction;
@@ -17,7 +14,7 @@ interface EnforcementActionViewEditContentReadOnlyProps {
   servingOfficerLabel: string;
   enforcementActionLabel: string;
   ticketOutcomeLabel?: string;
-  attachments: EnforcementActionAttachment[];
+  attachments: Attachment[];
   isLoadingAttachments: boolean;
 }
 
@@ -39,42 +36,22 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
   attachments,
   isLoadingAttachments,
 }) => {
-  const dispatch = useAppDispatch();
   const ticket = enforcementAction.ticket;
-  const isNonEADecision = NON_EA_DECISION_CODES.has(enforcementAction.enforcementActionCode?.enforcementActionCode ?? "");
-
-  const handleFileClick = async (e: React.MouseEvent<HTMLAnchorElement>, attachmentId: string) => {
-    e.preventDefault();
-    if (!attachmentId) return;
-    const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachmentId}?download=url`);
-    const downloadUrl = await get<string>(dispatch, parameters);
-    window.open(downloadUrl, "_blank");
-  };
+  const isNonEADecision = NON_EA_DECISION_CODES.has(
+    enforcementAction.enforcementActionCode?.enforcementActionCode ?? "",
+  );
 
   const attachmentContent =
     attachments.length === 0 ? (
       <span className="text-muted">No attachments</span>
     ) : (
-      <div className="d-flex flex-column gap-1">
-        {attachments.map((a) => (
-          <div
-            key={a.id}
-            className="d-flex align-items-center gap-2"
-          >
-            <i className="bi bi-paperclip" />
-            <a
-              href={`${config.COMS_URL}/object/${a.id}`}
-              className="comp-cell-link"
-              onClick={(e) => handleFileClick(e, a.id ?? "")}
-              title={`Download ${getDisplayFilename(a.name)}`}
-            >
-              {getDisplayFilename(a.name)}
-            </a>
-          </div>
-        ))}
-      </div>
+      <AttachmentCarousel
+        slides={attachments}
+        showPreview={true}
+        maxPreviews={MAX_ATTACHMENT_PREVIEWS}
+        variant="comp-carousel-modal"
+      />
     );
-
   return (
     <>
       <div className="border rounded bg-bc-brand-background-light-gray text-dark px-3 py-3 mb-4">
