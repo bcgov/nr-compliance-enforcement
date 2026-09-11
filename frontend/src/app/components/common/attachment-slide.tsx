@@ -5,8 +5,9 @@ import { COMSObject } from "@apptypes/coms/object";
 import AttachmentIcon from "./attachment-icon";
 import { Button } from "react-bootstrap";
 import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
-import { downloadAttachment } from "@/app/common/attachment-utils";
+import { downloadAttachment, getDisplayFilename } from "@/app/common/attachment-utils";
 import { useAppDispatch } from "@/app/hooks/hooks";
+import { truncateFilenameString } from "@/app/common/methods";
 
 type Props = {
   index: number;
@@ -66,7 +67,12 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
             />
           </div>
           <div className="comp-attachment-slide-bottom">
-            <div className="comp-attachment-slide-name">{decodeURIComponent(attachment.name)}</div>
+            <div
+              className="comp-attachment-slide-name"
+              title={getDisplayFilename(attachment.name)}
+            >
+              {truncateFilenameString(getDisplayFilename(attachment.name), 15)}
+            </div>
             {attachment?.pendingUpload && attachment?.errorMesage ? (
               <div className="comp-attachment-slide-meta">{attachment?.errorMesage}</div>
             ) : (
@@ -80,7 +86,9 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
         </>
       ) : (
         <>
-          <strong>{decodeURIComponent(attachment.name)}</strong>
+          <strong title={getDisplayFilename(attachment.name)}>
+            {truncateFilenameString(getDisplayFilename(attachment.name), 15)}
+          </strong>
           <div className="comp-carousel-files-buttons-no-preview">{renderButtons()}</div>
         </>
       )}

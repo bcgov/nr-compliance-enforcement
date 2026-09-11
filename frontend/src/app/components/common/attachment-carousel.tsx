@@ -42,6 +42,9 @@ export const AttachmentCarousel: FC<Props> = ({
   const previewSlides = maxPreviews === undefined ? slides : slides.slice(0, maxPreviews);
   const overflowSlides = maxPreviews === undefined ? [] : slides.slice(maxPreviews);
 
+  // the drop zone summarises what the user has staged, not attachments already saved
+  const stagedSlides = slides.filter((s) => s.pendingUpload);
+
   // calculates how many slides will fit on the page
   useEffect(() => {
     const calculateSlidesToDisplay = (containerWidth: number): number => {
@@ -97,7 +100,7 @@ export const AttachmentCarousel: FC<Props> = ({
                     <AttachmentUpload
                       onFileSelect={onFileSelect ?? (() => {})}
                       disabled={disabled}
-                      previousValues={slides}
+                      previousValues={stagedSlides}
                     />
                   )}
                   {previewSlides?.map((item, index) => (
@@ -134,7 +137,7 @@ export const AttachmentCarousel: FC<Props> = ({
                   <AttachmentUpload
                     onFileSelect={onFileSelect ?? (() => {})}
                     disabled={disabled}
-                    previousValues={slides}
+                    previousValues={stagedSlides}
                   />
                 </div>
               )}

@@ -1,4 +1,4 @@
-import { Attachment, fetchAttachmentsWithMetadata } from "./attachment-utils";
+import { Attachment, fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
 
 /**
  * Returns the highest sequence number currently in use for a given file type

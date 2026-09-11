@@ -9,13 +9,13 @@ import { DocumentationFilter } from "./documentation-filter";
 import { DocumentationFilterBar } from "./documentation-filter-bar";
 import { DocumentationList } from "./documentation-list";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
-import { useInvestigationAttachments } from "./hooks/use-investigation-attachments";
 import { Attachment } from "@/app/common/attachment-utils";
 import { bulkDownload } from "@/app/store/reducers/bulk-download";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import AttachmentEnum from "@constants/attachment-enum";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { useInvestigationAttachments } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 
 type Props = {
   investigationGuid: string;
