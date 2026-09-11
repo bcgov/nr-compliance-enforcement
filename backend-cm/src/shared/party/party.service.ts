@@ -33,6 +33,7 @@ import { EventPublisherService } from "../../event_publisher/event_publisher.ser
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
 import { BusinessIdentifiers } from "src/enum/business-identifier.enum";
+import { PartyExternalId, PartyExternalIdInput } from "src/shared/party_external_id/dto/party_external_id";
 import { ContactMethods } from "src/enum/contact-method.enum";
 import { toDateString } from "src/common/custom_scalars";
 import { PersonInput } from "src/shared/person/dto/person.input";
@@ -53,6 +54,7 @@ export interface PreparedPartyIdentifiers extends PartyIdentifiers {
   addressGuids: Map<string, string>;
   contactMethodGuids: Map<string, string>;
   aliasGuids: Map<string, string>;
+  partyExternalIdGuids: Map<string, string>;
   businessIdentifierGuids: Map<string, string>;
   businessPersonXrefGuids: Map<string, string>;
   facialHairStyleGuids: Map<string, string>;
@@ -65,6 +67,7 @@ const LOW_POINTS = 10;
 const MATCH_FIELD_WEIGHTS: Record<string, Record<string, number>> = {
   [PARTY_TYPES.Person]: {
     driversLicenseNumber: HIGH_POINTS,
+    externalId: HIGH_POINTS,
     firstName: MEDIUM_POINTS,
     lastName: MEDIUM_POINTS,
     middleNames: MEDIUM_POINTS,
@@ -95,6 +98,7 @@ const MATCH_FIELD_WEIGHTS: Record<string, Record<string, number>> = {
     businessName: HIGH_POINTS,
     businessNumber: HIGH_POINTS,
     worksafeBCNumber: HIGH_POINTS,
+    externalId: HIGH_POINTS,
     contactPhone: HIGH_POINTS,
     contactEmail: HIGH_POINTS,
     addressLine: MEDIUM_POINTS,
@@ -341,6 +345,7 @@ interface InactiveGuids {
   businessIdentifier: Set<string>;
   businessPersonXref: Set<string>;
   facialHairStyle: Set<string>;
+  partyExternalId: Set<string>;
   // Deactivating a business contact leaves the person's own contact methods active, since they
   // remain valid — only the link to the business is removed. Reactivating the xref therefore has
   // to match against those still-active rows, which the active-only party load doesn't carry.
@@ -472,6 +477,17 @@ export class PartyService {
             active_ind: true,
           },
         },
+        party_external_id: {
+          select: {
+            party_external_id_guid: true,
+            party_guid: true,
+            party_external_id_code: true,
+            external_id_value: true,
+          },
+          where: {
+            active_ind: true,
+          },
+        },
         business: {
           include: {
             business_identifier: {
@@ -586,6 +602,7 @@ export class PartyService {
     let data: any;
 
     try {
+      this._validateExternalIdInput(input.externalIds);
       if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
         this._validateBusinessInput(input.business);
       }
@@ -672,6 +689,19 @@ export class PartyService {
               create: input.aliases.map((a) => ({
                 ...(a.aliasGuid ? { alias_guid: a.aliasGuid } : {}),
                 name: a.name,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
+      ...(input.externalIds?.length
+        ? {
+            party_external_id: {
+              create: input.externalIds.map((eid) => ({
+                ...(eid.partyExternalIdGuid ? { party_external_id_guid: eid.partyExternalIdGuid } : {}),
+                party_external_id_code: eid.externalIdCode,
+                external_id_value: this._normalizeExternalIdValue(eid.externalIdValue),
                 create_user_id: this.user.getIdirUsername(),
                 create_utc_timestamp: new Date(),
               })),
@@ -802,6 +832,12 @@ export class PartyService {
       inactiveGuids.facialHairStyle,
     );
 
+    const externalIdOperations = this._buildExternalIdOperations(
+      input.externalIds ?? [],
+      existingPartyDto.externalIds ?? [],
+      inactiveGuids.partyExternalId,
+    );
+
     return {
       party_type: input.partyTypeCode,
       update_user_id: this.user.getIdirUsername(),
@@ -809,6 +845,7 @@ export class PartyService {
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
       ...(Object.keys(personContactMethodOperations).length ? { contact_method: personContactMethodOperations } : {}),
       ...(Object.keys(personAliasOperations).length ? { alias: personAliasOperations } : {}),
+      ...(Object.keys(externalIdOperations).length ? { party_external_id: externalIdOperations } : {}),
       person: {
         update: {
           ...this._buildPersonFieldData(input.person),
@@ -860,10 +897,17 @@ export class PartyService {
       inactiveGuids.inactiveXrefContactMethods,
     );
 
+    const externalIdOperations = this._buildExternalIdOperations(
+      input.externalIds ?? [],
+      existingPartyDto.externalIds ?? [],
+      inactiveGuids.partyExternalId,
+    );
+
     return {
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
       ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
       ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+      ...(Object.keys(externalIdOperations).length ? { party_external_id: externalIdOperations } : {}),
       update_user_id: this.user.getIdirUsername(),
       update_utc_timestamp: new Date(),
       business: {
@@ -939,8 +983,7 @@ export class PartyService {
     inactiveBusinessIdentifierGuids: Set<string>,
   ): any {
     const existingGuids = new Set(existingIdentifiers.map((i) => i.businessIdentifierGuid));
-    // A supplied guid may belong to a deactivated row, which is reactivated in place rather than
-    // created, since creating it would violate the primary key.
+    // Check for inactivated identifiers that should be reactivated instead of created.
     const identifiersToUpdate = incomingIdentifiers.filter(
       (i) =>
         i.businessIdentifierGuid &&
@@ -988,6 +1031,100 @@ export class PartyService {
     }
 
     return operations;
+  }
+
+  private _normalizeExternalIdValue(value?: string): string {
+    return value?.trim().toUpperCase() ?? "";
+  }
+
+  private _validateExternalIdInput(externalIds?: PartyExternalIdInput[]): void {
+    const seenCodes = new Set<string>();
+
+    for (const eid of externalIds ?? []) {
+      const code = eid.externalIdCode?.trim();
+
+      if (!code) {
+        throw new Error("External ID type is required.");
+      }
+      if (!this._normalizeExternalIdValue(eid.externalIdValue)) {
+        throw new Error("External ID value is required.");
+      }
+      // A party may hold only one active identifier of each type
+      if (seenCodes.has(code)) {
+        throw new Error("Only one external ID of each type can be recorded for a party.");
+      }
+      seenCodes.add(code);
+    }
+  }
+
+  // updates and deletes only
+  private _buildExternalIdOperations(
+    incomingExternalIds: PartyExternalIdInput[],
+    existingExternalIds: PartyExternalId[],
+    inactiveExternalIdGuids: Set<string>,
+  ): any {
+    const existingGuids = new Set(existingExternalIds.map((i) => i.partyExternalIdGuid));
+    // A supplied guid may belong to a deactivated row, which is reactivated in place rather than
+    // created, since creating it would violate the primary key.
+    const externalIdsToUpdate = incomingExternalIds.filter(
+      (i) =>
+        i.partyExternalIdGuid &&
+        (existingGuids.has(i.partyExternalIdGuid) || inactiveExternalIdGuids.has(i.partyExternalIdGuid)),
+    );
+    const externalIdsToDelete = existingExternalIds.filter(
+      (i) => !new Set(incomingExternalIds.map((ei) => ei.partyExternalIdGuid)).has(i.partyExternalIdGuid),
+    );
+    const existingCodes = new Map(existingExternalIds.map((i) => [i.partyExternalIdGuid, i.externalIdCode]));
+    const retypedExternalIds = externalIdsToUpdate.filter((i) => {
+      const currentCode = existingCodes.get(i.partyExternalIdGuid!);
+      return currentCode && currentCode !== i.externalIdCode;
+    });
+
+    const operations: any = {};
+
+    if (externalIdsToUpdate.length || externalIdsToDelete.length) {
+      operations.update = [
+        // Deactivations must come before the updates to avoid violating the one-active-identifier
+        // -per-type constraint when an identifier takes the type of one being removed.
+        ...[...externalIdsToDelete, ...retypedExternalIds].map((i) => ({
+          where: { party_external_id_guid: i.partyExternalIdGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...externalIdsToUpdate.map((i) => ({
+          where: { party_external_id_guid: i.partyExternalIdGuid },
+          data: {
+            party_external_id_code: i.externalIdCode,
+            external_id_value: this._normalizeExternalIdValue(i.externalIdValue),
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
+  // run after the party update so there's no collision with the identifiers it deactivates
+  private async _createPartyExternalIds(tx: any, partyGuid: string, externalIds: PartyExternalIdInput[]) {
+    if (!externalIds.length) return;
+
+    await tx.party_external_id.createMany({
+      data: externalIds.map((i) => ({
+        ...(i.partyExternalIdGuid ? { party_external_id_guid: i.partyExternalIdGuid } : {}),
+        party_guid: partyGuid,
+        party_external_id_code: i.externalIdCode,
+        external_id_value: this._normalizeExternalIdValue(i.externalIdValue),
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      })),
+    });
   }
 
   private _sortAddressesPrimaryLast(addresses: AddressInput[]): AddressInput[] {
@@ -1735,6 +1872,36 @@ export class PartyService {
       addEvent,
     );
     this._diffAddresses(oldParty.addresses ?? [], newParty.addresses ?? [], addEvent);
+    this._diffExternalIds(oldParty.externalIds ?? [], newParty.externalIds ?? [], addEvent);
+  }
+
+  private _diffExternalIds(
+    existingExternalIds: PartyExternalId[],
+    incomingExternalIds: PartyExternalIdInput[],
+    addEvent: AddEventFn,
+  ): void {
+    for (const incoming of incomingExternalIds) {
+      const existing = incoming.partyExternalIdGuid
+        ? existingExternalIds.find((i) => i.partyExternalIdGuid === incoming.partyExternalIdGuid)
+        : undefined;
+      // Stored values are normalized on write, so compare (and report) the normalized incoming
+      // value to avoid reporting an edit for a value that is already stored in a different case.
+      const incomingValue = this._normalizeExternalIdValue(incoming.externalIdValue);
+      if (!existing) {
+        addEvent("ADDED", `external ID (${incoming.externalIdCode})`, null, incomingValue);
+      } else if (existing.externalIdCode !== incoming.externalIdCode) {
+        addEvent("REMOVED", `external ID (${existing.externalIdCode})`, existing.externalIdValue, null);
+        addEvent("ADDED", `external ID (${incoming.externalIdCode})`, null, incomingValue);
+      } else if (existing.externalIdValue !== incomingValue) {
+        addEvent("EDITED", `external ID (${incoming.externalIdCode})`, existing.externalIdValue, incomingValue);
+      }
+    }
+    const incomingGuids = new Set(incomingExternalIds.map((i) => i.partyExternalIdGuid));
+    existingExternalIds
+      .filter((i) => !incomingGuids.has(i.partyExternalIdGuid))
+      .forEach((i) => {
+        addEvent("REMOVED", `external ID (${i.externalIdCode})`, i.externalIdValue, null);
+      });
   }
 
   private _diffPersonChanges(
@@ -1901,6 +2068,10 @@ export class PartyService {
           where: { active_ind: false },
           select: { alias_guid: true },
         },
+        party_external_id: {
+          where: { active_ind: false },
+          select: { party_external_id_guid: true },
+        },
         person: {
           select: {
             person_facial_hair_style_code: {
@@ -1972,6 +2143,7 @@ export class PartyService {
         ...businessContactMethods.map((cm) => cm.contact_method_guid),
       ]),
       alias: new Set<string>((party?.alias ?? []).map((a: any) => a.alias_guid)),
+      partyExternalId: new Set<string>((party?.party_external_id ?? []).map((eid: any) => eid.party_external_id_guid)),
       businessIdentifier: new Set<string>(
         (party?.business?.business_identifier ?? []).map((bi: any) => bi.business_identifier_guid),
       ),
@@ -2006,6 +2178,7 @@ export class PartyService {
         },
         contact_method: { where: { active_ind: true } },
         alias: { where: { active_ind: true } },
+        party_external_id: { where: { active_ind: true } },
         person: {
           include: {
             person_facial_hair_style_code: { where: { active_ind: true } },
@@ -2050,6 +2223,8 @@ export class PartyService {
 
     const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
 
+    this._validateExternalIdInput(input.externalIds);
+
     if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
       this._validateBusinessInput(input.business);
     }
@@ -2060,6 +2235,15 @@ export class PartyService {
     const newAddresses = isBusiness
       ? (input.addresses ?? []).filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid))
       : [];
+    const incomingExternalIds = input.externalIds ?? [];
+    const existingExternalIds = existingPartyDto.externalIds ?? [];
+    const knownExternalIdGuids = new Set([
+      ...existingExternalIds.map((i) => i.partyExternalIdGuid),
+      ...inactiveGuids.partyExternalId,
+    ]);
+    const newExternalIds = incomingExternalIds.filter(
+      (i) => !i.partyExternalIdGuid || !knownExternalIdGuids.has(i.partyExternalIdGuid),
+    );
     const existingXrefGuids = new Set(
       (existingPartyDto.business?.contactPeople ?? []).map((c) => c.businessPersonXrefGuid),
     );
@@ -2112,6 +2296,8 @@ export class PartyService {
             business: true,
           },
         });
+
+        await this._createPartyExternalIds(tx, partyIdentifier, newExternalIds);
 
         if (isBusiness && updated.business) {
           await this._createPartyAddresses(tx, partyIdentifier, newAddresses);
@@ -2210,6 +2396,14 @@ export class PartyService {
         sex_code: true,
         approximate_age_code: true,
         drivers_license_number: true,
+      },
+    },
+    party_external_id: {
+      where: { active_ind: true },
+      select: {
+        party_external_id_guid: true,
+        party_external_id_code: true,
+        external_id_value: true,
       },
     },
   };
@@ -2337,6 +2531,16 @@ export class PartyService {
           },
           { person: { first_name: { contains: term, mode: "insensitive" } } },
           { person: { last_name: { contains: term, mode: "insensitive" } } },
+          {
+            party_external_id: {
+              some: {
+                external_id_value: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
         ],
       }));
     }
@@ -2440,6 +2644,7 @@ export class PartyService {
     }
 
     matched.push(
+      ...this._scoreExternalIdFields(input, party, weights),
       ...[
         scoreNameField("firstName", weights.firstName, comparisons, "first"),
         scoreNameField("lastName", weights.lastName, comparisons, "last"),
@@ -2470,8 +2675,7 @@ export class PartyService {
     }
 
     const dateOfBirthExact = isSameUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
-    const dateOfBirthClose =
-      !dateOfBirthExact && isCloseUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
+    const dateOfBirthClose = isCloseUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
     if (dateOfBirthExact) {
       matched.push({ field: "dateOfBirth", exact: true, points: weights.dateOfBirth });
     } else if (dateOfBirthClose) {
@@ -2621,7 +2825,39 @@ export class PartyService {
       }
     }
 
-    matched.push(...this._scoreAddressFields(input, party, weights, comparisons));
+    matched.push(
+      ...this._scoreAddressFields(input, party, weights, comparisons),
+      ...this._scoreExternalIdFields(input, party, weights),
+    );
+
+    return matched;
+  }
+
+  private _scoreExternalIdFields(
+    input: PartyMatchInput,
+    party: party,
+    weights: Record<string, number>,
+  ): PartyMatchedField[] {
+    if (!weights.externalId) {
+      return [];
+    }
+
+    const matched: PartyMatchedField[] = [];
+    for (const externalId of input.externalIds ?? []) {
+      const inputCode = externalId.externalIdCode;
+      const inputValue = normalizeMatchValue(externalId.externalIdValue);
+      if (!inputCode || !inputValue) {
+        continue;
+      }
+      const hasMatch = (party.party_external_id ?? []).some(
+        (partyExternalId: any) =>
+          partyExternalId.party_external_id_code === inputCode &&
+          normalizeMatchValue(partyExternalId.external_id_value) === inputValue,
+      );
+      if (hasMatch) {
+        matched.push({ field: "externalId", exact: true, points: weights.externalId });
+      }
+    }
 
     return matched;
   }
@@ -3177,7 +3413,29 @@ export class PartyService {
         ? this._buildBusinessMatchLookups(input)
         : this._buildPersonMatchLookups(input);
 
-    return [...typeLookups, ...this._buildContactMatchLookups(input)];
+    const externalIdLookups: MatchLookup[] = (input.externalIds ?? []).map(
+      ({ externalIdCode, externalIdValue }, index) => {
+        const value = externalIdValue?.trim();
+        if (!externalIdCode || !value) {
+          return null;
+        }
+        return {
+          name: `externalId${index > 0 ? index : ""}`,
+          sql: Prisma.sql`SELECT p.party_guid
+          FROM shared.party_external_id pei
+          JOIN shared.party p ON p.party_guid = pei.party_guid AND p.party_type = ${input.partyTypeCode}
+          WHERE pei.active_ind = true AND pei.party_external_id_code = ${externalIdCode}
+            AND shared.f_match_norm(pei.external_id_value) = shared.f_match_norm(${value})
+          LIMIT 10`,
+        };
+      },
+    );
+
+    return [
+      ...typeLookups,
+      ...externalIdLookups.filter((lookup) => lookup != null),
+      ...this._buildContactMatchLookups(input),
+    ];
   }
 
   /**

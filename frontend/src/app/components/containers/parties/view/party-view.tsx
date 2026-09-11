@@ -56,6 +56,11 @@ export const GET_PARTY = gql`
         aliasGuid
         name
       }
+      externalIds {
+        partyExternalIdGuid
+        externalIdCode
+        externalIdValue
+      }
       person {
         personGuid
         firstName

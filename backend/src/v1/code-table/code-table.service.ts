@@ -840,6 +840,23 @@ export class CodeTableService {
         return results;
       }
 
+      case "party-external-id-type": {
+        const { data } = await get(token, {
+          query:
+            "{ partyExternalIdCodes { partyExternalIdCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.partyExternalIdCodes.map(
+          ({ partyExternalIdCode, shortDescription, longDescription, displayOrder, activeIndicator }) => ({
+            partyExternalIdCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            isActive: activeIndicator,
+          }),
+        );
+        return results;
+      }
+
       case "party-association-role": {
         const { data } = await get(token, {
           query:

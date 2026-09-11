@@ -13,6 +13,7 @@ type Party {
   addresses: [Address]
   contactMethods: [ContactMethod]
   aliases: [Alias]
+  externalIds: [PartyExternalId]
 }
 
 type PageInfo {
@@ -38,6 +39,7 @@ input PartyCreateInput {
   addresses: [AddressInput]
   contactMethods: [ContactMethodInput]
   aliases: [AliasInput]
+  externalIds: [PartyExternalIdInput]
 }
 
 input PartyUpdateInput {
@@ -49,6 +51,7 @@ input PartyUpdateInput {
   addresses: [AddressUpdateInput]
   contactMethods: [ContactMethodInput]
   aliases: [AliasUpdateInput]
+  externalIds: [PartyExternalIdUpdateInput]
   images: [ImageUpdateInput]
 }
 
@@ -84,4 +87,5 @@ input PartyMatchInput {
   aliases: [AliasMatchInput!]
   addresses: [AddressMatchInput!]
   contactMethods: [ContactMethodMatchInput!]
+  externalIds: [PartyExternalIdMatchInput!]
 }

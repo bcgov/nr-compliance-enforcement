@@ -68,6 +68,7 @@ export const AvailableCodeTables = [
   "park-area",
   "email-reference",
   "party-type",
+  "party-external-id-type",
   "party-association-role",
   "task-status-type",
   "task-type",

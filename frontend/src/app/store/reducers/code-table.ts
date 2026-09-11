@@ -45,6 +45,7 @@ import {
   fetchParkAreas,
   fetchEmailReference,
   fetchPartyTypes,
+  fetchPartyExternalIdTypes,
   fetchPartyAssociationRoles,
   fetchTaskStatusTypes,
   fetchTaskCategoryTypes,
@@ -120,6 +121,7 @@ const initialState: CodeTableState = {
   "park-area": [],
   "email-reference": [],
   "party-type": [],
+  "party-external-id-type": [],
   "party-association-role": [],
   "task-status-type": [],
   "task-category-type": [],
@@ -214,6 +216,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "park-area": parkArea,
       "email-reference": emailReference,
       "party-type": partyType,
+      "party-external-id-type": partyExternalIdType,
       "task-status-type": taskStatusType,
       "task-category-type": taskCategoryType,
       "investigation-source-code": investigationSourceCode,
@@ -380,6 +383,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(partyType).any()) {
       dispatch(fetchPartyTypes());
     }
+    if (!from(partyExternalIdType).any()) {
+      dispatch(fetchPartyExternalIdTypes());
+    }
     if (!from(partyAssociationRole).any()) {
       dispatch(fetchPartyAssociationRoles());
     }
@@ -509,6 +515,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchEquipmentStatus());
     dispatch(fetchParkAreas());
     dispatch(fetchPartyTypes());
+    dispatch(fetchPartyExternalIdTypes());
     dispatch(fetchPartyAssociationRoles());
     dispatch(fetchTaskStatusTypes());
     dispatch(fetchTaskCategoryTypes());

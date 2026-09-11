@@ -51,6 +51,11 @@ export const GET_INVESTIGATION = gql`
           aliasGuid
           name
         }
+        externalIds {
+          partyExternalIdGuid
+          externalIdCode
+          externalIdValue
+        }
         contactMethods {
           contactMethodGuid
           typeCode

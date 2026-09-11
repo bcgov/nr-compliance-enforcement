@@ -7,6 +7,7 @@ import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import {
   AddressFormValue,
+  buildExternalIds,
   ContactMethodFormValue,
   ContactPersonFormValue,
 } from "@/app/components/containers/parties/form/party-form-utils";
@@ -147,12 +148,17 @@ const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populated
   }
 
   const shared = buildSharedMatchFields(values, true);
+  const externalIds = buildExternalIds(values.externalIds, false);
+  if (externalIds.length) {
+    populatedCount += 1;
+  }
   populatedCount += shared.populatedCount;
 
   const input: PartyMatchInput = {
     partyTypeCode: PartyTypeCodes.PERSON,
     person,
     ...(aliases.length ? { aliases } : {}),
+    ...(externalIds.length ? { externalIds } : {}),
     ...(shared.contactMethods?.length ? { contactMethods: shared.contactMethods } : {}),
     ...(shared.addresses?.length ? { addresses: shared.addresses } : {}),
   };
@@ -261,6 +267,11 @@ const buildBusinessMatchInput = (values: any): { input: PartyMatchInput; populat
   const shared = buildSharedMatchFields(values, false);
   populatedCount += shared.populatedCount;
 
+  const externalIds = buildExternalIds(values.externalIds, false);
+  if (externalIds.length) {
+    populatedCount += 1;
+  }
+
   // The organization form captures phone and email on its addresses, not in their own sections
   const contactMethods = [...(shared.contactMethods ?? [])];
   const officePhones = (values.addresses ?? []).filter((a: AddressFormValue) => hasText(a?.phoneNumber));
@@ -282,6 +293,7 @@ const buildBusinessMatchInput = (values: any): { input: PartyMatchInput; populat
     partyTypeCode: PartyTypeCodes.ORGANIZATION,
     business,
     ...(aliases.length ? { aliases } : {}),
+    ...(externalIds.length ? { externalIds } : {}),
     ...(contactMethods.length ? { contactMethods } : {}),
     ...(shared.addresses?.length ? { addresses: shared.addresses } : {}),
   };
@@ -304,9 +316,10 @@ export const usePartyMatchTrigger = (form: any, isLinkedParty: boolean) => {
   const dispatchMatch = useCallback(() => {
     clearTimeout(timer.current);
     timer.current = undefined;
-    if (pendingInput.current) {
-      setDispatchedInput(pendingInput.current);
-    }
+    // Dispatches the armed input, or clears it when the form no longer has enough to search on.
+    // Without the clear, removing the last entered value (for example the only external ID) left
+    // the previous matches on screen, since the query kept its last input.
+    setDispatchedInput(pendingInput.current);
   }, []);
 
   const serializedInput = JSON.stringify(input);
@@ -331,10 +344,12 @@ export const usePartyMatchTrigger = (form: any, isLinkedParty: boolean) => {
 
   const { data, isFetching, isSuccess, error } = useMatchParty(dispatchedInput, !!dispatchedInput);
 
+  // keepPreviousData can keep serving the last result after the input it came from is gone, so the
+  // results are only reported while there is still an input to search on.
   return {
-    matches: data?.matchParty ?? [],
+    matches: dispatchedInput ? (data?.matchParty ?? []) : [],
     isFetching,
-    hasSearched: isSuccess,
+    hasSearched: !!dispatchedInput && isSuccess,
     error,
     handleFieldBlur,
   };

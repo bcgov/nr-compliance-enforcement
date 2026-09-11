@@ -44,6 +44,9 @@ import { party as _party } from "./party";
 import { party_association_role_code as _party_association_role_code } from "./party_association_role_code";
 import { party_h as _party_h } from "./party_h";
 import { party_type_code as _party_type_code } from "./party_type_code";
+import { party_external_id as _party_external_id } from "./party_external_id";
+import { party_external_id_h as _party_external_id_h } from "./party_external_id_h";
+import { party_external_id_code as _party_external_id_code } from "./party_external_id_code";
 import { person as _person } from "./person";
 import { person_h as _person_h } from "./person_h";
 import { team as _team } from "./team";
@@ -118,6 +121,9 @@ export namespace PrismaModel {
   export class party_association_role_code extends _party_association_role_code {}
   export class party_h extends _party_h {}
   export class party_type_code extends _party_type_code {}
+  export class party_external_id extends _party_external_id {}
+  export class party_external_id_h extends _party_external_id_h {}
+  export class party_external_id_code extends _party_external_id_code {}
   export class person extends _person {}
   export class person_h extends _person_h {}
   export class team extends _team {}
@@ -192,6 +198,9 @@ export namespace PrismaModel {
     party_association_role_code,
     party_h,
     party_type_code,
+    party_external_id,
+    party_external_id_h,
+    party_external_id_code,
     person,
     person_h,
     team,

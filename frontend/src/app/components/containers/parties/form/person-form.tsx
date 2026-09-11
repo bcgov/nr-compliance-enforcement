@@ -18,13 +18,18 @@ import { usePartyFormFields } from "@/app/components/containers/parties/hooks/us
 import { PartyContactFields } from "@/app/components/containers/parties/form/party-contact-fields";
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
 import { Form } from "react-bootstrap";
-import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
+import {
+  selectCountries,
+  selectCountrySubdivisions,
+  selectPartyExternalIdTypeDropdown,
+} from "@/app/store/reducers/code-table-selectors";
 import { PersonFacialHairStyleCode } from "@/generated/graphql";
 import { HeightField, WeightField } from "@/app/components/containers/parties/form/height-weight-fields";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import Option from "@apptypes/app/option";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { PartyAliasFields } from "@/app/components/containers/parties/form/party-alias-fields";
+import { PartyExternalIdFields } from "@/app/components/containers/parties/form/party-external-id-fields";
 
 type PersonFormProps = {
   form: any;
@@ -85,6 +90,8 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     }),
   );
 
+  const externalIdOptions = useAppSelector(selectPartyExternalIdTypeDropdown);
+
   const {
     addresses,
     handleAddAddress,
@@ -101,6 +108,9 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     aliases,
     handleAddAlias,
     handleRemoveAlias,
+    externalIds,
+    handleAddExternalId,
+    handleRemoveExternalId,
   } = usePartyFormFields(form);
 
   // Helper functions to prevent Sonar from whining that it's all nested too deep.
@@ -486,6 +496,16 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           ) : null
         }
       </form.Subscribe>
+
+      <PartyExternalIdFields
+        form={form}
+        isDisabled={isDisabled}
+        externalIds={externalIds}
+        externalIdOptions={externalIdOptions}
+        label="External ID"
+        onAdd={handleAddExternalId}
+        onRemove={handleRemoveExternalId}
+      />
 
       <PartyContactFields
         form={form}
