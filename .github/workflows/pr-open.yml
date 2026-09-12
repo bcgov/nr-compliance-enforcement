@@ -127,6 +127,7 @@ jobs:
   # https://github.com/bcgov/action-builder-ghcr
   build-n8n:
     name: Build n8n
+    continue-on-error: true # dont emit fail on PR for tool image
     runs-on: ubuntu-22.04
     outputs:
       digest: ${{ steps.build-n8n.outputs.digest }}
@@ -145,6 +146,33 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/n8n
+          target: ${{ github.event.number }}
+          tags: |
+            ${{ github.sha }}
+
+  # build s3 backup tooling image (busybox + rclone + curl)
+  # https://github.com/bcgov/action-builder-ghcr
+  build-s3-backups:
+    name: Build S3 Backups
+    continue-on-error: true # dont emit fail on PR for tool image
+    runs-on: ubuntu-22.04
+    outputs:
+      digest: ${{ steps.build-s3-backups.outputs.digest }}
+      sha: ${{ github.sha }}
+    timeout-minutes: 15
+    steps:
+      - uses: bcgov/action-builder-ghcr@v2.3.0
+        with:
+          package: s3-backups
+          build_file: tools/s3-backups/Dockerfile
+          build_context: tools/s3-backups/
+          tag: ${{ github.event.number }}
+          tag_fallback: latest
+          triggers: ('tools/s3-backups/')
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/s3-backups
           target: ${{ github.event.number }}
           tags: |
             ${{ github.sha }}
