@@ -5,6 +5,7 @@ type Query {
   searchInvestigations(page: Int = 1, pageSize: Int = 25, filters: InvestigationFilters): InvestigationResult!
   searchInvestigationsMap(model: InvestigationSearchMapParameters!): SearchMapResults!
   checkInvestigationNameExists(name: String!, leadAgency: String!, excludeInvestigationGuid: String): Boolean!
+  investigationCloseEligibility(investigationGuid: ID!): InvestigationCloseEligibility!
 }
 
 type Mutation {

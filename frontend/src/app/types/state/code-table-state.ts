@@ -42,6 +42,7 @@ import { EquipmentStatus } from "@/app/types/app/code-tables/equipment-status";
 import { ParkArea } from "@/app/types/app/code-tables/park-area";
 import { EmailReference } from "@/app/types/app/code-tables/email-reference";
 import { PartyType } from "../app/shared/party-type";
+import { PartyExternalIdType } from "../app/shared/party-external-id-type";
 import { PartyAssociationRole } from "../app/shared/party-association-role";
 import { TaskStatusType } from "@/app/types/app/investigation/task-status";
 import { TaskCategoryType } from "@/app/types/app/investigation/task-category";
@@ -122,7 +123,8 @@ export interface CodeTableState {
     | Array<HairColourType>
     | Array<HairLengthType>
     | Array<EyeColourType>
-    | Array<FacialHairStyleType>;
+    | Array<FacialHairStyleType>
+    | Array<PartyExternalIdType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -167,6 +169,7 @@ export interface CodeTableState {
   "park-area": Array<ParkArea>;
   "email-reference": Array<EmailReference>;
   "party-type": Array<PartyType>;
+  "party-external-id-type": Array<PartyExternalIdType>;
   "party-association-role": Array<PartyAssociationRole>;
   "task-status-type": Array<TaskStatusType>;
   "task-category-type": Array<TaskCategoryType>;

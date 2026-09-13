@@ -34,13 +34,16 @@ import {
   buildBusinessCreateUpdate,
   buildContactMethods,
   buildContactPeople,
+  buildExternalIds,
   buildPersonForCreate,
   buildPersonForUpdate,
   createEmptyContactMethod,
   mapAddressesFromPartyData,
   mapAliasesFromPartyData,
+  mapExternalIdsFromPartyData,
   mapContactMethodsFromPartyData,
   mapContactPeopleFromPartyData,
+  PartyExternalIdFormValue,
   validateBusinessForm,
   validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
@@ -186,6 +189,7 @@ const PartyEdit: FC = () => {
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.WSBC_NUMBER,
         ),
         aliases: mapAliasesFromPartyData(partyData.party.aliases),
+        externalIds: mapExternalIdsFromPartyData(partyData.party.externalIds),
         phoneNumbers: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.PHONE),
         emailAddresses: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.EMAIL),
         contacts: mapContactPeopleFromPartyData(partyData.party.business?.contactPeople),
@@ -230,6 +234,7 @@ const PartyEdit: FC = () => {
       businessNumber: {},
       worksafeBCNumber: {},
       aliases: [{ aliasGuid: undefined, name: "" }],
+      externalIds: [] as PartyExternalIdFormValue[],
       phoneNumbers: [createEmptyContactMethod(true)],
       emailAddresses: [createEmptyContactMethod(true)],
       contacts: [],
@@ -263,6 +268,7 @@ const PartyEdit: FC = () => {
           addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
           aliases: buildAliases(value.aliases, true),
+          externalIds: buildExternalIds(value.externalIds, true),
           images: pendingImagesRef.current,
           business:
             value.partyType === "ORG"
@@ -277,6 +283,7 @@ const PartyEdit: FC = () => {
           addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
           aliases: buildAliases(value.aliases, false),
+          externalIds: buildExternalIds(value.externalIds, false),
           business:
             value.partyType === "ORG"
               ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, false))

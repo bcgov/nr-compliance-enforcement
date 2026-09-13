@@ -8,7 +8,7 @@ import { applyStatusClass } from "@/app/common/methods";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { ChangeStatusModal } from "@/app/components/common/change-status-modal";
+import { ChangeStatusModal, StatusChangeAdvisory } from "@/app/components/common/change-status-modal";
 import { InvestigationAssignModal } from "@/app/components/containers/investigations/details/investigation-assign-modal";
 import { useForm } from "@tanstack/react-form";
 
@@ -28,9 +28,14 @@ const UPDATE_INVESTIGATION = gql`
 interface InvestigationHeaderProps {
   investigation?: Investigation;
   onStatusUpdated?: () => void;
+  statusAdvisories?: Record<string, StatusChangeAdvisory>;
 }
 
-export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation, onStatusUpdated }) => {
+export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
+  investigation,
+  onStatusUpdated,
+  statusAdvisories,
+}) => {
   const isReadOnly = investigation?.investigationStatus?.investigationStatusCode === "CLOSED";
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
@@ -239,6 +244,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
         data={investigation}
         type="investigation"
         isSaving={updateStatusMutation.isPending}
+        statusAdvisories={statusAdvisories}
       />
       <InvestigationAssignModal
         form={form}

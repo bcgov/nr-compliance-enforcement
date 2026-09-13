@@ -1,0 +1,6 @@
+type PartyExternalId {
+  partyExternalIdGuid: String
+  partyGuid: String
+  externalIdValue: String!
+  externalIdCode: String!
+}

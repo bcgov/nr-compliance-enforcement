@@ -43,6 +43,7 @@ export const CODE_TABLE_TYPES = {
   PARK_AREA: "park-area",
   EMAIL_REFERENCE: "email-reference",
   PARTY_TYPE: "party-type",
+  PARTY_EXTERNAL_ID_TYPE: "party-external-id-type",
   PARTY_ASSOCIATION_ROLE: "party-association-role",
   TASK_STATUS_TYPE: "task-status-type",
   TASK_CATEGORY_TYPE: "task-category-type",

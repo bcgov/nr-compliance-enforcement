@@ -36,6 +36,12 @@ export class Investigation {
   tasks: [Task];
 }
 
+export class InvestigationCloseEligibility {
+  isEligible: boolean;
+  contraventionsWithoutDecisionCount: number;
+  openTaskCount: number;
+}
+
 @InputType()
 export class InvestigationFilters {
   @Field(() => String, { nullable: true })

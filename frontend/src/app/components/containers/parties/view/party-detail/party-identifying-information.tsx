@@ -18,6 +18,9 @@ interface PartyIdentifyingInformationProps {
   party: Party | InvestigationParty;
 }
 
+const externalIdLabel = (types: any[] | undefined, code: string) =>
+  types?.find((type: any) => type.partyExternalIdCode === code)?.shortDescription ?? code;
+
 export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> = ({ party }) => {
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
   const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
@@ -54,6 +57,8 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
         ?.shortDescription ?? person?.driversLicenseCountryCode)
     : undefined;
 
+  const externalIdTypes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_EXTERNAL_ID_TYPE));
+
   return (
     <>
       {person && (
@@ -72,6 +77,16 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
           <DetailField label="Driver's licence class">{person.driversLicenseClass}</DetailField>
           <DetailField label="Driver's licence country">{licenceCountry}</DetailField>
           <DetailField label="Driver's licence province">{licenceProvince}</DetailField>
+          {(party.externalIds ?? [])
+            .filter((eid): eid is NonNullable<typeof eid> => eid != null)
+            .map((eid) => (
+              <DetailField
+                key={eid.partyExternalIdGuid}
+                label={externalIdLabel(externalIdTypes, eid.externalIdCode)}
+              >
+                {eid.externalIdValue}
+              </DetailField>
+            ))}
         </DetailSection>
       )}
 
@@ -89,6 +104,16 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
               </DetailField>
             ))}
           <DetailField label="Doing business as">{aliases}</DetailField>
+          {(party.externalIds ?? [])
+            .filter((eid): eid is NonNullable<typeof eid> => eid != null)
+            .map((eid) => (
+              <DetailField
+                key={eid.partyExternalIdGuid}
+                label={externalIdLabel(externalIdTypes, eid.externalIdCode)}
+              >
+                {eid.externalIdValue}
+              </DetailField>
+            ))}
         </DetailSection>
       )}
     </>

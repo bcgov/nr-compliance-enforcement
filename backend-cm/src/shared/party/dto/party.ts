@@ -17,6 +17,11 @@ import {
 } from "src/shared/contact_method/dto/contact_method";
 import { Alias, AliasInput, AliasMatchInput } from "src/shared/alias/dto/alias";
 import { PersonInput, PersonMatchInput } from "src/shared/person/dto/person.input";
+import {
+  PartyExternalId,
+  PartyExternalIdInput,
+  PartyExternalIdMatchInput,
+} from "src/shared/party_external_id/dto/party_external_id";
 
 export class Party implements PartyDto {
   partyIdentifier: string;
@@ -31,6 +36,7 @@ export class Party implements PartyDto {
   addresses: [Address];
   contactMethods: [ContactMethod];
   aliases: [Alias];
+  externalIds: [PartyExternalId];
 }
 
 export class ImageUpdate {
@@ -62,6 +68,10 @@ export class PartyCreateInput {
   @Field(() => [AliasInput], { nullable: true })
   @IsOptional()
   aliases?: AliasInput[];
+
+  @Field(() => [PartyExternalIdInput], { nullable: true })
+  @IsOptional()
+  externalIds?: PartyExternalIdInput[];
 }
 
 @InputType()
@@ -111,6 +121,9 @@ export class PartyMatchInput {
 
   @Field(() => ContactMethodMatchInput)
   contactMethods?: ContactMethodMatchInput[];
+
+  @Field(() => [PartyExternalIdMatchInput], { nullable: true })
+  externalIds?: PartyExternalIdMatchInput[];
 }
 
 export const mapPrismaPartyToParty = (mapper: Mapper) => {
@@ -177,6 +190,11 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.aliases,
       mapWithArguments((src) => mapper.mapArray(src.alias ?? [], "alias", "Alias")),
+    ),
+
+    forMember(
+      (dest) => dest.externalIds,
+      mapWithArguments((src) => mapper.mapArray(src.party_external_id ?? [], "party_external_id", "PartyExternalId")),
     ),
   );
 };

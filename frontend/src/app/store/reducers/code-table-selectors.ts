@@ -59,6 +59,18 @@ export const selectPartyTypeDropdown = createSelector([selectCodeTables], (codeT
   }));
 });
 
+export const selectPartyExternalIdTypeDropdown = createSelector([selectCodeTables], (codeTables) => {
+  const { "party-external-id-type": items } = codeTables;
+  return [...items]
+    .sort((left, right) => (left.displayOrder ?? 0) - (right.displayOrder ?? 0))
+    .map(({ partyExternalIdCode: value, shortDescription: label, isActive, displayOrder }) => ({
+      label,
+      value,
+      isActive,
+      displayOrder,
+    }));
+});
+
 export const selectPartyAssociationRoleDropdown = createSelector([selectCodeTables], (codeTables) => {
   const { "party-association-role": items } = codeTables;
   return items.map(

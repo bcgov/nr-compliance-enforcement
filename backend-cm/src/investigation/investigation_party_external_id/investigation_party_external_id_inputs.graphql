@@ -1,0 +1,11 @@
+input CreateInvestigationPartyExternalIdInput {
+  externalIdCode: String!
+  externalIdValue: String!
+  partyExternalIdReference: String
+}
+
+input UpdateInvestigationPartyExternalIdInput {
+  partyExternalIdGuid: String
+  externalIdCode: String!
+  externalIdValue: String!
+}

@@ -20,6 +20,7 @@ import {
   buildBusinessCreateUpdate,
   buildContactMethods,
   buildContactPeople,
+  buildExternalIds,
   buildPersonBase,
   createEmptyPartyFormValues,
   mapInvestigationPartyToDefaultValues,
@@ -164,6 +165,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           partyIdentifier: editParty.partyIdentifier,
           partyAssociationRole: value.partyAssociationRole,
           aliases: buildAliases(value.aliases, true),
+          externalIds: buildExternalIds(value.externalIds, true),
           addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
           images: pendingImagesRef.current,
@@ -193,6 +195,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           partyTypeCode: value.partyType,
           partyAssociationRole: value.partyAssociationRole,
           aliases: buildAliases(value.aliases, false),
+          externalIds: buildExternalIds(value.externalIds, false),
           addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
         };

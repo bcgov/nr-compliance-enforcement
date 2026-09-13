@@ -5,6 +5,7 @@ import { investigation_attachment_reference } from "./investigation_attachment_r
 import { investigation_business } from "./investigation_business";
 import { investigation_contact_method } from "./investigation_contact_method";
 import { investigation } from "./investigation";
+import { investigation_party_external_id } from "./investigation_party_external_id";
 import { investigation_person } from "./investigation_person";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -71,6 +72,9 @@ export class investigation_party {
 
   @ApiProperty({ type: () => investigation })
   investigation: investigation;
+
+  @ApiProperty({ isArray: true, type: () => investigation_party_external_id })
+  investigation_party_external_id: investigation_party_external_id[];
 
   @ApiProperty({ isArray: true, type: () => investigation_person })
   investigation_person: investigation_person[];

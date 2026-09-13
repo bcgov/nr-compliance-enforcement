@@ -1,0 +1,17 @@
+input PartyExternalIdInput {
+  partyExternalIdGuid: String
+  externalIdValue: String!
+  externalIdCode: String!
+}
+
+input PartyExternalIdUpdateInput {
+  partyExternalIdGuid: String
+  externalIdValue: String!
+  externalIdCode: String!
+}
+
+# Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
+input PartyExternalIdMatchInput {
+  externalIdCode: String!
+  externalIdValue: String
+}

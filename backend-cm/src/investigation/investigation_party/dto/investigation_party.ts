@@ -31,6 +31,11 @@ import {
   CreateInvestigationAttachmentReferenceInput,
   InvestigationAttachmentReference,
 } from "src/investigation/investigation_attachment_reference/dto/investigation_attachment_reference";
+import {
+  CreateInvestigationPartyExternalIdInput,
+  InvestigationPartyExternalId,
+  UpdateInvestigationPartyExternalIdInput,
+} from "src/investigation/investigation_party_external_id/dto/investigation_party_external_id";
 import { ImageUpdate } from "src/shared/party/dto/party";
 
 export class InvestigationParty implements PartyDto {
@@ -47,6 +52,7 @@ export class InvestigationParty implements PartyDto {
   enforcementActions?: EnforcementAction[];
   contactMethods?: InvestigationContactMethod[];
   aliases?: InvestigationAlias[];
+  externalIds?: InvestigationPartyExternalId[];
   addresses?: InvestigationAddress[];
   attachmentReferences?: InvestigationAttachmentReference[];
 }
@@ -74,6 +80,9 @@ export class CreateInvestigationPartyInput {
   @Field(() => [CreateInvestigationAliasInput], { nullable: true })
   aliases?: CreateInvestigationAliasInput[];
 
+  @Field(() => [CreateInvestigationPartyExternalIdInput], { nullable: true })
+  externalIds?: CreateInvestigationPartyExternalIdInput[];
+
   @Field(() => [CreateInvestigationAddressInput], { nullable: true })
   addresses?: CreateInvestigationAddressInput[];
 
@@ -100,6 +109,9 @@ export class UpdateInvestigationPartyInput {
 
   @Field(() => [UpdateInvestigationAliasInput], { nullable: true })
   aliases?: UpdateInvestigationAliasInput[];
+
+  @Field(() => [UpdateInvestigationPartyExternalIdInput], { nullable: true })
+  externalIds?: UpdateInvestigationPartyExternalIdInput[];
 
   @Field(() => [CreateInvestigationAddressInput], { nullable: true })
   addresses?: CreateInvestigationAddressInput[];
@@ -189,6 +201,16 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.aliases,
       mapFrom((src) => mapper.mapArray(src.investigation_alias ?? [], "investigation_alias", "InvestigationAlias")),
+    ),
+    forMember(
+      (dest) => dest.externalIds,
+      mapFrom((src) =>
+        mapper.mapArray(
+          src.investigation_party_external_id ?? [],
+          "investigation_party_external_id",
+          "InvestigationPartyExternalId",
+        ),
+      ),
     ),
     forMember(
       (dest) => dest.addresses,

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
@@ -12,6 +12,20 @@ import type {
   UpdateInvestigationInput,
 } from "@/generated/graphql";
 
+export type StatusChangeAdvisoryVariant = "blocked" | "confirm";
+
+export interface StatusChangeAdvisoryDetail {
+  id: string;
+  content: ReactNode;
+}
+
+export interface StatusChangeAdvisory {
+  variant: StatusChangeAdvisoryVariant;
+  heading: ReactNode;
+  subheading?: ReactNode;
+  details?: StatusChangeAdvisoryDetail[];
+}
+
 interface ChangeStatusModalProps {
   show: boolean;
   onHide: () => void;
@@ -22,9 +36,18 @@ interface ChangeStatusModalProps {
   data: Investigation | Task | Inspection | undefined;
   type: "investigation" | "task" | "inspection";
   isSaving: boolean;
+  statusAdvisories?: Record<string, StatusChangeAdvisory>;
 }
 
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ show, onHide, onSave, data, type, isSaving }) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
+  show,
+  onHide,
+  onSave,
+  data,
+  type,
+  isSaving,
+  statusAdvisories,
+}) => {
   const taskStatuses = useAppSelector(selectTaskStatus);
   const statusOptions = taskStatuses.map((s) => ({
     value: String(s.value ?? ""),
@@ -45,6 +68,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ show, onHide, on
       break;
   }
   const isDirty = selectedStatus !== initialStatus;
+
+  // Only show guidance once the user has moved away from the current status.
+  const activeAdvisory = isDirty ? statusAdvisories?.[selectedStatus] : undefined;
+  const isBlocked = activeAdvisory?.variant === "blocked";
 
   useEffect(() => {
     if (show) {
@@ -128,6 +155,31 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ show, onHide, on
             enableValidation={false}
           />
         </div>
+        {activeAdvisory && (
+          <>
+            <div
+              className="alert alert-warning d-flex gap-2"
+              role="alert"
+            >
+              <i
+                className="bi bi-check-circle-fill"
+                aria-hidden="true"
+              />
+              <div>
+                <div>{activeAdvisory.heading}</div>
+                {activeAdvisory.subheading && <div>{activeAdvisory.subheading}</div>}
+              </div>
+            </div>
+            {activeAdvisory.details?.map((detail) => (
+              <div
+                key={detail.id}
+                className="comp-status-advisory-detail"
+              >
+                {detail.content}
+              </div>
+            ))}
+          </>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -140,7 +192,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ show, onHide, on
         <Button
           variant="primary"
           onClick={handleSave}
-          disabled={isSaving || !selectedStatus}
+          disabled={isSaving || !selectedStatus || isBlocked}
         >
           {isSaving ? "Updating..." : "Update"}
         </Button>

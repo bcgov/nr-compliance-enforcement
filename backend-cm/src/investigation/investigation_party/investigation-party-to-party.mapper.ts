@@ -7,6 +7,7 @@ import { BusinessIdentifier } from "../../shared/business_identifier/dto/busines
 import { BusinessPersonXrefInput } from "../../shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod, ContactMethodInput } from "../../shared/contact_method/dto/contact_method";
 import { PartyCreateInput, PartyUpdateInput } from "../../shared/party/dto/party";
+import { PartyExternalIdInput } from "../../shared/party_external_id/dto/party_external_id";
 import { PersonFacialHairStyleCodeInput } from "../../shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 import { InvestigationAddress } from "../investigation_address/dto/investigation_address";
 import { InvestigationBusiness } from "../investigation_business/dto/investigation_business";
@@ -21,6 +22,7 @@ export interface SharedChildGuids {
   addressGuids: Map<string, string>;
   contactMethodGuids: Map<string, string>;
   aliasGuids: Map<string, string>;
+  partyExternalIdGuids: Map<string, string>;
   businessIdentifierGuids: Map<string, string>;
   businessPersonXrefGuids: Map<string, string>;
   facialHairStyleGuids: Map<string, string>;
@@ -39,6 +41,7 @@ const emptyChildGuids = (): SharedChildGuids => ({
   addressGuids: new Map<string, string>(),
   contactMethodGuids: new Map<string, string>(),
   aliasGuids: new Map<string, string>(),
+  partyExternalIdGuids: new Map<string, string>(),
   businessIdentifierGuids: new Map<string, string>(),
   businessPersonXrefGuids: new Map<string, string>(),
   facialHairStyleGuids: new Map<string, string>(),
@@ -185,6 +188,16 @@ export const mapInvestigationPartyToPartyCreateInput = (party: InvestigationPart
       .map(
         (alias) => ({ aliasGuid: takeSharedGuid(childGuids.aliasGuids, alias.aliasGuid), name: alias.name }) as Alias,
       ),
+    externalIds: (party.externalIds ?? [])
+      .filter((eid) => isActive(eid) && hasValue(eid.externalIdCode) && hasValue(eid.externalIdValue))
+      .map(
+        (eid) =>
+          ({
+            partyExternalIdGuid: takeSharedGuid(childGuids.partyExternalIdGuids, eid.partyExternalIdGuid),
+            externalIdCode: eid.externalIdCode,
+            externalIdValue: eid.externalIdValue,
+          }) as PartyExternalIdInput,
+      ),
   };
 
   const input =
@@ -231,6 +244,12 @@ export const mapInvestigationPartyToPartyUpdateInput = (
   const aliases: AliasInput[] = (input.aliases ?? []).map((a) => ({
     aliasGuid: a.aliasReference ?? "",
     name: a.name,
+  }));
+
+  const externalIds: PartyExternalIdInput[] = (input.externalIds ?? []).map((eid) => ({
+    partyExternalIdGuid: eid.partyExternalIdReference ?? "",
+    externalIdCode: eid.externalIdCode,
+    externalIdValue: eid.externalIdValue,
   }));
 
   const person: PersonInput | undefined = input.person
@@ -315,6 +334,7 @@ export const mapInvestigationPartyToPartyUpdateInput = (
     addresses,
     contactMethods,
     aliases,
+    externalIds,
     images: input.images ?? [],
   };
 };
@@ -335,6 +355,14 @@ export const resolveSharedReferences = (
   for (const alias of input.aliases ?? []) {
     const existing = (existingParty.aliases ?? []).find((a) => a.aliasGuid === alias.aliasGuid);
     alias.aliasReference = existing?.aliasReference ?? alias.aliasReference ?? randomUUID();
+  }
+
+  for (const externalId of input.externalIds ?? []) {
+    const existing = (existingParty.externalIds ?? []).find(
+      (e) => e.partyExternalIdGuid === externalId.partyExternalIdGuid,
+    );
+    externalId.partyExternalIdReference =
+      existing?.partyExternalIdReference ?? externalId.partyExternalIdReference ?? randomUUID();
   }
 
   for (const contactMethod of input.contactMethods ?? []) {

@@ -183,6 +183,24 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     [form, revalidateList],
   );
 
+  // External IDs
+  const externalIds = useStore(form.store, (state: any) => state.values.externalIds);
+
+  const handleAddExternalId = useCallback(() => {
+    const currentExternalIds = form.getFieldValue("externalIds") || [];
+    form.pushFieldValue("externalIds", { partyExternalIdGuid: undefined, externalIdCode: "", externalIdValue: "" });
+    revalidateList("externalIds");
+    focusFieldById(`external-id-${currentExternalIds.length}`);
+  }, [form, focusFieldById, revalidateList]);
+
+  const handleRemoveExternalId = useCallback(
+    (indexToRemove: number) => {
+      form.removeFieldValue("externalIds", indexToRemove);
+      revalidateList("externalIds");
+    },
+    [form, revalidateList],
+  );
+
   // Contacts (business person xrefs)
   const contacts = useStore(form.store, (state: any) => state.values.contacts);
 
@@ -319,6 +337,9 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     aliases,
     handleAddAlias,
     handleRemoveAlias,
+    externalIds,
+    handleAddExternalId,
+    handleRemoveExternalId,
     contacts,
     handleAddContact,
     handleRemoveContact,

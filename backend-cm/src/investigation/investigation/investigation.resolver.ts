@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
 import { InvestigationService } from "./investigation.service";
-import { Logger, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Logger, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -8,6 +8,7 @@ import {
   CreateInvestigationInput,
   UpdateInvestigationInput,
   InvestigationFilters,
+  InvestigationCloseEligibility,
 } from "src/investigation/investigation/dto/investigation";
 import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 
@@ -150,6 +151,29 @@ export class InvestigationResolver {
       this.logger.error("Check investigation name exists error:", error);
       throw new GraphQLError("Error checking investigation name", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Query("investigationCloseEligibility")
+  @Roles(coreRoles)
+  async investigationCloseEligibility(
+    @Args("investigationGuid") investigationGuid: string,
+  ): Promise<InvestigationCloseEligibility> {
+    try {
+      return await this.investigationService.evaluateCloseEligibility(investigationGuid);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        const response = error.getResponse() as { message: string; eligibility: InvestigationCloseEligibility };
+        throw new GraphQLError(response.message, {
+          extensions: { code: "BAD_REQUEST", eligibility: response.eligibility },
+        });
+      }
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching data from investigation schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
       });
     }
   }
