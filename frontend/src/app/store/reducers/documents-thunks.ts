@@ -9,8 +9,8 @@ import { COMSObject } from "@/app/types/coms/object";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
-import { fetchAttachmentsWithMetadata } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 import { bulkDownload, BulkDownloadProgressCallback, FileWithPresignedUrl } from "@/app/store/reducers/bulk-download";
+import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
 
 export const generateExportComplaintInputParams = (
   id: string,

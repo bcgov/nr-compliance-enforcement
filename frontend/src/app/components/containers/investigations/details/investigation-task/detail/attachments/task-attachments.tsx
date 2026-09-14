@@ -1,8 +1,6 @@
 import { useDocumentationSearch } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-documentation-search";
-import {
-  Attachment,
-  useInvestigationAttachments,
-} from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { useInvestigationAttachments } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { Attachment } from "@/app/common/attachment-utils";
 import { TaskAttachmentList } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/attachment-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";

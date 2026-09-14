@@ -5,11 +5,30 @@ import axios, { AxiosProgressEvent } from "axios";
 import config from "@/config";
 import { AUTH_TOKEN } from "@service/user-service";
 import { getAttachmentConfig, isSecureAttachmentType } from "@apptypes/app/attachment-config";
+import { generateApiParameters, get } from "@/app/common/api";
+import { getThumbnailDataURL, isImage } from "@/app/common/methods";
+import { Dispatch } from "@reduxjs/toolkit";
+
+export interface Attachment extends COMSObject {
+  taskId: string | null;
+  enforcementActionId: string | null;
+  taskNumber?: number;
+  takenBy?: string | null;
+  sequenceNumber?: string | null;
+  fileType?: string | null;
+  description?: string | null;
+  title?: string | null;
+  date?: string | null;
+  location?: string | null;
+}
+const FETCH_PAGE_SIZE = 100;
 
 export const RETRY_CONFIG = {
   MAX_RETRIES: 3,
   RETRY_DELAY_BASE_MS: 2000, // Base delay: 2s, 4s, 6s
 };
+
+export const MAX_ATTACHMENT_PREVIEWS = 4;
 
 interface CategorizedError {
   errorType: string;
@@ -136,7 +155,7 @@ export async function handlePersistAttachments({
 }: PersistAttachmentsParams): Promise<void> {
   const tasks: Promise<unknown>[] = [];
   if (attachmentsToDelete) {
-    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType)));
+    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType, subIdentifier)));
   }
 
   if (attachmentsToAdd) {
@@ -220,7 +239,7 @@ export interface ParsedObjectMetadata {
 /**
  * Which bucket to use based on attachment type.
  */
-const getBucketForAttachmentType = (attachmentType: AttachmentEnum): string => {
+export const getBucketForAttachmentType = (attachmentType: AttachmentEnum): string => {
   return isSecureAttachmentType(attachmentType) ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
 };
 
@@ -367,4 +386,156 @@ export const fileListToCOMSObjects = (files: FileList | null): COMSObject[] => {
     size: f.size,
     pendingUpload: true,
   }));
+};
+
+/** Requests a download URL for the attachment from COMS and triggers the browser download. */
+export const downloadAttachment = async (dispatch: Dispatch, attachment: COMSObject): Promise<void> => {
+  const versionQuery = attachment.s3VersionId ? `&s3VersionId=${attachment.s3VersionId}` : "";
+  const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}?download=url${versionQuery}`);
+  const response = await get<string>(dispatch, parameters);
+
+  const a = document.createElement("a");
+  a.href = response;
+  a.download = `${attachment.name}`;
+  a.target = "_blank";
+  a.click();
+};
+
+/**
+ * Generates a data-URL thumbnail for a locally selected file that has not been uploaded yet.
+ * Returns undefined for non-image files, or when a thumbnail could not be produced.
+ */
+export const generateFileThumbnail = async (file: File): Promise<string | undefined> => {
+  if (!isImage(file.name)) {
+    return undefined;
+  }
+
+  const thumbnail = await getThumbnailDataURL(file);
+  return thumbnail || undefined;
+};
+
+/**
+ * Resolves the thumbnail image for each image attachment, mutating `imageIconString` / `imageIconId` in place.
+ * Non-image attachments are skipped — the UI falls back to a file-type placeholder icon.
+ */
+export const resolveThumbnails = async (
+  attachments: COMSObject[],
+  identifier: string,
+  subIdentifier: string | undefined,
+  attachmentType: AttachmentEnum,
+): Promise<void> => {
+  const attachmentConfig = getAttachmentConfig(attachmentType);
+  const bucketId = getBucketForAttachmentType(attachmentType);
+  const authHeader = { Authorization: `Bearer ${localStorage.getItem(AUTH_TOKEN)}` };
+
+  for (const attachment of attachments) {
+    if (!isImage(attachment.name) || !attachment.id) continue;
+
+    try {
+      const lookupUrl = new URL(`${config.COMS_URL}/object`);
+      lookupUrl.searchParams.append("bucketId", bucketId);
+      lookupUrl.searchParams.append("latest", "true");
+
+      const lookupHeaders: Record<string, string> = {
+        ...authHeader,
+        [attachmentConfig.headerKey]: identifier,
+        "x-amz-meta-is-thumb": "Y",
+        "x-amz-meta-attachment-type": attachmentType.toString(),
+        "x-amz-meta-thumb-for": attachment.id,
+        "Content-Disposition": `attachment; filename="${attachment.name}"`,
+      };
+
+      if (attachmentConfig.subHeaderKey) {
+        // matches buildAttachmentHeader: a dummy value filters everything out when there is no sub identifier yet
+        lookupHeaders[attachmentConfig.subHeaderKey] = subIdentifier ?? "00000000-0000-0000-0000-000000000000";
+      }
+
+      const lookupResponse = await axios.get<COMSObject[]>(lookupUrl.toString(), { headers: lookupHeaders });
+
+      const thumbId = lookupResponse.data[0]?.id;
+      if (!thumbId) continue;
+
+      const downloadResponse = await axios.get<string>(`${config.COMS_URL}/object/${thumbId}?download=url`, {
+        headers: authHeader,
+      });
+
+      attachment.imageIconString = downloadResponse.data;
+      attachment.imageIconId = thumbId;
+    } catch (error) {
+      // A thumbnail failure must not fail the whole fetch — fall back to the placeholder icon.
+      console.error(`Unable to resolve thumbnail for attachment ${attachment.id}`, error);
+    }
+  }
+};
+
+/**
+ * Fetches attachments for an investigation by iterating through pages, then fetches metadata in bulk.
+ * Scoped to a single task or enforcement action when the relevant identifier is supplied; when neither
+ * is given, both task and enforcement action attachments are returned.
+ */
+export const fetchAttachmentsWithMetadata = async (
+  investigationIdentifier: string,
+  taskId?: string,
+  enforcementActionId?: string,
+  includeThumbnails: boolean = false,
+): Promise<Attachment[]> => {
+  const fetchByType = async (attachmentType: AttachmentEnum, subHeaderId?: string): Promise<COMSObject[]> => {
+    const collected: COMSObject[] = [];
+    let currentPage = 1;
+    let hasMorePages = true;
+    while (hasMorePages) {
+      const searchResult = await searchAttachments({
+        headerId: investigationIdentifier,
+        subHeaderId,
+        page: currentPage,
+        limit: FETCH_PAGE_SIZE,
+        attachmentType,
+      });
+      collected.push(...searchResult.attachments);
+      hasMorePages = searchResult.attachments.length === FETCH_PAGE_SIZE;
+      currentPage++;
+    }
+
+    if (includeThumbnails) {
+      await resolveThumbnails(collected, investigationIdentifier, subHeaderId, attachmentType);
+    }
+
+    return collected;
+  };
+
+  // scoped to one enforcement action, scoped to one task, or everything for the investigation
+  const fetchAttachments: Promise<COMSObject[]>[] = [];
+  if (enforcementActionId) {
+    fetchAttachments.push(fetchByType(AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT, enforcementActionId));
+  } else {
+    fetchAttachments.push(fetchByType(AttachmentEnum.TASK_ATTACHMENT, taskId));
+    // don't include enforcement action attachments for tasks
+    if (!taskId) {
+      fetchAttachments.push(fetchByType(AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT));
+    }
+  }
+
+  const attachments = (await Promise.all(fetchAttachments)).flat();
+  if (attachments.length === 0) return [];
+
+  const objectIds = attachments.map((a) => a.id).filter((id): id is string => !!id);
+  const metadataMap = await fetchObjectsMetadata(objectIds, AttachmentEnum.TASK_ATTACHMENT);
+
+  return attachments.map((attachment) => {
+    const metadata: ParsedObjectMetadata | undefined = attachment.id ? metadataMap.get(attachment.id) : undefined;
+    return {
+      ...attachment,
+      taskId: metadata?.taskId ?? null,
+      enforcementActionId: metadata?.enforcementActionId ?? null,
+      type: metadata?.attachmentType ?? null,
+      takenBy: metadata?.takenBy ?? null,
+      sequenceNumber: metadata?.sequenceNumber ?? null,
+      fileType: metadata?.fileType ?? null,
+      description: metadata?.description ?? null,
+      title: metadata?.title ?? null,
+      date: metadata?.date ?? null,
+      location: metadata?.location ?? null,
+      size: metadata?.size ?? attachment.size,
+    };
+  });
 };
