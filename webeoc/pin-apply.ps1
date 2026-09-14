@@ -2,7 +2,7 @@
 # Edits the raw text in place so formatting, escaping and non-dependency sections are untouched.
 # Reads the snapshot produced by: npm ls --depth=0 --json
 
-$snapshotPath = "$env:TEMP\pinned-event-worker.json"
+$snapshotPath = "$env:TEMP\pinned.json"
 $packagePath = ".\package.json"
 
 $snapshot = Get-Content $snapshotPath -Raw | ConvertFrom-Json
