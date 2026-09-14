@@ -151,7 +151,6 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
     });
   }, [onRequestDelete, contravention, activityGuid, isEditMode, partyGuid]);
 
-  // Note: The forms are hidden when not active in order to prevent them from unmounting and losing state
   return (
     <ContraventionDetailsForm
       contravention={contravention}

@@ -131,6 +131,7 @@ export const ContraventionDetailsForm = ({
       communityCode: defaultCommunity,
       subsection: "",
       parties: [] as Option[],
+      party: partyGuid ?? UNKNOWN_PARTY_VALUE,
     },
     onSubmit: async () => {},
   });
@@ -164,7 +165,7 @@ export const ContraventionDetailsForm = ({
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
 
-  const [party, setParty] = useState(partyGuid ?? "");
+  const [party, setParty] = useState(partyGuid ?? UNKNOWN_PARTY_VALUE);
 
   const contraventionDate = useStore(form.baseStore, (state) => state.values.contraventionDate);
   const formattedContraventionDate = contraventionDate ? format(contraventionDate, "yyyy-MM-dd") : undefined;
@@ -270,9 +271,11 @@ export const ContraventionDetailsForm = ({
       contraventionDate: formattedContraventionDate ?? "",
       communityCode: form.getFieldValue("communityCode"),
       selectedSection: form.getFieldValue("subsection"),
-      selectedPartyGuids: form
-        .getFieldValue("parties")
-        .map((option) => (!option.value || option.value === UNKNOWN_PARTY_VALUE ? null : option.value)),
+      selectedPartyGuids: isEditMode
+        ? [party && party !== UNKNOWN_PARTY_VALUE ? party : null]
+        : form
+            .getFieldValue("parties")
+            .map((option) => (!option.value || option.value === UNKNOWN_PARTY_VALUE ? null : option.value)),
     }),
     [formattedContraventionDate, form, party],
   );
@@ -412,13 +415,18 @@ export const ContraventionDetailsForm = ({
             form={form}
             name="party"
             label="Party"
+            required
+            validators={{
+              onChange: z.string().min(1, "Party is required"),
+              onSubmit: z.string().min(1, "Party is required"),
+            }}
             render={(field) => (
               <CompSelect
                 id="party-select"
                 classNamePrefix="comp-select"
                 className="comp-details-input mb-1"
-                options={partyOptions}
-                value={findOptionByValue(partyOptions, party)}
+                options={partySelectOptions}
+                value={findOptionByValue(partySelectOptions, party)}
                 onChange={(option) => {
                   markDirty();
                   const value = option?.value || "";
