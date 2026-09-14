@@ -26,6 +26,11 @@ import { parseISO } from "date-fns";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
+import { InvestigationParty } from "@/generated/graphql";
+import { getPartyName } from "@/app/common/party-name";
+import Option from "@/app/types/app/option";
+import { selectCodeTable } from "@/app/store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
@@ -53,6 +58,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     investigationIdentifier,
     taskIdentifier,
     existingAttachments,
+    parties,
     attachment,
     defaultAssignee,
     onDirtyChange,
@@ -79,6 +85,34 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     const labelB = String(b.label ?? "");
     return labelA.localeCompare(labelB, undefined, { sensitivity: "base" });
   });
+
+  const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
+
+  const partyOptions = (parties as InvestigationParty[])
+    .map((party) => {
+      const name = getPartyName(party);
+      const roleText =
+        partyRoles.find(
+          (r) => r.partyAssociationRole === party.partyAssociationRole && r.caseActivityTypeCode === "INVSTGTN",
+        )?.shortDescription ?? party.partyAssociationRole;
+      return {
+        value: party.partyIdentifier,
+        label: name,
+        labelElement: (
+          <>
+            {name} <span className="text-muted">({roleText})</span>
+          </>
+        ),
+      };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+
+  const takenByOptions: Option[] = [...partyOptions, ...assignableOfficersExtendedSorted];
+
+  const takenByOptionGroups = [
+    { label: "Parties", options: partyOptions },
+    { label: "Officers", options: assignableOfficersExtendedSorted },
+  ];
 
   const updateInvestigationTimestampMutation = useGraphQLMutation(UPDATE_INVESTIGATION_TIMESTAMP, {
     onError: () => {
@@ -545,8 +579,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                       id="taken-by-select"
                       classNamePrefix="comp-select"
                       className="comp-details-input"
-                      options={assignableOfficersExtendedSorted}
-                      value={assignableOfficersExtendedSorted.find((opt) => opt.value === field.state.value)}
+                      options={takenByOptionGroups}
+                      value={takenByOptions.find((opt) => opt.value === field.state.value)}
                       onChange={(option) => field.handleChange(option?.value || "")}
                       placeholder="Select taken by"
                       isClearable={true}

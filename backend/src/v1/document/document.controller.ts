@@ -50,9 +50,9 @@ export class DocumentController {
   @Post("/export-task")
   @Roles(coreRoles)
   async exportTask(@Body() model: ExportTaskParameters, @Token() token, @Res() res: Response): Promise<void> {
-    const { taskId, fileName, tz, attachments } = model;
+    const { investigationGuid, taskId, fileName, tz, attachments } = model;
     try {
-      const response = await this.service.exportTask(taskId, fileName, tz, token, attachments);
+      const response = await this.service.exportTask(investigationGuid, taskId, fileName, tz, token, attachments);
 
       if (!response?.data) {
         throw new Error(`exception: unable to generate task document: ${taskId}`);

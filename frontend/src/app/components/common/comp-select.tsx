@@ -1,5 +1,5 @@
 import { FC } from "react";
-import Select, { MenuPlacement, StylesConfig, components } from "react-select";
+import Select, { GroupBase, MenuPlacement, StylesConfig, components } from "react-select";
 import Option from "@apptypes/app/option";
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
   showInactive: boolean;
   className?: string;
   classNames?: {};
-  options?: Array<Option>;
+  options?: Array<Option> | Array<GroupBase<Option>>;
   enableValidation: boolean;
   errorMessage?: string;
   classNamePrefix?: string;
@@ -23,17 +23,7 @@ type Props = {
 
 // Custom Option component to render labelElement or disabled items
 const CustomOption = (props: any) => {
-  const { data, innerRef } = props;
-
-  // A plain, non-interactive divider row
-  if (data.isSeparator) {
-    return (
-      <div
-        ref={innerRef}
-        className={data.className}
-      />
-    );
-  }
+  const { data } = props;
 
   // If there's a custom labelElement, use it
   if (data.labelElement) {
@@ -61,6 +51,9 @@ const CustomOption = (props: any) => {
   // Default rendering
   return <components.Option {...props}>{data.label}</components.Option>;
 };
+
+// Group headings render only for labelled groups
+const CustomGroupHeading = (props: any) => (props.data.label ? <components.GroupHeading {...props} /> : null);
 
 // Custom filterOption to ensure searchability
 const customFilterOption = (option: Option, rawInput: string) => {
@@ -91,27 +84,34 @@ export const CompSelect: FC<Props> = ({
 
   let items: any[] = [];
 
-  if (options) {
+  const toItems = (opts: readonly Option[]) => {
     // If the options do not have the field isActive, then show all options
-    if (options.length > 0 && !("isActive" in options[0])) {
-      items = [...options];
-    } else {
-      items = options.filter((o) => (showInactive ? true : o.isActive));
-    }
-    if (value && !items.some((o) => o.value === value.value)) {
-      items.push(value);
-    }
+    const visible =
+      opts.length > 0 && !("isActive" in opts[0]) ? opts : opts.filter((o) => (showInactive ? true : o.isActive));
 
-    // Map options to include label, labelElement, isDisabled, isHeader, and isSeparator
-    items = items.map((o) => ({
+    // Map options to include label, labelElement, isDisabled and isHeader
+    return visible.map((o) => ({
       label: o.label, //for searchability
       value: o.value,
       labelElement: o.labelElement,
       isDisabled: o.isDisabled ?? false,
       isHeader: o.isHeader ?? false,
-      isSeparator: o.isSeparator ?? false,
-      className: o.className,
     }));
+  };
+
+  if (options && options.length > 0 && "options" in options[0]) {
+    items = (options as Array<GroupBase<Option>>).map((group) => ({
+      label: group.label,
+      options: toItems(group.options),
+    }));
+    if (value && !items.some((group) => group.options.some((o: Option) => o.value === value.value))) {
+      items[items.length - 1].options.push(value);
+    }
+  } else if (options) {
+    items = toItems(options as Array<Option>);
+    if (value && !items.some((o) => o.value === value.value)) {
+      items.push(value);
+    }
   }
 
   //-- pass through the onChange event
@@ -137,7 +137,7 @@ export const CompSelect: FC<Props> = ({
         isDisabled={isDisabled}
         menuPlacement={menuPlacement ?? "auto"}
         filterOption={customFilterOption}
-        components={{ Option: CustomOption }}
+        components={{ Option: CustomOption, GroupHeading: CustomGroupHeading }}
         isClearable={isClearable ?? false}
         maxMenuHeight={maxMenuHeight ?? undefined}
       />

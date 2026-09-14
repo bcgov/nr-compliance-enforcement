@@ -7,16 +7,18 @@ import {
   getDisplayFilename,
 } from "@common/attachment-utils";
 import { COMSObject } from "@apptypes/coms/object";
-import { Task } from "@/generated/graphql";
+import { InvestigationParty, Task } from "@/generated/graphql";
 import AttachmentEnum from "@constants/attachment-enum";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
+import { getPartyName } from "@/app/common/party-name";
 
 interface UseInvestigationAttachmentsParams {
   investigationIdentifier: string;
   tasks: Task[];
+  parties: InvestigationParty[];
   search: string | null;
   taskFilter: string | null;
   fileTypeFilter: string | null;
@@ -33,6 +35,7 @@ export interface Attachment extends COMSObject {
   enforcementActionId: string | null;
   taskNumber?: number;
   takenBy?: string | null;
+  takenByName?: string | null;
   sequenceNumber?: string | null;
   fileType?: string | null;
   description?: string | null;
@@ -118,6 +121,7 @@ export const useInvestigationAttachments = (
   const {
     investigationIdentifier,
     tasks,
+    parties,
     search,
     taskFilter,
     fileTypeFilter,
@@ -130,11 +134,6 @@ export const useInvestigationAttachments = (
   } = params;
 
   const officers = useAppSelector(selectOfficers);
-
-  const geUserName = (officerGuid: string) => {
-    const takenBy = officers?.find((o) => o.app_user_guid === officerGuid);
-    return takenBy ? `${takenBy.last_name}, ${takenBy.first_name}` : "-";
-  };
 
   const query = useQuery({
     queryKey: ["investigation-attachments-all", investigationIdentifier, taskId],
@@ -158,12 +157,15 @@ export const useInvestigationAttachments = (
   const attachmentResults = useMemo(() => {
     const attachments = query.data ?? [];
 
-    // Get task numbers
+    // Get task numbers and match "taken by" against officers then parties
     let items: Attachment[] = attachments.map((attachment) => {
       const task = attachment.taskId ? tasks.find((t) => t.taskIdentifier === attachment.taskId) : undefined;
+      const officer = officers?.find((o) => o.app_user_guid === attachment.takenBy);
+      const party = parties.find((p) => p.partyIdentifier === attachment.takenBy);
       return {
         ...attachment,
         taskNumber: task?.taskNumber,
+        takenByName: officer ? `${officer.last_name}, ${officer.first_name}` : party ? getPartyName(party) : null,
       };
     });
 
@@ -182,9 +184,7 @@ export const useInvestigationAttachments = (
           a.description?.toLowerCase().includes(searchLower) ||
           a.title?.toLowerCase().includes(searchLower) ||
           a.taskNumber?.toString().includes(searchLower) ||
-          geUserName(a.takenBy ?? "")
-            .toLowerCase()
-            .includes(searchLower) ||
+          a.takenByName?.toLowerCase().includes(searchLower) ||
           a.location?.toLowerCase().includes(searchLower) ||
           displayName.includes(searchLower)
         );
@@ -242,8 +242,8 @@ export const useInvestigationAttachments = (
         }
 
         case "takenBy": {
-          const takenByA = geUserName(a.takenBy ?? "");
-          const takenByB = geUserName(b.takenBy ?? "");
+          const takenByA = a.takenByName ?? "";
+          const takenByB = b.takenByName ?? "";
           comparison = takenByA.localeCompare(takenByB);
           break;
         }
@@ -284,7 +284,7 @@ export const useInvestigationAttachments = (
       filtered: items,
       totalCount,
     };
-  }, [query.data, tasks, search, taskFilter, fileTypeFilter, sortBy, sortOrder, page, pageSize]);
+  }, [query.data, tasks, officers, parties, search, taskFilter, fileTypeFilter, sortBy, sortOrder, page, pageSize]);
 
   return {
     attachments: attachmentResults.items,

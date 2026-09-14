@@ -1,12 +1,11 @@
-import { FC, useCallback } from "react";
+import { FC } from "react";
 import { CompTable } from "@components/common/comp-table";
 import { editColumn } from "@components/common/comp-table-edit-column";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
 import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import { selectOfficers } from "@/app/store/reducers/officer";
+import { useAppDispatch } from "@/app/hooks/hooks";
 import { generateApiParameters, get } from "@/app/common/api";
 import config from "@/config";
 import { truncateFilenameString } from "@/app/common/methods";
@@ -42,15 +41,6 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({
   onEdit,
 }) => {
   const dispatch = useAppDispatch();
-  const officers = useAppSelector(selectOfficers);
-
-  const getOfficerName = useCallback(
-    (officerGuid: string): string => {
-      const officer = officers?.find((o) => o.app_user_guid === officerGuid);
-      return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
-    },
-    [officers],
-  );
 
   const columns: CompColumn<Attachment>[] = [
     {
@@ -98,7 +88,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({
       headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
       cellClassName: "comp-cell-width-150 comp-cell-min-width-150 align-middle",
       isSortable: false,
-      renderCell: (attachment) => getOfficerName(attachment.takenBy ?? ""),
+      renderCell: (attachment) => attachment.takenByName ?? "-",
     },
     {
       label: "Location",
