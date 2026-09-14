@@ -105,7 +105,7 @@ export const CompSelect: FC<Props> = ({
       options: toItems(group.options),
     }));
     if (value && !items.some((group) => group.options.some((o: Option) => o.value === value.value))) {
-      items[items.length - 1].options.push(value);
+      items.at(-1).options.push(value);
     }
   } else if (options) {
     items = toItems(options as Array<Option>);

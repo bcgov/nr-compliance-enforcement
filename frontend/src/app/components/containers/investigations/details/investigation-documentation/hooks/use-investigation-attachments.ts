@@ -162,10 +162,16 @@ export const useInvestigationAttachments = (
       const task = attachment.taskId ? tasks.find((t) => t.taskIdentifier === attachment.taskId) : undefined;
       const officer = officers?.find((o) => o.app_user_guid === attachment.takenBy);
       const party = parties.find((p) => p.partyIdentifier === attachment.takenBy);
+      let takenByName: string | null = null;
+      if (officer) {
+        takenByName = `${officer.last_name}, ${officer.first_name}`;
+      } else if (party) {
+        takenByName = getPartyName(party);
+      }
       return {
         ...attachment,
         taskNumber: task?.taskNumber,
-        takenByName: officer ? `${officer.last_name}, ${officer.first_name}` : party ? getPartyName(party) : null,
+        takenByName,
       };
     });
 
