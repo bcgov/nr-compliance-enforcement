@@ -1,3 +1,4 @@
+import { PublishedBadge } from "@/app/components/containers/parties/published-badge";
 import { FC } from "react";
 
 type PartyBadgesProps = {
@@ -19,11 +20,7 @@ export const PartyBadges: FC<PartyBadgesProps> = ({ isSafetyConcern, isPublished
         <i className="bi bi-slash-circle-fill"></i> Incomplete
       </div>
     )}
-    {isPublished && (
-      <div className="badge comp-status-badge-open">
-        <i className="bi bi-check-circle-fill"></i> Published
-      </div>
-    )}
+    {isPublished && <PublishedBadge />}
     {isYoungPerson && <div className="badge comp-status-badge-closed">Young person</div>}
   </>
 );
