@@ -15,6 +15,7 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
+import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input";
 import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/common/methods";
 import { getPartyName } from "@/app/common/party-name";
@@ -110,11 +111,8 @@ const PartiesList: React.FC<Props> = ({
       .map((a) => a!.name)
       .join(", ");
 
-  const getBusinessNumbers = (business: InvestigationBusiness): string =>
-    (business.businessIdentifiers ?? [])
-      .filter(Boolean)
-      .map((id) => id!.identifierValue)
-      .join(", ");
+  const getBusinessIdentifier = (business: InvestigationBusiness, identifierCode: string): string =>
+    (business.businessIdentifiers ?? []).find((id) => id?.identifierCode === identifierCode)?.identifierValue ?? "";
 
   const getPrimaryContactName = (business: InvestigationBusiness): string => {
     const contactPeople = (business.contactPeople ?? []).filter(Boolean) as InvestigationBusinessPerson[];
@@ -146,7 +144,7 @@ const PartiesList: React.FC<Props> = ({
     if (!invParty.business) return [];
     const missing: string[] = [];
     if (!invParty.business.name) missing.push("name");
-    if (!getBusinessNumbers(invParty.business)) missing.push("business number");
+    if (!getBusinessIdentifier(invParty.business, BusinessIdentifiers.BUSINESS_NUMBER)) missing.push("business number");
     if (getPartyAddress(invParty.addresses) === "-") missing.push("address");
     return missing;
   };
@@ -255,14 +253,16 @@ const PartiesList: React.FC<Props> = ({
     if (invParty.business) {
       const aliases = getAliases(invParty.aliases) || "-";
       const primaryContact = getPrimaryContactName(invParty.business);
-      const businessNumbers = getBusinessNumbers(invParty.business) || "-";
+      const businessNumber = getBusinessIdentifier(invParty.business, BusinessIdentifiers.BUSINESS_NUMBER) || "-";
+      const worksafeBCNumber = getBusinessIdentifier(invParty.business, BusinessIdentifiers.WSBC_NUMBER) || "-";
       const address = getPartyAddress(invParty.addresses);
       const missingFields = getBusinessMissingFields(invParty);
       const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
       return (
         <Card.Body className="py-3 px-4">
-          {renderDetailRow("Doing business as", aliases, "Business number", businessNumbers)}
-          {renderDetailRow("Primary contact", primaryContact, "Primary address", address)}
+          {renderDetailRow("Doing business as", aliases, "Business number", businessNumber)}
+          {renderDetailRow("WorkSafeBC number", worksafeBCNumber, "Primary contact", primaryContact)}
+          {renderDetailRow("Primary address", address, "", "")}
           {invParty.isUpToDate === false && renderNotUpToDateAlert(invParty.partyIdentifier)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
