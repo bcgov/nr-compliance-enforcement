@@ -29,7 +29,8 @@ import {
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
 import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
-import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
+import { getPartyMissingFields, getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
+import { joinWithAnd } from "@/app/common/methods";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
 import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
 
@@ -440,7 +441,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             >
               <i className="bi bi-info-circle-fill pe-2" />
               {party
-                ? "This profile is incomplete. Enforcement actions are unavailable."
+                ? `This profile is incomplete. Add ${joinWithAnd(getPartyMissingFields(party))} before logging an enforcement action.`
                 : "The party is unknown. Enforcement actions are unavailable."}
             </Alert>
           )}
