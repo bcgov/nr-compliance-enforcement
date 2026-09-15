@@ -53,9 +53,16 @@ export class DocumentService {
     }
   };
 
-  exportTask = async (taskId: string, fileName: string, tz: string, token: string, attachments: Attachment[]) => {
+  exportTask = async (
+    investigationGuid: string,
+    taskId: string,
+    fileName: string,
+    tz: string,
+    token: string,
+    attachments: Attachment[],
+  ) => {
     try {
-      const data = await getTask(token, taskId, tz, attachments);
+      const data = await getTask(token, taskId, investigationGuid, tz, attachments);
       return await this.cdogs.generate(fileName, data, REPORT_TYPE.TASK_DEFINITION);
     } catch (error) {
       this.logger.error(

@@ -1,7 +1,7 @@
 // Instruction for running: from backend directory: node dataloader/bulk-data-loader.js
 // Ensure parameters at the bottom of this file are updated as required
 require('dotenv').config();
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 const db = require('pg-promise')();
 const regions = require('./location-enum');
 
@@ -21,7 +21,7 @@ const pg = db(connection);
 //    min: the minimum latitude
 //    max: the maximum latitude
 const generateLatitude = (min, max) => {
-  return faker.datatype.number({ min: min * 10000, max: max * 10000 }) / 10000;
+  return faker.number.int({ min: min * 10000, max: max * 10000 }) / 10000;
 };
 
 // Function to generate a random longitude within the specified range
@@ -29,7 +29,7 @@ const generateLatitude = (min, max) => {
 //    min: the minimum longitude
 //    max: the maximum longitude
 const generateLongitude = (min, max) => {
-  return faker.datatype.number({ min: min * 10000, max: max * 10000 }) / 10000;
+  return faker.number.int({ min: min * 10000, max: max * 10000 }) / 10000;
 };
 
 // Randomly selects a region, a zone within that region, a district within that zone and a community.
@@ -38,19 +38,19 @@ const generateLongitude = (min, max) => {
 const getRandomLocation = () => {
   // Randomly select a region
   const regionKeys = Object.keys(regions);
-  const region = faker.random.arrayElement(regionKeys);
+  const region = faker.helpers.arrayElement(regionKeys);
 
   // Randomly select a zone within that region
   const zoneKeys = Object.keys(regions[region].zones);
-  const zone = faker.random.arrayElement(zoneKeys);
+  const zone = faker.helpers.arrayElement(zoneKeys);
 
   // Randomly select a district within that zone
   const districtKeys = Object.keys(regions[region].zones[zone].districts);
-  const district = faker.random.arrayElement(districtKeys);
+  const district = faker.helpers.arrayElement(districtKeys);
 
   // Randomly select a community within that district
   const communities = regions[region].zones[zone].districts[district];
-  const community = faker.random.arrayElement(communities);
+  const community = faker.helpers.arrayElement(communities);
 
   return { region, zone, district, community };
 };
@@ -69,8 +69,8 @@ const generateCommonFields = (complaint_identifier) => {
 
   return {
     tablename: 'Conservation Officer Service Table',
-    dataid: faker.datatype.number(),
-    username: faker.internet.userName(),
+    dataid: faker.number.int({ max: 99999 }),
+    username: faker.internet.username(),
     positionname: 'ECC COS_test',
     entrydate: faker.date.recent().toISOString(),
     prevdataid: '0',
@@ -81,23 +81,23 @@ const generateCommonFields = (complaint_identifier) => {
     cos_district: district,
     cos_zone: zone,
     cos_region: region,
-    status: faker.random.arrayElement(['Open', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed' ]), //Close 90% of complaints
-    address: faker.address.streetAddress(),
+    status: faker.helpers.arrayElement(['Open', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed' ]), //Close 90% of complaints
+    address: faker.location.streetAddress(),
     address_coordinates_lat: generateLatitude(48.2513, 60.0).toString(),
     address_coordinates_long: generateLongitude(-139.0596, -114.0337).toString(),
     cos_location_description: faker.lorem.sentence(),
-    cos_caller_name: faker.name.findName(),
+    cos_caller_name: faker.person.fullName(),
     cos_caller_email: faker.internet.email(),
-    caller_address: faker.address.streetAddress(),
+    caller_address: faker.location.streetAddress(),
     cos_call_details: faker.lorem.paragraph(),
     created_by_position: 'ECC COS_test',
-    created_by_username: faker.internet.userName(),
-    back_number_of_days: faker.datatype.number({ min: 0, max: 365 }).toString(),
-    back_number_of_hours: faker.datatype.number({ min: 0, max: 24 }).toString(),
-    back_number_of_minutes: faker.datatype.number({ min: 0, max: 60 }).toString(),
-    flag_COS: faker.random.arrayElement(['Yes', 'No']),
-    flag_AT: faker.random.arrayElement(['Yes', 'No']),
-    flag_UAT: faker.random.arrayElement(['Yes', 'No']),
+    created_by_username: faker.internet.username(),
+    back_number_of_days: faker.number.int({ min: 0, max: 365 }).toString(),
+    back_number_of_hours: faker.number.int({ min: 0, max: 24 }).toString(),
+    back_number_of_minutes: faker.number.int({ min: 0, max: 60 }).toString(),
+    flag_COS: faker.helpers.arrayElement(['Yes', 'No']),
+    flag_AT: faker.helpers.arrayElement(['Yes', 'No']),
+    flag_UAT: faker.helpers.arrayElement(['Yes', 'No']),
   };
 };
 
@@ -111,9 +111,9 @@ const generateHWCRData = (complaint_identifier) => {
   return {
     ...commonFields,
     report_type: 'HWCR',
-    nature_of_complaint: faker.random.arrayElement(['Sightings', 'Food Conditioned', 'Confined', 'Human injury/death', 'Wildlife in trap']),
-    species: faker.random.arrayElement(['Black bear', 'Deer', 'Wolf', 'Moose', 'Cougar', 'Wolverine', 'Elk', 'Rattlesnake']),
-    attractants_list: faker.random.arrayElement(['BBQ', 'Crops', 'Pet Food', 'Beehive', 'Freezer', 'Pets', 'Garbage', 'Industrial Camp']),
+    nature_of_complaint: faker.helpers.arrayElement(['Sightings', 'Food Conditioned', 'Confined', 'Human injury/death', 'Wildlife in trap']),
+    species: faker.helpers.arrayElement(['Black bear', 'Deer', 'Wolf', 'Moose', 'Cougar', 'Wolverine', 'Elk', 'Rattlesnake']),
+    attractants_list: faker.helpers.arrayElement(['BBQ', 'Crops', 'Pet Food', 'Beehive', 'Freezer', 'Pets', 'Garbage', 'Industrial Camp']),
   };
 };
 
@@ -123,10 +123,10 @@ const generateHWCRData = (complaint_identifier) => {
 const generateERSData = (complaint_identifier, owner) => {
 
   const commonFields = generateCommonFields(complaint_identifier);  // Get common fields
-  let violationType = faker.random.arrayElement(['Boating', 'Dumping', 'Fisheries ', 'Open Burning', 'Off-road vehicles (ORV)', 'Aquatic: Invasive Species'])
+  let violationType = faker.helpers.arrayElement(['Boating', 'Dumping', 'Fisheries ', 'Open Burning', 'Off-road vehicles (ORV)', 'Aquatic: Invasive Species'])
 
   if(owner === 'CEEB') {
-    violationType = faker.random.arrayElement(['Waste', 'Pesticide'])
+    violationType = faker.helpers.arrayElement(['Waste', 'Pesticide'])
   }
 
   return {
@@ -134,8 +134,8 @@ const generateERSData = (complaint_identifier, owner) => {
     report_type: 'ERS',
     violation_type: violationType,
     suspect_details: faker.lorem.paragraph(),
-    observe_violation: faker.random.arrayElement(['Yes', 'No']),
-    violation_in_progress: faker.random.arrayElement(['Yes', 'No']),
+    observe_violation: faker.helpers.arrayElement(['Yes', 'No']),
+    violation_in_progress: faker.helpers.arrayElement(['Yes', 'No']),
   };
 };
 
@@ -149,7 +149,7 @@ const generateGIRData = (complaint_identifier) => {
 return {
   ...commonFields,
   report_type: 'GIR',
-  call_type_gir: faker.random.arrayElement(['Contact', 'Disposition', 'General Advice', 'Media', 'Query']),
+  call_type_gir: faker.helpers.arrayElement(['Contact', 'Disposition', 'General Advice', 'Media', 'Query']),
 };
 };
 
@@ -227,7 +227,7 @@ const insertData = async (data) => {
     const currentTimestamp = new Date().toISOString(); // Get the current timestamp
 
     return [
-      faker.datatype.uuid(),  // Unique ID for the complaint (staging_complaint_guid)
+      faker.string.uuid(),  // Unique ID for the complaint (staging_complaint_guid)
       'PENDING',              // Placeholder for status (staging_status_code)
       'INSERT',               // Placeholder for activity (staging_activity_code)
       item.incident_number,   // Complaint identifier
@@ -593,10 +593,10 @@ const bulkDataLoad = async () => {
 
   // Adjust these as required.
   const processAfterInsert = true // Will move complaints from staging to the live table after each iteration
-  const numRecords = 10000; // Records created per iteration, no more than 10k at a time or the insert will blow up.
+  const numRecords = 10; // Records created per iteration, no more than 10k at a time or the insert will blow up.
   const yearPrefix = 35; 
   const startingRecord = 100000;
-  const iterations = 25; 
+  const iterations = 1; 
 
   // Ratios for related data, adjust as required.
   const relatedDataConfig = {

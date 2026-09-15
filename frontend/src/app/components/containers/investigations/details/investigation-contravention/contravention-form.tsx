@@ -4,11 +4,9 @@ import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ContraventionDetailsForm, ContraventionDetailsFormValues } from "./contravention-details-form";
-import { ContraventionPartyForm, ContraventionPartyFormValues } from "./contravention-party-form";
 import { useMultiStepForm } from "@/app/hooks/multi-step-form";
 
 interface ContraventionFormProps {
-  currentStep: number;
   activityGuid: string;
   contravention?: Contravention;
   parties?: InvestigationParty[];
@@ -52,7 +50,6 @@ const REMOVE_CONTRAVENTION = gql`
 `;
 
 export const ContraventionForm: FC<ContraventionFormProps> = ({
-  currentStep,
   activityGuid,
   contravention,
   parties,
@@ -115,44 +112,30 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
   useEffect(() => {
     onRequestSave(async () => {
       const isDetailsValid = await validateStep(0);
-      const isPartyValid = isEditMode ? true : await validateStep(1);
-      if (!isDetailsValid || !isPartyValid) return;
+      if (!isDetailsValid) return;
 
       const step1Values = getStepValues<ContraventionDetailsFormValues>(0);
-      const step2Values = getStepValues<ContraventionPartyFormValues>(1);
-      if (!step1Values || !step2Values) return;
+      if (!step1Values) return;
 
       const input: CreateUpdateContraventionInput = {
         investigationGuid: activityGuid,
         legislationReference: step1Values.selectedSection,
         date: step1Values.contraventionDate,
         community: step1Values.communityCode || null,
-        ...(isEditMode
-          ? {
-              selectedPartyGuid: partyGuid,
-              investigationPartyGuids: [step1Values.selectedPartyGuid ?? null],
-            }
-          : {
-              investigationPartyGuids: step2Values?.partyType === "unknown" ? [] : (step2Values?.selectedParties ?? []),
-            }),
+        investigationPartyGuids: step1Values.selectedPartyGuids,
+        // selectedPartyGuid identifies the party row being edited, so update() knows which xref to move
+        ...(isEditMode ? { selectedPartyGuid: partyGuid } : {}),
       };
 
       if (isEditMode) {
         onIsSavingChange?.(true);
         editContraventionMutation.mutate({ contraventionGuid: contravention!.contraventionIdentifier, input });
       } else {
-        const step2Values = getStepValues<ContraventionPartyFormValues>(1);
-        if (!step2Values) return;
         onIsSavingChange?.(true);
-        addContraventionMutation.mutate({
-          input: {
-            ...input,
-            investigationPartyGuids: step2Values.partyType === "unknown" ? [] : step2Values.selectedParties,
-          },
-        });
+        addContraventionMutation.mutate({ input });
       }
     });
-  }, [onRequestSave, getStepValues, activityGuid, isEditMode, contravention, partyGuid]);
+  }, [onRequestSave, getStepValues, validateStep, activityGuid, isEditMode, contravention, partyGuid]);
 
   useEffect(() => {
     if (!onRequestDelete || !isEditMode) return;
@@ -168,31 +151,17 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
     });
   }, [onRequestDelete, contravention, activityGuid, isEditMode, partyGuid]);
 
-  // Note: The forms are hidden when not active in order to prevent them from unmounting and losing state
   return (
-    <>
-      <div className={currentStep === 0 ? "" : "d-none"}>
-        <ContraventionDetailsForm
-          contravention={contravention}
-          discoveryDate={discoveryDate}
-          investigationCommunity={investigationCommunity}
-          onDirtyChange={onDirtyChange}
-          onRequestValidate={(fn) => registerStepValidate(0, fn)}
-          onRequestValues={(fn) => registerStepValues<ContraventionDetailsFormValues>(0, fn)}
-          parties={parties}
-          partyGuid={partyGuid}
-          isEditMode={isEditMode}
-        />
-      </div>
-      <div className={currentStep === 1 ? "" : "d-none"}>
-        <ContraventionPartyForm
-          contravention={contravention}
-          parties={parties}
-          onDirtyChange={onDirtyChange}
-          onRequestValidate={(fn) => registerStepValidate(1, fn)}
-          onRequestValues={(fn) => registerStepValues<ContraventionPartyFormValues>(1, fn)}
-        />
-      </div>
-    </>
+    <ContraventionDetailsForm
+      contravention={contravention}
+      discoveryDate={discoveryDate}
+      investigationCommunity={investigationCommunity}
+      onDirtyChange={onDirtyChange}
+      onRequestValidate={(fn) => registerStepValidate(0, fn)}
+      onRequestValues={(fn) => registerStepValues<ContraventionDetailsFormValues>(0, fn)}
+      parties={parties}
+      partyGuid={partyGuid}
+      isEditMode={isEditMode}
+    />
   );
 };

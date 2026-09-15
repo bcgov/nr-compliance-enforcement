@@ -54,12 +54,12 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: isEdit ? ["Edit contravention", "Edit party"] : ["Add contravention", "Add party"],
-          totalSteps: isEdit ? 1 : 2,
+          titles: isEdit ? ["Edit contravention"] : ["Add contravention"],
+          totalSteps: 1,
           isEdit,
           deleteEntityLabel: "contravention",
           content: (
-            currentStep: number,
+            _currentStep: number, // Multistep modal requires this param but this is a single step
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
             onRequestSave: (fn: () => Promise<void>) => void,
             onRequestDelete: (fn: () => Promise<void>) => void,
@@ -68,7 +68,6 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <ContraventionForm
-              currentStep={currentStep}
               activityGuid={investigationGuid}
               contravention={contravention ?? undefined}
               partyGuid={partyGuid ?? null}
@@ -112,6 +111,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             onRequestDelete: (fn: () => Promise<void>) => void,
             onClose: () => void,
             onIsSavingChange: (isSaving: boolean) => void,
+            onIsBlockedChange: (isBlocked: boolean) => void,
             // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <EnforcementActionViewEditContent
@@ -124,6 +124,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               onRequestDelete={onRequestDelete}
               onClose={onClose}
               onIsSavingChange={onIsSavingChange}
+              onIsBlockedChange={onIsBlockedChange}
               handleChildDirtyChange={handleChildDirtyChange}
             />
           ),
@@ -166,6 +167,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             onRequestDelete: (fn: () => Promise<void>) => void,
             onClose: () => void,
             onIsSavingChange: (isSaving: boolean) => void,
+            onIsBlockedChange: (isBlocked: boolean) => void,
             // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <EnforcementActionViewEditContent
@@ -180,6 +182,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               onRequestDelete={onRequestDelete}
               onClose={onClose}
               onIsSavingChange={onIsSavingChange}
+              onIsBlockedChange={onIsBlockedChange}
               handleChildDirtyChange={handleChildDirtyChange}
             />
           ),
