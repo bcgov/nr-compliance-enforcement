@@ -1,7 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useState, useCallback } from "react";
 import { Alert, Button } from "react-bootstrap";
-import AttachmentUpload from "@/app/components/common/attachment-upload";
-import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
+import {
+  Attachment,
+  fetchAttachmentsWithMetadata,
+  getDisplayFilename,
+  handlePersistAttachments,
+  MAX_ATTACHMENT_PREVIEWS,
+} from "@/app/common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
@@ -9,66 +14,116 @@ import { DismissToast, ToggleInformation } from "@/app/common/toast";
 import {
   buildEnforcementActionMeta,
   computeSequenceNumbers,
-  fetchEnforcementActionAttachments,
-  EnforcementActionAttachment,
   EnforcementActionAttachmentFieldValues,
 } from "@/app/common/enforcement-action-attachment-utils";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
+import { COMSObject } from "@/app/types/coms/object";
+import { useAttachmentStaging } from "@/app/hooks/use-attachment-staging";
+import AttachmentCarousel from "@/app/components/common/attachment-carousel";
+import AttachmentDuplicateWarning from "@/app/components/common/attachment-duplicate-warning";
+import { useDuplicateFileWarning } from "@/app/hooks/use-duplicate-file-warning";
 
 export interface EnforcementActionAttachmentSectionHandle {
-  /** True if files are staged to add or existing attachments are staged to remove. */
+  // True if files are staged to add or existing attachments are staged to remove.
   isDirty: () => boolean;
-  /** Persist staged adds/removes against the given enforcement action id. */
+  // Persist staged adds/removes against the given enforcement action id.
   persist: (enforcementActionId: string, fieldValues: EnforcementActionAttachmentFieldValues) => Promise<void>;
 }
 
 interface EnforcementActionAttachmentSectionProps {
   investigationGuid: string;
-  /** Existing attachments already in COMS for this EA (empty for a brand-new EA). */
-  existingAttachments: EnforcementActionAttachment[];
+  // Existing attachments already in COMS for this EA (empty for a brand-new EA).
+  existingAttachments: Attachment[];
   onDirtyChange?: (isDirty: boolean) => void;
+  // Reports when a pending duplicate-file decision should block saving.
+  onBlockedChange?: (isBlocked: boolean) => void;
 }
 
 export const EnforcementActionAttachmentSection = forwardRef<
   EnforcementActionAttachmentSectionHandle,
   EnforcementActionAttachmentSectionProps
->(({ investigationGuid, existingAttachments, onDirtyChange }, ref) => {
+>(({ investigationGuid, existingAttachments, onDirtyChange, onBlockedChange }, ref) => {
   const dispatch = useAppDispatch();
 
   const [filesToAdd, setFilesToAdd] = useState<File[]>([]);
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
   // existing (already-saved) attachment awaiting delete confirmation
-  const [pendingRemove, setPendingRemove] = useState<(EnforcementActionAttachment & { id: string }) | null>(null);
+  const [pendingRemove, setPendingRemove] = useState<(Attachment & { id: string }) | null>(null);
+
+  const handleFilesSelected = useCallback((files: File[]) => {
+    setFilesToAdd((prev) => mergeNewFiles(prev, files));
+  }, []);
+
+  // a staged slide was removed from the carousel, so drop the matching file from the upload list
+  const handleFileDeleted = useCallback((attachment: COMSObject) => {
+    const removedName = decodeURIComponent(attachment.name);
+    setFilesToAdd((prev) => prev.filter((f) => f.name !== removedName));
+  }, []);
+
+  const {
+    slides,
+    setSlides,
+    onFileSelect: stageFiles,
+    onFileRemove,
+  } = useAttachmentStaging({
+    attachmentType: AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT,
+    identifier: investigationGuid,
+    onFilesSelected: handleFilesSelected,
+    onFilesReplaced: handleFilesSelected,
+    onFileDeleted: handleFileDeleted,
+    confirmDuplicates: false,
+  });
 
   const isSectionDirty = filesToAdd.length > 0 || removedIds.size > 0;
   useEffect(() => {
     onDirtyChange?.(isSectionDirty);
   }, [isSectionDirty, onDirtyChange]);
 
-  const onFileSelect = useCallback((files: FileList) => {
-    const incoming = Array.from<File>(files);
-    setFilesToAdd((prev) => mergeNewFiles(prev, incoming));
-  }, []);
-
-  const handleRemoveStagedFile = (name: string) => {
-    setFilesToAdd((prev) => prev.filter((f) => f.name !== name));
-  };
-
   const handleRemoveExisting = (id: string) => {
     setRemovedIds((prev) => new Set(prev).add(id));
   };
 
   const visibleExisting = existingAttachments.filter(
-    (a): a is EnforcementActionAttachment & { id: string } => !!a.id && !removedIds.has(a.id),
+    (a): a is Attachment & { id: string } => !!a.id && !removedIds.has(a.id),
   );
+
+  const { duplicateFileNames, isBlocked, confirm, reset } = useDuplicateFileWarning({
+    stagedNames: slides.map((s) => getDisplayFilename(s.name)),
+    existingNames: visibleExisting.map((a) => getDisplayFilename(a.name)),
+  });
+
+  useEffect(() => {
+    onBlockedChange?.(isBlocked);
+  }, [isBlocked, onBlockedChange]);
+
+  // staged files first, matching the carousel's own ordering when new files are staged.
+  // A staged file supersedes the saved attachment of the same name, since it will replace it in
+  // COMS on save, so the saved one is dropped from the display rather than shown alongside it.
+  const stagedNames = new Set(slides.map((s) => getDisplayFilename(s.name)));
+  const mergedSlides: COMSObject[] = [
+    ...slides,
+    ...visibleExisting.filter((a) => !stagedNames.has(getDisplayFilename(a.name))),
+  ];
+
+  const handleSlideRemove = (attachment: COMSObject) => {
+    if (attachment.pendingUpload) {
+      onFileRemove(attachment);
+      return;
+    }
+
+    const existing = visibleExisting.find((a) => a.id === attachment.id);
+    if (existing) {
+      setPendingRemove(existing);
+    }
+  };
 
   useImperativeHandle(ref, () => ({
     isDirty: () => filesToAdd.length > 0 || removedIds.size > 0,
     persist: async (enforcementActionId, fieldValues) => {
       const meta = buildEnforcementActionMeta(fieldValues, { investigationGuid, enforcementActionId });
 
-      const current = await fetchEnforcementActionAttachments(investigationGuid, enforcementActionId);
+      const current = await fetchAttachmentsWithMetadata(investigationGuid, undefined, enforcementActionId);
 
       // Deletes
       const toDelete = current.filter((a) => a.id && removedIds.has(a.id));
@@ -87,9 +142,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
       }
 
       // Sync metadata onto retained attachments
-      const toSync = current.filter(
-        (a): a is EnforcementActionAttachment & { id: string } => !!a.id && !removedIds.has(a.id),
-      );
+      const toSync = current.filter((a): a is Attachment & { id: string } => !!a.id && !removedIds.has(a.id));
       if (toSync.length > 0) {
         await Promise.all(
           toSync.map((a) =>
@@ -139,28 +192,6 @@ export const EnforcementActionAttachmentSection = forwardRef<
     <fieldset className="mt-3">
       <h5>Attachments</h5>
 
-      {/* Existing attachments with remove */}
-      {visibleExisting.length > 0 && (
-        <div className="mb-3">
-          {visibleExisting.map((a) => (
-            <div
-              key={a.id}
-              className="d-flex align-items-center gap-2 py-1"
-            >
-              <span>{getDisplayFilename(a.name)}</span>
-              <button
-                type="button"
-                className="btn btn-link p-0 border-0 text-body"
-                onClick={() => setPendingRemove(a)}
-                aria-label={`Remove ${getDisplayFilename(a.name)}`}
-              >
-                <i className="bi bi-trash" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Delete confirmation for an already-saved attachment */}
       {pendingRemove && (
         <Alert
@@ -198,51 +229,37 @@ export const EnforcementActionAttachmentSection = forwardRef<
         </Alert>
       )}
 
-      {/* New file dropzone */}
-      <div className="comp-details-input-label">Add attachments</div>
-      <AttachmentUpload
-        onFileSelect={onFileSelect}
-        previousValues={fileListToCOMSObjects(toFileList(filesToAdd))}
-      />
+      {isBlocked && (
+        <AttachmentDuplicateWarning
+          fileNames={duplicateFileNames}
+          onCancel={() => {
+            reset();
+            setFilesToAdd([]);
+            setSlides([]);
+          }}
+          onConfirm={confirm}
+        />
+      )}
 
-      {/* Staged file names with remove */}
-      <div className="comp-details-input mt-2">
-        {filesToAdd.length > 0 ? (
-          filesToAdd.map((f) => (
-            <div
-              key={f.name}
-              className="d-flex align-items-center gap-2"
-            >
-              <span>{f.name}</span>
-              <button
-                type="button"
-                className="btn btn-link p-0 border-0 text-body"
-                onClick={() => handleRemoveStagedFile(f.name)}
-                aria-label={`Remove ${f.name}`}
-              >
-                <i className="bi bi-trash" />
-              </button>
-            </div>
-          ))
-        ) : (
-          <span className="text-muted">No file selected</span>
-        )}
-      </div>
+      <div className="comp-details-input-label">Add attachments</div>
+      <AttachmentCarousel
+        slides={mergedSlides}
+        showPreview={true}
+        onFileSelect={stageFiles}
+        onFileRemove={handleSlideRemove}
+        allowUpload={true}
+        allowDelete={true}
+        variant="comp-carousel-modal"
+        maxPreviews={MAX_ATTACHMENT_PREVIEWS}
+      />
     </fieldset>
   );
 });
 
 EnforcementActionAttachmentSection.displayName = "EnforcementActionAttachmentSection";
 
-// convert to FileList for fileListToCOMSObjects
-function toFileList(files: File[]): FileList {
-  const dt = new DataTransfer();
-  files.forEach((f) => dt.items.add(f));
-  return dt.files;
-}
-
-// merge new files into the list, ignore any already present by name
+// merge new files into the list, replacing any already present by name
 function mergeNewFiles(existing: File[], incoming: File[]): File[] {
-  const existingNames = new Set(existing.map((f) => f.name));
-  return [...existing, ...incoming.filter((f) => !existingNames.has(f.name))];
+  const incomingNames = new Set(incoming.map((f) => f.name));
+  return [...existing.filter((f) => !incomingNames.has(f.name)), ...incoming];
 }
