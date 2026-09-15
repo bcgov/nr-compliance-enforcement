@@ -1,10 +1,9 @@
 import { FC, useState, useCallback } from "react";
 import { CloseButton, Collapse, Offcanvas } from "react-bootstrap";
-import { Task } from "@/generated/graphql";
+import { InvestigationParty, Task } from "@/generated/graphql";
 import { escapeCsvCell } from "@common/methods";
 import { getDisplayFilename } from "@common/attachment-utils";
-import { selectOfficers } from "@/app/store/reducers/officer";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch } from "@/app/hooks/hooks";
 import { DocumentationFilter } from "./documentation-filter";
 import { DocumentationFilterBar } from "./documentation-filter-bar";
 import { DocumentationList } from "./documentation-list";
@@ -21,14 +20,18 @@ type Props = {
   investigationGuid: string;
   investigationName?: string | null;
   tasks?: Task[];
+  parties?: InvestigationParty[];
 };
 
-export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, investigationName, tasks = [] }) => {
+export const InvestigationDocumentation: FC<Props> = ({
+  investigationGuid,
+  investigationName,
+  tasks = [],
+  parties = [],
+}) => {
   const dispatch = useAppDispatch();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
-
-  const officers = useAppSelector(selectOfficers);
 
   const { searchValues } = useDocumentationSearch();
 
@@ -36,6 +39,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
   const { attachments, filteredAttachments, totalCount, isLoading, error } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
     tasks,
+    parties,
     search: searchValues.search,
     taskFilter: searchValues.taskFilter,
     fileTypeFilter: searchValues.fileTypeFilter,
@@ -48,14 +52,6 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
 
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prev) => !prev), []);
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prev) => !prev), []);
-
-  const getOfficerName = useCallback(
-    (officerGuid: string): string => {
-      const officer = officers?.find((o) => o.app_user_guid === officerGuid);
-      return officer ? `${officer.last_name}, ${officer.first_name}` : "";
-    },
-    [officers],
-  );
 
   const handleExportAttachmentsAndCsv = useCallback(async () => {
     let toastDownloadInfo: any;
@@ -81,7 +77,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
           a.description,
           a.title,
           a.date ? formatDateObjectAsString(parseUTCDateToLocal(a.date), { format: "date" }) : "",
-          getOfficerName(a.takenBy ?? ""),
+          a.takenByName ?? "",
           a.location,
           task ? `Task ${task.taskNumber}` : "",
           getDisplayFilename(a.name),
@@ -124,7 +120,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
     } finally {
       DismissToast(toastDownloadInfo);
     }
-  }, [filteredAttachments, tasks, investigationName, investigationGuid, getOfficerName]);
+  }, [filteredAttachments, tasks, investigationName, investigationGuid]);
 
   const renderDesktopFilterSection = () => (
     <Collapse

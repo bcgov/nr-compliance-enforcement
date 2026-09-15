@@ -6,7 +6,9 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_TASK_ATTACHMENT } from "@/app/types/modal/modal-types";
-import { Task } from "@/generated/graphql";
+import { Investigation, InvestigationParty, Task } from "@/generated/graphql";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 
@@ -22,10 +24,18 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
 
   const { searchValues } = useDocumentationSearch();
 
+  const { data } = useGraphQLQuery<{ getInvestigation: Investigation }>(GET_INVESTIGATION, {
+    queryKey: ["getInvestigation", investigationGuid],
+    variables: { investigationGuid },
+    enabled: !!investigationGuid,
+  });
+  const parties = (data?.getInvestigation?.parties ?? []).filter(Boolean) as InvestigationParty[];
+
   const { attachments, isLoading } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
     taskId: task?.taskIdentifier,
     tasks: task ? [task] : [],
+    parties,
     search: searchValues.search,
     taskFilter: searchValues.taskFilter,
     fileTypeFilter: searchValues.fileTypeFilter,
@@ -46,6 +56,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
           existingAttachments: attachments,
+          parties,
           defaultAssignee: task?.assignedUserIdentifier,
           onDirtyChange: handleChildDirtyChange,
         },
@@ -64,6 +75,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
           existingAttachments: attachments,
+          parties,
           attachment,
           onDirtyChange: handleChildDirtyChange,
         },

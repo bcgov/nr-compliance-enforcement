@@ -164,7 +164,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const [attachmentsBlocked, setAttachmentsBlocked] = useState(false);
 
   const enforcementActionSelectOptions = useMemo(() => {
-    const options = enforcementActionOptions.map((opt) => {
+    return enforcementActionOptions.map((opt) => {
       const isDisabled = isRestrictedToCommentDecisions && !NON_EA_DECISION_CODES.has(opt.value ?? "");
       if (!isDisabled) return opt;
 
@@ -174,20 +174,16 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         labelElement: <span className="enforcement-action-decision-option-disabled">{opt.label}</span>,
       };
     });
-
-    const dividerIndex = options.findIndex((opt) => opt.value === DIVIDER_BEFORE_CODE);
-    if (dividerIndex === -1) return options;
-
-    const dividerOption = {
-      value: "__enforcement_action_divider__",
-      label: "",
-      isDisabled: true,
-      isSeparator: true,
-      className: "enforcement-action-decision-divider mx-2 my-1",
-    };
-
-    return [...options.slice(0, dividerIndex), dividerOption, ...options.slice(dividerIndex)];
   }, [enforcementActionOptions, isRestrictedToCommentDecisions]);
+
+  const dividerIndex = enforcementActionSelectOptions.findIndex((opt) => opt.value === DIVIDER_BEFORE_CODE);
+  const enforcementActionSelectGroups =
+    dividerIndex === -1
+      ? enforcementActionSelectOptions
+      : [
+          { options: enforcementActionSelectOptions.slice(0, dividerIndex) },
+          { options: enforcementActionSelectOptions.slice(dividerIndex) },
+        ];
 
   const communityOptions = areaCodes.map((c) => ({
     value: c.area ?? "",
@@ -477,7 +473,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 id="enforcement-action-code"
                 classNamePrefix="comp-select"
                 className="comp-details-input"
-                options={enforcementActionSelectOptions}
+                options={enforcementActionSelectGroups}
                 value={enforcementActionSelectOptions.find((opt) => opt.value === field.state.value)}
                 onChange={(option) => {
                   field.handleChange(option?.value ?? "");

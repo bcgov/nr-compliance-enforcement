@@ -14,6 +14,7 @@ export interface Attachment extends COMSObject {
   enforcementActionId: string | null;
   taskNumber?: number;
   takenBy?: string | null;
+  takenByName?: string | null;
   sequenceNumber?: string | null;
   fileType?: string | null;
   description?: string | null;
