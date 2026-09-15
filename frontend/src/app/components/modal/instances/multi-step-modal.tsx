@@ -30,6 +30,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
   const [deleteFn, setDeleteFn] = useState<(() => Promise<void>) | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const title = titles?.[currentStep] ?? titles?.[0] ?? "";
 
@@ -70,6 +71,10 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
     setIsSaving(saving);
   }, []);
 
+  const handleIsBlockedChange = useCallback((blocked: boolean) => {
+    setIsBlocked(blocked);
+  }, []);
+
   return (
     <>
       <Modal.Header closeButton>
@@ -84,6 +89,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
           handleRequestDelete,
           submit,
           handleIsSavingChange,
+          handleIsBlockedChange,
         )}
 
         {showDeleteConfirm && (
@@ -135,6 +141,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
           nextButtonLabel={nextButtonLabel}
           hidePreviousButton={hidePreviousButton}
           isReadOnly={isReadOnly}
+          isBlocked={isBlocked}
         />
       </Modal.Footer>
     </>

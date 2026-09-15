@@ -2,11 +2,11 @@
 // Ensure that parameters in main method are updated as required.
 require("dotenv").config();
 const { Client } = require("pg");
-const faker = require("@faker-js/faker");
+const { faker } = require("@faker-js/faker");
 
 const client = new Client({
   host: process.env.COMPLAINT_OUTCOME_POSTGRESQL_HOST, //note make sure port not specified in .env file!
-  port: 5433,
+  port: 5432,
   database: process.env.COMPLAINT_OUTCOME_POSTGRESQL_DATABASE,
   user: process.env.COMPLAINT_OUTCOME_POSTGRESQL_USER,
   password: process.env.COMPLAINT_OUTCOME_POSTGRESQL_PASSWORD,
@@ -33,7 +33,7 @@ const generateHWCRCaseData = () => {
   const action_not_required_ind = faker.datatype.boolean(); // 50% chance of action required / not required.
 
   let generatedCase = {
-    complaint_outcome_guid: faker.datatype.uuid(), // Generates a random GUID (UUID)
+    complaint_outcome_guid: faker.string.uuid(), // Generates a random GUID (UUID)
     case_code: "HWCR",
     owned_by_agency_code: "COS",
     action_not_required_ind: action_not_required_ind,
@@ -44,16 +44,16 @@ const generateHWCRCaseData = () => {
     // If No action is required the only assessment data is the inaction reason
     return {
       ...generatedCase,
-      inaction_reason_code: faker.random.arrayElement(["DUPLICATE", "NOPUBSFTYC", "OTHOPRPRTY"]), // Random inaction reason
+      inaction_reason_code: faker.helpers.arrayElement(["DUPLICATE", "NOPUBSFTYC", "OTHOPRPRTY"]), // Random inaction reason
     };
   } else {
     return {
       ...generatedCase,
       complainant_contacted_ind: faker.datatype.boolean(), // True or false
       attended_ind: faker.datatype.boolean(), // True or false
-      case_location_code: faker.random.arrayElement(["RURAL", "URBAN", "WLDNS"]), // Random location code
-      case_conflict_history_code: faker.random.arrayElement(["L", "M", "H", "U"]), // Random conflict history
-      case_threat_level_code: faker.random.arrayElement(["1", "2", "3", "U"]), // Random threat level code
+      case_location_code: faker.helpers.arrayElement(["RURAL", "URBAN", "WLDNS"]), // Random location code
+      case_conflict_history_code: faker.helpers.arrayElement(["L", "M", "H", "U"]), // Random conflict history
+      case_threat_level_code: faker.helpers.arrayElement(["1", "2", "3", "U"]), // Random threat level code
     };
   }
 };
@@ -77,10 +77,10 @@ const generateLeadData = (year, num, complaint_outcome_guid) => {
 //    wildlife_guid = optional foreign key to wildlife record
 const generateActionData = (complaint_outcome_guid, actions, wildlife_guid = null) => {
   return {
-    action_guid: faker.datatype.uuid(), // Generates a random GUID (UUID)
+    action_guid: faker.string.uuid(), // Generates a random GUID (UUID)
     complaint_outcome_guid: complaint_outcome_guid,
-    action_type_action_xref_guid: faker.random.arrayElement(actions),
-    actor_guid: faker.datatype.uuid(), // Generates a random GUID (UUID) - This won't render properly in the app
+    action_type_action_xref_guid: faker.helpers.arrayElement(actions),
+    actor_guid: faker.string.uuid(), // Generates a random GUID (UUID) - This won't render properly in the app
     action_date: faker.date.recent().toISOString(),
     active_ind: true,
     equipment_guid: null, // Not implemented
@@ -94,12 +94,12 @@ const generateActionData = (complaint_outcome_guid, actions, wildlife_guid = nul
 //    complaint_outcome_guid = foreign key to case
 const generateWildlifeData = async (complaint_outcome_guid) => {
   return {
-    wildlife_guid: faker.datatype.uuid(),
+    wildlife_guid: faker.string.uuid(),
     complaint_outcome_guid: complaint_outcome_guid,
-    threat_level_code: faker.random.arrayElement(["1", "2", "3", "U"]), // Random threat level code
-    sex_code_ref: faker.random.arrayElement(["M", "F", "U"]), // Random sex code
-    age_code: faker.random.arrayElement(["ADLT", "YRLN", "YOFY", "UNKN"]), // Random age code
-    hwcr_outcome_code: faker.random.arrayElement([
+    threat_level_code: faker.helpers.arrayElement(["1", "2", "3", "U"]), // Random threat level code
+    sex_code_ref: faker.helpers.arrayElement(["M", "F", "U"]), // Random sex code
+    age_code: faker.helpers.arrayElement(["ADLT", "YRLN", "YOFY", "UNKN"]), // Random age code
+    hwcr_outcome_code: faker.helpers.arrayElement([
       "LESSLETHAL",
       "DEADONARR",
       "GONEONARR",
@@ -108,7 +108,7 @@ const generateWildlifeData = async (complaint_outcome_guid) => {
       "TRANSLCTD",
       "TRANSREHB",
     ]), // Random outcome code
-    species_code: faker.random.arrayElement([
+    species_code: faker.helpers.arrayElement([
       "BISON",
       "BLKBEAR",
       "RACCOON",
@@ -131,9 +131,9 @@ const generateWildlifeData = async (complaint_outcome_guid) => {
 //    complaint_outcome_guid = foreign key to case
 const generateSiteData = (complaint_outcome_guid) => {
   return {
-    site_guid: faker.datatype.uuid(), // Generates a random GUID (UUID)
+    site_guid: faker.string.uuid(), // Generates a random GUID (UUID)
     complaint_outcome_guid: complaint_outcome_guid,
-    site_id: faker.datatype.number({ min: 1, max: 9999999999 }).toString(),
+    site_id: faker.number.int({ min: 1, max: 9999999999 }).toString(),
     active_ind: true,
   };
 };
@@ -143,9 +143,9 @@ const generateSiteData = (complaint_outcome_guid) => {
 //    complaint_outcome_guid = foreign key to case
 const generateAuthorizationData = (complaint_outcome_guid) => {
   return {
-    authorization_permit_guid: faker.datatype.uuid(), //Generates a random GUID (UUID)
+    authorization_permit_guid: faker.string.uuid(), //Generates a random GUID (UUID)
     complaint_outcome_guid: complaint_outcome_guid,
-    authorization_permit_id: faker.datatype.number({ min: 1, max: 9999999999 }).toString(),
+    authorization_permit_id: faker.number.int({ min: 1, max: 9999999999 }).toString(),
     active_ind: true,
   };
 };
@@ -348,7 +348,7 @@ const insertHWCRData = async (records) => {
     // Bulk insert for case files
     if (caseValues.length > 0) {
       await client.query(
-        `INSERT INTO complaint_outcome.case_file (
+        `INSERT INTO complaint_outcome.complaint_outcome (
           complaint_outcome_guid, 
           case_code, 
           owned_by_agency_code, 
@@ -544,7 +544,7 @@ const insertCEEBData = async (records) => {
     // Bulk insert for case files
     if (caseValues.length > 0) {
       await client.query(
-        `INSERT INTO complaint_outcome.case_file (
+        `INSERT INTO complaint_outcome.complaint_outcome (
           complaint_outcome_guid, 
           case_code, 
           owned_by_agency_code, 
@@ -773,11 +773,11 @@ const PARTY_BUSINESS_CATEGORY_PAIRS = [
 ];
 
 // True pct percent of the time
-const chance = (pct) => faker.datatype.number({ min: 1, max: 100 }) <= pct;
+const chance = (pct) => faker.number.int({ min: 1, max: 100 }) <= pct;
 
 // Picks a value from a pool of [value, weight] entries
 const pickWeighted = (pool) => {
-  let roll = faker.datatype.number({ min: 1, max: pool.reduce((total, [, weight]) => total + weight, 0) });
+  let roll = faker.number.int({ min: 1, max: pool.reduce((total, [, weight]) => total + weight, 0) });
   for (const [value, weight] of pool) {
     roll -= weight;
     if (roll <= 0) return value;
@@ -786,31 +786,31 @@ const pickWeighted = (pool) => {
 };
 
 // The weighted pools are the head of the name curve, faker supplies the long tail
-const pickFirstName = () => (chance(20) ? faker.name.firstName() : pickWeighted(PARTY_FIRST_NAMES));
-const pickSurname = () => (chance(18) ? faker.name.lastName() : pickWeighted(PARTY_SURNAMES));
+const pickFirstName = () => (chance(20) ? faker.person.firstName() : pickWeighted(PARTY_FIRST_NAMES));
+const pickSurname = () => (chance(18) ? faker.person.lastName() : pickWeighted(PARTY_SURNAMES));
 
 // Generates a BC phone number in the E.164 form the phone input stores
 const generatePhone = () =>
-  `+1${faker.random.arrayElement(PARTY_AREA_CODES)}${faker.datatype.number({ min: 2000000, max: 9999999 })}`;
+  `+1${faker.helpers.arrayElement(PARTY_AREA_CODES)}${faker.number.int({ min: 2000000, max: 9999999 })}`;
 
-const generatePostalCode = () => faker.address.zipCode("V#? #?#");
+const generatePostalCode = () => faker.location.zipCode("V#? #?#");
 
 // Generates a date of birth.   Some are missing, the rest cluster by decade with a first of January data entry spike
 const generateBirthDate = () => {
   if (chance(12)) return null;
-  const year = pickWeighted(PARTY_BIRTH_DECADES) + faker.datatype.number({ min: 0, max: 9 });
+  const year = pickWeighted(PARTY_BIRTH_DECADES) + faker.number.int({ min: 0, max: 9 });
   if (chance(20)) return `${year}-01-01`;
-  return `${year}-${faker.datatype.number({ min: 1, max: 12 }).toString().padStart(2, "0")}-${faker.datatype.number({ min: 1, max: 28 }).toString().padStart(2, "0")}`;
+  return `${year}-${faker.number.int({ min: 1, max: 12 }).toString().padStart(2, "0")}-${faker.number.int({ min: 1, max: 28 }).toString().padStart(2, "0")}`;
 };
 
 // Sparse physical descriptors - most people carry only a few, and the booleans are mostly unrecorded
 const generateDescriptors = () => ({
-  sex_code: chance(55) ? faker.random.arrayElement(["M", "F", "U", "X"]) : null,
-  approximate_age_code: chance(15) ? faker.random.arrayElement(["18UNDER", "19TO39", "40TO59", "60OVER"]) : null,
-  height_cm: chance(30) ? faker.datatype.number({ min: 1400, max: 2000 }) / 10 : null,
-  weight_kg: chance(25) ? faker.datatype.number({ min: 450, max: 1300 }) / 10 : null,
+  sex_code: chance(55) ? faker.helpers.arrayElement(["M", "F", "U", "X"]) : null,
+  approximate_age_code: chance(15) ? faker.helpers.arrayElement(["18UNDER", "19TO39", "40TO59", "60OVER"]) : null,
+  height_cm: chance(30) ? faker.number.int({ min: 1400, max: 2000 }) / 10 : null,
+  weight_kg: chance(25) ? faker.number.int({ min: 450, max: 1300 }) / 10 : null,
   complexion_code: chance(8)
-    ? faker.random.arrayElement([
+    ? faker.helpers.arrayElement([
         "ALB",
         "BLK",
         "LBR",
@@ -826,13 +826,13 @@ const generateDescriptors = () => ({
         "YEL",
       ])
     : null,
-  build_code: chance(18) ? faker.random.arrayElement(["SL", "MD", "LG"]) : null,
+  build_code: chance(18) ? faker.helpers.arrayElement(["SL", "MD", "LG"]) : null,
   hair_colour_code: chance(25)
-    ? faker.random.arrayElement(["BLK", "BLN", "BRO", "GRY", "RED", "SDY", "WHI", "OTH"])
+    ? faker.helpers.arrayElement(["BLK", "BLN", "BRO", "GRY", "RED", "SDY", "WHI", "OTH"])
     : null,
-  hair_length_code: chance(12) ? faker.random.arrayElement(["BALD", "BUZZ", "SHORT", "MEDIUM", "LONG"]) : null,
+  hair_length_code: chance(12) ? faker.helpers.arrayElement(["BALD", "BUZZ", "SHORT", "MEDIUM", "LONG"]) : null,
   eye_colour_code: chance(20)
-    ? faker.random.arrayElement(["AMBER", "BLU", "BRO", "GRY", "GRN", "HAZ", "MUL", "OTH"])
+    ? faker.helpers.arrayElement(["AMBER", "BLU", "BRO", "GRY", "GRN", "HAZ", "MUL", "OTH"])
     : null,
   facial_hair_ind: chance(20) ? chance(60) : null,
   tattoo_ind: chance(15) ? chance(55) : null,
@@ -840,11 +840,11 @@ const generateDescriptors = () => ({
 
 // Generates an address row.   Household members are passed the household so they share the same address values
 const generateAddressRow = (party_guid, address_name, household = null) => ({
-  address_guid: faker.datatype.uuid(),
+  address_guid: faker.string.uuid(),
   party_guid: party_guid,
   address_name: address_name,
-  address: household ? household.address : faker.address.streetAddress(),
-  city: household ? household.city : faker.random.arrayElement(PARTY_CITIES),
+  address: household ? household.address : faker.location.streetAddress(),
+  city: household ? household.city : faker.helpers.arrayElement(PARTY_CITIES),
   country_subdivision_code: "CA-BC",
   postal_code: household ? household.postal_code : generatePostalCode(),
   country_code: "CA",
@@ -853,7 +853,7 @@ const generateAddressRow = (party_guid, address_name, household = null) => ({
 
 // Generates a contact method row.   Only one row per party and type may be primary
 const generateContactMethodRow = (party_guid, contact_method_type, contact_value, is_primary) => ({
-  contact_method_guid: faker.datatype.uuid(),
+  contact_method_guid: faker.string.uuid(),
   party_guid: party_guid,
   contact_method_type: contact_method_type,
   contact_value: contact_value,
@@ -862,11 +862,11 @@ const generateContactMethodRow = (party_guid, contact_method_type, contact_value
 
 // Generates an alias row - a nickname, alone or with the surname, or an initialled name
 const generateAliasRow = (party_guid, person) => ({
-  alias_guid: faker.datatype.uuid(),
+  alias_guid: faker.string.uuid(),
   party_guid: party_guid,
-  name: faker.random.arrayElement([
-    faker.random.arrayElement(PARTY_NICKNAMES),
-    `${faker.random.arrayElement(PARTY_NICKNAMES)} ${person.last_name}`,
+  name: faker.helpers.arrayElement([
+    faker.helpers.arrayElement(PARTY_NICKNAMES),
+    `${faker.helpers.arrayElement(PARTY_NICKNAMES)} ${person.last_name}`,
     `${person.first_name.charAt(0)} ${person.last_name}`,
   ]),
 });
@@ -876,7 +876,7 @@ let nextBusinessNumber = 100000000;
 let nextWsbcNumber = 100000;
 
 const generateBusinessIdentifierRow = (business_guid, business_identifier_code, identifier_value) => ({
-  business_identifier_guid: faker.datatype.uuid(),
+  business_identifier_guid: faker.string.uuid(),
   business_guid: business_guid,
   business_identifier_code: business_identifier_code,
   identifier_value: identifier_value,
@@ -885,8 +885,8 @@ const generateBusinessIdentifierRow = (business_guid, business_identifier_code, 
 // Generates the address and home phone shared by the members of one household
 const generateHousehold = () => ({
   last_name: pickSurname(),
-  address: faker.address.streetAddress(),
-  city: faker.random.arrayElement(PARTY_CITIES),
+  address: faker.location.streetAddress(),
+  city: faker.helpers.arrayElement(PARTY_CITIES),
   postal_code: generatePostalCode(),
   phone: generatePhone(),
 });
@@ -896,18 +896,18 @@ const generateHousehold = () => ({
 //    party_type = PRS for a person party, CNT for a business contact
 //    household = optional household whose address and home phone the person shares
 const generatePersonParty = (party_type, household = null) => {
-  const party_guid = faker.datatype.uuid();
+  const party_guid = faker.string.uuid();
   const first_name = pickFirstName();
   const last_name = household && chance(80) ? household.last_name : pickSurname();
 
   const person = {
-    person_guid: faker.datatype.uuid(),
+    person_guid: faker.string.uuid(),
     party_guid: party_guid,
     first_name: first_name,
     middle_names: chance(30) ? pickFirstName() : null,
     last_name: last_name,
     date_of_birth: generateBirthDate(),
-    drivers_license_number: chance(60) ? faker.datatype.number({ min: 1000000, max: 9999999 }).toString() : null,
+    drivers_license_number: chance(60) ? faker.number.int({ min: 1000000, max: 9999999 }).toString() : null,
     ...generateDescriptors(),
   };
 
@@ -923,7 +923,7 @@ const generatePersonParty = (party_type, household = null) => {
   if (chance(35)) contactMethods.push(generateContactMethodRow(party_guid, "PHONE", generatePhone(), false));
   if (chance(45))
     contactMethods.push(
-      generateContactMethodRow(party_guid, "EMAILADDR", faker.internet.email(first_name, last_name), true),
+      generateContactMethodRow(party_guid, "EMAILADDR", faker.internet.email({ firstName: first_name, lastName: last_name }), true),
     );
 
   return {
@@ -946,7 +946,7 @@ const generateContactParty = () => {
     generateContactMethodRow(
       contact.party_guid,
       "EMAILADDR",
-      faker.internet.email(contact.person.first_name, contact.person.last_name),
+      faker.internet.email({ firstName: contact.person.first_name, lastName: contact.person.last_name }),
       true,
     ),
   ];
@@ -958,9 +958,9 @@ const generateContactParty = () => {
 //    stem = the leading words of the legal name, shared by vocabulary neighbours
 //    category = the category word that distinguishes the legal name from its neighbour
 const generateBusinessParty = (stem, category) => {
-  const party_guid = faker.datatype.uuid();
-  const business_guid = faker.datatype.uuid();
-  const name = `${stem} ${category} ${faker.random.arrayElement(PARTY_BUSINESS_SUFFIXES)}`;
+  const party_guid = faker.string.uuid();
+  const business_guid = faker.string.uuid();
+  const name = `${stem} ${category} ${faker.helpers.arrayElement(PARTY_BUSINESS_SUFFIXES)}`;
 
   const identifiers = [];
   if (chance(80))
@@ -972,7 +972,7 @@ const generateBusinessParty = (stem, category) => {
   for (let i = 0; i < contactCount; i++) {
     const contact = generateContactParty();
     contact.xref = {
-      business_person_xref_guid: faker.datatype.uuid(),
+      business_person_xref_guid: faker.string.uuid(),
       business_guid: business_guid,
       person_guid: contact.person.person_guid,
       business_person_xref_code: "CONT",
@@ -985,7 +985,7 @@ const generateBusinessParty = (stem, category) => {
   if (chance(70)) contactMethods.push(generateContactMethodRow(party_guid, "PHONE", generatePhone(), true));
   if (chance(60))
     contactMethods.push(
-      generateContactMethodRow(party_guid, "EMAILADDR", faker.internet.email("info", stem.replace(/\W/g, "")), true),
+      generateContactMethodRow(party_guid, "EMAILADDR", faker.internet.email({ firstName: "info", lastName: stem.replace(/\W/g, "") }), true),
     );
 
   return {
@@ -1003,14 +1003,14 @@ const generateBusinessParty = (stem, category) => {
 // Generates the next group of parties - a business (sometimes with its vocabulary neighbour), a household, or a lone person
 const generatePartyRecords = () => {
   if (chance(10)) {
-    const stem = `${faker.random.arrayElement(PARTY_BUSINESS_REGIONS)} ${faker.random.arrayElement(PARTY_BUSINESS_FEATURES)}`;
-    const categories = faker.random.arrayElement(PARTY_BUSINESS_CATEGORY_PAIRS);
+    const stem = `${faker.helpers.arrayElement(PARTY_BUSINESS_REGIONS)} ${faker.helpers.arrayElement(PARTY_BUSINESS_FEATURES)}`;
+    const categories = faker.helpers.arrayElement(PARTY_BUSINESS_CATEGORY_PAIRS);
     if (chance(30)) return [generateBusinessParty(stem, categories[0]), generateBusinessParty(stem, categories[1])];
-    return [generateBusinessParty(stem, faker.random.arrayElement(categories))];
+    return [generateBusinessParty(stem, faker.helpers.arrayElement(categories))];
   }
   if (chance(35)) {
     const household = generateHousehold();
-    return Array.from({ length: faker.datatype.number({ min: 2, max: 4 }) }, () =>
+    return Array.from({ length: faker.number.int({ min: 2, max: 4 }) }, () =>
       generatePersonParty("PRS", household),
     );
   }
@@ -1551,8 +1551,8 @@ const main = async () => {
   // This script assumes requisite complaint data exists and that there are no conflicts in the case management database
   const yearPrefix = 25; // The year prefix of the complaint
   const startingSequence = 0; // The complaint sequence number you want to start at
-  const numRecords = 4000; // How many records are being generated.  4K Max for HWCR and CEEB, no maximum for PARTY
-  const type = "HWCR"; // The Type of case to generate.   Currently supported: HWCR, CEEB, PARTY
+  const numRecords = 50; // How many records are being generated.  4K Max for HWCR and CEEB, no maximum for PARTY
+  const type = "CEEB"; // The Type of case to generate.   Currently supported: HWCR, CEEB, PARTY
   const disableTriggers = false; // PARTY only.  Turns off the audit history triggers for the load
 
   // Party data is generated and inserted in chunks, so it takes neither the complaint parameters nor the cap

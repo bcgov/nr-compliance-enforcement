@@ -6,6 +6,7 @@ type Props = {
   onFileSelect: (selectedFile: FileList) => void;
   previousValues: COMSObject[] | null; // existing files that were previously selected for accurate counts and sizes
   disabled?: boolean | null;
+  /** Renders the drop zone in a reduced-height layout, for use alongside thumbnails in modals. */
 };
 
 const formatFileSize = (bytes: number): string => {
