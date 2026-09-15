@@ -24,12 +24,14 @@ import { format } from "date-fns";
 import { getPartyName } from "@/app/common/party-name";
 import Option from "@apptypes/app/option";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
   communityCode: string;
   selectedSection: string;
-  selectedPartyGuid?: string | null;
+  // Edit mode selects a single party; add mode selects one or more
+  selectedPartyGuids: (string | null)[];
 }
 
 interface ContraventionDetailsFormProps {
@@ -45,6 +47,8 @@ interface ContraventionDetailsFormProps {
 }
 
 type LegislationFieldName = "act" | "regulation" | "section" | "subsection";
+
+const UNKNOWN_PARTY_VALUE = "UNKNOWN";
 
 const getLegislationViewUrl = (sourceUrl: string | null, isRegulation: boolean): URL | null => {
   if (!sourceUrl) return null;
@@ -126,6 +130,8 @@ export const ContraventionDetailsForm = ({
       contraventionDate: defaultDate as Date | null,
       communityCode: defaultCommunity,
       subsection: "",
+      parties: [] as Option[],
+      party: partyGuid ?? UNKNOWN_PARTY_VALUE,
     },
     onSubmit: async () => {},
   });
@@ -159,7 +165,7 @@ export const ContraventionDetailsForm = ({
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
 
-  const [party, setParty] = useState(partyGuid ?? "");
+  const [party, setParty] = useState(partyGuid ?? UNKNOWN_PARTY_VALUE);
 
   const contraventionDate = useStore(form.baseStore, (state) => state.values.contraventionDate);
   const formattedContraventionDate = contraventionDate ? format(contraventionDate, "yyyy-MM-dd") : undefined;
@@ -171,6 +177,9 @@ export const ContraventionDetailsForm = ({
         label: getPartyName(party),
         value: party.partyIdentifier,
       })) ?? [];
+
+  // "Unknown" is pinned to the top of the list and maps to a null investigation_party_guid on save
+  const partySelectOptions: Option[] = [{ value: UNKNOWN_PARTY_VALUE, label: "Unknown" }, ...partyOptions];
 
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
@@ -262,7 +271,11 @@ export const ContraventionDetailsForm = ({
       contraventionDate: formattedContraventionDate ?? "",
       communityCode: form.getFieldValue("communityCode"),
       selectedSection: form.getFieldValue("subsection"),
-      selectedPartyGuid: party || null,
+      selectedPartyGuids: isEditMode
+        ? [party && party !== UNKNOWN_PARTY_VALUE ? party : null]
+        : form
+            .getFieldValue("parties")
+            .map((option) => (!option.value || option.value === UNKNOWN_PARTY_VALUE ? null : option.value)),
     }),
     [formattedContraventionDate, form, party],
   );
@@ -396,6 +409,66 @@ export const ContraventionDetailsForm = ({
             />
           </div>
         </div>
+
+        {isEditMode ? (
+          <FormField
+            form={form}
+            name="party"
+            label="Party"
+            required
+            validators={{
+              onChange: z.string().min(1, "Party is required"),
+              onSubmit: z.string().min(1, "Party is required"),
+            }}
+            render={(field) => (
+              <CompSelect
+                id="party-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input mb-1"
+                options={partySelectOptions}
+                value={findOptionByValue(partySelectOptions, party)}
+                onChange={(option) => {
+                  markDirty();
+                  const value = option?.value || "";
+                  field.handleChange(value);
+                  setParty(value);
+                }}
+                placeholder="Select party"
+                isClearable={true}
+                showInactive={false}
+                enableValidation={false}
+              />
+            )}
+          />
+        ) : (
+          <FormField
+            form={form}
+            name="parties"
+            label="Party"
+            required
+            validators={{
+              onSubmit: z
+                .array(z.object({ value: z.string(), label: z.string() }))
+                .min(1, "At least one party is required"),
+            }}
+            render={(field) => (
+              <ValidationMultiSelect
+                id="party-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                options={partySelectOptions}
+                values={field.state.value}
+                onChange={(option: Option) => {
+                  field.handleChange(option);
+                  markDirty();
+                }}
+                placeholder="Select party"
+                isClearable={true}
+                errMsg={field.state.meta.errors?.[0]?.message || ""}
+              />
+            )}
+          />
+        )}
 
         {form.getFieldValue("contraventionDate") && (
           <FormField
@@ -619,32 +692,6 @@ export const ContraventionDetailsForm = ({
                   <div className="error-message mt-2">{field.state.meta.errors[0].message}</div>
                 )}
               </div>
-            )}
-          />
-        )}
-        {isEditMode && (
-          <FormField
-            form={form}
-            name="party"
-            label="Party"
-            render={(field) => (
-              <CompSelect
-                id="party-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input mb-1"
-                options={partyOptions}
-                value={findOptionByValue(partyOptions, party)}
-                onChange={(option) => {
-                  markDirty();
-                  const value = option?.value || "";
-                  field.handleChange(value);
-                  setParty(value);
-                }}
-                placeholder="Select party"
-                isClearable={true}
-                showInactive={false}
-                enableValidation={false}
-              />
             )}
           />
         )}
