@@ -1077,6 +1077,10 @@ td.actions-col {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  label {
+    color: $gray-700;
+  }
 }
 
 .party-contact-method {
