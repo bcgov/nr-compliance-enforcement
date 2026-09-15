@@ -9,8 +9,8 @@ import { COMSObject } from "@/app/types/coms/object";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
-import { fetchAttachmentsWithMetadata } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 import { bulkDownload, BulkDownloadProgressCallback, FileWithPresignedUrl } from "@/app/store/reducers/bulk-download";
+import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
 
 export const generateExportComplaintInputParams = (
   id: string,
@@ -53,10 +53,15 @@ export const generateExportComplaintInputParams = (
   return exportComplaintInput;
 };
 
-export const generateExportTaskInputParams = (taskId: string, taskNumber: number, attachments?: COMSObject[]) => {
+export const generateExportTaskInputParams = (
+  investigationGuid: string,
+  taskId: string,
+  taskNumber: number,
+  attachments?: COMSObject[],
+) => {
   const fileName = `T${taskNumber}_Task_Report_${format(new Date(), "yyMMdd")}.pdf`;
   const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  return { taskId, fileName, tz, attachments } as ExportTaskInput;
+  return { investigationGuid, taskId, fileName, tz, attachments } as ExportTaskInput;
 };
 
 export const generateExportContinuationReportParams = (investigationGuid: string) => {
@@ -241,7 +246,7 @@ export const exportTask =
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      const exportTaskInput = generateExportTaskInputParams(taskId, taskNumber, attachments);
+      const exportTaskInput = generateExportTaskInputParams(investigationId, taskId, taskNumber, attachments);
 
       const url = `${config.API_BASE_URL}/v1/document/export-task`;
 
@@ -284,7 +289,12 @@ export const exportTasksList =
             .filter((a) => a.taskId === taskIdentifier)
             .sort((a, b) => new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime());
 
-          const exportTaskInput = generateExportTaskInputParams(taskIdentifier, taskNumber, attachments);
+          const exportTaskInput = generateExportTaskInputParams(
+            investigationGuid,
+            taskIdentifier,
+            taskNumber,
+            attachments,
+          );
           const response = await axios.post(exportTaskUrl, exportTaskInput, { responseType: "arraybuffer" });
 
           const pdfBlob = new Blob([response.data], { type: "application/pdf" });
