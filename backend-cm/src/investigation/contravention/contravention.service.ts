@@ -171,53 +171,37 @@ export class ContraventionService {
 
         if (!originalContravention) throw new Error("Contravention not found");
 
-        const investigationPartyGuid = input.investigationPartyGuids?.[0];
+        const investigationPartyGuid = input.investigationPartyGuids?.[0] ?? null;
 
-        if (investigationPartyGuid === null) {
-          if (input.selectedPartyGuid) {
-            await db.contravention_party_xref.updateMany({
-              where: {
-                contravention_guid: contraventionGuid,
-                active_ind: true,
-                investigation_party_guid: input.selectedPartyGuid,
-              },
-              data: {
-                active_ind: false,
-                update_user_id: this.user.getIdirUsername(),
-                update_utc_timestamp: new Date(),
-              },
-            });
-          }
+        const existingParty = originalContravention.contravention_party_xref.filter(
+          (xref) => xref.investigation_party_guid == input.selectedPartyGuid,
+        );
+
+        if (existingParty?.length > 0) {
+          await db.contravention_party_xref.updateMany({
+            where: {
+              contravention_guid: contraventionGuid,
+              investigation_party_guid: existingParty[0].investigation_party_guid,
+              active_ind: true,
+            },
+            data: {
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+              investigation_party_guid: investigationPartyGuid,
+            },
+          });
         } else {
-          const existingParty = originalContravention.contravention_party_xref.filter(
-            (xref) => xref.investigation_party_guid == input.selectedPartyGuid,
-          );
-
-          if (existingParty?.length > 0) {
-            await db.contravention_party_xref.updateMany({
-              where: {
-                contravention_guid: contraventionGuid,
-                investigation_party_guid: existingParty[0].investigation_party_guid,
-                active_ind: true,
-              },
-              data: {
-                update_user_id: this.user.getIdirUsername(),
-                update_utc_timestamp: new Date(),
-                investigation_party_guid: investigationPartyGuid,
-              },
-            });
-          } else {
-            await db.contravention_party_xref.create({
-              data: {
-                contravention_guid: contraventionGuid,
-                investigation_party_guid: investigationPartyGuid,
-                active_ind: true,
-                create_user_id: this.user.getIdirUsername(),
-                create_utc_timestamp: new Date(),
-              },
-            });
-          }
+          await db.contravention_party_xref.create({
+            data: {
+              contravention_guid: contraventionGuid,
+              investigation_party_guid: investigationPartyGuid,
+              active_ind: true,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+            },
+          });
         }
+
         await db.contravention.update({
           where: { contravention_guid: contraventionGuid },
           data: {
