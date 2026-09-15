@@ -18,9 +18,6 @@ export class administrative_penalty {
   @ApiProperty({ type: String })
   administrative_penalty_status_code: string;
 
-  @ApiPropertyOptional({ type: String })
-  comment?: string;
-
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
 

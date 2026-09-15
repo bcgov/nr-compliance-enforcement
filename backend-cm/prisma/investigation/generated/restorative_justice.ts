@@ -17,9 +17,6 @@ export class restorative_justice {
   @ApiPropertyOptional({ type: Boolean })
   remediation_required_ind?: boolean;
 
-  @ApiPropertyOptional({ type: String })
-  comment?: string;
-
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
 

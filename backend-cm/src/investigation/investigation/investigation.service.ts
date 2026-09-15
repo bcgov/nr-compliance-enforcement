@@ -28,6 +28,7 @@ import { PARTY_TYPES } from "src/common/party";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
 import { CosGeoOrgUnitService } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.service";
+import { DECISION_DETAIL_INCLUDE } from "../enforcement_action/enforcement_action.constants";
 import { TaskStatus } from "src/enum/task-status.enum";
 import { InvestigationStatus } from "src/enum/investigation-status.enum";
 
@@ -191,12 +192,7 @@ export class InvestigationService {
                           active_ind: true,
                         },
                       },
-                      warning: { where: { active_ind: true } },
-                      administrative_sanction: { where: { active_ind: true } },
-                      enforcement_order: { where: { active_ind: true } },
-                      restorative_justice: { where: { active_ind: true } },
-                      court_prosecution: { where: { active_ind: true } },
-                      administrative_penalty: { where: { active_ind: true } },
+                      ...DECISION_DETAIL_INCLUDE,
                       enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
                       contravention_party_xref: {
                         include: {

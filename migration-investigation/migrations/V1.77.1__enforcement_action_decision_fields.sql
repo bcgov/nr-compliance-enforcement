@@ -447,7 +447,6 @@ CREATE TABLE
         effective_date DATE NOT NULL,
         end_date DATE NOT NULL,
         sanction_status_code VARCHAR(16) NOT NULL REFERENCES investigation.sanction_status_code (sanction_status_code),
-        comment TEXT,
         active_ind BOOLEAN DEFAULT true NOT NULL,
         create_user_id VARCHAR(32) NOT NULL,
         create_utc_timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT now () NOT NULL,
@@ -468,8 +467,6 @@ COMMENT ON COLUMN investigation.administrative_sanction.effective_date IS 'The d
 COMMENT ON COLUMN investigation.administrative_sanction.end_date IS 'The date the administrative sanction ends.';
 
 COMMENT ON COLUMN investigation.administrative_sanction.sanction_status_code IS 'Foreign key to sanction_status_code. Code representing the current status of the sanction.';
-
-COMMENT ON COLUMN investigation.administrative_sanction.comment IS 'Freeform comment about the administrative sanction.';
 
 COMMENT ON COLUMN investigation.administrative_sanction.active_ind IS 'A boolean indicator to determine if the administrative sanction is active. Inactive values are retained for legacy data integrity and history.';
 
@@ -798,7 +795,6 @@ CREATE TABLE
         hearing_date DATE,
         decision_date DATE,
         remediation_required_ind BOOLEAN,
-        comment TEXT,
         active_ind BOOLEAN DEFAULT true NOT NULL,
         create_user_id VARCHAR(32) NOT NULL,
         create_utc_timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT now () NOT NULL,
@@ -817,8 +813,6 @@ COMMENT ON COLUMN investigation.restorative_justice.hearing_date IS 'The date of
 COMMENT ON COLUMN investigation.restorative_justice.decision_date IS 'The date the restorative justice decision was made, if any.';
 
 COMMENT ON COLUMN investigation.restorative_justice.remediation_required_ind IS 'A boolean indicator to determine if remediation is required as part of the restorative justice process.';
-
-COMMENT ON COLUMN investigation.restorative_justice.comment IS 'Freeform comment about the restorative justice process.';
 
 COMMENT ON COLUMN investigation.restorative_justice.active_ind IS 'A boolean indicator to determine if the restorative justice record is active. Inactive values are retained for legacy data integrity and history.';
 
@@ -1189,7 +1183,6 @@ CREATE TABLE
         approval_ind BOOLEAN,
         remediation_required_ind BOOLEAN,
         administrative_penalty_status_code VARCHAR(16) NOT NULL REFERENCES investigation.administrative_penalty_status_code (administrative_penalty_status_code),
-        comment TEXT,
         active_ind BOOLEAN DEFAULT true NOT NULL,
         create_user_id VARCHAR(32) NOT NULL,
         create_utc_timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT now () NOT NULL,
@@ -1208,8 +1201,6 @@ COMMENT ON COLUMN investigation.administrative_penalty.approval_ind IS 'A boolea
 COMMENT ON COLUMN investigation.administrative_penalty.remediation_required_ind IS 'A boolean indicator to determine if remediation is required as part of the administrative penalty.';
 
 COMMENT ON COLUMN investigation.administrative_penalty.administrative_penalty_status_code IS 'Foreign key to administrative_penalty_status_code. Code representing the current status of the administrative penalty.';
-
-COMMENT ON COLUMN investigation.administrative_penalty.comment IS 'Freeform comment about the administrative penalty.';
 
 COMMENT ON COLUMN investigation.administrative_penalty.active_ind IS 'A boolean indicator to determine if the administrative penalty is active. Inactive values are retained for legacy data integrity and history.';
 

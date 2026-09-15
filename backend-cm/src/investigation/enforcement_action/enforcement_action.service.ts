@@ -11,31 +11,7 @@ import {
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { InvestigationService } from "../investigation/investigation.service";
 import { InvestigationPartyService } from "../investigation_party/investigation_party_service";
-
-// Every enforcement action code that has its own decision-detail table, and the table it maps
-// to. Unfounded/Unresolved (comment only) and Violation Ticket (the pre-existing ticket table,
-// handled separately) are intentionally excluded here.
-const DECISION_DETAIL_TABLES = [
-  "warning",
-  "administrative_sanction",
-  "enforcement_order",
-  "restorative_justice",
-  "court_prosecution",
-  "administrative_penalty",
-] as const;
-
-type DecisionDetailTable = (typeof DECISION_DETAIL_TABLES)[number];
-
-const activeDetailInclude = { where: { active_ind: true } };
-
-const DECISION_DETAIL_INCLUDE = {
-  warning: activeDetailInclude,
-  administrative_sanction: activeDetailInclude,
-  enforcement_order: activeDetailInclude,
-  restorative_justice: activeDetailInclude,
-  court_prosecution: activeDetailInclude,
-  administrative_penalty: activeDetailInclude,
-};
+import { DECISION_DETAIL_TABLES, DecisionDetailTable, DECISION_DETAIL_INCLUDE } from "./enforcement_action.constants";
 
 @Injectable()
 export class EnforcementActionService {
@@ -67,7 +43,6 @@ export class EnforcementActionService {
             effective_date: input.effectiveDate,
             end_date: input.endDate,
             sanction_status_code: input.sanctionStatusCode,
-            comment: input.comment ?? null,
           },
         };
       case "ORDR":
@@ -87,7 +62,6 @@ export class EnforcementActionService {
             hearing_date: input.hearingDate ?? null,
             decision_date: input.decisionDate ?? null,
             remediation_required_ind: input.remediationRequired ?? null,
-            comment: input.comment ?? null,
           },
         };
       case "CTPR":
@@ -106,7 +80,6 @@ export class EnforcementActionService {
             approval_ind: input.approvalInd ?? null,
             remediation_required_ind: input.remediationRequired ?? null,
             administrative_penalty_status_code: input.administrativePenaltyStatusCode,
-            comment: input.comment ?? null,
           },
         };
       default:

@@ -130,16 +130,7 @@ export const mapPrismaEnforcementActionToEnforcementAction = (mapper: Mapper) =>
     ),
     forMember(
       (dest) => dest.comment,
-      // Unfounded/Unresolved store comment directly; Administrative Sanction/Restorative
-      // Justice/Administrative Penalty store it on their own decision-detail table.
-      mapFrom(
-        (src) =>
-          src.comment ??
-          src.administrative_sanction?.[0]?.comment ??
-          src.restorative_justice?.[0]?.comment ??
-          src.administrative_penalty?.[0]?.comment ??
-          null,
-      ),
+      mapFrom((src) => src.comment ?? null),
     ),
     forMember(
       (dest) => dest.issuingOfficerIdentifier,

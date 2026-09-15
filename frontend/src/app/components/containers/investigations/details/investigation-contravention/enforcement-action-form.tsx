@@ -38,27 +38,21 @@ import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
-import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
 import Option from "@apptypes/app/option";
 import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
-import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
-
-const CODE_WARNING = "WARN";
-const CODE_VIOLATION_TICKET = "FDVT";
-const CODE_ADMINISTRATIVE_SANCTION = "ADSN";
-const CODE_ORDER = "ORDR";
-const CODE_RESTORATIVE_JUSTICE = "RJUS";
-const CODE_COURT_PROSECUTION = "CTPR";
-const CODE_ADMINISTRATIVE_PENALTY = "ADPN";
-const DIVIDER_BEFORE_CODE = "ADPN"; // Administrative Penalty
-
-// Decisions that record a "Comments" field
-const COMMENT_DECISION_CODES = new Set([
+import {
+  NON_EA_DECISION_CODES,
+  CODE_WARNING,
+  CODE_VIOLATION_TICKET,
   CODE_ADMINISTRATIVE_SANCTION,
+  CODE_ORDER,
   CODE_RESTORATIVE_JUSTICE,
+  CODE_COURT_PROSECUTION,
   CODE_ADMINISTRATIVE_PENALTY,
-]);
+  COMMENT_DECISION_CODES,
+} from "./enforcement-action-constants";
+import { Attachment } from "@/app/common/attachment-utils";
 
 const YES_NO_OPTIONS = [
   { value: "true", label: "Yes" },
@@ -161,13 +155,14 @@ interface EnforcementActionFormProps {
   party?: InvestigationParty;
   primaryInvestigatorGuid?: string;
   enforcementAction?: EnforcementAction;
-  existingAttachments: EnforcementActionAttachment[];
+  existingAttachments: Attachment[];
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
   onRequestSave: (fn: () => Promise<void>) => void;
   onRequestDelete?: (fn: () => Promise<void>) => void;
   onIsSavingChange?: (isSaving: boolean) => void;
   onClose: () => void;
+  onIsBlockedChange?: (isBlocked: boolean) => void;
 }
 
 export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
@@ -183,6 +178,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   onRequestDelete,
   onIsSavingChange,
   onClose,
+  onIsBlockedChange,
 }) => {
   const isEdit = !!enforcementAction;
   const attachmentsRef = useRef<EnforcementActionAttachmentSectionHandle>(null);
@@ -206,6 +202,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const administrativePenaltyStatusOptions = useAppSelector(selectAdministrativePenaltyStatuses);
 
   const isRestrictedToCommentDecisions = !isPartyProfileComplete(party);
+
+  const [attachmentsDirty, setAttachmentsDirty] = useState(false);
+  const [attachmentsBlocked, setAttachmentsBlocked] = useState(false);
+
   const enforcementActionSelectOptions = useMemo(() => {
     const options = enforcementActionOptions.map((opt) => {
       const isDisabled = isRestrictedToCommentDecisions && !NON_EA_DECISION_CODES.has(opt.value ?? "");
@@ -218,7 +218,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       };
     });
 
-    const dividerIndex = options.findIndex((opt) => opt.value === DIVIDER_BEFORE_CODE);
+    const dividerIndex = options.findIndex((opt) => opt.value === CODE_ADMINISTRATIVE_PENALTY);
     if (dividerIndex === -1) return options;
 
     const dividerOption = {
@@ -331,7 +331,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     return !hasErrors;
   };
 
-  const [attachmentsDirty, setAttachmentsDirty] = useState(false);
   const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
@@ -340,6 +339,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   useEffect(() => {
     onDirtyChange?.(0, isDirty);
   }, [isDirty, onDirtyChange]);
+
+  useEffect(() => {
+    onIsBlockedChange?.(attachmentsBlocked);
+  }, [attachmentsBlocked, onIsBlockedChange]);
 
   useEffect(() => {
     return () => {
@@ -641,22 +644,24 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     );
   };
 
-  const renderTextField = (name: string, label: string, placeholder: string, config: { required?: boolean } = {}) => {
-    const { required = false } = config;
+  const renderTextField = (
+    name: string,
+    label: string,
+    placeholder: string,
+    config: { required?: boolean; maxLength?: number } = {},
+  ) => {
+    const { required = false, maxLength } = config;
+    let validator = z.string();
+    if (required) validator = validator.min(1, `${label} is required`);
+    if (maxLength !== undefined) validator = validator.max(maxLength, `${label} must be ${maxLength} characters or fewer`);
+    const validators = required || maxLength !== undefined ? { onChange: validator, onSubmit: validator } : undefined;
     return (
       <FormField
         form={form}
         name={name}
         label={label}
         required={required}
-        validators={
-          required
-            ? {
-                onChange: z.string().min(1, `${label} is required`),
-                onSubmit: z.string().min(1, `${label} is required`),
-              }
-            : undefined
-        }
+        validators={validators}
         render={(field) => (
           <CompInput
             id={`enforcement-action-${name}`}
@@ -667,6 +672,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             onChange={(evt: any) => field.handleChange(evt.target.value)}
             value={field.state.value}
             placeholder={placeholder}
+            maxLength={maxLength}
           />
         )}
       />
@@ -726,9 +732,17 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 options={enforcementActionSelectOptions}
                 value={enforcementActionSelectOptions.find((opt) => opt.value === field.state.value)}
                 onChange={(option) => {
-                  field.handleChange(option?.value ?? "");
-                  setSelectedCode(option?.value ?? "");
-                  setHasDecision(!!option?.value);
+                  const newCode = option?.value ?? "";
+                  // The comment field is shared across decision types (Unfounded/Unresolved plus
+                  // Administrative Sanction/Restorative Justice/Administrative Penalty) - clear it
+                  // when the decision type changes so a comment written for one decision can't be
+                  // carried over and saved against a different one.
+                  if (newCode !== selectedCode) {
+                    form.setFieldValue("comment", "");
+                  }
+                  field.handleChange(newCode);
+                  setSelectedCode(newCode);
+                  setHasDecision(!!newCode);
                 }}
                 placeholder="Select"
                 isClearable
@@ -784,7 +798,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           {isWarning && (
             <div className="row mb-3">
               <div className="col-6">
-                {renderTextField("warningNumber", "Warning number", "Enter warning number", { required: true })}
+                {renderTextField("warningNumber", "Warning number", "Enter warning number", {
+                  required: true,
+                  maxLength: 32,
+                })}
               </div>
             </div>
           )}
@@ -800,7 +817,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                   })}
                 </div>
                 <div className="col-6">
-                  {renderTextField("ticketNumber", "Ticket number", "Enter ticket number", { required: true })}
+                  {renderTextField("ticketNumber", "Ticket number", "Enter ticket number", {
+                    required: true,
+                    maxLength: 32,
+                  })}
                 </div>
               </div>
               <div className="row mb-3">
@@ -1002,6 +1022,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             investigationGuid={investigationGuid}
             existingAttachments={existingAttachments}
             onDirtyChange={setAttachmentsDirty}
+            onBlockedChange={setAttachmentsBlocked}
           />
         </>
       )}

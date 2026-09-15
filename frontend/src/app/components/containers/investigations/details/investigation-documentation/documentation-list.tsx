@@ -9,7 +9,7 @@ import { Task } from "@/generated/graphql";
 import { getDisplayFilename } from "@common/attachment-utils";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
-import { Attachment } from "./hooks/use-investigation-attachments";
+import { Attachment } from "@/app/common/attachment-utils";
 import { SORT_TYPES } from "@constants/sort-direction";
 import config from "@/config";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";

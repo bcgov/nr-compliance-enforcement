@@ -953,7 +953,6 @@ model administrative_penalty {
   approval_ind                                                                                                                     Boolean?
   remediation_required_ind                                                                                                         Boolean?
   administrative_penalty_status_code                                                                                               String                             @db.VarChar(16)
-  comment                                                                                                                          String?
   active_ind                                                                                                                       Boolean                            @default(true)
   create_user_id                                                                                                                   String                             @db.VarChar(32)
   create_utc_timestamp                                                                                                             DateTime                           @default(now()) @db.Timestamp(6)
@@ -1001,7 +1000,6 @@ model administrative_sanction {
   effective_date                                                                          DateTime             @db.Date
   end_date                                                                                DateTime             @db.Date
   sanction_status_code                                                                    String               @db.VarChar(16)
-  comment                                                                                 String?
   active_ind                                                                              Boolean              @default(true)
   create_user_id                                                                          String               @db.VarChar(32)
   create_utc_timestamp                                                                    DateTime             @default(now()) @db.Timestamp(6)
@@ -1143,7 +1141,6 @@ model restorative_justice {
   hearing_date             DateTime?          @db.Date
   decision_date            DateTime?          @db.Date
   remediation_required_ind Boolean?
-  comment                  String?
   active_ind               Boolean            @default(true)
   create_user_id           String             @db.VarChar(32)
   create_utc_timestamp     DateTime           @default(now()) @db.Timestamp(6)
