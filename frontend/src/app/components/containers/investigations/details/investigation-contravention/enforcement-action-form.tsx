@@ -28,7 +28,6 @@ import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
-import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
 import { getPartyMissingFields, getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
 import { joinWithAnd } from "@/app/common/methods";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
