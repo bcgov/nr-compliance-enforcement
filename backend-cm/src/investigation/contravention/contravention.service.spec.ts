@@ -8,7 +8,10 @@ const SOURCE_GUID = "44444444-4444-4444-4444-444444444444";
 
 const makeService = () => {
   const db: any = {
-    contravention: { create: jest.fn().mockResolvedValue({ contravention_guid: "c1" }) },
+    contravention: {
+      create: jest.fn().mockResolvedValue({ contravention_guid: "c1" }),
+      findFirst: jest.fn().mockResolvedValue(null),
+    },
     contravention_party_xref: { create: jest.fn() },
   };
   const prisma: any = {
@@ -83,7 +86,7 @@ describe("ContraventionService.create", () => {
     const { service, db, sharedPrisma } = makeService();
     sharedPrisma.legislation.findUnique.mockResolvedValue(legislationNode("SUCCESS", "2020-01-01"));
 
-    await service.create(contraventionInput());
+    await service.create(contraventionInput({ investigationPartyGuids: [null] }));
 
     expect(db.contravention.create).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ legislation_guid_ref: NODE_GUID }) }),
