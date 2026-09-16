@@ -173,6 +173,7 @@ export const ContraventionDetailsForm = ({
   const partyOptions: Option[] =
     parties
       ?.filter((p: InspectionParty | InvestigationParty) => p.partyAssociationRole === "PTYOFINTRST")
+      .sort((a, b) => getPartyName(a).localeCompare(getPartyName(b)))
       .map((party: InspectionParty | InvestigationParty) => ({
         label: getPartyName(party),
         value: party.partyIdentifier,
