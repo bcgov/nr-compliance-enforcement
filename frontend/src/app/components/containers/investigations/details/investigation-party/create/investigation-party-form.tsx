@@ -337,13 +337,13 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       );
       return;
     }
-    if (!isEditMode && matches.length > 0) {
+    if (matches.length > 0) {
       dispatch(
         openModal({
           modalSize: "md",
           modalType: SAVE_CONFIRM,
           data: {
-            title: "Create new party",
+            title: isEditMode ? "Save party" : "Create new party",
             warning: "Potential matching profiles were found based on the information entered.",
             description:
               "Confirm this party does not match an existing profile before saving, to avoid the creation of duplicate records.",
