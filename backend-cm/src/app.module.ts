@@ -81,6 +81,13 @@ import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
 import { LegislationConfigurationModule } from "./shared/legislation_configuration/legislation_configuration.module";
 import { ExhibitModule } from "./investigation/exhibit/exhibit.module";
 import { TicketOutcomeCodeModule } from "./investigation/ticket_outcome_code/ticket_outcome_code.module";
+import { TicketTypeCodeModule } from "./investigation/ticket_type_code/ticket_type_code.module";
+import { SanctionTypeCodeModule } from "./investigation/sanction_type_code/sanction_type_code.module";
+import { SanctionStatusCodeModule } from "./investigation/sanction_status_code/sanction_status_code.module";
+import { OrderTypeCodeModule } from "./investigation/order_type_code/order_type_code.module";
+import { OrderStatusCodeModule } from "./investigation/order_status_code/order_status_code.module";
+import { CourtProsecutionStatusCodeModule } from "./investigation/court_prosecution_status_code/court_prosecution_status_code.module";
+import { AdministrativePenaltyStatusCodeModule } from "./investigation/administrative_penalty_status_code/administrative_penalty_status_code.module";
 import { EnforcementActionModule } from "./investigation/enforcement_action/enforcement_action.module";
 import { EnforcementActionCodeModule } from "./investigation/enforcement_action_code/enforcement_action_code.module";
 import { CountryCodeModule } from "./shared/country_code/country_code.module";
@@ -173,6 +180,13 @@ import { InvestigationAttachmentReferenceModule } from "src/investigation/invest
     DiaryDateModule,
     ExhibitModule,
     TicketOutcomeCodeModule,
+    TicketTypeCodeModule,
+    SanctionTypeCodeModule,
+    SanctionStatusCodeModule,
+    OrderTypeCodeModule,
+    OrderStatusCodeModule,
+    CourtProsecutionStatusCodeModule,
+    AdministrativePenaltyStatusCodeModule,
     EnforcementActionModule,
     EnforcementActionCodeModule,
     CountryCodeModule,
