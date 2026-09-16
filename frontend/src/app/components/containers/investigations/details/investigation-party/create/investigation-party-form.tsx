@@ -355,7 +355,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           },
         }),
       );
-      return;
     } else {
       form.handleSubmit();
     }
