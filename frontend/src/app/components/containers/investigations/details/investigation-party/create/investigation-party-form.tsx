@@ -337,7 +337,28 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       );
       return;
     }
-    form.handleSubmit();
+    if (!isEditMode && matches.length > 0) {
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: SAVE_CONFIRM,
+          data: {
+            title: "Create new party",
+            warning: "Potential matching profiles were found based on the information entered.",
+            description:
+              "Confirm this party does not match an existing profile before saving, to avoid the creation of duplicate records.",
+            cancelText: "Cancel",
+            saveText: "Confirm",
+          },
+          callback: () => {
+            form.handleSubmit();
+          },
+        }),
+      );
+      return;
+    } else {
+      form.handleSubmit();
+    }
   };
 
   const confirmCancel = () => {
