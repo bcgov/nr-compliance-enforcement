@@ -6,6 +6,7 @@ interface ActivityColumnProps {
   items?: any[];
   ItemComponent?: ComponentType<any>;
   addButtonText: string;
+  showAddButton?: boolean;
   isLoading?: boolean;
   loadingText?: string;
   disableBorder?: boolean;
@@ -20,6 +21,7 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
   items = [],
   ItemComponent,
   addButtonText,
+  showAddButton = true,
   isLoading = false,
   loadingText = "Loading...",
   disableBorder = false,
@@ -50,14 +52,16 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
       <div className={`flex-grow-1 ${showBorder && !disableBorder ? "pe-3 border-end" : ""}`}>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5 className="fw-bold mb-0">{title}</h5>
-          <Button
-            variant="outline-primary"
-            size="sm"
-            onClick={onAddClick}
-          >
-            <i className="bi bi-plus-circle me-1" />
-            {addButtonText}
-          </Button>
+          {showAddButton && (
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={onAddClick}
+            >
+              <i className="bi bi-plus-circle me-1" />
+              {addButtonText}
+            </Button>
+          )}
         </div>
         {isLoading ? (
           <div className="border rounded p-3 mb-3 bg-white">
