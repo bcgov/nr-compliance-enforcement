@@ -1,6 +1,7 @@
 # Build static files
 # Node Bullseye has npm
-FROM node:20.19.0-bullseye-slim AS buildwithdevdeps
+# node:20.19.0-bullseye-slim as of 2026-09-15
+FROM node@sha256:c9063968e5c359c7430892bd48448f8368aa0a76527b816e03bce59fe08bfd93 AS buildwithdevdeps
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
@@ -12,7 +13,8 @@ RUN npm run prisma-generate-complaint-outcome
 RUN npm run prisma-generate-shared
 RUN npm run prisma-generate-investigation
 RUN npm run prisma-generate-inspection
-FROM node:20.19.0-bullseye-slim AS build
+# node:20.19.0-bullseye-slim as of 2026-09-15
+FROM node@sha256:c9063968e5c359c7430892bd48448f8368aa0a76527b816e03bce59fe08bfd93 AS build
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
@@ -30,7 +32,8 @@ COPY --from=buildwithdevdeps /app/node_modules/prisma ./node_modules/prisma
 RUN npm run build
 
 # Deploy container
-FROM node:20.19.0-bullseye-slim
+# node:20.19.0-bullseye-slim as of 2026-09-15
+FROM node@sha256:c9063968e5c359c7430892bd48448f8368aa0a76527b816e03bce59fe08bfd93
 ENV NODE_ENV=production
 
 # Copy over app
