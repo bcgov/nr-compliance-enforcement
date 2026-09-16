@@ -51,7 +51,7 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
-import { Attachments } from "@components/common/attachments-carousel";
+import { Attachments } from "@/app/components/common/attachments";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";

@@ -1,15 +1,7 @@
 import { format } from "date-fns";
 import AttachmentEnum from "@constants/attachment-enum";
-import { COMSObject } from "@apptypes/coms/object";
-import {
-  searchAttachments,
-  fetchObjectsMetadata,
-  getDisplayFilename,
-  ParsedObjectMetadata,
-} from "@common/attachment-utils";
+import { Attachment, getDisplayFilename } from "@common/attachment-utils";
 import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
-
-const FETCH_PAGE_SIZE = 100;
 
 /** Values entered in the attachment metadata fields. */
 export interface EnforcementActionAttachmentFieldValues {
@@ -19,19 +11,6 @@ export interface EnforcementActionAttachmentFieldValues {
   date: Date | null;
   takenBy: string;
   location: string;
-}
-
-/** A COMS attachment parsed with its enforcement-action metadata. */
-export interface EnforcementActionAttachment extends COMSObject {
-  enforcementActionId: string | null;
-  taskId: string | null;
-  takenBy?: string | null;
-  sequenceNumber?: string | null;
-  fileType?: string | null;
-  description?: string | null;
-  title?: string | null;
-  date?: string | null;
-  location?: string | null;
 }
 
 const MEDIA_FILE_TYPES = new Set(["Audio", "Video", "Photo"]);
@@ -65,7 +44,7 @@ export const buildEnforcementActionMeta = (
  */
 export const computeSequenceNumbers = async (
   investigationGuid: string,
-  existingAttachments: EnforcementActionAttachment[],
+  existingAttachments: Attachment[],
   fileType: string,
   files: File[],
 ): Promise<string[]> => {
@@ -77,55 +56,4 @@ export const computeSequenceNumbers = async (
     )?.sequenceNumber;
     return existing ?? String(baseSequence + i + 1).padStart(4, "0");
   });
-};
-
-const mapWithMetadata = (
-  attachments: COMSObject[],
-  metadataMap: Map<string, ParsedObjectMetadata>,
-): EnforcementActionAttachment[] =>
-  attachments.map((attachment) => {
-    const metadata = attachment.id ? metadataMap.get(attachment.id) : undefined;
-    return {
-      ...attachment,
-      enforcementActionId: metadata?.enforcementActionId ?? null,
-      taskId: metadata?.taskId ?? null,
-      type: metadata?.attachmentType ?? null,
-      takenBy: metadata?.takenBy ?? null,
-      sequenceNumber: metadata?.sequenceNumber ?? null,
-      fileType: metadata?.fileType ?? null,
-      description: metadata?.description ?? null,
-      title: metadata?.title ?? null,
-      date: metadata?.date ?? null,
-      location: metadata?.location ?? null,
-      size: metadata?.size ?? attachment.size,
-    };
-  });
-
-/** Fetches all enforcement-action attachments for an investigation, optionally scoped to a single enforcement action. */
-export const fetchEnforcementActionAttachments = async (
-  investigationGuid: string,
-  enforcementActionId?: string,
-): Promise<EnforcementActionAttachment[]> => {
-  const attachments: COMSObject[] = [];
-  let currentPage = 1;
-  let hasMorePages = true;
-
-  while (hasMorePages) {
-    const searchResult = await searchAttachments({
-      headerId: investigationGuid,
-      subHeaderId: enforcementActionId,
-      page: currentPage,
-      limit: FETCH_PAGE_SIZE,
-      attachmentType: AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT,
-    });
-    attachments.push(...searchResult.attachments);
-    hasMorePages = searchResult.attachments.length === FETCH_PAGE_SIZE;
-    currentPage++;
-  }
-
-  if (attachments.length === 0) return [];
-
-  const objectIds = attachments.map((a) => a.id).filter((id): id is string => !!id);
-  const metadataMap = await fetchObjectsMetadata(objectIds, AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT);
-  return mapWithMetadata(attachments, metadataMap);
 };

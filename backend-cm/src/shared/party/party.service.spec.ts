@@ -119,13 +119,16 @@ describe("_scoreMatch person fields", () => {
     ).toHaveLength(1);
   });
 
-  it("scores a dictionary nickname as its own field alongside the name fields", () => {
+  it("scores only the highest pointed match per for a single name field", () => {
     const input = personInput({ person: { firstName: "Bob" } });
 
     expect(service._scoreMatch(input, personParty(), { nickname_eq: true }).matchedFields).toEqual([
-      { field: "nickname", exact: true, points: 50 },
+      { field: "nickname", exact: false, points: 25 },
     ]);
-    expect(service._scoreMatch(input, personParty(), { nickname_eq: true, first_norm_eq: true }).score).toBe(100);
+    expect(service._scoreMatch(input, personParty(), { nickname_eq: true, first_norm_eq: true }).matchedFields).toEqual(
+      [{ field: "firstName", exact: true, points: 50 }],
+    );
+    expect(service._scoreMatch(input, personParty(), { nickname_eq: true, first_dmeta_eq: true }).score).toBe(25);
   });
 
   it("scores an alias as its own field alongside the name fields", () => {
@@ -212,6 +215,16 @@ describe("_scoreMatch person fields", () => {
     const { matchedFields } = service._scoreMatch(input, party, {});
     expect(matchedFields).toContainEqual({ field: "approximateAgeCode", exact: true, points: 10 });
     expect(matchedFields.map((matched: any) => matched.field)).not.toContain("youngPerson");
+  });
+
+  it("scores a phone stored on one of the party's addresses", () => {
+    const input = personInput({ contactMethods: [{ typeCode: ContactMethods.PHONE, value: "(778) 887-8808" }] });
+    const party = personParty(
+      {},
+      { address: [{ contact_method: [{ contact_method_type: "PHONE", contact_value: "+17788878808" }] }] },
+    );
+
+    expect(service._scoreMatch(input, party, {}).matchedFields).toEqual([{ field: "phone", exact: true, points: 50 }]);
   });
 
   it("compares phones on their trailing ten digits whatever format was entered", () => {

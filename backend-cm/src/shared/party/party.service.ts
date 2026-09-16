@@ -263,6 +263,12 @@ const hasContactValue = (rows: any[] | undefined, typeCode: ContactMethods, valu
   );
 };
 
+// A contact method belongs to the party both directly or through one of its addresses
+const partyContactMethods = (party: party): any[] => [
+  ...((party.contact_method as any[]) ?? []),
+  ...((party.address as any[]) ?? []).flatMap((address: any) => address.contact_method ?? []),
+];
+
 const matchFlag = (comparisons: MatchComparisons | undefined, column: string): boolean =>
   comparisons?.[column] === true;
 
@@ -2431,6 +2437,14 @@ export class PartyService {
         ...this._partySummaryInclude.address.select,
         postal_code: true,
         country_code: true,
+        contact_method: {
+          where: { active_ind: true },
+          select: {
+            contact_method_type: true,
+            contact_value: true,
+            is_primary: true,
+          },
+        },
       },
       orderBy: [{ is_primary: "desc" }, { create_utc_timestamp: "asc" }],
     },
@@ -2630,6 +2644,45 @@ export class PartyService {
     return matched;
   }
 
+  private _scoreNameFields(weights: Record<string, number>, comparisons?: MatchComparisons): PartyMatchedField[] {
+    const matched: PartyMatchedField[] = [];
+
+    // Only the highest pointed match per for a single name field. Nicknames are considered fuzzy matches.
+    const nickname = matchFlag(comparisons, "nickname_eq")
+      ? { field: "nickname", exact: false, points: Math.round(weights.nickname * FUZZY_MODIFIER) }
+      : undefined;
+    const firstName = scoreNameField("firstName", weights.firstName, comparisons, "first");
+
+    matched.push(
+      ...[
+        firstName && firstName.points >= (nickname?.points ?? 0) ? firstName : nickname,
+        scoreNameField("lastName", weights.lastName, comparisons, "last"),
+        scoreNameField("middleNames", weights.middleNames, comparisons, "middle"),
+      ].filter(Boolean),
+    );
+
+    const alias = scoreAlias(weights.alias, comparisons);
+    if (alias) {
+      matched.push(alias);
+    }
+
+    // A name matching in the other name slot, or half of a compound surname, is fuzzy evidence at best
+    const nameFallbacks: [string, number, string, number][] = [
+      ["firstName", weights.firstName, "first_middle_eq", FUZZY_MODIFIER_CROSS_FIELD],
+      ["middleNames", weights.middleNames, "middle_first_eq", FUZZY_MODIFIER_CROSS_FIELD],
+      ["lastName", weights.lastName, "last_part_eq", FUZZY_MODIFIER],
+    ];
+    for (const [field, points, column, modifier] of nameFallbacks) {
+      const occupied =
+        matched.some((matchedField) => matchedField.field === field) || (field === "firstName" && nickname);
+      if (!occupied && matchFlag(comparisons, column)) {
+        matched.push({ field, exact: false, points: Math.round(points * modifier) });
+      }
+    }
+
+    return matched;
+  }
+
   private _scorePersonFields(
     input: PartyMatchInput,
     party: party,
@@ -2643,36 +2696,7 @@ export class PartyService {
       matched.push({ field: "driversLicenseNumber", exact: true, points: weights.driversLicenseNumber });
     }
 
-    matched.push(
-      ...this._scoreExternalIdFields(input, party, weights),
-      ...[
-        scoreNameField("firstName", weights.firstName, comparisons, "first"),
-        scoreNameField("lastName", weights.lastName, comparisons, "last"),
-        scoreNameField("middleNames", weights.middleNames, comparisons, "middle"),
-      ].filter(Boolean),
-    );
-
-    const alias = scoreAlias(weights.alias, comparisons);
-    if (alias) {
-      matched.push(alias);
-    }
-
-    // A nickname matching the first name is considered an exact match
-    if (matchFlag(comparisons, "nickname_eq")) {
-      matched.push({ field: "nickname", exact: true, points: weights.nickname });
-    }
-
-    // A name matching in the other name slot, or half of a compound surname, is fuzzy evidence at best
-    const nameFallbacks: [string, number, string, number][] = [
-      ["firstName", weights.firstName, "first_middle_eq", FUZZY_MODIFIER_CROSS_FIELD],
-      ["middleNames", weights.middleNames, "middle_first_eq", FUZZY_MODIFIER_CROSS_FIELD],
-      ["lastName", weights.lastName, "last_part_eq", FUZZY_MODIFIER],
-    ];
-    for (const [field, points, column, modifier] of nameFallbacks) {
-      if (!matched.some((matchedField) => matchedField.field === field) && matchFlag(comparisons, column)) {
-        matched.push({ field, exact: false, points: Math.round(points * modifier) });
-      }
-    }
+    matched.push(...this._scoreExternalIdFields(input, party, weights), ...this._scoreNameFields(weights, comparisons));
 
     const dateOfBirthExact = isSameUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
     const dateOfBirthClose = isCloseUtcDate(input.person?.dateOfBirth, party.person?.date_of_birth);
@@ -2709,14 +2733,15 @@ export class PartyService {
     weights: Record<string, number>,
   ): PartyMatchedField[] {
     const matched: PartyMatchedField[] = [];
+    const contactRows = partyContactMethods(party);
 
     for (const phone of pooledContactValues(input, ContactMethods.PHONE)) {
-      if (hasContactValue(party.contact_method, ContactMethods.PHONE, phone)) {
+      if (hasContactValue(contactRows, ContactMethods.PHONE, phone)) {
         matched.push({ field: "phone", exact: true, points: weights.phone });
       }
     }
     for (const email of pooledContactValues(input, ContactMethods.EMAIL)) {
-      if (hasContactValue(party.contact_method, ContactMethods.EMAIL, email)) {
+      if (hasContactValue(contactRows, ContactMethods.EMAIL, email)) {
         matched.push({ field: "email", exact: true, points: weights.email });
       }
     }
@@ -2819,7 +2844,7 @@ export class PartyService {
       for (const value of pooledContactValues(input, typeCode)) {
         if (hasContactValue(contactMethods, typeCode, value)) {
           matched.push({ field: contactField, exact: true, points: weights[contactField] });
-        } else if (hasContactValue(party.contact_method, typeCode, value)) {
+        } else if (hasContactValue(partyContactMethods(party), typeCode, value)) {
           matched.push({ field: businessField, exact: true, points: weights[businessField] });
         }
       }
@@ -3328,10 +3353,10 @@ export class PartyService {
         name: "phone",
         sql: Prisma.sql`SELECT p.party_guid
           FROM shared.contact_method cm
-          JOIN shared.party p ON p.party_guid = cm.party_guid AND p.party_type = ${partyType}
+          LEFT JOIN shared.address ad ON ad.address_guid = cm.address_guid
+          JOIN shared.party p ON p.party_guid = coalesce(cm.party_guid, ad.party_guid) AND p.party_type = ${partyType}
           WHERE cm.active_ind = true AND cm.contact_method_type = ${contactMethodTypeSql(ContactMethods.PHONE)}
             AND right(shared.f_match_norm(cm.contact_value), 10) = right(shared.f_match_norm(${phone}), 10)
-            AND cm.party_guid IS NOT NULL
           LIMIT 25`,
       });
     }
@@ -3340,10 +3365,10 @@ export class PartyService {
         name: "email",
         sql: Prisma.sql`SELECT p.party_guid
           FROM shared.contact_method cm
-          JOIN shared.party p ON p.party_guid = cm.party_guid AND p.party_type = ${partyType}
+          LEFT JOIN shared.address ad ON ad.address_guid = cm.address_guid
+          JOIN shared.party p ON p.party_guid = coalesce(cm.party_guid, ad.party_guid) AND p.party_type = ${partyType}
           WHERE cm.active_ind = true AND cm.contact_method_type = ${contactMethodTypeSql(ContactMethods.EMAIL)}
             AND lower(cm.contact_value) = lower(${email})
-            AND cm.party_guid IS NOT NULL
           LIMIT 25`,
       });
     }
