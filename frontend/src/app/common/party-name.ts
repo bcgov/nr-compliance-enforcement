@@ -25,7 +25,7 @@ export const getPartyMissingFields = (party?: InvestigationParty | null): string
   if (!party) return [];
   const missing: string[] = [];
   if (party.person) {
-    if (!party.person.firstName || !party.person.lastName) missing.push("name");
+    if (!party.person.firstName || !party.person.lastName) missing.push("first and last name");
     if (!party.person.dateOfBirth) missing.push("date of birth");
   } else if (party.business) {
     if (!party.business.name) missing.push("name");
