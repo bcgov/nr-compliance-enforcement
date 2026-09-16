@@ -28,13 +28,6 @@ export const SideBar: FC = () => {
 
   const menuItems: Array<MenuItem> = [
     {
-      id: "cases-link",
-      name: "Cases",
-      icon: "bi bi-folder",
-      route: "/cases",
-      hidden: !canAccessCases,
-    },
-    {
       id: "complaints-link",
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
@@ -43,7 +36,7 @@ export const SideBar: FC = () => {
     {
       id: "investigations-link",
       name: "Investigations",
-      icon: "bi bi-incognito",
+      icon: "bi bi-shield-lock",
       route: investigationSearchURL,
       hidden: !canAccessInvestigations,
     },
@@ -55,6 +48,20 @@ export const SideBar: FC = () => {
       hidden: !canAccessInspections,
     },
     {
+      id: "cases-link",
+      name: "Cases",
+      icon: "bi bi-folder",
+      route: "/cases",
+      hidden: !canAccessCases,
+    },
+    {
+      id: "parties-link",
+      name: "Parties",
+      icon: "bi bi-people",
+      route: "/parties",
+      hidden: !canAccessCases,
+    },
+    {
       id: "zone-at-a-glance-link",
       name: "Zone at a glance",
       icon: "bi bi-buildings",
@@ -64,16 +71,9 @@ export const SideBar: FC = () => {
     {
       id: "user-management",
       name: "User administration",
-      icon: "bi bi-people",
+      icon: "bi bi-person-plus-fill",
       route: "/admin/user",
       requiredRoles: adminRoles,
-    },
-    {
-      id: "parties-link",
-      name: "Parties",
-      icon: "bi bi-file-earmark-image",
-      route: "/parties",
-      hidden: !canAccessCases,
     },
   ];
 

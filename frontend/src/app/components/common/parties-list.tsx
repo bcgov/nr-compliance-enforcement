@@ -18,7 +18,7 @@ import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input";
 import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/common/methods";
-import { getPartyName } from "@/app/common/party-name";
+import { getBusinessIdentifier, getPartyMissingFields, getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
 const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
@@ -111,9 +111,6 @@ const PartiesList: React.FC<Props> = ({
       .map((a) => a!.name)
       .join(", ");
 
-  const getBusinessIdentifier = (business: InvestigationBusiness, identifierCode: string): string =>
-    (business.businessIdentifiers ?? []).find((id) => id?.identifierCode === identifierCode)?.identifierValue ?? "";
-
   const getPrimaryContactName = (business: InvestigationBusiness): string => {
     const contactPeople = (business.contactPeople ?? []).filter(Boolean) as InvestigationBusinessPerson[];
     const primary = contactPeople.find((cp) => cp.isPrimary) ?? contactPeople[0];
@@ -129,33 +126,11 @@ const PartiesList: React.FC<Props> = ({
     return !!invParty.partyReference;
   };
 
-  const getPersonMissingFields = (invParty: InvestigationParty): string[] => {
-    if (!invParty.person) return [];
-    const missing: string[] = [];
-    if (!invParty.person.firstName || !invParty.person.lastName) missing.push("name");
-    if (!invParty.person.dateOfBirth) missing.push("date of birth");
-    if (!invParty.contactMethods?.some((cm) => cm?.typeCode === ContactMethods.PHONE && cm?.value))
-      missing.push("phone number");
-    if (getPartyAddress(invParty.addresses) === "-") missing.push("address");
-    return missing;
-  };
-
-  const getBusinessMissingFields = (invParty: InvestigationParty): string[] => {
-    if (!invParty.business) return [];
-    const missing: string[] = [];
-    if (!invParty.business.name) missing.push("name");
-    if (!getBusinessIdentifier(invParty.business, BusinessIdentifiers.BUSINESS_NUMBER)) missing.push("business number");
-    if (getPartyAddress(invParty.addresses) === "-") missing.push("address");
-    return missing;
-  };
-
   const isPartyIncomplete = (party: InvestigationParty | InspectionParty): boolean => {
     if (!isInvestigation) return false;
     const invParty = party as InvestigationParty;
     if (invParty.partyAssociationRole !== "PTYOFINTRST") return false;
-    if (invParty.person) return getPersonMissingFields(invParty).length > 0;
-    if (invParty.business) return getBusinessMissingFields(invParty).length > 0;
-    return false;
+    return getPartyMissingFields(invParty).length > 0;
   };
 
   const renderRemoveButton = (party: InvestigationParty | InspectionParty) => {
@@ -218,7 +193,7 @@ const PartiesList: React.FC<Props> = ({
       const phone = getPhone(invParty.contactMethods);
       const address = getPartyAddress(invParty.addresses);
       const dateOfBirthText = getDateOfBirth(invParty.person);
-      const missingFields = getPersonMissingFields(invParty);
+      const missingFields = getPartyMissingFields(invParty);
       const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
       const dob = invParty.person.dateOfBirth ? new Date(String(invParty.person.dateOfBirth)) : null;
       const personIsYoung = isYoungPerson(dob, invParty.person.approximateAgeCode);
@@ -256,7 +231,7 @@ const PartiesList: React.FC<Props> = ({
       const businessNumber = getBusinessIdentifier(invParty.business, BusinessIdentifiers.BUSINESS_NUMBER) || "-";
       const worksafeBCNumber = getBusinessIdentifier(invParty.business, BusinessIdentifiers.WSBC_NUMBER) || "-";
       const address = getPartyAddress(invParty.addresses);
-      const missingFields = getBusinessMissingFields(invParty);
+      const missingFields = getPartyMissingFields(invParty);
       const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
       return (
         <Card.Body className="py-3 px-4">

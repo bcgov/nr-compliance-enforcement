@@ -1,4 +1,5 @@
-import { InspectionParty, InvestigationParty, Party } from "@/generated/graphql";
+import { InspectionParty, InvestigationBusiness, InvestigationParty, Party } from "@/generated/graphql";
+import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 
 export const getPartyName = (party?: InvestigationParty | InspectionParty | Party | null): string => {
   if (!party) return "Unknown party";
@@ -16,14 +17,23 @@ export const getPartyName = (party?: InvestigationParty | InspectionParty | Part
   return "-";
 };
 
-export const isPartyProfileComplete = (party?: InvestigationParty | null): boolean => {
-  if (!party) return false;
-  const primaryAddress = party.addresses?.find((addr) => addr?.isPrimary);
+export const getBusinessIdentifier = (business: InvestigationBusiness, identifierCode: string): string =>
+  (business.businessIdentifiers ?? []).find((id) => id?.identifierCode === identifierCode)?.identifierValue ?? "";
+
+// Fields a party must have before an enforcement action can be logged against it
+export const getPartyMissingFields = (party?: InvestigationParty | null): string[] => {
+  if (!party) return [];
+  const missing: string[] = [];
   if (party.person) {
-    const rawDob = party.person?.dateOfBirth;
-    const rawPhone = party.contactMethods?.find((m) => m?.typeCode === "PHONE")?.value;
-    return !!primaryAddress && !!rawPhone && !!rawDob;
-  } else {
-    return !!primaryAddress;
+    if (!party.person.firstName || !party.person.lastName) missing.push("first and last name");
+    if (!party.person.dateOfBirth) missing.push("date of birth");
+  } else if (party.business) {
+    if (!party.business.name) missing.push("name");
+    if (!getBusinessIdentifier(party.business, BusinessIdentifiers.BUSINESS_NUMBER)) missing.push("business number");
+    if (!party.addresses?.some((addr) => addr?.isPrimary)) missing.push("address");
   }
+  return missing;
 };
+
+export const isPartyProfileComplete = (party?: InvestigationParty | null): boolean =>
+  !!party && getPartyMissingFields(party).length === 0;
