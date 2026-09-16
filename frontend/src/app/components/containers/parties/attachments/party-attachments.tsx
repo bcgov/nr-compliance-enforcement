@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { Attachments } from "@components/common/attachments-carousel";
+import { Attachments } from "@/app/components/common/attachments";
 import { COMSObject } from "@apptypes/coms/object";
 import {
   getDisplayFilename,

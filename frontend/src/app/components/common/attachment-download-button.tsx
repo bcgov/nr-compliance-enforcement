@@ -4,10 +4,7 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { bulkDownload, selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { Id } from "react-toastify";
 import { useSelector } from "react-redux";
-import {
-  Attachment,
-  fetchAttachmentsWithMetadata,
-} from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { Attachment, fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import AttachmentEnum from "@constants/attachment-enum";
 

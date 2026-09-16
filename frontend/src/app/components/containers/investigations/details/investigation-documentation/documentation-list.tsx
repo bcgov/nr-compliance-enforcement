@@ -4,12 +4,11 @@ import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { truncateFilenameString } from "@common/methods";
 import { generateApiParameters, get } from "@common/api";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { useAppDispatch } from "@hooks/hooks";
 import { Task } from "@/generated/graphql";
 import { getDisplayFilename } from "@common/attachment-utils";
-import { selectOfficers } from "@/app/store/reducers/officer";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
-import { Attachment } from "./hooks/use-investigation-attachments";
+import { Attachment } from "@/app/common/attachment-utils";
 import { SORT_TYPES } from "@constants/sort-direction";
 import config from "@/config";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
@@ -36,7 +35,6 @@ export const DocumentationList: FC<Props> = ({
   investigationGuid,
 }) => {
   const dispatch = useAppDispatch();
-  const officers = useAppSelector(selectOfficers);
   const { searchValues, setValues, setSort } = useDocumentationSearch();
 
   const handleSort = useCallback(
@@ -52,11 +50,6 @@ export const DocumentationList: FC<Props> = ({
     },
     [setValues],
   );
-
-  const getUserName = (officerGuid: string): string => {
-    const officer = officers?.find((o) => o.app_user_guid === officerGuid);
-    return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
-  };
 
   const handleFileClick = async (e: React.MouseEvent<HTMLAnchorElement>, attachmentId: string) => {
     e.preventDefault();
@@ -150,8 +143,8 @@ export const DocumentationList: FC<Props> = ({
       headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
       cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
       isSortable: true,
-      getValue: (attachment) => getUserName(attachment.takenBy ?? ""),
-      renderCell: (attachment) => getUserName(attachment.takenBy ?? ""),
+      getValue: (attachment) => attachment.takenByName ?? "",
+      renderCell: (attachment) => attachment.takenByName ?? "-",
     },
     {
       label: "Location",

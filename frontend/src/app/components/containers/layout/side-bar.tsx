@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
 import { isSidebarOpen, toggleSidebar, isFeatureActive } from "@store/reducers/app";
@@ -8,7 +8,7 @@ import {
   selectCanAccessInvestigations,
 } from "@/app/access/module-access";
 import MenuItem from "@apptypes/app/menu-item";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
@@ -23,6 +23,8 @@ export const SideBar: FC = () => {
   const canAccessInvestigations = useAppSelector(selectCanAccessInvestigations);
   const canAccessInspections = useAppSelector(selectCanAccessInspections);
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
+  const { pathname } = useLocation();
+  const [showToggleTooltip, setShowToggleTooltip] = useState(false);
 
   const menuItems: Array<MenuItem> = [
     {
@@ -85,24 +87,55 @@ export const SideBar: FC = () => {
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
     const { id, icon, name, route } = item;
-    return isOpen ? (
-      <li key={`sb-open-${idx}`}>
+    if (isOpen) {
+      return (
+        <li key={`sb-open-${idx}`}>
+          {!route ? (
+            <div className="comp-sidenav-item comp-sidenav-item-lg">
+              <i className={`comp-sidenav-item-icon ${icon}`}></i>
+              <span className="comp-sidenav-item-name">{name}</span>
+            </div>
+          ) : (
+            <Link
+              className="comp-sidenav-item comp-sidenav-item-lg"
+              to={route}
+              id={id}
+            >
+              <i className={`comp-sidenav-item-icon ${icon}`}></i>
+              <span className="comp-sidenav-item-name">{name}</span>
+            </Link>
+          )}
+        </li>
+      );
+    }
+
+    const collapsedItem = (
+      <li key={`sb-closed-${idx}`}>
         {!route ? (
-          <div className="comp-sidenav-item comp-sidenav-item-lg">
+          <div
+            className="comp-sidenav-item comp-sidenav-item-sm"
+            aria-label={name}
+          >
             <i className={`comp-sidenav-item-icon ${icon}`}></i>
-            <span className="comp-sidenav-item-name">{name}</span>
           </div>
         ) : (
           <Link
-            className="comp-sidenav-item comp-sidenav-item-lg"
+            className="comp-sidenav-item comp-sidenav-item-sm"
             to={route}
-            id={id}
+            id={`icon-${id}`}
+            aria-label={name}
           >
             <i className={`comp-sidenav-item-icon ${icon}`}></i>
-            <span className="comp-sidenav-item-name">{name}</span>
           </Link>
         )}
       </li>
+    );
+
+    //  Don't apply the tooltip to the active item so hover text doesn't show up on ipads or touch devices
+    const routePath = route?.split("?")[0];
+    const isActive = !!routePath && (pathname === routePath || pathname.startsWith(`${routePath}/`));
+    return isActive ? (
+      collapsedItem
     ) : (
       <OverlayTrigger
         key={`overlay-${idx}`}
@@ -116,25 +149,7 @@ export const SideBar: FC = () => {
           </Tooltip>
         }
       >
-        <li key={`sb-closed-${idx}`}>
-          {!route ? (
-            <div
-              className="comp-sidenav-item comp-sidenav-item-sm"
-              aria-label={name}
-            >
-              <i className={`comp-sidenav-item-icon ${icon}`}></i>
-            </div>
-          ) : (
-            <Link
-              className="comp-sidenav-item comp-sidenav-item-sm"
-              to={route}
-              id={`icon-${id}`}
-              aria-label={name}
-            >
-              <i className={`comp-sidenav-item-icon ${icon}`}></i>
-            </Link>
-          )}
-        </li>
+        {collapsedItem}
       </OverlayTrigger>
     );
   };
@@ -192,6 +207,8 @@ export const SideBar: FC = () => {
       <OverlayTrigger
         key={`overlay-sidebar`}
         placement="right"
+        show={showToggleTooltip}
+        onToggle={setShowToggleTooltip}
         overlay={
           <Tooltip
             id={`tt-sidebar`}
@@ -205,6 +222,7 @@ export const SideBar: FC = () => {
           type="button"
           className="comp-sidebar-toggle"
           onClick={() => {
+            setShowToggleTooltip(false);
             dispatch(toggleSidebar());
           }}
         >

@@ -16,6 +16,7 @@ interface StepModalFooterProps {
   nextButtonLabel?: string; // When set, replaces the default "Next" label
   hidePreviousButton?: boolean;
   isReadOnly?: boolean;
+  isBlocked?: boolean; // When true, Save/Next are disabled pending a decision inside the step content
 }
 
 export const StepModalFooter: FC<StepModalFooterProps> = ({
@@ -33,6 +34,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
   nextButtonLabel,
   hidePreviousButton,
   isReadOnly,
+  isBlocked,
 }) => {
   const isLastStep = currentStep === totalSteps - 1;
   const showDelete = !isReadOnly && isEdit && currentStep >= deleteFromStep;
@@ -76,7 +78,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
             <Button
               variant="primary"
               onClick={onSave}
-              disabled={showDeleteConfirm || isSaving}
+              disabled={showDeleteConfirm || isSaving || isBlocked}
             >
               <i className="bi bi-check-circle" />
               <span>Save</span>
@@ -85,7 +87,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
             <Button
               variant="primary"
               onClick={onNext}
-              disabled={showDeleteConfirm || isSaving}
+              disabled={showDeleteConfirm || isSaving || isBlocked}
             >
               {nextButtonLabel ? (
                 <span>{nextButtonLabel}</span>
