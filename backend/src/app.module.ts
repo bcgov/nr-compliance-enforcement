@@ -69,9 +69,7 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
   logger.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD not present");
 }
 
-// Off unless POSTGRES_SSL=true so docker-compose and CI keep working against a plain postgres.
-// PGO signs the server cert with its own CA: mount <cluster>-cluster-cert and point
-// POSTGRES_CA_FILE at its ca.crt to verify it. Without a CA file, encrypt-only.
+// Setting POSTGRES_CA_FILE with a mounted CA will verify it, otherwise just encrypts.
 const pgSsl = () => {
   if (process.env.POSTGRES_SSL !== "true") return false;
   const ca = process.env.POSTGRES_CA_FILE;
