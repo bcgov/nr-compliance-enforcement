@@ -1,4 +1,4 @@
-import { GraphQLClient, type RequestOptions } from 'graphql-request';
+import { GraphQLClient, RequestOptions } from 'graphql-request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -595,17 +595,34 @@ export type CreateDecisionInput = {
 };
 
 export type CreateEnforcementActionInput = {
+  administrativePenaltyStatusCode?: InputMaybe<Scalars['String']['input']>;
   appUserIdentifier: Scalars['String']['input'];
+  appealHearingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  approvalInd?: InputMaybe<Scalars['Boolean']['input']>;
   comment?: InputMaybe<Scalars['String']['input']>;
   contraventionIdentifier: Scalars['String']['input'];
+  courtProsecutionStatusCode?: InputMaybe<Scalars['String']['input']>;
   dateIssued: Scalars['DateTime']['input'];
+  dateServed?: InputMaybe<Scalars['DateTime']['input']>;
+  decisionDate?: InputMaybe<Scalars['DateTime']['input']>;
+  effectiveDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode: Scalars['String']['input'];
   geoOrganizationUnitCode: Scalars['String']['input'];
+  hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
+  orderStatusCode?: InputMaybe<Scalars['String']['input']>;
+  orderTypeCode?: InputMaybe<Scalars['String']['input']>;
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
   partyIdentifier?: InputMaybe<Scalars['String']['input']>;
+  remediationRequired?: InputMaybe<Scalars['Boolean']['input']>;
+  sanctionStatusCode?: InputMaybe<Scalars['String']['input']>;
+  sanctionTypeCode?: InputMaybe<Scalars['String']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
+  ticketTypeCode?: InputMaybe<Scalars['String']['input']>;
+  warningNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateEquipmentInput = {
@@ -1038,15 +1055,31 @@ export type EarTagInput = {
 export type EnforcementAction = {
   __typename?: 'EnforcementAction';
   activeIndicator: Scalars['Boolean']['output'];
+  administrativePenaltyStatusCode?: Maybe<Scalars['String']['output']>;
   appUserIdentifier: Scalars['String']['output'];
+  appealHearingDate?: Maybe<Scalars['DateTime']['output']>;
+  approvalInd?: Maybe<Scalars['Boolean']['output']>;
   comment?: Maybe<Scalars['String']['output']>;
   contraventionPartyXrefIdentifier: Scalars['String']['output'];
+  courtProsecutionStatusCode?: Maybe<Scalars['String']['output']>;
   dateIssued: Scalars['DateTime']['output'];
+  dateServed?: Maybe<Scalars['DateTime']['output']>;
+  decisionDate?: Maybe<Scalars['DateTime']['output']>;
+  effectiveDate?: Maybe<Scalars['DateTime']['output']>;
+  endDate?: Maybe<Scalars['DateTime']['output']>;
   enforcementActionCode: EnforcementActionCode;
   enforcementActionIdentifier: Scalars['String']['output'];
   geoOrganizationUnitCode: Scalars['String']['output'];
+  hearingDate?: Maybe<Scalars['DateTime']['output']>;
+  issuingOfficerIdentifier?: Maybe<Scalars['String']['output']>;
+  orderStatusCode?: Maybe<Scalars['String']['output']>;
+  orderTypeCode?: Maybe<Scalars['String']['output']>;
   publishedPartyReference?: Maybe<Scalars['String']['output']>;
+  remediationRequired?: Maybe<Scalars['Boolean']['output']>;
+  sanctionStatusCode?: Maybe<Scalars['String']['output']>;
+  sanctionTypeCode?: Maybe<Scalars['String']['output']>;
   ticket?: Maybe<Ticket>;
+  warningNumber?: Maybe<Scalars['String']['output']>;
 };
 
 export type EnforcementActionCode = {
@@ -3302,12 +3335,14 @@ export type ThreatLevelCode = {
 export type Ticket = {
   __typename?: 'Ticket';
   activeIndicator: Scalars['Boolean']['output'];
+  appealHearingDate?: Maybe<Scalars['Date']['output']>;
   enforcementActionIdentifier: Scalars['String']['output'];
   paidDate?: Maybe<Scalars['Date']['output']>;
   ticketAmount: Scalars['Float']['output'];
   ticketIdentifier: Scalars['String']['output'];
   ticketNumber: Scalars['String']['output'];
   ticketOutcomeCode: Scalars['String']['output'];
+  ticketTypeCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type TicketOutcomeCode = {
@@ -3360,16 +3395,33 @@ export type UpdateDecisionInput = {
 };
 
 export type UpdateEnforcementActionInput = {
+  administrativePenaltyStatusCode?: InputMaybe<Scalars['String']['input']>;
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
+  appealHearingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  approvalInd?: InputMaybe<Scalars['Boolean']['input']>;
   comment?: InputMaybe<Scalars['String']['input']>;
+  courtProsecutionStatusCode?: InputMaybe<Scalars['String']['input']>;
   dateIssued?: InputMaybe<Scalars['DateTime']['input']>;
+  dateServed?: InputMaybe<Scalars['DateTime']['input']>;
+  decisionDate?: InputMaybe<Scalars['DateTime']['input']>;
+  effectiveDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
   enforcementActionIdentifier: Scalars['String']['input'];
   geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
+  hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
+  orderStatusCode?: InputMaybe<Scalars['String']['input']>;
+  orderTypeCode?: InputMaybe<Scalars['String']['input']>;
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
+  remediationRequired?: InputMaybe<Scalars['Boolean']['input']>;
+  sanctionStatusCode?: InputMaybe<Scalars['String']['input']>;
+  sanctionTypeCode?: InputMaybe<Scalars['String']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
+  ticketTypeCode?: InputMaybe<Scalars['String']['input']>;
+  warningNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateEquipmentInput = {

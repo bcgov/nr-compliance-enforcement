@@ -74,7 +74,7 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
               }}
               render={(field) => (
                 <>
-                  <div className="comp-details-form-row">
+                  <div className="party-contact-header">
                     <label htmlFor={`phone-primary-${index}`}>
                       <input
                         type="radio"
@@ -150,7 +150,7 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
               }}
               render={(field) => (
                 <>
-                  <div className="comp-details-form-row">
+                  <div className="party-contact-header">
                     <label htmlFor={`email-primary-${index}`}>
                       <input
                         type="radio"
