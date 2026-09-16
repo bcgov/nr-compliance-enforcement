@@ -30,21 +30,38 @@ export class ContraventionService {
 
     try {
       await withRlsTransaction(this.prisma, async (db) => {
-        const contravention = await db.contravention.create({
-          data: {
-            investigation_guid: contraventionInput.investigationGuid,
-            legislation_guid_ref: contraventionInput.legislationReference,
-            contravention_date: contraventionInput.date,
-            geo_organization_unit_code_ref: contraventionInput.community,
-            active_ind: true,
-            create_user_id: this.user.getIdirUsername(),
-            create_utc_timestamp: new Date(),
-          },
-        });
+        const contraventionData = {
+          investigation_guid: contraventionInput.investigationGuid,
+          legislation_guid_ref: contraventionInput.legislationReference,
+          contravention_date: contraventionInput.date,
+          geo_organization_unit_code_ref: contraventionInput.community,
+          active_ind: true,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+        };
 
-        const parties = contraventionInput.investigationPartyGuids;
+        for (const party of contraventionInput.investigationPartyGuids) {
+          // Check if there is an existing unknown contravention on the investigation
+          // as we don't want duplicates.
+          if (party === null) {
+            const existingUnknownContravention = await db.contravention.findFirst({
+              where: {
+                investigation_guid: contraventionInput.investigationGuid,
+                legislation_guid_ref: contraventionInput.legislationReference,
+                contravention_date: contraventionInput.date,
+                geo_organization_unit_code_ref: contraventionInput.community,
+                active_ind: true,
+                contravention_party_xref: {
+                  some: { investigation_party_guid: null, active_ind: true },
+                },
+              },
+            });
 
-        for (const party of parties) {
+            if (existingUnknownContravention) continue;
+          }
+
+          const contravention = await db.contravention.create({ data: contraventionData });
+
           await db.contravention_party_xref.create({
             data: {
               contravention_guid: contravention.contravention_guid,
@@ -172,6 +189,47 @@ export class ContraventionService {
         if (!originalContravention) throw new Error("Contravention not found");
 
         const investigationPartyGuid = input.investigationPartyGuids?.[0] ?? null;
+
+        // Check if there is an existing unknown contravention on the investigation
+        // as we don't want duplicates.
+        const duplicateUnknownContravention =
+          investigationPartyGuid === null
+            ? await db.contravention.findFirst({
+                where: {
+                  investigation_guid: input.investigationGuid,
+                  legislation_guid_ref: input.legislationReference,
+                  contravention_date: input.date,
+                  geo_organization_unit_code_ref: input.community,
+                  active_ind: true,
+                  contravention_guid: { not: contraventionGuid },
+                  contravention_party_xref: {
+                    some: { investigation_party_guid: null, active_ind: true },
+                  },
+                },
+              })
+            : null;
+
+        if (duplicateUnknownContravention) {
+          await db.contravention_party_xref.updateMany({
+            where: { contravention_guid: contraventionGuid, active_ind: true },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
+
+          await db.contravention.update({
+            where: { contravention_guid: contraventionGuid },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
+
+          return;
+        }
 
         const existingParty = originalContravention.contravention_party_xref.filter(
           (xref) => xref.investigation_party_guid == input.selectedPartyGuid,

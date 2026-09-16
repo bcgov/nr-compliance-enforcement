@@ -181,6 +181,14 @@ export const ContraventionDetailsForm = ({
   // "Unknown" is pinned to the top of the list and maps to a null investigation_party_guid on save
   const partySelectOptions: Option[] = [{ value: UNKNOWN_PARTY_VALUE, label: "Unknown" }, ...partyOptions];
 
+  // The unknown party comes back with an empty partyIdentifier rather than its own entry
+  const editedParty = contravention?.investigationParty?.find(
+    (entry) => (entry?.partyIdentifier ?? "") === (partyGuid ?? ""),
+  );
+
+  // Changing the party would orphan any decisions recorded against this party on this contravention
+  const isPartyLocked = !!editedParty?.enforcementActions?.some((action) => action?.activeIndicator);
+
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [LegislationType.ACT],
@@ -434,7 +442,8 @@ export const ContraventionDetailsForm = ({
                   setParty(value);
                 }}
                 placeholder="Select party"
-                isClearable={true}
+                isClearable={!isPartyLocked}
+                isDisabled={isPartyLocked}
                 showInactive={false}
                 enableValidation={false}
               />
@@ -463,7 +472,6 @@ export const ContraventionDetailsForm = ({
                   markDirty();
                 }}
                 placeholder="Select party"
-                isClearable={true}
                 errMsg={field.state.meta.errors?.[0]?.message || ""}
               />
             )}
