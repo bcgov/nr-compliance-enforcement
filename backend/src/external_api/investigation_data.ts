@@ -10,7 +10,13 @@ const combineDateAndTime = (date: string, time?: string): string => {
 };
 
 // Used for Report generation
-export const getTask = async (token: string, taskId: string, tz: string, attachments: Attachment[]) => {
+export const getTask = async (
+  token: string,
+  taskId: string,
+  investigationGuid: string,
+  tz: string,
+  attachments: Attachment[],
+) => {
   const query = `{
     task(taskId: "${taskId}") {
       investigationLabel
@@ -52,6 +58,19 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
        lastName
        firstName
     }
+    getInvestigation(investigationGuid: "${investigationGuid}") {
+      parties {
+        partyIdentifier
+        placeholderName
+        person {
+          firstName
+          lastName
+        }
+        business {
+          name
+        }
+      }
+    }
     taskCategoryTypeCodes { 
       taskCategoryTypeCode 
       longDescription
@@ -64,13 +83,31 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     throw new Error(`GraphQL errors occurred while fetching task: ${JSON.stringify(errors)}`);
   }
 
-  const { task, diaryDatesByTask, getExhibitsByTask, getActivityNotesByTask, appUsers, taskCategoryTypeCodes } = data;
+  const {
+    task,
+    diaryDatesByTask,
+    getExhibitsByTask,
+    getActivityNotesByTask,
+    appUsers,
+    getInvestigation,
+    taskCategoryTypeCodes,
+  } = data;
 
   // Convert data into report readable format
 
   // Users
   const userMap = new Map(appUsers.map((u) => [u.appUserGuid, { firstName: u.firstName, lastName: u.lastName }]));
   const _resolveUser = (guid: string) => userMap.get(guid) ?? { firstName: "Unknown", lastName: "User" };
+
+  // Parties
+  const partyMap = new Map(
+    (getInvestigation?.parties ?? []).map((p) => [
+      p.partyIdentifier,
+      p.person
+        ? { firstName: p.person.firstName, lastName: p.person.lastName }
+        : { firstName: "", lastName: p.business?.name ?? p.placeholderName },
+    ]),
+  );
 
   // Task Categories
   const categoryMap = new Map<string, string>(
@@ -146,7 +183,9 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     attachments: attachments.map((att) => ({
       ...att,
       name: _getDisplayFilename(att.name),
-      takenBy: att.takenBy ? _resolveUser(att.takenBy) : null,
+      takenBy: att.takenBy
+        ? userMap.get(att.takenBy) ?? partyMap.get(att.takenBy) ?? { firstName: "Unknown", lastName: "User" }
+        : null,
     })),
     generatedOn: formatDate(new Date().toISOString()),
     hasDiaryDates: (diaryDatesByTask?.length ?? 0) > 0,

@@ -207,7 +207,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const [attachmentsBlocked, setAttachmentsBlocked] = useState(false);
 
   const enforcementActionSelectOptions = useMemo(() => {
-    const options = enforcementActionOptions.map((opt) => {
+    return enforcementActionOptions.map((opt) => {
       const isDisabled = isRestrictedToCommentDecisions && !NON_EA_DECISION_CODES.has(opt.value ?? "");
       if (!isDisabled) return opt;
 
@@ -217,20 +217,16 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         labelElement: <span className="enforcement-action-decision-option-disabled">{opt.label}</span>,
       };
     });
-
-    const dividerIndex = options.findIndex((opt) => opt.value === CODE_ADMINISTRATIVE_PENALTY);
-    if (dividerIndex === -1) return options;
-
-    const dividerOption = {
-      value: "__enforcement_action_divider__",
-      label: "",
-      isDisabled: true,
-      isSeparator: true,
-      className: "enforcement-action-decision-divider mx-2 my-1",
-    };
-
-    return [...options.slice(0, dividerIndex), dividerOption, ...options.slice(dividerIndex)];
   }, [enforcementActionOptions, isRestrictedToCommentDecisions]);
+
+  const dividerIndex = enforcementActionSelectOptions.findIndex((opt) => opt.value === CODE_ADMINISTRATIVE_PENALTY);
+  const enforcementActionSelectGroups =
+    dividerIndex === -1
+      ? enforcementActionSelectOptions
+      : [
+          { options: enforcementActionSelectOptions.slice(0, dividerIndex) },
+          { options: enforcementActionSelectOptions.slice(dividerIndex) },
+        ];
 
   const communityOptions = areaCodes.map((c) => ({
     value: c.area ?? "",
@@ -653,7 +649,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     const { required = false, maxLength } = config;
     let validator = z.string();
     if (required) validator = validator.min(1, `${label} is required`);
-    if (maxLength !== undefined) validator = validator.max(maxLength, `${label} must be ${maxLength} characters or fewer`);
+    if (maxLength !== undefined)
+      validator = validator.max(maxLength, `${label} must be ${maxLength} characters or fewer`);
     const validators = required || maxLength !== undefined ? { onChange: validator, onSubmit: validator } : undefined;
     return (
       <FormField
@@ -729,7 +726,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 id="enforcement-action-code"
                 classNamePrefix="comp-select"
                 className="comp-details-input"
-                options={enforcementActionSelectOptions}
+                options={enforcementActionSelectGroups}
                 value={enforcementActionSelectOptions.find((opt) => opt.value === field.state.value)}
                 onChange={(option) => {
                   const newCode = option?.value ?? "";

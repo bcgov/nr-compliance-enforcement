@@ -979,12 +979,10 @@
 
   > label,
   .muliline-label {
-    width: 12rem;
     color: $gray-700;
   }
 
   > legend {
-    width: 12rem;
     font-weight: 400;
     color: $gray-500;
   }
@@ -1640,6 +1638,15 @@ p {
 .comp-select__control:focus-within {
   border: 1px solid $blue-100 !important;
   box-shadow: 0px 0px 0px 4px $blue-300 !important;
+}
+
+.comp-select__group + .comp-select__group {
+  border-top: 1px solid $gray-300;
+}
+
+// Override bootstrap's text-muted otherwise stays grey on the selected option
+.comp-select__option--is-selected .text-muted {
+  color: inherit !important;
 }
 
 //Need these to make sure the filters show up on top of other frozen items

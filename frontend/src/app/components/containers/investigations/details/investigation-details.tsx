@@ -3,7 +3,7 @@ import { FC, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
-import { CaseFile, Investigation, InvestigationCloseEligibility, Task } from "@/generated/graphql";
+import { CaseFile, Investigation, InvestigationCloseEligibility, InvestigationParty, Task } from "@/generated/graphql";
 import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
 import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contravention";
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
@@ -438,6 +438,7 @@ export const InvestigationDetails: FC = () => {
           investigationGuid={investigationGuid}
           investigationName={investigationData?.name}
           tasks={(investigationData?.tasks as Task[]) ?? []}
+          parties={(investigationData?.parties as InvestigationParty[]) ?? []}
         />
       );
     }
