@@ -155,6 +155,10 @@ export class ContraventionService {
     return await this.investigationService.findOne(investigationGuid);
   }
 
+  private hasActiveDecision(xrefs: { enforcement_action: { active_ind: boolean }[] }[]): boolean {
+    return xrefs.some((xref) => xref.enforcement_action.some((action) => action.active_ind));
+  }
+
   async update(contraventionGuid: string, input: CreateUpdateContraventionInput): Promise<Investigation> {
     const stored = await this.prisma.contravention.findUnique({
       where: { contravention_guid: contraventionGuid },
@@ -182,6 +186,9 @@ export class ContraventionService {
           include: {
             contravention_party_xref: {
               where: { active_ind: true },
+              include: {
+                enforcement_action: { where: { active_ind: true } },
+              },
             },
           },
         });
@@ -206,12 +213,35 @@ export class ContraventionService {
                     some: { investigation_party_guid: null, active_ind: true },
                   },
                 },
+                include: {
+                  contravention_party_xref: {
+                    where: { active_ind: true },
+                    include: {
+                      enforcement_action: { where: { active_ind: true } },
+                    },
+                  },
+                },
               })
             : null;
 
         if (duplicateUnknownContravention) {
+          const editedHasDecision = this.hasActiveDecision(originalContravention.contravention_party_xref);
+          const duplicateHasDecision = this.hasActiveDecision(duplicateUnknownContravention.contravention_party_xref);
+
+          if (editedHasDecision && duplicateHasDecision) {
+            throw new GraphQLError(
+              "This change would merge two unknown party contraventions that both have decisions recorded against them.",
+              {},
+            );
+          }
+
+          // Merging discards one of the two records, so keep whichever carries the decision.
+          const guidToDeactivate = editedHasDecision
+            ? duplicateUnknownContravention.contravention_guid
+            : contraventionGuid;
+
           await db.contravention_party_xref.updateMany({
-            where: { contravention_guid: contraventionGuid, active_ind: true },
+            where: { contravention_guid: guidToDeactivate, active_ind: true },
             data: {
               active_ind: false,
               update_user_id: this.user.getIdirUsername(),
@@ -220,7 +250,7 @@ export class ContraventionService {
           });
 
           await db.contravention.update({
-            where: { contravention_guid: contraventionGuid },
+            where: { contravention_guid: guidToDeactivate },
             data: {
               active_ind: false,
               update_user_id: this.user.getIdirUsername(),
@@ -228,7 +258,8 @@ export class ContraventionService {
             },
           });
 
-          return;
+          // The edited record survives, so let it fall through and pick up the field changes
+          if (!editedHasDecision) return;
         }
 
         const existingParty = originalContravention.contravention_party_xref.filter(
