@@ -1,5 +1,3 @@
--- Business renamed the "no enforcement action" decision Unresolved -> Unsolved (CE-959).
--- New code UNSL replaces UNRS; existing enforcement actions are repointed and UNRS retired.
 INSERT INTO
     investigation.enforcement_action_code (
         enforcement_action_code,
@@ -29,7 +27,6 @@ SET
 WHERE
     enforcement_action_code = 'UNRS';
 
--- UNSL agency rows are added by R__enforcement_action_code_agency_xref.sql, which runs after this.
 UPDATE investigation.enforcement_action_code_agency_xref
 SET
     active_ind = false,
