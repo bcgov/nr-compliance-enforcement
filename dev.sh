@@ -60,7 +60,7 @@ Commands:
 Reset flow (each step can be run individually):
   1. ./dev.sh health                         # check env files
   2. docker compose down -v                  # tear down containers + volumes
-  3. docker compose up -d                    # start all (compose handles ordering)
+  3. docker compose up -d --build            # build changed images + start all
   4. ./dev.sh prisma                         # pull + generate all prisma schemas
   5. ./dev.sh codegen                        # generate GraphQL types for frontend
   6. docker compose restart frontend         # restart frontend with generated types
@@ -86,10 +86,10 @@ cmd_reset() {
   cmd_health || warn "Health checks reported issues — resetting anyway."
 
   info "Tearing down..."
-  docker compose down -v 2>/dev/null || true
+  docker compose down -v || error "Teardown failed — fix before resetting."
 
   info "Starting all services (compose handles dependency ordering)..."
-  docker compose up -d
+  docker compose up -d --build
 
   wait_for_service "$SVC_CM" "${FE_URL}/api"
 
