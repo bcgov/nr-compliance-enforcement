@@ -788,7 +788,7 @@ model wildlife {
   sex_code_ref                                                                                        String?                        @db.VarChar(16)
   age_code                                                                                            String?                        @db.VarChar(10)
   hwcr_outcome_code                                                                                   String?                        @db.VarChar(10)
-  species_code                                                                                        String                         @db.VarChar(10)
+  species_code_ref                                                                                    String                         @db.VarChar(10)
   create_user_id                                                                                      String                         @db.VarChar(32)
   create_utc_timestamp                                                                                DateTime                       @db.Timestamp(6)
   update_user_id                                                                                      String                         @db.VarChar(32)
