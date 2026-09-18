@@ -540,7 +540,7 @@ const addComplaintOutcomes = async (fraction) => {
 
   await run("add complaint_outcome.wildlife", `
     INSERT INTO complaint_outcome.wildlife
-      (complaint_outcome_guid, species_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+      (complaint_outcome_guid, species_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
     SELECT co.complaint_outcome_guid, 'BISON', 'Bulk Data Load', now(), 'Bulk Data Load', now()
     FROM complaint_outcome.complaint_outcome co
     WHERE (abs(hashtext(co.complaint_outcome_guid::text || 'wildlife')) % 100) < 30

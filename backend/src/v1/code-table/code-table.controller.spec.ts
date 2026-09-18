@@ -19,13 +19,11 @@ jest.mock("../../external_api/shared_data", () => {
 import { resetSharedDataMocks } from "../../../test/mocks/external_api/mock-shared-data";
 import {
   MockAttractantCodeTableRepository,
-  MockCommunityCodeTableServiceRepository,
   MockComplaintStatusCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
   MockReportedByCodeTableRepository,
-  MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
   MockGirTypeCodeRepository,
   MockCompMthdRecvCdAgcyCdXrefRepository,
@@ -34,7 +32,6 @@ import { AttractantCode } from "../attractant_code/entities/attractant_code.enti
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
@@ -68,10 +65,6 @@ describe("Testing: CodeTable Controller", () => {
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),

@@ -83,7 +83,6 @@ import {
   getOfficeByGeoCode,
   searchAppUsers,
 } from "../../external_api/shared_data";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
 import { formatPhonenumber, getFileType } from "../../common/methods";
@@ -116,8 +115,6 @@ export class ComplaintService {
   private readonly _complaintReferralRepository: Repository<ComplaintReferral>;
   @InjectRepository(ActionTaken)
   private readonly _actionTakenRepository: Repository<ActionTaken>;
-  @InjectRepository(SpeciesCode)
-  private readonly _speciesRepository: Repository<SpeciesCode>;
 
   constructor(
     @Inject(REQUEST)
@@ -318,7 +315,6 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife")
           .leftJoin("wildlife.complaint_identifier", "complaint")
-          .leftJoin("wildlife.species_code", "species_code")
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
           .leftJoin("attractants.attractant_code", "attractant_code")
@@ -384,15 +380,7 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
-          .leftJoin("wildlife.species_code", "species_code")
           .leftJoin("complaint.complaint_referral", "complaint_referral")
-          .addSelect([
-            "species_code.species_code",
-            "species_code.short_description",
-            "species_code.long_description",
-            "species_code.large_carnivore_ind",
-          ])
-
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .addSelect([
             "complaint_nature_code.hwcr_complaint_nature_code",
@@ -570,7 +558,7 @@ export class ComplaintService {
         }
 
         if (speciesCode) {
-          builder.andWhere("wildlife.species_code = :SpeciesCode", {
+          builder.andWhere("wildlife.species_code_ref = :SpeciesCode", {
             SpeciesCode: speciesCode,
           });
         }
@@ -727,13 +715,6 @@ export class ComplaintService {
           case "HWCR": {
             //consider to remove? because other_attractants_text is not displayed in frontend
             qb.orWhere("wildlife.other_attractants_text ILIKE :query", {
-              query: `%${query}%`,
-            });
-
-            qb.orWhere("species_code.short_description ILIKE :query", {
-              query: `%${query}%`,
-            });
-            qb.orWhere("species_code.long_description ILIKE :query", {
               query: `%${query}%`,
             });
 
@@ -1173,7 +1154,9 @@ export class ComplaintService {
       if (caseComplaintIds.length > 0) {
         builder.andWhere(
           new Brackets((qb) => {
-            qb.where("complaint.complaint_identifier IN(:...case_ids)", { case_ids: caseComplaintIds }).orWhere(hasCoors);
+            qb.where("complaint.complaint_identifier IN(:...case_ids)", { case_ids: caseComplaintIds }).orWhere(
+              hasCoors,
+            );
           }),
         );
       } else {
@@ -2220,7 +2203,7 @@ export class ComplaintService {
                 hwcr_complaint_nature_code: {
                   hwcr_complaint_nature_code: natureOfComplaint,
                 },
-                species_code: { species_code: species },
+                species_code_ref: species,
                 other_attractants_text: otherAttractants,
                 update_user_id: idir,
               })
@@ -2373,7 +2356,7 @@ export class ComplaintService {
           const hwcr = {
             hwcr_complaint_guid: hwcrId,
             complaint_identifier: complaintId,
-            species_code: species,
+            species_code_ref: species,
             hwcr_complaint_nature_code: natureOfComplaint,
             other_attractants_text: otherAttractants,
             create_user_id: idir,
@@ -2762,12 +2745,6 @@ export class ComplaintService {
         const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
         let drugActor = drugAction?.actor;
         let drugDate = drugAction?.date;
-
-        //-- Case Management doesn't keep the species codes as we are source of truth
-
-        const builder = this._speciesRepository.createQueryBuilder("species").where({ species_code: animal.species });
-        const result = await builder.getOne();
-        animal.species = result.short_description;
 
         //-- Convert Officer Guids to Names in parallel
         animal.officer = outcomeAction?.actor;

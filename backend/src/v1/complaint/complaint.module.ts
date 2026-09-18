@@ -11,7 +11,6 @@ import { AttractantCode } from "../attractant_code/entities/attractant_code.enti
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CodeTableModule } from "../code-table/code-table.module";
 import { AppUserComplaintXrefModule } from "../app_user_complaint_xref/app_user_complaint_xref.module";
@@ -42,7 +41,6 @@ import { EventPublisherModule } from "src/v1/event_publisher/event_publisher.mod
     TypeOrmModule.forFeature([AttractantCode]),
     TypeOrmModule.forFeature([HwcrComplaintNatureCode]),
     TypeOrmModule.forFeature([AppUserComplaintXrefCode]),
-    TypeOrmModule.forFeature([SpeciesCode]),
     TypeOrmModule.forFeature([ViolationCode]),
     TypeOrmModule.forFeature([ComplaintTypeCode]),
     TypeOrmModule.forFeature([GirComplaint]),

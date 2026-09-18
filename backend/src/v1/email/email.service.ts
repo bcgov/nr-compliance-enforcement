@@ -4,7 +4,6 @@ import { generateReferralEmailBody } from "../../email_templates/referrals";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
 import { ComplaintService } from "../../v1/complaint/complaint.service";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
-import { SpeciesCodeService } from "../../v1/species_code/species_code.service";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
@@ -26,7 +25,6 @@ export class EmailService {
     private readonly _emailReferenceService: EmailReferenceService,
     @Inject(forwardRef(() => ComplaintService))
     private readonly _complaintService: ComplaintService,
-    private readonly _speciesCodeService: SpeciesCodeService,
     private readonly _natureOfComplaintService: HwcrComplaintNatureCodeService,
     private readonly _violationCodeService: ViolationCodeService,
     private readonly _girTypeCodeService: GirTypeCodeService,
@@ -71,7 +69,7 @@ export class EmailService {
         subjectTypeDescription = "HWC";
         bodyTypeDescription = "Human wildlife conflict";
         const wildlifeComplaint = complaint as WildlifeComplaintDto;
-        const speciesName = (await this._speciesCodeService.findOne(wildlifeComplaint.species)).short_description;
+        const speciesName = "PLACEHOLDER REPLACE WITH SHARED LOOKUP";
         const natureOfComplaint = (await this._natureOfComplaintService.findOne(wildlifeComplaint.natureOfComplaint))
           .long_description;
         complaintSummaryText = `${bodyTypeDescription}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
@@ -254,9 +252,7 @@ export class EmailService {
           const complaintAsWildlife = complaint as WildlifeComplaintDto;
           subjectTypeDescription = "HWC";
           complaintTypeDescription = "Human wildlife conflict";
-          const { short_description: speciesName } = await this._speciesCodeService.findOne(
-            complaintAsWildlife.species,
-          );
+          const speciesName = "PLACEHOLDER REPLACE WITH SHARED LOOKUP";
           const { long_description: natureOfComplaint } = await this._natureOfComplaintService.findOne(
             complaintAsWildlife.natureOfComplaint,
           );

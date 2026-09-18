@@ -26,7 +26,6 @@ import { AttractantCode } from "../attractant_code/entities/attractant_code.enti
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { Justification } from "src/types/models/code-tables/justification";
@@ -79,8 +78,6 @@ export class CodeTableService {
   private readonly _natureOfComplaintRepository: Repository<HwcrComplaintNatureCode>;
   @InjectRepository(AppUserComplaintXrefCode)
   private readonly _appUserComplaintXrefCodeRepository: Repository<AppUserComplaintXrefCode>;
-  @InjectRepository(SpeciesCode)
-  private readonly _speciesRepository: Repository<SpeciesCode>;
   @InjectRepository(ViolationAgencyXref)
   private readonly _violationAgencyXrefRepository: Repository<ViolationAgencyXref>;
   @InjectRepository(ComplaintTypeCode)
@@ -234,25 +231,26 @@ export class CodeTableService {
         return results;
       }
       case "species": {
-        const data = await this._speciesRepository.find({ order: { display_order: "ASC" } });
-        let results = data.map(
+        const { data } = await get(token, {
+          query:
+            "{speciesCodes{speciesCode shortDescription longDescription displayOrder activeIndicator, largeCarnivoreIndicator}}",
+        });
+        let results = data.speciesCodes.map(
           ({
-            species_code,
-            short_description,
-            long_description,
-            display_order,
-            active_ind,
-            legacy_code,
-            large_carnivore_ind,
+            speciesCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator,
+            largeCarnivoreIndicator,
           }) => {
             let table: Species = {
-              species: species_code,
-              legacy: legacy_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order,
-              isActive: active_ind,
-              isLargeCarnivore: large_carnivore_ind,
+              species: speciesCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+              isLargeCarnivore: largeCarnivoreIndicator,
             };
             return table;
           },

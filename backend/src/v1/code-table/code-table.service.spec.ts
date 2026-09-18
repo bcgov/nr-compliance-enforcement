@@ -15,7 +15,6 @@ import {
   MockComplaintStatusCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
-  MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
@@ -24,7 +23,6 @@ import {
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
@@ -56,10 +54,6 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),
@@ -186,19 +180,6 @@ describe("Testing: CodeTable Service", () => {
     expect(results.length).toBe(2);
   });
 
-  it("should return collection of species", async () => {
-    //-- arrange
-    const _tableName = "species";
-
-    //-- act
-    const results = await service.getCodeTableByName(_tableName, "mock-token");
-
-    //-- assert
-    expect(results).not.toBe(null);
-    expect(results.length).not.toBe(0);
-    expect(results.length).toBe(6);
-  });
-
   it("should return collection of violations", async () => {
     //-- arrange
     const _tableName = "violation";
@@ -263,10 +244,6 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),
@@ -346,10 +323,6 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
-        },
-        {
           provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
         },
@@ -425,10 +398,6 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),

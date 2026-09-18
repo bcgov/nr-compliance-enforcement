@@ -11,7 +11,6 @@ import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";
 import { AttractantCode } from "../../v1/attractant_code/entities/attractant_code.entity";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
-import { SpeciesCode } from "../../v1/species_code/entities/species_code.entity";
 import { HwcrComplaintNatureCode } from "../../v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AttractantHwcrXref } from "../../v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
@@ -89,26 +88,6 @@ export const createComplaintMetaData = () => {
     delegates: Array<DelegateDto>,
     parkGuid: String,
     type: String,
-  });
-};
-
-export const createSpeciesCodeMetaData = () => {
-  PojosMetadataMap.create<SpeciesCode>("SpeciesCode", {
-    species_code: String,
-    short_description: String,
-    long_description: String,
-    display_order: Number,
-    active_ind: Boolean,
-    legacy_code: String,
-  });
-
-  PojosMetadataMap.create<Species>("SpeciesDto", {
-    species: String,
-    legacy: String,
-    shortDescription: String,
-    longDescription: String,
-    displayOrder: Number,
-    isActive: Boolean,
   });
 };
 
@@ -198,13 +177,12 @@ export const createViolationCodeMetadata = () => {
 
 export const createWildlifeComplaintMetadata = () => {
   createComplaintMetaData();
-  createSpeciesCodeMetaData();
   createNatureOfComplaintMetaData();
   createAttractantCodeMetaData();
 
   PojosMetadataMap.create<HwcrComplaint>("WildlifeComplaint", {
     complaint_identifier: Complaint,
-    species_code: SpeciesCode,
+    species_code_ref: String,
     hwcr_complaint_nature_code: HwcrComplaintNatureCode,
     other_attractants_text: String,
     attractant_hwcr_xref: Array<AttractantCode>,
