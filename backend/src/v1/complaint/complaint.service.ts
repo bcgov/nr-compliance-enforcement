@@ -223,7 +223,6 @@ export class ComplaintService {
     sortMap: Map<string, number>,
     orderBy: "ASC" | "DESC",
   ): void {
-    console.dir(sortMap, { depth: null });
     if (sortMap.size === 0) {
       builder.orderBy("complaint.complaint_identifier", orderBy);
       return;

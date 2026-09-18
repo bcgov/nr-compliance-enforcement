@@ -354,7 +354,7 @@ export class ComplaintOutcomeService {
           where: { active_ind: true },
           select: {
             wildlife_guid: true,
-            species_code: true,
+            species_code_ref: true,
             age_code_wildlife_age_codeToage_code: {
               select: {
                 age_code: true,
@@ -2042,7 +2042,7 @@ export class ComplaintOutcomeService {
         .map((item, idx) => {
           const {
             wildlife_guid: id,
-            species_code: species,
+            species_code_ref: species,
             sex_code_ref: sex,
             age_code_wildlife_age_codeToage_code: ageObject,
             threat_level_code_wildlife_threat_level_codeTothreat_level_code: categoryLevelObject,
@@ -2208,7 +2208,7 @@ export class ComplaintOutcomeService {
 
         let record: any = {
           complaint_outcome_guid: caseId,
-          species_code: species,
+          species_code_ref: species,
           active_ind: true,
           create_user_id: userId,
           update_user_id: userId,
@@ -2447,7 +2447,7 @@ export class ComplaintOutcomeService {
 
         //-- create a new data record to update based on the input provided
         let data = {
-          species_code: species,
+          species_code_ref: species,
           sex_code_ref: sex || null,
           age_code: age || null,
           threat_level_code: categoryLevel || null,
