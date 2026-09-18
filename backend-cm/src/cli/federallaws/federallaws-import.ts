@@ -288,7 +288,7 @@ async function importLegislationVersion(
 
 /**
  * Imports Federal Laws documents for the legislation versions waiting to be imported
- * Versions that have already been imported are skipped
+ * Versions that have already been imported or failed are skipped
  */
 export async function runFederalLawsImport(
   legislationService: LegislationService,
@@ -300,12 +300,14 @@ export async function runFederalLawsImport(
   logger.log("Fetching legislation versions to import from database...");
 
   try {
-    // Get the pending and failed federal versions of active sources
+    // Get the pending federal versions of active sources
     const versions = await legislationVersionService.getImportableVersions("FEDERAL");
 
     if (versions.length === 0) {
-      logger.log("No legislation versions to import. All versions have already been imported.");
-      logger.log("To re-import a version, set its import_status to PENDING in the legislation_version table.");
+      logger.log("No pending legislation versions to import.");
+      logger.log(
+        "To import a version again, including a failed one, reset it or set its import_status to PENDING in the legislation_version table.",
+      );
       return;
     }
 
