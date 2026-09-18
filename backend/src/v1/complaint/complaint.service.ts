@@ -93,6 +93,7 @@ import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dt
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 import { EventPublisherService } from "../event_publisher/event_publisher.service";
+import { Species } from "src/types/models/code-tables/species";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -171,11 +172,11 @@ export class ComplaintService {
 
   private _getSortTable = (column: string): string => {
     switch (column) {
-      case "species_code":
       case "hwcr_complaint_nature_code":
         return "wildlife";
+      case "species_code":
       case "last_name":
-        // last_name sorting is handled via GraphQL API in applyLastNameSort method
+        // species and last_name sorting is handled via GraphQL API
         return "complaint";
       case "gir_type_code":
         return "general";
@@ -190,6 +191,55 @@ export class ComplaintService {
         return "complaint";
     }
   };
+
+  // Fetches species from GraphQL and returns a map of species sorted by species_name
+  private async getSpeciesSortMap(token: string): Promise<Map<string, number>> {
+    try {
+      const species = (await this._codeTableService.getCodeTableByName("species", token)) as unknown as Species[];
+
+      const sorted = [...species].sort((a, b) => {
+        const speciesA = (a.shortDescription || "").toLowerCase();
+        const speciesB = (b.shortDescription || "").toLowerCase();
+        return speciesA.localeCompare(speciesB);
+      });
+
+      const sortMap = new Map<string, number>();
+      for (const [index, species] of sorted.entries()) {
+        if (species.species) {
+          sortMap.set(species.species, index);
+        }
+      }
+
+      return sortMap;
+    } catch (error) {
+      this.logger.error(`Error building species sort map: ${error}`);
+      return new Map();
+    }
+  }
+
+  // Applies area_name sorting to a query builder using a CASE statement
+  private applySpeciesSort(
+    builder: SelectQueryBuilder<any>,
+    sortMap: Map<string, number>,
+    orderBy: "ASC" | "DESC",
+  ): void {
+    console.dir(sortMap, { depth: null });
+    if (sortMap.size === 0) {
+      builder.orderBy("complaint.complaint_identifier", orderBy);
+      return;
+    }
+
+    let caseStatement = "(CASE wildlife.species_code_ref ";
+
+    for (const [speciesCode, position] of sortMap) {
+      caseStatement += `WHEN '${speciesCode.replaceAll("'", "''")}' THEN ${position} `;
+    }
+    caseStatement += "ELSE 9999 END)";
+
+    builder.addSelect(caseStatement, "species_sort_order");
+    builder.orderBy("species_sort_order", orderBy);
+    builder.addOrderBy("complaint.incident_reported_utc_timestmp", "DESC");
+  }
 
   // Fetches geo org units from GraphQL and returns a map of areaCode sorted by area_name
   private async getAreaNameSortMap(token: string): Promise<Map<string, number>> {
@@ -1481,6 +1531,10 @@ export class ComplaintService {
           // Special handling for last_name sort since it's source is the GraphQL API
           const lastNameSortMap = await this.getLastNameSortMap(token);
           this.applyLastNameSort(builder, lastNameSortMap, orderBy);
+        } else if (sortBy === "species_code") {
+          // Special handling for species sort since it's source is the GraphQL API
+          const speciesSortMap = await this.getSpeciesSortMap(token);
+          this.applySpeciesSort(builder, speciesSortMap, orderBy);
         } else {
           builder
             .orderBy(sortString, orderBy, "NULLS LAST")
