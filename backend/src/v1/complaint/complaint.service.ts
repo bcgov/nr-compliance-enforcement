@@ -2792,6 +2792,11 @@ export class ComplaintService {
 
     const _applyWildlifeData = async (wildlife) => {
       for (const animal of wildlife) {
+        // Convert species code from shared
+        const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+        const species = speciesTable?.find((item: any) => item.species === animal.species)?.shortDescription;
+        animal.species = species;
+
         const wildlifeActions = animal.actions;
 
         const drugAction = wildlifeActions?.find((item) => item.actionCode === "ADMNSTRDRG");
@@ -3115,6 +3120,14 @@ export class ComplaintService {
           this.logger.error(`Failed to fetch app user ${data.officerAssigned} for report: ${error}`);
           data.officerAssigned = "Not Assigned";
         }
+      }
+
+      //-- get species from GraphQL
+      if (data.species) {
+        // Convert species code from shared
+        const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+        const species = speciesTable?.find((item: any) => item.species === data.species)?.shortDescription;
+        data.species = species;
       }
 
       //-- get community, office, zone, and region from GraphQL
