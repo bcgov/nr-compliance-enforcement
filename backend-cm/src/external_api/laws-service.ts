@@ -15,7 +15,7 @@ const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.en
 
 const proxyConfig: AxiosRequestConfig = httpsProxyAgent ? { proxy: false, httpsAgent: httpsProxyAgent } : {};
 
-// The Federal Laws API failed to connect
+// The Federal Laws API fails to connect on occasion, so retry a few times to mitigate.
 const MAX_FETCH_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 1000;
 
