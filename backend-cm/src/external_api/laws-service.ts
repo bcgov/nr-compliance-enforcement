@@ -52,7 +52,7 @@ const parseDocumentsFromXml = (xmlString: string): any[] => {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "@_",
-    parseTagValue: false, // all-digit document IDs must stay strings
+    parseTagValue: false, // document id's must be parsed as strings
   });
 
   const parsed = parser.parse(xmlString);
