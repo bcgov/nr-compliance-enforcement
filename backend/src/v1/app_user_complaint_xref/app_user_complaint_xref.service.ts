@@ -337,7 +337,17 @@ export class AppUserComplaintXrefService {
       );
       if (sendEmail && leadAgencyActive && collaboratorAgencyActive) {
         try {
-          await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user, token);
+          const complaint = await this._complaintService.findById(
+            complaintIdentifier,
+            sendCollaboratorEmailDto.complaintType,
+          );
+          await this._emailService.sendCollaboratorEmail(
+            complaintIdentifier,
+            complaint,
+            sendCollaboratorEmailDto,
+            user,
+            token,
+          );
         } catch (error) {
           this.logger.error(`Error sending collaborator email.`, error);
         }

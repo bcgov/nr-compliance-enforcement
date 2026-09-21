@@ -1,8 +1,7 @@
-import { Inject, Injectable, Logger, forwardRef } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ChesService } from "../../external_api/ches/ches.service";
 import { generateReferralEmailBody } from "../../email_templates/referrals";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
-import { ComplaintService } from "../../v1/complaint/complaint.service";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
@@ -23,8 +22,6 @@ export class EmailService {
   constructor(
     private readonly _chesService: ChesService,
     private readonly _emailReferenceService: EmailReferenceService,
-    @Inject(forwardRef(() => ComplaintService))
-    private readonly _complaintService: ComplaintService,
     private readonly _natureOfComplaintService: HwcrComplaintNatureCodeService,
     private readonly _violationCodeService: ViolationCodeService,
     private readonly _girTypeCodeService: GirTypeCodeService,
@@ -104,6 +101,7 @@ export class EmailService {
 
   sendReferralEmail = async (
     createComplaintReferralDto,
+    complaint,
     senderEmailAddress,
     senderName,
     exportContentBuffer,
@@ -122,7 +120,6 @@ export class EmailService {
 
     const { type, fileName } = createComplaintReferralDto.documentExportParams;
     try {
-      const complaint = await this._complaintService.findById(id, type, undefined, token);
       const base64Content = Buffer.from(exportContentBuffer.data).toString("base64");
       const emailAttachments = [
         {
@@ -223,6 +220,7 @@ export class EmailService {
 
   sendCollaboratorEmail = async (
     complaintId,
+    complaint,
     sendCollaboratorEmailDto: SendCollaboratorEmalDto,
     user,
     token: string,
@@ -240,7 +238,6 @@ export class EmailService {
       const collaborator = collaboratorUserRes[0];
       const { email, lastName, firstName } = collaborator;
       const collaboratorName = `${firstName} ${lastName}`;
-      const complaint = await this._complaintService.findById(complaintId, complaintType);
       const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
       const owningAgency = agencyTable?.find((agency: any) => agency.agency === complaint.ownedBy)?.shortDescription;
       let subjectAdditionalDetails = "";

@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
@@ -12,7 +12,6 @@ export class DocumentService {
 
   constructor(
     private readonly cdogs: CdogsService,
-    @Inject(forwardRef(() => ComplaintService))
     private readonly ceds: ComplaintService,
   ) {}
 

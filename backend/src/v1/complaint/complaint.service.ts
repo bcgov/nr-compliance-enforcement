@@ -1,6 +1,5 @@
 import { map } from "lodash";
 import {
-  forwardRef,
   HttpException,
   HttpStatus,
   Inject,
@@ -117,7 +116,6 @@ export class ComplaintService {
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
-    @Inject(forwardRef(() => AppUserComplaintXrefService))
     private readonly _appUserComplaintXrefService: AppUserComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
