@@ -70,26 +70,28 @@ import { EmailReference } from "../email_reference/entities/email_reference.enti
 export class CodeTableService {
   private readonly logger = new Logger(CodeTableService.name);
 
-  @InjectRepository(AttractantCode)
-  private readonly _attractantRepository: Repository<AttractantCode>;
-  @InjectRepository(ComplaintStatusCode)
-  private readonly _complaintStatusRepository: Repository<ComplaintStatusCode>;
-  @InjectRepository(HwcrComplaintNatureCode)
-  private readonly _natureOfComplaintRepository: Repository<HwcrComplaintNatureCode>;
-  @InjectRepository(AppUserComplaintXrefCode)
-  private readonly _appUserComplaintXrefCodeRepository: Repository<AppUserComplaintXrefCode>;
-  @InjectRepository(ViolationAgencyXref)
-  private readonly _violationAgencyXrefRepository: Repository<ViolationAgencyXref>;
-  @InjectRepository(ComplaintTypeCode)
-  private readonly _complaintTypetRepository: Repository<ComplaintTypeCode>;
-  @InjectRepository(GirTypeCode)
-  private readonly _girTypeCodeRepository: Repository<GirTypeCode>;
-  @InjectRepository(ReportedByCode)
-  private readonly _reportedByRepository: Repository<ReportedByCode>;
-  @InjectRepository(CompMthdRecvCdAgcyCdXref)
-  private readonly _compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
-  @InjectRepository(EmailReference)
-  private readonly _emailReferenceRepository: Repository<EmailReference>;
+  constructor(
+    @InjectRepository(AttractantCode)
+    private readonly _attractantRepository: Repository<AttractantCode>,
+    @InjectRepository(ComplaintStatusCode)
+    private readonly _complaintStatusRepository: Repository<ComplaintStatusCode>,
+    @InjectRepository(HwcrComplaintNatureCode)
+    private readonly _natureOfComplaintRepository: Repository<HwcrComplaintNatureCode>,
+    @InjectRepository(AppUserComplaintXrefCode)
+    private readonly _appUserComplaintXrefCodeRepository: Repository<AppUserComplaintXrefCode>,
+    @InjectRepository(ViolationAgencyXref)
+    private readonly _violationAgencyXrefRepository: Repository<ViolationAgencyXref>,
+    @InjectRepository(ComplaintTypeCode)
+    private readonly _complaintTypetRepository: Repository<ComplaintTypeCode>,
+    @InjectRepository(GirTypeCode)
+    private readonly _girTypeCodeRepository: Repository<GirTypeCode>,
+    @InjectRepository(ReportedByCode)
+    private readonly _reportedByRepository: Repository<ReportedByCode>,
+    @InjectRepository(CompMthdRecvCdAgcyCdXref)
+    private readonly _compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>,
+    @InjectRepository(EmailReference)
+    private readonly _emailReferenceRepository: Repository<EmailReference>,
+  ) {}
 
   getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     this.logger.debug("in code table: " + JSON.stringify(table));

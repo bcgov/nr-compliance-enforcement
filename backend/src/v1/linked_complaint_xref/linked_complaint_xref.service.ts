@@ -13,12 +13,13 @@ import { getAppUserByAuthUserGuid } from "../../external_api/shared_data";
 
 @Injectable({ scope: Scope.REQUEST })
 export class LinkedComplaintXrefService {
-  @InjectRepository(LinkedComplaintXref)
-  private readonly linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
-
   private readonly logger = new Logger(LinkedComplaintXrefService.name);
 
-  constructor(@Inject(REQUEST) private readonly request: Request) {}
+  constructor(
+    @InjectRepository(LinkedComplaintXref)
+    private readonly linkedComplaintXrefRepository: Repository<LinkedComplaintXref>,
+    @Inject(REQUEST) private readonly request: Request,
+  ) {}
 
   async create(createLinkedComplaintXrefDto: CreateLinkedComplaintXrefDto): Promise<LinkedComplaintXref> {
     const newLinkedComplaintXref = this.linkedComplaintXrefRepository.create(createLinkedComplaintXrefDto);
