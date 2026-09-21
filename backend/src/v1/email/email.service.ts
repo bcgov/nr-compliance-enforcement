@@ -55,7 +55,7 @@ export class EmailService {
     return recipientList;
   }
 
-  private async _getComplaintDetailsByType(type, complaint, communityName) {
+  private async _getComplaintDetailsByType(type, complaint, communityName, token) {
     let subjectTypeDescription = type;
     let bodyTypeDescription = type;
     let complaintSummaryText = "";
@@ -66,7 +66,11 @@ export class EmailService {
         subjectTypeDescription = "HWC";
         bodyTypeDescription = "Human wildlife conflict";
         const wildlifeComplaint = complaint as WildlifeComplaintDto;
-        const speciesName = "PLACEHOLDER REPLACE WITH SHARED LOOKUP";
+        // Convert species code from shared
+        const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+        const speciesName = speciesTable?.find(
+          (item: any) => item.species === wildlifeComplaint.species,
+        )?.shortDescription;
         const natureOfComplaint = (await this._natureOfComplaintService.findOne(wildlifeComplaint.natureOfComplaint))
           .long_description;
         complaintSummaryText = `${bodyTypeDescription}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
@@ -169,7 +173,7 @@ export class EmailService {
       )?.longDescription;
 
       const { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails } =
-        await this._getComplaintDetailsByType(type, complaint, communityName);
+        await this._getComplaintDetailsByType(type, complaint, communityName, token);
 
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
       const emailSubject = externalAgencyInd
@@ -249,7 +253,11 @@ export class EmailService {
           const complaintAsWildlife = complaint as WildlifeComplaintDto;
           subjectTypeDescription = "HWC";
           complaintTypeDescription = "Human wildlife conflict";
-          const speciesName = "PLACEHOLDER REPLACE WITH SHARED LOOKUP";
+          // Convert species code from shared
+          const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+          const speciesName = speciesTable?.find(
+            (item: any) => item.species === complaintAsWildlife.species,
+          )?.shortDescription;
           const { long_description: natureOfComplaint } = await this._natureOfComplaintService.findOne(
             complaintAsWildlife.natureOfComplaint,
           );
