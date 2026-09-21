@@ -17,9 +17,6 @@ import { getAppUserByGuid } from "../../external_api/shared_data";
 
 @Injectable()
 export class AppUserComplaintXrefService {
-  @InjectRepository(AppUserComplaintXref)
-  private readonly repository: Repository<AppUserComplaintXref>;
-
   private readonly logger = new Logger(AppUserComplaintXrefService.name);
 
   constructor(
@@ -33,6 +30,8 @@ export class AppUserComplaintXrefService {
     @Inject(FeatureFlagService)
     private readonly _featureFlagService: FeatureFlagService,
     private readonly _appUserService: AppUserService,
+    @InjectRepository(AppUserComplaintXref)
+    private readonly repository: Repository<AppUserComplaintXref>,
   ) {}
 
   async create(createAppUserComplaintXrefDto: CreateAppUserComplaintXrefDto): Promise<AppUserComplaintXref> {

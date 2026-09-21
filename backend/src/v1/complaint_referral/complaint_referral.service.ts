@@ -16,16 +16,12 @@ import { asUUID } from "src/common/methods";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintReferralService {
-  @InjectRepository(ComplaintReferral)
-  private readonly complaintReferralRepository: Repository<ComplaintReferral>;
-  @InjectRepository(Complaint)
-  private readonly complaintRepository: Repository<Complaint>;
-
   constructor(
     @Inject(REQUEST)
     private readonly request: Request,
     @Inject(forwardRef(() => AppUserComplaintXrefService))
     private readonly _personService: AppUserComplaintXrefService,
+    @Inject(forwardRef(() => EmailService))
     @Inject(EmailService)
     private readonly _emailService: EmailService,
     @Inject(FeatureFlagService)
@@ -34,6 +30,10 @@ export class ComplaintReferralService {
     private readonly _documentService: DocumentService,
     @Inject(ComplaintReferralEmailLogService)
     private readonly _complaintReferralEmailLogService: ComplaintReferralEmailLogService,
+    @InjectRepository(ComplaintReferral)
+    private readonly complaintReferralRepository: Repository<ComplaintReferral>,
+    @InjectRepository(Complaint)
+    private readonly complaintRepository: Repository<Complaint>,
   ) {}
 
   private readonly logger = new Logger(ComplaintReferralService.name);
@@ -79,7 +79,7 @@ export class ComplaintReferralService {
       await this.complaintRepository.update({ complaint_identifier: id }, updateData);
     }
     // Clear the officer assigned to the complaint
-    this._personService.clearAssignedAppUser(createComplaintReferralDto.complaint_identifier);
+    await this._personService.clearAssignedAppUser(createComplaintReferralDto.complaint_identifier);
 
     if (sendEmail) {
       const senderEmail = user.email ?? process.env.CEDS_EMAIL;

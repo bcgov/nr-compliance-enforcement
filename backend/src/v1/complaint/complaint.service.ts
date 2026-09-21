@@ -1,5 +1,14 @@
 import { map } from "lodash";
-import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, Scope } from "@nestjs/common";
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  Scope,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, In, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
@@ -102,27 +111,13 @@ export class ComplaintService {
   private readonly logger = new Logger(ComplaintService.name);
   private readonly mapper: Mapper;
 
-  @InjectRepository(Complaint)
-  private readonly complaintsRepository: Repository<Complaint>;
-  @InjectRepository(HwcrComplaint)
-  private readonly _wildlifeComplaintRepository: Repository<HwcrComplaint>;
-  @InjectRepository(AllegationComplaint)
-  private readonly _allegationComplaintRepository: Repository<AllegationComplaint>;
-  @InjectRepository(GirComplaint)
-  private readonly _girComplaintRepository: Repository<GirComplaint>;
-  @InjectRepository(ComplaintUpdate)
-  private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>;
-  @InjectRepository(ComplaintReferral)
-  private readonly _complaintReferralRepository: Repository<ComplaintReferral>;
-  @InjectRepository(ActionTaken)
-  private readonly _actionTakenRepository: Repository<ActionTaken>;
-
   constructor(
     @Inject(REQUEST)
     private readonly request: Request,
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
+    @Inject(forwardRef(() => AppUserComplaintXrefService))
     private readonly _appUserComplaintXrefService: AppUserComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
@@ -130,6 +125,20 @@ export class ComplaintService {
     private readonly _linkedComplaintsXrefService: LinkedComplaintXrefService,
     private readonly dataSource: DataSource,
     private readonly eventPublisherService: EventPublisherService,
+    @InjectRepository(Complaint)
+    private readonly complaintsRepository: Repository<Complaint>,
+    @InjectRepository(HwcrComplaint)
+    private readonly _wildlifeComplaintRepository: Repository<HwcrComplaint>,
+    @InjectRepository(AllegationComplaint)
+    private readonly _allegationComplaintRepository: Repository<AllegationComplaint>,
+    @InjectRepository(GirComplaint)
+    private readonly _girComplaintRepository: Repository<GirComplaint>,
+    @InjectRepository(ComplaintUpdate)
+    private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>,
+    @InjectRepository(ComplaintReferral)
+    private readonly _complaintReferralRepository: Repository<ComplaintReferral>,
+    @InjectRepository(ActionTaken)
+    private readonly _actionTakenRepository: Repository<ActionTaken>,
   ) {
     this.mapper = mapper;
 

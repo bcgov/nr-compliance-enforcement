@@ -20,12 +20,10 @@ import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.module";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
-import { ComplaintReferralModule } from "../complaint_referral/complaint_referral.module";
 import { StagingComplaintModule } from "../staging_complaint/staging_complaint.module";
 import { ActionTaken } from "./entities/action_taken.entity";
 import { ComplaintMethodReceivedCode } from "../complaint_method_received_code/entities/complaint_method_received_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
-import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { CompMthdRecvCdAgcyCdXrefModule } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.module";
 import { LinkedComplaintXrefModule } from "../linked_complaint_xref/linked_complaint_xref.module";
 import { AppUserModule } from "../app_user/app_user.module";
@@ -46,7 +44,6 @@ import { EventPublisherModule } from "src/v1/event_publisher/event_publisher.mod
     TypeOrmModule.forFeature([GirComplaint]),
     TypeOrmModule.forFeature([ComplaintUpdate]),
     TypeOrmModule.forFeature([ComplaintReferral]),
-    TypeOrmModule.forFeature([GirComplaint]),
     TypeOrmModule.forFeature([ActionTaken]),
     TypeOrmModule.forFeature([ComplaintMethodReceivedCode]),
     TypeOrmModule.forFeature([CompMthdRecvCdAgcyCdXref]),
@@ -55,7 +52,6 @@ import { EventPublisherModule } from "src/v1/event_publisher/event_publisher.mod
     AttractantHwcrXrefModule,
     AutomapperModule,
     ComplaintUpdatesModule,
-    forwardRef(() => ComplaintReferralModule),
     StagingComplaintModule,
     CompMthdRecvCdAgcyCdXrefModule,
     LinkedComplaintXrefModule,
@@ -63,7 +59,7 @@ import { EventPublisherModule } from "src/v1/event_publisher/event_publisher.mod
     EventPublisherModule,
   ],
   controllers: [ComplaintController],
-  providers: [ComplaintService, CompMthdRecvCdAgcyCdXrefService],
+  providers: [ComplaintService],
   exports: [ComplaintService],
 })
 export class ComplaintModule {}

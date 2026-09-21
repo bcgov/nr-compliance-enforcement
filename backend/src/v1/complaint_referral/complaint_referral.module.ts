@@ -5,7 +5,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { AppUserComplaintXrefModule } from "../app_user_complaint_xref/app_user_complaint_xref.module";
-import { ComplaintModule } from "../complaint/complaint.module";
 import { EmailModule } from "../../v1/email/email.module";
 import { FeatureFlagModule } from "../../v1/feature_flag/feature_flag.module";
 import { DocumentModule } from "../../v1/document/document.module";
@@ -14,10 +13,9 @@ import { ComplaintReferralEmailLogModule } from "../complaint_referral_email_log
 @Module({
   imports: [
     TypeOrmModule.forFeature([ComplaintReferral, Complaint]),
-    AppUserComplaintXrefModule,
+    forwardRef(() => AppUserComplaintXrefModule),
     ComplaintReferralEmailLogModule,
-    EmailModule,
-    forwardRef(() => ComplaintModule),
+    forwardRef(() => EmailModule),
     FeatureFlagModule,
     DocumentModule,
   ],
