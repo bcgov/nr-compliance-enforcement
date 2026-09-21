@@ -15,7 +15,7 @@ export class EnforcementAction {
   ticket?: [Ticket];
   comment?: string;
   publishedPartyReference?: string; //For attachments in COMS
-  // Mutual fields (all decisions except Unfounded/Unresolved)
+  // Mutual fields (all decisions except Unfounded/Unsolved)
   issuingOfficerIdentifier?: string;
   dateServed?: Date;
   // Warning

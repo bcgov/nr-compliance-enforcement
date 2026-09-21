@@ -1,5 +1,5 @@
 // Every enforcement action code that has its own decision-detail table, and the table it maps
-// to. Unfounded/Unresolved (comment only) and Violation Ticket (the pre-existing ticket table,
+// to. Unfounded/Unsolved (comment only) and Violation Ticket (the pre-existing ticket table,
 // handled separately) are intentionally excluded here.
 export const DECISION_DETAIL_TABLES = [
   "warning",
