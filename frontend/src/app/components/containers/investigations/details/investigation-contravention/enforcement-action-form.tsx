@@ -410,12 +410,12 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     }
   };
 
-  // Comment applies to Unfounded/Unresolved plus other decisions
+  // Comment applies to Unfounded/Unsolved plus other decisions
   const buildCommentField = (value: FormValues) => ({
     comment: hasCommentField ? value.comment : null,
   });
 
-  // Issuing officer/date served apply to every decision except Unfounded/Unresolved
+  // Issuing officer/date served apply to every decision except Unfounded/Unsolved
   const buildMutualFields = (value: FormValues) => ({
     issuingOfficerIdentifier: isNonEADecision ? null : value.issuingOfficer,
     dateServed: isNonEADecision || !value.dateServed ? null : new Date(value.dateServed).toISOString(),
@@ -731,7 +731,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 value={enforcementActionSelectOptions.find((opt) => opt.value === field.state.value)}
                 onChange={(option) => {
                   const newCode = option?.value ?? "";
-                  // The comment field is shared across decision types (Unfounded/Unresolved plus
+                  // The comment field is shared across decision types (Unfounded/Unsolved plus
                   // Administrative Sanction/Restorative Justice/Administrative Penalty) - clear it
                   // when the decision type changes so a comment written for one decision can't be
                   // carried over and saved against a different one.

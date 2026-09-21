@@ -1,4 +1,4 @@
-export const NON_EA_DECISION_CODES = new Set(["UNFD", "UNRS"]); // Unfounded, Unresolved
+export const NON_EA_DECISION_CODES = new Set(["UNFD", "UNSL"]); // Unfounded, Unsolved
 
 export const CODE_WARNING = "WARN";
 export const CODE_VIOLATION_TICKET = "FDVT";

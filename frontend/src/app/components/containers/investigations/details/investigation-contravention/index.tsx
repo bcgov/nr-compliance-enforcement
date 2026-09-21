@@ -158,7 +158,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 
   const onAddEnforcementAction = (contraventionId: string, partyGuid: string | null) => {
     // No party at all for an unknown-party contravention - only the comment-only decisions
-    // (Unfounded, Unresolved) are available for those, enforced inside the form itself.
+    // (Unfounded, Unsolved) are available for those, enforced inside the form itself.
     const resolved = resolveContraventionAndParty(contraventionId, partyGuid);
     if (!resolved) return;
 
