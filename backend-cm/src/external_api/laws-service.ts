@@ -75,7 +75,8 @@ const parseDocumentsFromXml = (xmlString: string): any[] => {
  * Fetches the regulations from the BC Laws Content API and parses it
  * Recursively fetch documents from any directories (CIVIX_DOCUMENT_TYPE === "dir")
  * For directories with multipart documents (ID ending in _multi), import only the multipart
- * Skips "Amendments Not in Force" directories, which hold a second copy of the regulation
+ * Skips "Amendments Not in Force" directories, which may have a second copy of the regulation
+ * (Not sure why, since it seems to be in force but there are several examples of this)
  * @param contentApiUrl - The Content API URL for the regulations
  * @returns Set of regulation documents
  */
