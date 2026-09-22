@@ -27,7 +27,7 @@ export class EnforcementActionService {
 
   // Maps a decision code to the fields for its decision-detail table, given a flat
   // create/update input. Returns null for decisions with no dedicated table (Unfounded,
-  // Unresolved, Violation Ticket - ticket is handled by the existing ticket-specific logic).
+  // Unsolved, Violation Ticket - ticket is handled by the existing ticket-specific logic).
   private buildDecisionDetailData(
     code: string | undefined,
     input: CreateEnforcementActionInput | UpdateEnforcementActionInput,

@@ -161,7 +161,9 @@ const renderTableSection = (section: any, tag: string, isHeader: boolean): strin
   if (!section) return "";
   const rows = toArray(section?.row)
     .map((row: any) => {
-      const cells = toArray(row?.entry).map((e: any) => generateCell(e, isHeader)).join("");
+      const cells = toArray(row?.entry)
+        .map((e: any) => generateCell(e, isHeader))
+        .join("");
       return cells ? `<tr>${cells}</tr>` : "";
     })
     .filter(Boolean)
@@ -267,14 +269,20 @@ function collectTextChildren(el: any, startOrder: number): ParsedLegislationNode
   return nodes;
 }
 
+const getHeadingText = (heading: any): { titleText: string; legislationText: string | null } => {
+  const [titleText = "", ...descriptions] = toArray(heading?.TitleText).map((t: any) => extractText(t).trim());
+  return { titleText, legislationText: descriptions.filter(Boolean).join(" ") || null };
+};
+
 // Parses a Heading element into a PART or DIV
 function parseHeadingNode(heading: any, order: number): ParsedLegislationNode | null {
-  const titleText = extractText(heading?.TitleText).trim();
+  const { titleText, legislationText } = getHeadingText(heading);
   if (!titleText) return null;
   const level = heading?.["@_level"] || "1";
   return createNode(level === "1" ? "PART" : "DIV", order, {
     citation: level === "1" ? (/^PART\s+([IVXLCDM]+(?:\.\d+)?)/i.exec(titleText)?.[1] ?? null) : null,
     sectionTitle: titleText,
+    legislationText,
   });
 }
 
@@ -498,16 +506,17 @@ function parseBody(body: any): ParsedLegislationNode[] {
 
   for (const { tag, data } of elements) {
     if (tag === "Heading") {
-      const titleText = extractText(data?.TitleText).trim();
+      const { titleText, legislationText } = getHeadingText(data);
       if ((data?.["@_level"] || "1") === "1") {
         currentPart = createNode("PART", order++, {
           citation: /^PART\s+([IVXLCDM]+(?:\.\d+)?)/i.exec(titleText)?.[1] ?? null,
           sectionTitle: titleText,
+          legislationText,
         });
         currentDiv = null;
         topChildren.push(currentPart);
       } else {
-        const div = createNode("DIV", order++, { sectionTitle: titleText });
+        const div = createNode("DIV", order++, { sectionTitle: titleText, legislationText });
         currentDiv = div;
         currentPart ? currentPart.children.push(div) : topChildren.push(div);
       }
