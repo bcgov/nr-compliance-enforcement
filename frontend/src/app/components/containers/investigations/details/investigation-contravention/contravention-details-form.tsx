@@ -138,7 +138,7 @@ export const ContraventionDetailsForm = ({
       party: partyGuid ?? UNKNOWN_PARTY_VALUE,
       speciesCode: "",
       speciesOtherText: "",
-      quantity: "1",
+      quantity: "",
       wildlifeManagementUnitCode: "",
     },
     onSubmit: async () => {},
@@ -159,7 +159,7 @@ export const ContraventionDetailsForm = ({
 
       for (const name of names) {
         form.setFieldValue(name, "");
-        form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: true }));
+        form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: false, errorMap: {} }));
         localStateSetters[name]?.("");
       }
     },
@@ -279,6 +279,25 @@ export const ContraventionDetailsForm = ({
       isMandatory: isAnimalInformationMandatory,
     };
   }, [isAnimalInformationVisible, isAnimalInformationMandatory]);
+
+  // Quantity defaults to 1 only for mandatory animal information. The ref marks a value as the default,
+  // so it can be withdrawn if the legislation changes, without touching a quantity loaded in edit mode.
+  const isQuantityDefaultedRef = useRef(false);
+  useEffect(() => {
+    if (form.getFieldMeta("quantity")?.isDirty) return;
+
+    const quantity = form.getFieldValue("quantity");
+
+    if (isAnimalInformationMandatory && !quantity) {
+      form.setFieldValue("quantity", "1");
+      form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      isQuantityDefaultedRef.current = true;
+    } else if (!isAnimalInformationMandatory && isQuantityDefaultedRef.current) {
+      form.setFieldValue("quantity", "");
+      form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      isQuantityDefaultedRef.current = false;
+    }
+  }, [isAnimalInformationMandatory, form]);
 
   const findOptionByValue = (options: any[], value: string) =>
     value ? options.find((opt) => opt.value === value) : null;

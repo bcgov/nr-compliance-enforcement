@@ -270,7 +270,7 @@ const LegislationVersionRow: FC<RowProps> = ({
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Edit effective date</Modal.Title>
+          <Modal.Title>Edit legislation details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="comp-details-form">
