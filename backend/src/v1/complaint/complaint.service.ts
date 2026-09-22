@@ -629,6 +629,7 @@ export class ComplaintService {
     let caseSearchData = [];
     let orgGeoCodes: string[] = [];
     let appUserGuids: string[] = [];
+    let speciesCodes: string[] = [];
 
     builder
       .leftJoin("complaint.complaint_update", "complaint_update")
@@ -682,6 +683,21 @@ export class ComplaintService {
         }
 
         caseSearchData = data.getComplaintOutcomesBySearchString;
+      }
+
+      // Species descriptions live in the shared schema and can't be joined, so match the codes here
+      try {
+        const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+        const lowercaseQuery = query.toLowerCase();
+        speciesCodes = speciesTable
+          .filter(
+            (species: any) =>
+              species.shortDescription?.toLowerCase().includes(lowercaseQuery) ||
+              species.longDescription?.toLowerCase().includes(lowercaseQuery),
+          )
+          .map((species: any) => species.species);
+      } catch (error) {
+        this.logger.error(`Error searching species by description: ${error}`);
       }
     }
 
@@ -776,6 +792,9 @@ export class ComplaintService {
             qb.orWhere("attractant_code.long_description ILIKE :query", {
               query: `%${query}%`,
             });
+            if (speciesCodes.length > 0) {
+              qb.orWhere("wildlife.species_code_ref IN (:...speciesCodes)", { speciesCodes });
+            }
             break;
           }
           case "SECTOR":

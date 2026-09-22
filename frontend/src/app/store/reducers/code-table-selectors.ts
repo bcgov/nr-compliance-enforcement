@@ -1,6 +1,6 @@
 import { RootState } from "@store/store";
 import { createSelector } from "@reduxjs/toolkit";
-const selectCodeTables = (state: RootState) => state.codeTables;
+export const selectCodeTables = (state: RootState) => state.codeTables;
 
 export const selectDischargeDropdown = createSelector([selectCodeTables], (codeTables) => {
   const { discharge: items } = codeTables;
