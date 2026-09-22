@@ -19,7 +19,11 @@ import { LegislationVersion, useLegislationVersions } from "@/app/graphql/hooks/
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { selectCommunityCodeDropdown, selectSpeciesCodeDropdown } from "@/app/store/reducers/code-table";
+import {
+  selectCommunityCodeDropdown,
+  selectSpeciesCodeDropdown,
+  selectWildlifeManagementUnitCodeDropdown,
+} from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
 import { getPartyName } from "@/app/common/party-name";
 import Option from "@apptypes/app/option";
@@ -169,7 +173,7 @@ export const ContraventionDetailsForm = ({
   const userAgency = getUserAgency();
   const communityCodes = useAppSelector(selectCommunityCodeDropdown);
   const speciesCodes = useAppSelector(selectSpeciesCodeDropdown);
-  const wildlifeManagementUnitCodes = useAppSelector(selectSpeciesCodeDropdown);
+  const wildlifeManagementUnitCodes = useAppSelector(selectWildlifeManagementUnitCodeDropdown);
 
   const [act, setAct] = useState("");
   const [regulation, setRegulation] = useState("");

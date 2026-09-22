@@ -1829,7 +1829,7 @@ export const selectInvestigationSourceCodeDropdown = createSelector(
     })),
 );
 
-export const selectWildlifeManagementUnitCodeDropDown = createSelector(
+export const selectWildlifeManagementUnitCodeDropdown = createSelector(
   (state: RootState) => state.codeTables["wildlife-management-unit-type"],
   (items) =>
     items.map(({ wildlifeManagementUnitCode: value, shortDescription: label, activeInd }) => ({

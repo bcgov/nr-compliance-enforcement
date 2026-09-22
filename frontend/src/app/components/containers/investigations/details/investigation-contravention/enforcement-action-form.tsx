@@ -17,7 +17,11 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
-import { selectCodeTable } from "@store/reducers/code-table";
+import {
+  selectCodeTable,
+  selectSpeciesCodeDropdown,
+  selectWildlifeManagementUnitCodeDropdown,
+} from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import {
   selectAdministrativePenaltyStatuses,
@@ -201,6 +205,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const orderStatusOptions = useAppSelector(selectOrderStatuses);
   const courtProsecutionStatusOptions = useAppSelector(selectCourtProsecutionStatuses);
   const administrativePenaltyStatusOptions = useAppSelector(selectAdministrativePenaltyStatuses);
+  const speciesCodes = useAppSelector(selectSpeciesCodeDropdown);
+  const wildlifeManagementUnitCodes = useAppSelector(selectWildlifeManagementUnitCodeDropdown);
 
   const isRestrictedToCommentDecisions = !isPartyProfileComplete(party);
 
@@ -233,6 +239,31 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     value: c.area ?? "",
     label: c.areaName ?? "",
   }));
+
+  // Species, quantity and WMU are only recorded on animal related contraventions, so the whole block is
+  // absent for the rest. "Other" species shows the officer's description alongside the label.
+  const speciesLabel =
+    speciesCodes.find((option) => option.value === contravention?.speciesCode)?.label ?? contravention?.speciesCode;
+  const animalInformation = contravention?.speciesCode
+    ? [
+        {
+          label: "Species",
+          value:
+            contravention.speciesCode === "OTHER" && contravention.speciesOtherText
+              ? `${speciesLabel} (${contravention.speciesOtherText})`
+              : speciesLabel,
+        },
+        contravention.quantity == null ? null : { label: "Quantity", value: String(contravention.quantity) },
+        contravention.wildlifeManagementUnitCode
+          ? {
+              label: "Wildlife management unit",
+              value:
+                wildlifeManagementUnitCodes.find((option) => option.value === contravention.wildlifeManagementUnitCode)
+                  ?.label ?? contravention.wildlifeManagementUnitCode,
+            }
+          : null,
+      ].filter((entry) => entry !== null)
+    : [];
 
   const officerOptions = [...(officersInAgency ?? [])].map((o) => ({
     value: o.app_user_guid,
@@ -709,6 +740,12 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           <div>
             <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
           </div>
+          {animalInformation.map((entry) => (
+            <div key={entry.label}>
+              <div className="text-muted small mb-1 mt-2">{entry.label}</div>
+              <div>{entry.value}</div>
+            </div>
+          ))}
         </div>
       )}
       <div className="row mb-3">
