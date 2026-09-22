@@ -256,7 +256,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                               update_user_id,
                               update_utc_timestamp,
                               complaint_identifier,
-                              species_code,
+                              species_code_ref,
                               hwcr_complaint_nature_code
                   )
                   VALUES
