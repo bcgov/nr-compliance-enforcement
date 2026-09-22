@@ -123,6 +123,10 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
         date: step1Values.contraventionDate,
         community: step1Values.communityCode || null,
         investigationPartyGuids: step1Values.selectedPartyGuids,
+        speciesCode: step1Values.speciesCode,
+        speciesOtherText: step1Values.speciesOtherText,
+        quantity: step1Values.quantity,
+        wildlifeManagementUnitCode: step1Values.wildlifeManagementUnitCode,
         // selectedPartyGuid identifies the party row being edited, so update() knows which xref to move
         ...(isEditMode ? { selectedPartyGuid: partyGuid } : {}),
       };

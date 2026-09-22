@@ -40,6 +40,7 @@ const SEARCH_LEGISLATION = gql`
       legislationSourceGuid
       versionEffectiveDate
       sourceUrl
+      animalInformationDisplayType
       legislationText
       sectionTitle
       alternateText

@@ -27,6 +27,8 @@ export class ContraventionService {
     const contraventionDate = toDateString(contraventionInput.date);
     this.validateContraventionDate(contraventionDate);
     await this.validateLegislationReference(contraventionInput.legislationReference, contraventionDate);
+    await this.validateLegislationReference(contraventionInput.legislationReference, contraventionDate);
+    await this.validateAnimalInformation(contraventionInput);
 
     try {
       await withRlsTransaction(this.prisma, async (db) => {
@@ -35,6 +37,7 @@ export class ContraventionService {
           legislation_guid_ref: contraventionInput.legislationReference,
           contravention_date: contraventionInput.date,
           geo_organization_unit_code_ref: contraventionInput.community,
+          ...this.toAnimalInformationData(contraventionInput),
           active_ind: true,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
@@ -179,6 +182,8 @@ export class ContraventionService {
       await this.validateLegislationReference(input.legislationReference, contraventionDate);
     }
 
+    await this.validateAnimalInformation(input);
+
     try {
       await withRlsTransaction(this.prisma, async (db) => {
         const originalContravention = await db.contravention.findUnique({
@@ -207,6 +212,7 @@ export class ContraventionService {
                   legislation_guid_ref: input.legislationReference,
                   contravention_date: input.date,
                   geo_organization_unit_code_ref: input.community,
+                  ...this.toAnimalInformationData(input),
                   active_ind: true,
                   contravention_guid: { not: contraventionGuid },
                   contravention_party_xref: {
@@ -361,5 +367,47 @@ export class ContraventionService {
         {},
       );
     }
+  }
+
+  private async validateAnimalInformation(input: CreateUpdateContraventionInput): Promise<void> {
+    if (input.quantity != null && input.quantity < 1) {
+      throw new GraphQLError("The quantity must be at least 1.", {});
+    }
+
+    if (input.speciesCode === "OTHER" && !input.speciesOtherText?.trim()) {
+      throw new GraphQLError("A description is required when the species is Other.", {});
+    }
+
+    const legislation = await this.sharedPrisma.legislation.findUnique({
+      where: { legislation_guid: input.legislationReference },
+      select: {
+        legislation_version: {
+          select: { legislation_source: { select: { animal_information_display_code: true } } },
+        },
+      },
+    });
+
+    const displayType = legislation?.legislation_version.legislation_source.animal_information_display_code;
+
+    if (displayType !== "M") {
+      return;
+    }
+
+    if (!input.speciesCode || input.quantity == null || !input.wildlifeManagementUnitCode) {
+      throw new GraphQLError(
+        "Species, quantity, and wildlife management unit are required for the selected legislation.",
+        {},
+      );
+    }
+  }
+
+  private toAnimalInformationData(input: CreateUpdateContraventionInput) {
+    return {
+      species_code_ref: input.speciesCode ?? null,
+      // Free text only applies to the Other species, so it is cleared for any other selection
+      species_other_text: input.speciesCode === "OTHER" ? input.speciesOtherText.trim() : null,
+      quantity: input.quantity ?? null,
+      wildlife_management_unit_code_ref: input.wildlifeManagementUnitCode ?? null,
+    };
   }
 }

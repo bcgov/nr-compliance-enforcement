@@ -128,11 +128,13 @@ export class LegislationService {
         lv.legislation_source_guid,
         lv.effective_date AS version_effective_date,
         lv.source_url,
+        ls.animal_information_display_code,
         COALESCE(lc.enabled_ind, true) AS enabled_ind
       FROM legislation l
       INNER JOIN descendants d ON l.legislation_guid = d.legislation_guid
       INNER JOIN legislation_version lv
         ON l.legislation_version_guid = lv.legislation_version_guid AND lv.import_status = 'SUCCESS'
+      INNER JOIN legislation_source ls ON lv.legislation_source_guid = ls.legislation_source_guid
       -- Join to config by agency
       LEFT JOIN legislation_configuration lc
         ON lc.legislation_guid = l.legislation_guid AND lc.agency_code = ${agencyCode}

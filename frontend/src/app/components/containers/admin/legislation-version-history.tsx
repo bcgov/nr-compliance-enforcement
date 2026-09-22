@@ -17,6 +17,13 @@ import {
   useResetLegislationVersion,
   useUpdateLegislationVersion,
 } from "@/app/graphql/hooks/useLegislationVersionQuery";
+import {
+  AnimalInformationDisplayType,
+  animalInformationDisplayTypeOptions,
+  useUpdateLegislationSource,
+} from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { CompSelect } from "@/app/components/common/comp-select";
+import Option from "@apptypes/app/option";
 
 const EMPTY = "—";
 
@@ -51,11 +58,13 @@ type RowProps = {
   effectiveUntil: string | null;
   isInEffect: boolean;
   isNewestImported: boolean;
+  animalInformationDisplayType: AnimalInformationDisplayType;
 };
 
 const LegislationVersionRow: FC<RowProps> = ({
   version,
   agencyCode,
+  animalInformationDisplayType,
   precedingVersion,
   nextVersion,
   effectiveUntil,
@@ -66,6 +75,8 @@ const LegislationVersionRow: FC<RowProps> = ({
   const [showLog, setShowLog] = useState(false);
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [editedDate, setEditedDate] = useState<Date | undefined>();
+  const [editedDisplayType, setEditedDisplayType] =
+    useState<AnimalInformationDisplayType>(animalInformationDisplayType);
 
   const { data: stats } = useLegislationVersionContraventionStats(version.legislationVersionGuid);
   const { data: precedingStats } = useLegislationVersionContraventionStats(precedingVersion?.legislationVersionGuid);
@@ -76,6 +87,11 @@ const LegislationVersionRow: FC<RowProps> = ({
       setIsEditingDate(false);
     },
     onError: (error: any) => ToggleError(unwrapError(error, "Failed to update the effective date")),
+  });
+
+  const updateSourceMutation = useUpdateLegislationSource({
+    onSuccess: () => ToggleSuccess("Animal information updated"),
+    onError: (error: any) => ToggleError(unwrapError(error, "Failed to update the animal information")),
   });
 
   const resetMutation = useResetLegislationVersion({
@@ -143,6 +159,14 @@ const LegislationVersionRow: FC<RowProps> = ({
 
   const saveEffectiveDate = () => {
     if (!editedDate) return;
+    if (editedDisplayType !== animalInformationDisplayType) {
+      updateSourceMutation.mutate({
+        input: {
+          legislationSourceGuid: version.legislationSourceGuid,
+          animalInformationDisplayType: editedDisplayType,
+        },
+      });
+    }
     updateMutation.mutate({
       legislationVersionGuid: version.legislationVersionGuid,
       effectiveDate: formatDateObjectAsString(editedDate, { format: "date" }),
@@ -206,10 +230,11 @@ const LegislationVersionRow: FC<RowProps> = ({
                     return;
                   }
                   setEditedDate(toPickerDate(version.effectiveDate));
+                  setEditedDisplayType(animalInformationDisplayType);
                   setIsEditingDate(true);
                 }}
               >
-                <i className="bi bi-pencil" /> Edit date
+                <i className="bi bi-pencil" /> Edit
               </Dropdown.Item>
               <Dropdown.Item
                 onClick={() => {
@@ -262,6 +287,24 @@ const LegislationVersionRow: FC<RowProps> = ({
                   maxDate={toPickerDate(maxEffectiveDate)}
                   showYearDropdown={true}
                   onChange={(date: Date | undefined) => setEditedDate(date)}
+                />
+              </div>
+            </div>
+            <div className="comp-details-form-row">
+              <label htmlFor={`version-animal-information-${version.legislationVersionGuid}`}>Animal information</label>
+              <div className="comp-details-edit-input">
+                <CompSelect
+                  id={`version-animal-information-${version.legislationVersionGuid}`}
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={animalInformationDisplayTypeOptions}
+                  value={animalInformationDisplayTypeOptions.find((option) => option.value === editedDisplayType)}
+                  onChange={(option: Option | null) =>
+                    setEditedDisplayType((option?.value as AnimalInformationDisplayType) ?? "H")
+                  }
+                  showInactive={false}
+                  enableValidation={false}
+                  isClearable={false}
                 />
               </div>
             </div>
@@ -327,9 +370,14 @@ const LegislationVersionRow: FC<RowProps> = ({
 type Props = {
   legislationSourceGuid: string;
   agencyCode: string;
+  animalInformationDisplayType: AnimalInformationDisplayType;
 };
 
-export const LegislationVersionHistory: FC<Props> = ({ legislationSourceGuid, agencyCode }) => {
+export const LegislationVersionHistory: FC<Props> = ({
+  legislationSourceGuid,
+  agencyCode,
+  animalInformationDisplayType,
+}) => {
   const { data: versions, isLoading } = useLegislationVersions(legislationSourceGuid);
   const [newEffectiveDate, setNewEffectiveDate] = useState<Date | undefined>();
   const [isAddingVersion, setIsAddingVersion] = useState(false);
@@ -415,6 +463,7 @@ export const LegislationVersionHistory: FC<Props> = ({ legislationSourceGuid, ag
                       key={version.legislationVersionGuid}
                       version={version}
                       agencyCode={agencyCode}
+                      animalInformationDisplayType={animalInformationDisplayType}
                       precedingVersion={precedingVersion ?? null}
                       nextVersion={nextVersion ?? null}
                       effectiveUntil={isImported && nextVersion ? addDays(nextVersion.effectiveDate, -1) : null}

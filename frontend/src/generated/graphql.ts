@@ -1,4 +1,4 @@
-import { GraphQLClient, RequestOptions } from 'graphql-request';
+import { GraphQLClient, type RequestOptions } from 'graphql-request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -97,6 +97,15 @@ export type AddressUpdateInput = {
   province?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AdministrativePenaltyStatusCode = {
+  __typename?: 'AdministrativePenaltyStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  administrativePenaltyStatusCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type AgeCode = {
   __typename?: 'AgeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -134,6 +143,15 @@ export type AliasUpdateInput = {
   aliasGuid?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
+
+export enum AnimalInformationDisplayType {
+  /** Hidden: not visible. */
+  H = 'H',
+  /** Mandatory: always visible and required. */
+  M = 'M',
+  /** Optional: visible but not required. */
+  O = 'O'
+}
 
 export type AppUser = {
   __typename?: 'AppUser';
@@ -503,6 +521,10 @@ export type Contravention = {
   investigationParty?: Maybe<Array<Maybe<InvestigationParty>>>;
   isActive: Scalars['Boolean']['output'];
   legislationIdentifierRef: Scalars['String']['output'];
+  quantity?: Maybe<Scalars['Int']['output']>;
+  speciesCode?: Maybe<Scalars['String']['output']>;
+  speciesOtherText?: Maybe<Scalars['String']['output']>;
+  wildlifeManagementUnitCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type ContraventionStats = {
@@ -539,6 +561,15 @@ export type CountrySubdivision = {
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
   countryCode?: Maybe<Scalars['String']['output']>;
   countrySubdivisionCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type CourtProsecutionStatusCode = {
+  __typename?: 'CourtProsecutionStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  courtProsecutionStatusCode?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
@@ -793,6 +824,7 @@ export type CreateInvestigationPersonInput = {
 
 export type CreateLegislationSourceInput = {
   agencyCode: Scalars['String']['input'];
+  animalInformationDisplayType?: InputMaybe<AnimalInformationDisplayType>;
   effectiveDate?: InputMaybe<Scalars['String']['input']>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   regulationsSourceUrl?: InputMaybe<Scalars['String']['input']>;
@@ -828,7 +860,11 @@ export type CreateUpdateContraventionInput = {
   investigationGuid: Scalars['String']['input'];
   investigationPartyGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   legislationReference: Scalars['String']['input'];
+  quantity?: InputMaybe<Scalars['Int']['input']>;
   selectedPartyGuid?: InputMaybe<Scalars['String']['input']>;
+  speciesCode?: InputMaybe<Scalars['String']['input']>;
+  speciesOtherText?: InputMaybe<Scalars['String']['input']>;
+  wildlifeManagementUnitCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateUpdateExhibitInput = {
@@ -1688,6 +1724,7 @@ export type Legislation = {
   __typename?: 'Legislation';
   alternateText?: Maybe<Scalars['String']['output']>;
   ancestors?: Maybe<Array<Maybe<Legislation>>>;
+  animalInformationDisplayType?: Maybe<AnimalInformationDisplayType>;
   citation?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
   fullCitation?: Maybe<Scalars['String']['output']>;
@@ -1706,6 +1743,7 @@ export type LegislationSource = {
   __typename?: 'LegislationSource';
   activeInd: Scalars['Boolean']['output'];
   agencyCode: Scalars['String']['output'];
+  animalInformationDisplayType: AnimalInformationDisplayType;
   createUserId?: Maybe<Scalars['String']['output']>;
   createUtcTimestamp?: Maybe<Scalars['String']['output']>;
   externalKey?: Maybe<Scalars['String']['output']>;
@@ -2315,6 +2353,24 @@ export type Office = {
   officeGuid?: Maybe<Scalars['String']['output']>;
 };
 
+export type OrderStatusCode = {
+  __typename?: 'OrderStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  orderStatusCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type OrderTypeCode = {
+  __typename?: 'OrderTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  orderTypeCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type OutcomeAgencyCode = {
   __typename?: 'OutcomeAgencyCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -2378,6 +2434,28 @@ export type Party = {
   updatedDateTime?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type PartyAssociationRole = {
+  __typename?: 'PartyAssociationRole';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  caseActivityTypeCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  partyAssociationRole?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type PartyCreateInput = {
+  addresses?: InputMaybe<Array<InputMaybe<AddressInput>>>;
+  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
+  business?: InputMaybe<BusinessInput>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  externalIds?: InputMaybe<Array<InputMaybe<PartyExternalIdInput>>>;
+  longDescription?: InputMaybe<Scalars['String']['input']>;
+  partyTypeCode: Scalars['String']['input'];
+  person?: InputMaybe<PersonInput>;
+  shortDescription?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type PartyExternalId = {
   __typename?: 'PartyExternalId';
   externalIdCode: Scalars['String']['output'];
@@ -2399,7 +2477,6 @@ export type PartyExternalIdInput = {
   externalIdCode: Scalars['String']['input'];
   externalIdValue: Scalars['String']['input'];
   partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
-  partyGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PartyExternalIdMatchInput = {
@@ -2411,29 +2488,6 @@ export type PartyExternalIdUpdateInput = {
   externalIdCode: Scalars['String']['input'];
   externalIdValue: Scalars['String']['input'];
   partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
-  partyGuid?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type PartyAssociationRole = {
-  __typename?: 'PartyAssociationRole';
-  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  caseActivityTypeCode?: Maybe<Scalars['String']['output']>;
-  displayOrder?: Maybe<Scalars['Int']['output']>;
-  longDescription?: Maybe<Scalars['String']['output']>;
-  partyAssociationRole?: Maybe<Scalars['String']['output']>;
-  shortDescription?: Maybe<Scalars['String']['output']>;
-};
-
-export type PartyCreateInput = {
-  addresses?: InputMaybe<Array<InputMaybe<AddressInput>>>;
-  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
-  business?: InputMaybe<BusinessInput>;
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  externalIds?: InputMaybe<Array<PartyExternalIdInput>>;
-  longDescription?: InputMaybe<Scalars['String']['input']>;
-  partyTypeCode: Scalars['String']['input'];
-  person?: InputMaybe<PersonInput>;
-  shortDescription?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PartyFilters = {
@@ -2482,14 +2536,12 @@ export type PartyTypeCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
-/* eslint-disable */
-
 export type PartyUpdateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressUpdateInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  externalIds?: InputMaybe<Array<PartyExternalIdUpdateInput>>;
+  externalIds?: InputMaybe<Array<InputMaybe<PartyExternalIdUpdateInput>>>;
   images?: InputMaybe<Array<InputMaybe<ImageUpdateInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
@@ -2675,6 +2727,7 @@ export type Query = {
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
   InspectionParties: Array<Maybe<InspectionParty>>;
   InvestigationParties: Array<Maybe<InvestigationParty>>;
+  administrativePenaltyStatusCodes: Array<Maybe<AdministrativePenaltyStatusCode>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
   appUser?: Maybe<AppUser>;
@@ -2696,6 +2749,7 @@ export type Query = {
   cosGeoOrgUnits: Array<Maybe<CosGeoOrgUnit>>;
   countries: Array<Maybe<Country>>;
   countrySubdivisions: Array<Maybe<CountrySubdivision>>;
+  courtProsecutionStatusCodes: Array<Maybe<CourtProsecutionStatusCode>>;
   diaryDates?: Maybe<Array<DiaryDate>>;
   diaryDatesByTask?: Maybe<Array<DiaryDate>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
@@ -2753,14 +2807,16 @@ export type Query = {
   office?: Maybe<Office>;
   offices: Array<Maybe<Office>>;
   officesByZone: Array<Maybe<Office>>;
+  orderStatusCodes: Array<Maybe<OrderStatusCode>>;
+  orderTypeCodes: Array<Maybe<OrderTypeCode>>;
   outcomeAgencyCodes: Array<Maybe<OutcomeAgencyCode>>;
   park?: Maybe<Park>;
   parkArea?: Maybe<ParkArea>;
   parkAreas: Array<Maybe<ParkArea>>;
   parks?: Maybe<Array<Maybe<Park>>>;
   party?: Maybe<Party>;
-  partyExternalIdCodes: Array<Maybe<PartyExternalIdCode>>;
   partyAssociationRoles: Array<Maybe<PartyAssociationRole>>;
+  partyExternalIdCodes: Array<Maybe<PartyExternalIdCode>>;
   partyHistoryCaseFiles?: Maybe<Array<Maybe<CaseFile>>>;
   partyHistoryInspections?: Maybe<Array<Maybe<Inspection>>>;
   partyHistoryInvestigations?: Maybe<Array<Maybe<Investigation>>>;
@@ -2769,6 +2825,8 @@ export type Query = {
   person?: Maybe<Person>;
   referencedLegislationGuids: Array<Maybe<Scalars['String']['output']>>;
   regulationVersions: Array<Maybe<LegislationVersion>>;
+  sanctionStatusCodes: Array<Maybe<SanctionStatusCode>>;
+  sanctionTypeCodes: Array<Maybe<SanctionTypeCode>>;
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
   searchActivityNotes?: Maybe<Array<ActivityNote>>;
@@ -2784,6 +2842,7 @@ export type Query = {
   searchParties: PartyResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
+  speciesCodes: Array<Maybe<SpeciesCode>>;
   task?: Maybe<Task>;
   taskCategoryTypeCodes: Array<Maybe<TaskCategoryTypeCode>>;
   taskStatusCodes: Array<Maybe<TaskStatusCode>>;
@@ -2793,6 +2852,7 @@ export type Query = {
   teams: Array<Maybe<Team>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
   ticketOutcomeCodes: Array<Maybe<TicketOutcomeCode>>;
+  ticketTypeCodes: Array<Maybe<TicketTypeCode>>;
 };
 
 
@@ -3224,6 +3284,24 @@ export type ReviewInput = {
   userId: Scalars['String']['input'];
 };
 
+export type SanctionStatusCode = {
+  __typename?: 'SanctionStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  sanctionStatusCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type SanctionTypeCode = {
+  __typename?: 'SanctionTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  sanctionTypeCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type ScheduleCode = {
   __typename?: 'ScheduleCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -3268,6 +3346,16 @@ export type SexCode = {
   longDescription?: Maybe<Scalars['String']['output']>;
   sexCode?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type SpeciesCode = {
+  __typename?: 'SpeciesCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  largeCarnivoreIndicator?: Maybe<Scalars['Boolean']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  speciesCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type Task = {
@@ -3352,6 +3440,15 @@ export type TicketOutcomeCode = {
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
   ticketOutcomeCode?: Maybe<Scalars['String']['output']>;
+};
+
+export type TicketTypeCode = {
+  __typename?: 'TicketTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  ticketTypeCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type UpdateAppUserInput = {
@@ -3514,7 +3611,6 @@ export type UpdateInvestigationPartyExternalIdInput = {
   externalIdCode: Scalars['String']['input'];
   externalIdValue: Scalars['String']['input'];
   partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
-  partyExternalIdReference?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateInvestigationPartyInput = {
@@ -3573,6 +3669,7 @@ export type UpdateLegislationConfigurationInput = {
 export type UpdateLegislationSourceInput = {
   activeInd?: InputMaybe<Scalars['Boolean']['input']>;
   agencyCode?: InputMaybe<Scalars['String']['input']>;
+  animalInformationDisplayType?: InputMaybe<AnimalInformationDisplayType>;
   legislationSourceGuid: Scalars['String']['input'];
   longDescription?: InputMaybe<Scalars['String']['input']>;
   regulationsSourceUrl?: InputMaybe<Scalars['String']['input']>;
