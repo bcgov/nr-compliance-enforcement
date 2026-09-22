@@ -24,6 +24,9 @@ export class SpeciesCodeService {
         active_ind: true,
         large_carnivore_ind: true,
       },
+      orderBy: {
+        display_order: "asc",
+      },
     });
 
     return this.mapper.mapArray<species_code, SpeciesCode>(

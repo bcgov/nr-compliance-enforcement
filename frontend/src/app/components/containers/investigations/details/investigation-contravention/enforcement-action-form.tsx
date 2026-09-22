@@ -740,12 +740,17 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           <div>
             <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
           </div>
-          {animalInformation.map((entry) => (
-            <div key={entry.label}>
-              <div className="text-muted small mb-1 mt-2">{entry.label}</div>
-              <div>{entry.value}</div>
-            </div>
-          ))}
+          <div className="row">
+            {animalInformation.map((entry) => (
+              <div
+                key={entry.label}
+                className="col-12 col-lg-4"
+              >
+                <div className="text-muted small mb-1 mt-2">{entry.label}</div>
+                <div>{entry.value}</div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
       <div className="row mb-3">

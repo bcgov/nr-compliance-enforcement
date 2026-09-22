@@ -237,25 +237,6 @@ export class AppUserComplaintXrefService {
     return newAppUserComplaintXref;
   }
 
-  async clearAssignedAppUser(complaintIdentifier: string): Promise<void> {
-    try {
-      const unassignedAppUserComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
-      if (unassignedAppUserComplaintXref) {
-        this.logger.debug(
-          `Unassigning app user xref ${unassignedAppUserComplaintXref.appUserComplaintXrefGuid} existing app user ${unassignedAppUserComplaintXref.app_user_guid} from complaint ${unassignedAppUserComplaintXref?.complaint_identifier?.complaint_identifier}`,
-        );
-        await this.repository.update(unassignedAppUserComplaintXref.appUserComplaintXrefGuid, {
-          active_ind: false,
-        });
-        // Update the complaint last updated date on the parent record
-        await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier);
-      }
-    } catch (err) {
-      this.logger.error(err);
-      throw new BadRequestException(err);
-    }
-  }
-
   remove(id: string) {
     return `This action removes a #${id} appUserComplaintXref`;
   }

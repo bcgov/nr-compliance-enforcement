@@ -27,7 +27,6 @@ export class ContraventionService {
     const contraventionDate = toDateString(contraventionInput.date);
     this.validateContraventionDate(contraventionDate);
     await this.validateLegislationReference(contraventionInput.legislationReference, contraventionDate);
-    await this.validateLegislationReference(contraventionInput.legislationReference, contraventionDate);
     await this.validateAnimalInformation(contraventionInput);
 
     try {

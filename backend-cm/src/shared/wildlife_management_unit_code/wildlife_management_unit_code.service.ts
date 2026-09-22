@@ -23,6 +23,9 @@ export class WildlifeManagementUnitCodeService {
         display_order: true,
         active_ind: true,
       },
+      orderBy: {
+        display_order: "asc",
+      },
     });
 
     return this.mapper.mapArray<wildlife_management_unit_code, WildlifeManagementUnitCode>(

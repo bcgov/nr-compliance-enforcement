@@ -101,10 +101,6 @@ export const mapPrismaContreventionToContravention = (mapper: Mapper) => {
       mapFrom((src) => src.geo_organization_unit_code_ref),
     ),
     forMember(
-      (dest) => dest.community,
-      mapFrom((src) => src.geo_organization_unit_code_ref),
-    ),
-    forMember(
       (dest) => dest.speciesCode,
       mapFrom((src) => src.species_code_ref),
     ),

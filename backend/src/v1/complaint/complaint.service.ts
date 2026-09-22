@@ -1,13 +1,5 @@
 import { map } from "lodash";
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  Scope,
-} from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, In, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
@@ -2798,9 +2790,9 @@ export class ComplaintService {
     };
 
     const _applyWildlifeData = async (wildlife) => {
+      const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
       for (const animal of wildlife) {
         // Convert species code from shared
-        const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
         const species = speciesTable?.find((item: any) => item.species === animal.species)?.shortDescription;
         animal.species = species;
 
