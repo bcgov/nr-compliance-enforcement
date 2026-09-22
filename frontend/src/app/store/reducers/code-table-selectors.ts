@@ -227,3 +227,8 @@ export const selectFacialHairStyles = createSelector([selectCodeTables], (codeTa
   const { "facial-hair-style-type": items } = codeTables;
   return items.map(({ facialHairStyleCode: value, shortDescription: label }) => ({ label, value }));
 });
+
+export const selectWildlifeManagementUnits = createSelector([selectCodeTables], (codeTables) => {
+  const { "wildlife-management-unit-type": items } = codeTables;
+  return items.map(({ wildlifeManagementUnitCode: value, shortDescription: label }) => ({ label, value }));
+});

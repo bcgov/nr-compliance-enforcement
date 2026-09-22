@@ -84,6 +84,7 @@ import { mapPrismaBusinessPersonAddressXrefToBusinessPersonAddressXref } from "s
 import { mapPrismaInvestigationBusinessPersonXrefToInvestigationBusinessPersonXref } from "src/investigation/investigation_business_person_xref/dto/investigation_business_person_xref";
 import { mapPrismaInvestigationBusinessPersonAddressXrefToInvestigationBusinessPersonAddressXref } from "src/investigation/investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
 import { mapPrismaSpeciesCodeToSpeciesCode } from "src/shared/species_code/dto/species_code";
+import { mapPrismaWMUCodeToWMUCode } from "src/shared/wildlife_management_unit_code/dto/wildlife_management_unit_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -137,6 +138,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaPersonFacialHairStyleCodeToPersonFacialHairStyleCode(mapper);
   mapPrismaBusinessPersonAddressXrefToBusinessPersonAddressXref(mapper);
   mapPrismaSpeciesCodeToSpeciesCode(mapper);
+  mapPrismaWMUCodeToWMUCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

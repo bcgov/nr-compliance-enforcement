@@ -102,6 +102,7 @@ import { EyeColourCodeModule } from "src/shared/eye_colour_code/eye_colour_code.
 import { FacialHairStyleCodeModule } from "src/shared/facial_hair_style_code/facial_hair_style_code.module";
 import { InvestigationAttachmentReferenceModule } from "src/investigation/investigation_attachment_reference/investigation_attachment_reference.module";
 import { SpeciesCodeModule } from "src/shared/species_code/species_code.module";
+import { WildlifeManagementUnitCodeModule } from "src/shared/wildlife_management_unit_code/wildlife_management_unit_code.module";
 
 @Module({
   imports: [
@@ -202,6 +203,7 @@ import { SpeciesCodeModule } from "src/shared/species_code/species_code.module";
     FacialHairStyleCodeModule,
     InvestigationAttachmentReferenceModule,
     SpeciesCodeModule,
+    WildlifeManagementUnitCodeModule,
   ],
   controllers: [AppController],
   providers: [

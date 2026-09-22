@@ -1080,6 +1080,15 @@ export class CodeTableService {
         const results = data.investigationSourceCodes;
         return results;
       }
+      case "wildlife-management-unit-type": {
+        const { data } = await get(token, {
+          query:
+            "{ wildlifeManagementUnitCodes { wildlifeManagementUnitCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+
+        const results = data.wildlifeManagementUnitCodes;
+        return results;
+      }
     }
   };
 
