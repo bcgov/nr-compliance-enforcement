@@ -386,7 +386,7 @@ export class ContraventionService {
       },
     });
 
-    const displayType = legislation?.legislation_version.legislation_source.animal_information_display_code;
+    const displayType = legislation?.legislation_version?.legislation_source?.animal_information_display_code;
 
     if (displayType !== "M") {
       return;
