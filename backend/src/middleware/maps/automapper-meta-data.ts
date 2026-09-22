@@ -5,7 +5,7 @@ import { AppUserComplaintXref } from "../../v1/app_user_complaint_xref/entities/
 import { Complaint } from "../../v1/complaint/entities/complaint.entity";
 
 //-- models
-import { Attractant, NatureOfComplaint, Species, Violation, ReportedBy } from "../../types/models/code-tables";
+import { Attractant, NatureOfComplaint, Violation, ReportedBy } from "../../types/models/code-tables";
 import { DelegateDto } from "../../types/models/app_user/delegate";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";

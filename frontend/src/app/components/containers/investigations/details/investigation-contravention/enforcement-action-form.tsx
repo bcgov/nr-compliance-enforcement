@@ -17,11 +17,7 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
-import {
-  selectCodeTable,
-  selectSpeciesCodeDropdown,
-  selectWildlifeManagementUnitCodeDropdown,
-} from "@store/reducers/code-table";
+import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import {
   selectAdministrativePenaltyStatuses,
@@ -42,7 +38,7 @@ import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
-import { getPartyMissingFields, getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
+import { getPartyMissingFields, isPartyProfileComplete } from "@/app/common/party-name";
 import { joinWithAnd } from "@/app/common/methods";
 import Option from "@apptypes/app/option";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
@@ -58,6 +54,7 @@ import {
   COMMENT_DECISION_CODES,
 } from "./enforcement-action-constants";
 import { Attachment } from "@/app/common/attachment-utils";
+import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
 
 const YES_NO_OPTIONS = [
   { value: "true", label: "Yes" },
@@ -205,8 +202,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const orderStatusOptions = useAppSelector(selectOrderStatuses);
   const courtProsecutionStatusOptions = useAppSelector(selectCourtProsecutionStatuses);
   const administrativePenaltyStatusOptions = useAppSelector(selectAdministrativePenaltyStatuses);
-  const speciesCodes = useAppSelector(selectSpeciesCodeDropdown);
-  const wildlifeManagementUnitCodes = useAppSelector(selectWildlifeManagementUnitCodeDropdown);
 
   const isRestrictedToCommentDecisions = !isPartyProfileComplete(party);
 
@@ -239,31 +234,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     value: c.area ?? "",
     label: c.areaName ?? "",
   }));
-
-  // Species, quantity and WMU are only recorded on animal related contraventions, so the whole block is
-  // absent for the rest. "Other" species shows the officer's description alongside the label.
-  const speciesLabel =
-    speciesCodes.find((option) => option.value === contravention?.speciesCode)?.label ?? contravention?.speciesCode;
-  const animalInformation = contravention?.speciesCode
-    ? [
-        {
-          label: "Species",
-          value:
-            contravention.speciesCode === "OTHER" && contravention.speciesOtherText
-              ? `${speciesLabel} (${contravention.speciesOtherText})`
-              : speciesLabel,
-        },
-        contravention.quantity == null ? null : { label: "Quantity", value: String(contravention.quantity) },
-        contravention.wildlifeManagementUnitCode
-          ? {
-              label: "Wildlife management unit",
-              value:
-                wildlifeManagementUnitCodes.find((option) => option.value === contravention.wildlifeManagementUnitCode)
-                  ?.label ?? contravention.wildlifeManagementUnitCode,
-            }
-          : null,
-      ].filter((entry) => entry !== null)
-    : [];
 
   const officerOptions = [...(officersInAgency ?? [])].map((o) => ({
     value: o.app_user_guid,
@@ -721,37 +691,25 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       )}
 
       {contravention && (
-        <div className="border rounded bg-bc-brand-background-light-gray text-dark px-3 py-3 mb-4">
-          {isRestrictedToCommentDecisions && (
-            <Alert
-              variant="warning"
-              id="enforcement-action-restricted-decisions-notice"
-              className="px-2 py-2"
-            >
-              <i className="bi bi-info-circle-fill pe-2" />
-              {party
-                ? `This profile is incomplete. Add ${joinWithAnd(getPartyMissingFields(party))} before logging an enforcement action.`
-                : "The party is unknown. Enforcement actions are unavailable."}
-            </Alert>
-          )}
-          <div className="text-muted small mb-1">Party</div>
-          <div className="mb-2">{getPartyName(party)}</div>
-          <div className="text-muted small mb-1">Contravention</div>
-          <div>
-            <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
-          </div>
-          <div className="row">
-            {animalInformation.map((entry) => (
-              <div
-                key={entry.label}
-                className="col-12 col-lg-4"
+        <ContraventionSummary
+          contravention={contravention}
+          party={party}
+          contraventionLabel={<ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />}
+          notice={
+            isRestrictedToCommentDecisions ? (
+              <Alert
+                variant="warning"
+                id="enforcement-action-restricted-decisions-notice"
+                className="px-2 py-2"
               >
-                <div className="text-muted small mb-1 mt-2">{entry.label}</div>
-                <div>{entry.value}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+                <i className="bi bi-info-circle-fill pe-2" />
+                {party
+                  ? `This profile is incomplete. Add ${joinWithAnd(getPartyMissingFields(party))} before logging an enforcement action.`
+                  : "The party is unknown. Enforcement actions are unavailable."}
+              </Alert>
+            ) : undefined
+          }
+        />
       )}
       <div className="row mb-3">
         <div className="col-6">
