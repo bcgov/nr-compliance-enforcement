@@ -112,7 +112,7 @@ const generateHWCRData = (complaint_identifier) => {
     ...commonFields,
     report_type: 'HWCR',
     nature_of_complaint: faker.helpers.arrayElement(['Sightings', 'Food Conditioned', 'Confined', 'Human injury/death', 'Wildlife in trap']),
-    species: faker.helpers.arrayElement(['Black bear', 'Deer', 'Wolf', 'Moose', 'Cougar', 'Wolverine', 'Elk', 'Rattlesnake']),
+    species: faker.helpers.arrayElement(['Bear, black', 'Deer', 'Wolf', 'Moose', 'Cougar', 'Wolverine', 'Elk', 'Rattlesnake']),
     attractants_list: faker.helpers.arrayElement(['BBQ', 'Crops', 'Pet Food', 'Beehive', 'Freezer', 'Pets', 'Garbage', 'Industrial Camp']),
   };
 };

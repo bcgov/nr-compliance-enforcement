@@ -3143,9 +3143,13 @@ export class ComplaintService {
       //-- get species from GraphQL
       if (data.species) {
         // Convert species code from shared
-        const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
-        const species = speciesTable?.find((item: any) => item.species === data.species)?.shortDescription;
-        data.species = species;
+        try {
+          const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+          const species = speciesTable?.find((item: any) => item.species === data.species)?.shortDescription;
+          data.species = species;
+        } catch (error) {
+          this.logger.error(`Failed to fetch species ${data.species} for report: ${error}`);
+        }
       }
 
       //-- get community, office, zone, and region from GraphQL

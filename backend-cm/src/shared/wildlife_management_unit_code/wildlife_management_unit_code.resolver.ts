@@ -6,7 +6,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { WildlifeManagementUnitCodeService } from "src/shared/wildlife_management_unit_code/wildlife_management_unit_code.service";
 
 @UseGuards(JwtRoleGuard)
-@Resolver("WildlifeManagementUnitCode")
+@Resolver("wildlifeManagementUnitCode")
 export class WildlifeManagementUnitCodeResolver {
   constructor(private readonly wmuCodeService: WildlifeManagementUnitCodeService) {}
 

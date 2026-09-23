@@ -63,7 +63,7 @@ test.describe("COMPENF-35 Display HWCR Details", () => {
     await expect(
       page
         .locator(".comp-box-species-type")
-        .getByText(/Black Bear/)
+        .getByText(/Bear, Black/)
         .first(),
     ).toBeVisible();
   });

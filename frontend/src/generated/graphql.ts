@@ -2853,6 +2853,7 @@ export type Query = {
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
   ticketOutcomeCodes: Array<Maybe<TicketOutcomeCode>>;
   ticketTypeCodes: Array<Maybe<TicketTypeCode>>;
+  wildlifeManagementUnitCodes: Array<Maybe<wildlifeManagementUnitCode>>;
 };
 
 
@@ -3351,6 +3352,7 @@ export type SexCode = {
 export type SpeciesCode = {
   __typename?: 'SpeciesCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOnComplaintIndicator?: Maybe<Scalars['Boolean']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
   largeCarnivoreIndicator?: Maybe<Scalars['Boolean']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
@@ -3745,6 +3747,15 @@ export type WildlifeInput = {
   sex?: InputMaybe<Scalars['String']['input']>;
   species: Scalars['String']['input'];
   tags?: InputMaybe<Array<InputMaybe<EarTagInput>>>;
+};
+
+export type wildlifeManagementUnitCode = {
+  __typename?: 'wildlifeManagementUnitCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  wildlifeManagementUnitCode?: Maybe<Scalars['String']['output']>;
 };
 
 
