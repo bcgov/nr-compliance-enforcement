@@ -30,6 +30,8 @@ import {
   handleBusinessPartyMutationError,
   scrollToFirstFieldError,
 } from "@/app/components/containers/parties/form/party-form-errors";
+import { PARTY_DUPLICATE_MESSAGE } from "@/app/components/containers/parties/form/party-unique-fields";
+import { useUniqueFieldCheck } from "@/app/components/containers/parties/hooks/use-unique-field-check";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { isYoungPerson } from "@/app/common/methods";
 import AttachmentEnum from "@/app/constants/attachment-enum";
@@ -214,6 +216,11 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
   });
 
+  const { uniqueFieldConflict, checkUniqueFieldConflicts, handleDuplicateIdentifierError } = useUniqueFieldCheck(
+    form,
+    editParty?.partyReference ?? undefined,
+  );
+
   const navigateToPreviousParty = () => {
     allowNavigation();
     if (partyIdentifier) {
@@ -241,6 +248,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       console.error("Error adding party:", error);
       copyInFlightRef.current = false;
       setCopyPending(false);
+      if (handleDuplicateIdentifierError(error)) return;
       handleBusinessPartyMutationError(form, error, "Failed to add party");
     },
   });
@@ -259,6 +267,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       console.error("Error updating party:", error);
       copyInFlightRef.current = false;
       setCopyPending(false);
+      if (handleDuplicateIdentifierError(error)) return;
       handleBusinessPartyMutationError(form, error, "Failed to update party");
     },
   });
@@ -317,7 +326,11 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     return name || editParty.placeholderName || "Edit party";
   }, [isEditMode, editParty]);
 
-  const saveButtonClick = () => {
+  const saveButtonClick = async () => {
+    if (await checkUniqueFieldConflicts()) {
+      return;
+    }
+
     if (isEditMode && isLinkedParty) {
       dispatch(
         openModal({
@@ -337,6 +350,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       );
       return;
     }
+
     if (matches.length > 0) {
       dispatch(
         openModal({
@@ -577,7 +591,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             <div className="comp-details-section-header">
               <h3>Party details</h3>
             </div>
-            <FormErrorBanner form={form} />
+            <FormErrorBanner
+              form={form}
+              errorMessage={uniqueFieldConflict ? PARTY_DUPLICATE_MESSAGE : undefined}
+            />
             <fieldset disabled={isDisabled}>
               <FormField
                 form={form}

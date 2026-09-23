@@ -231,3 +231,30 @@ export class PartyMatchResult {
   @Field(() => [PartyMatchedField])
   matchedFields: PartyMatchedField[];
 }
+
+@InputType()
+export class PartyUniqueFieldCheckInput {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  driversLicenseNumber?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  businessIdentifierValue?: string;
+
+  @Field(() => [PartyExternalIdInput], { nullable: true })
+  @IsOptional()
+  externalIds?: PartyExternalIdInput[];
+}
+
+@ObjectType()
+export class PartyUniqueFieldConflict {
+  @Field(() => String)
+  fieldCode: string;
+
+  @Field(() => String)
+  shortDescription: string;
+
+  @Field(() => String)
+  value: string;
+}

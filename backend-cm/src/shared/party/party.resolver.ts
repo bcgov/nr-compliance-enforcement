@@ -5,7 +5,15 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";
 import { PartyService } from "./party.service";
-import { PartyCreateInput, PartyFilters, PartyMatchInput, PartyMatchResult, PartyUpdateInput } from "./dto/party";
+import {
+  PartyCreateInput,
+  PartyFilters,
+  PartyMatchInput,
+  PartyMatchResult,
+  PartyUniqueFieldCheckInput,
+  PartyUniqueFieldConflict,
+  PartyUpdateInput,
+} from "./dto/party";
 
 @UseGuards(JwtRoleGuard)
 @Resolver("Party")
@@ -55,6 +63,24 @@ export class PartyResolver {
     } catch (error) {
       this.logger.error(error);
       throw new GraphQLError("Error matching parties from Shared schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
+  @Query("checkPartyUniqueFields")
+  @Roles(coreRoles)
+  async checkPartyUniqueFields(
+    @Args("input") input: PartyUniqueFieldCheckInput,
+    @Args("excludePartyIdentifier") excludePartyIdentifier?: string,
+  ): Promise<PartyUniqueFieldConflict[]> {
+    try {
+      return await this.partyService.findUniqueFieldConflicts(input, excludePartyIdentifier);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error checking party identifiers in Shared schema", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
         },

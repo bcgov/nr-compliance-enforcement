@@ -64,6 +64,7 @@ import {
   mapPartyToInvestigationPartyCreateInput,
   mapPartyToInvestigationPartyUpdateInput,
 } from "./party-to-investigation-party.mapper";
+import { buildPartyUniqueFieldCheck } from "../../shared/party/party-uniqueness";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -156,6 +157,8 @@ export class InvestigationPartyService {
       }
 
       this._validateExternalIdInput(input.externalIds);
+
+      await this.partyService.validateUniquePartyFields(buildPartyUniqueFieldCheck(input), input.partyReference);
     }
 
     const investigation = await this.investigationService.findOne(investigationGuid);
@@ -630,6 +633,8 @@ export class InvestigationPartyService {
 
     this._validateExternalIdInput(input.externalIds);
 
+    await this.partyService.validateUniquePartyFields(buildPartyUniqueFieldCheck(input), input.partyReference);
+
     const investigation = await this.investigationService.findOne(investigationGuid);
     const existingParty = investigation.parties.some((p) => p.partyIdentifier === partyIdentifier && p.isActive);
 
@@ -916,6 +921,8 @@ export class InvestigationPartyService {
     }
 
     this._validateExternalIdInput(input.externalIds);
+
+    await this.partyService.validateUniquePartyFields(buildPartyUniqueFieldCheck(input), existingParty.partyReference);
 
     resolveSharedReferences(existingParty, input);
 
