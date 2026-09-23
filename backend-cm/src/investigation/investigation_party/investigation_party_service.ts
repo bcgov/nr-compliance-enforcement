@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import {
   CreateInvestigationPartyInput,
   InvestigationParty,
@@ -86,6 +86,30 @@ export class InvestigationPartyService {
   ) {}
 
   private readonly logger = new Logger(InvestigationPartyService.name);
+
+  /**
+   * Blocks a role change when the party is associated with any active contravention.
+   * Changing the role would otherwise orphan the party's contravention associations.
+   */
+  private async _assertRoleChangeAllowed(partyIdentifier: string, currentRole: string, newRole: string): Promise<void> {
+    if (currentRole === newRole) {
+      return;
+    }
+
+    const contraventionCount = await this.prisma.contravention_party_xref.count({
+      where: {
+        investigation_party_guid: partyIdentifier,
+        active_ind: true,
+        contravention: { active_ind: true },
+      },
+    });
+
+    if (contraventionCount > 0) {
+      throw new BadRequestException(
+        "This party's role cannot be changed while they are associated with a contravention. Remove the party from all contraventions before changing their role.",
+      );
+    }
+  }
 
   private _validateBusinessInput(business: { name?: string; addresses?: CreateInvestigationAddressInput[] }): void {
     for (const address of business.addresses ?? []) {
@@ -910,6 +934,12 @@ export class InvestigationPartyService {
         "Party information have changed as part of another investigation. Update to the latest version of information prior to making additional edits.",
       );
     }
+
+    await this._assertRoleChangeAllowed(
+      input.partyIdentifier,
+      existingParty.partyAssociationRole,
+      input.partyAssociationRole,
+    );
 
     if (input.business) {
       this._validateBusinessInput(input.business);
