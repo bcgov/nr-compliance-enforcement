@@ -114,9 +114,7 @@ const PartiesList: React.FC<Props> = ({
   const getPrimaryContactName = (business: InvestigationBusiness): string => {
     const contactPeople = (business.contactPeople ?? []).filter(Boolean) as InvestigationBusinessPerson[];
     const primary = contactPeople.find((cp) => cp.isPrimary) ?? contactPeople[0];
-    const person = primary?.person;
-    if (!person) return "-";
-    return [person.firstName, person.lastName].filter(Boolean).join(", ") || "-";
+    return getPartyName({ person: primary?.person });
   };
 
   const isGlobalParty = (party: InvestigationParty | InspectionParty): boolean => {
