@@ -1,6 +1,9 @@
 import { getPartyName } from "@/app/common/party-name";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { selectSpeciesCodeDropdown, selectWildlifeManagementUnitCodeDropdown } from "@/app/store/reducers/code-table";
+import {
+  selectAllSpeciesCodeDropdown,
+  selectWildlifeManagementUnitCodeDropdown,
+} from "@/app/store/reducers/code-table";
 import { Contravention, InvestigationParty } from "@/generated/graphql";
 import Option from "@apptypes/app/option";
 import { FC, ReactNode } from "react";
@@ -56,7 +59,7 @@ export const ContraventionSummary: FC<ContraventionSummaryProps> = ({
   contraventionLabel,
   notice,
 }) => {
-  const speciesCodes = useAppSelector(selectSpeciesCodeDropdown);
+  const speciesCodes = useAppSelector(selectAllSpeciesCodeDropdown);
   const wildlifeManagementUnitCodes = useAppSelector(selectWildlifeManagementUnitCodeDropdown);
   const animalInformation = buildAnimalInformation(contravention, speciesCodes, wildlifeManagementUnitCodes);
 

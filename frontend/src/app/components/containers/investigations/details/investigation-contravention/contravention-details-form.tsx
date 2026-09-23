@@ -20,8 +20,8 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
 import {
+  selectAllSpeciesCodeDropdown,
   selectCommunityCodeDropdown,
-  selectSpeciesCodeDropdown,
   selectWildlifeManagementUnitCodeDropdown,
 } from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
@@ -172,7 +172,7 @@ export const ContraventionDetailsForm = ({
 
   const userAgency = getUserAgency();
   const communityCodes = useAppSelector(selectCommunityCodeDropdown);
-  const speciesCodes = useAppSelector(selectSpeciesCodeDropdown);
+  const speciesCodes = useAppSelector(selectAllSpeciesCodeDropdown);
   const wildlifeManagementUnitCodes = useAppSelector(selectWildlifeManagementUnitCodeDropdown);
 
   const [act, setAct] = useState("");
@@ -296,7 +296,7 @@ export const ContraventionDetailsForm = ({
       form.setFieldValue("quantity", "1");
       form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
       isQuantityDefaultedRef.current = true;
-    } else if (!isAnimalInformationMandatory && isQuantityDefaultedRef.current) {
+    } else if (!isAnimalInformationMandatory && isQuantityDefaultedRef.current && quantity === "1") {
       form.setFieldValue("quantity", "");
       form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
       isQuantityDefaultedRef.current = false;

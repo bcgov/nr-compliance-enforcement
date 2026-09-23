@@ -1056,14 +1056,20 @@ export const selectComplaintStatusWithPendingCodeDropdown = createSelector(
     })),
 );
 
-export const selectSpeciesCodeDropdown = createSelector(
+// The full species list, for contraventions. Complaints use selectSpeciesCodeDropdown instead.
+export const selectAllSpeciesCodeDropdown = createSelector(
   (state: RootState) => state.codeTables.species,
   (species) =>
-    species.map(({ species, longDescription, isActive }) => ({
+    species.map(({ species, longDescription, isActive, isDisplayedOnComplaint }) => ({
       label: longDescription,
       value: species,
       isActive,
+      isDisplayedOnComplaint,
     })),
+);
+
+export const selectSpeciesCodeDropdown = createSelector(selectAllSpeciesCodeDropdown, (species) =>
+  species.filter((entry) => entry.isDisplayedOnComplaint),
 );
 
 export const selectViolationCodeDropdown = (agency: string) =>
