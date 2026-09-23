@@ -97,8 +97,6 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   );
   const businessNumber =
     businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER)?.identifierValue ?? "-";
-  const worksafeBCNumber =
-    businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER)?.identifierValue ?? "-";
 
   const addresses = (party.addresses ?? []).filter((a): a is Address => a != null);
   const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0];
@@ -188,7 +186,6 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
           <>
             {detailRow("Doing business as", aliases, anyMatched("alias"))}
             {detailRow("Business number", businessNumber, anyMatched("businessNumber"))}
-            {detailRow("WorkSafeBC number", worksafeBCNumber, anyMatched("worksafeBCNumber"))}
             {detailRow("Primary phone", phone, anyMatched("phone"))}
             {detailRow("Primary address", address, anyMatched("addressLine", "city", "province", "country"))}
             {showMoreInfo && detailRow("Email", email, anyMatched("email"))}
