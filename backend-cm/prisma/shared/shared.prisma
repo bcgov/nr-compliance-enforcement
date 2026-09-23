@@ -1302,17 +1302,18 @@ model nickname {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model species_code {
-  species_code         String    @id(map: "species_code_pk") @db.VarChar(16)
-  short_description    String    @db.VarChar(64)
-  long_description     String?   @db.VarChar(256)
-  display_order        Int
-  active_ind           Boolean   @default(true)
-  complaint_ind        Boolean   @default(true)
-  large_carnivore_ind  Boolean   @default(false)
-  create_user_id       String    @db.VarChar(32)
-  create_utc_timestamp DateTime  @default(now()) @db.Timestamp(6)
-  update_user_id       String?   @db.VarChar(32)
-  update_utc_timestamp DateTime? @db.Timestamp(6)
+  species_code             String    @id(map: "species_code_pk") @db.VarChar(16)
+  short_description        String    @db.VarChar(64)
+  long_description         String?   @db.VarChar(256)
+  display_order            Int
+  active_ind               Boolean   @default(true)
+  complaint_ind            Boolean   @default(true)
+  large_carnivore_ind      Boolean   @default(false)
+  display_on_complaint_ind Boolean   @default(false)
+  create_user_id           String    @db.VarChar(32)
+  create_utc_timestamp     DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id           String?   @db.VarChar(32)
+  update_utc_timestamp     DateTime? @db.Timestamp(6)
 
   @@schema("shared")
 }

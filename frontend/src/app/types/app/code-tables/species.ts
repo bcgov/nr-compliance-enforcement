@@ -4,4 +4,5 @@ export interface Species extends BaseCodeTable {
   species: string;
   legacy: string;
   isLargeCarnivore: boolean;
+  isDisplayedOnComplaint: boolean;
 }

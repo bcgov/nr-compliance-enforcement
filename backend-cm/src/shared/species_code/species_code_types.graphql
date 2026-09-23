@@ -5,4 +5,5 @@ type SpeciesCode {
   displayOrder: Int
   activeIndicator: Boolean
   largeCarnivoreIndicator: Boolean
+  displayOnComplaintIndicator: Boolean
 }

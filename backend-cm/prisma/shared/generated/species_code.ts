@@ -22,6 +22,9 @@ export class species_code {
   @ApiProperty({ type: Boolean })
   large_carnivore_ind: boolean;
 
+  @ApiProperty({ type: Boolean })
+  display_on_complaint_ind: boolean;
+
   @ApiProperty({ type: String })
   create_user_id: string;
 

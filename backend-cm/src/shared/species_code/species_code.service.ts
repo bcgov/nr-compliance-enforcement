@@ -23,6 +23,7 @@ export class SpeciesCodeService {
         display_order: true,
         active_ind: true,
         large_carnivore_ind: true,
+        display_on_complaint_ind: true,
       },
       orderBy: {
         display_order: "asc",

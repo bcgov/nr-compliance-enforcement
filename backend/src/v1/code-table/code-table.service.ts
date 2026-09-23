@@ -235,7 +235,7 @@ export class CodeTableService {
       case "species": {
         const { data } = await get(token, {
           query:
-            "{speciesCodes{speciesCode shortDescription longDescription displayOrder activeIndicator, largeCarnivoreIndicator}}",
+            "{speciesCodes{speciesCode shortDescription longDescription displayOrder activeIndicator, largeCarnivoreIndicator, displayOnComplaintIndicator}}",
         });
         let results = data.speciesCodes.map(
           ({
@@ -245,6 +245,7 @@ export class CodeTableService {
             displayOrder,
             activeIndicator,
             largeCarnivoreIndicator,
+            displayOnComplaintIndicator,
           }) => {
             let table: Species = {
               species: speciesCode,
@@ -253,6 +254,7 @@ export class CodeTableService {
               displayOrder: displayOrder,
               isActive: activeIndicator,
               isLargeCarnivore: largeCarnivoreIndicator,
+              isDisplayedOnComplaint: displayOnComplaintIndicator,
             };
             return table;
           },

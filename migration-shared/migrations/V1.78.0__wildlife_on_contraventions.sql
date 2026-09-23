@@ -44,6 +44,7 @@ CREATE TABLE shared.species_code (
     active_ind boolean NOT NULL DEFAULT true,
     complaint_ind boolean NOT NULL DEFAULT true,
     large_carnivore_ind boolean NOT NULL DEFAULT false,
+    display_on_complaint_ind boolean NOT NULL DEFAULT false,
     create_user_id character varying(32) NOT NULL,
     create_utc_timestamp timestamp without time zone NOT NULL DEFAULT now(),
     update_user_id character varying(32),
@@ -67,6 +68,8 @@ COMMENT ON COLUMN shared.species_code.active_ind IS 'A boolean indicator to dete
 COMMENT ON COLUMN shared.species_code.complaint_ind IS 'A boolean indicator to determine if a species is available for selection on a complaint.';
 
 COMMENT ON COLUMN shared.species_code.large_carnivore_ind IS 'A boolean indicator to determine if a species is a large carnivore.';
+
+COMMENT ON COLUMN shared.species_code.display_on_complaint_ind IS 'A boolean indicator to determine if a species is available for selection on a complaint.';
 
 COMMENT ON COLUMN shared.species_code.create_user_id IS 'The id of the user that created the species.';
 

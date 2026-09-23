@@ -4,6 +4,7 @@ export const AddWMUType = {
       ...state,
       codeTables: {
         ...state.codeTables,
+        species: [],
         "wildlife-management-unit-type": [],
       },
     };

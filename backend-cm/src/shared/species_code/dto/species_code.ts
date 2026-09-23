@@ -8,6 +8,7 @@ export class SpeciesCode {
   displayOrder: number;
   activeIndicator: boolean;
   largeCarnivoreIndicator: boolean;
+  displayOnComplaintIndicator: boolean;
 }
 
 export const mapPrismaSpeciesCodeToSpeciesCode = (mapper: Mapper) => {
@@ -38,6 +39,10 @@ export const mapPrismaSpeciesCodeToSpeciesCode = (mapper: Mapper) => {
     forMember(
       (dest) => dest.largeCarnivoreIndicator,
       mapFrom((src) => src.large_carnivore_ind),
+    ),
+    forMember(
+      (dest) => dest.displayOnComplaintIndicator,
+      mapFrom((src) => src.display_on_complaint_ind),
     ),
   );
 };
