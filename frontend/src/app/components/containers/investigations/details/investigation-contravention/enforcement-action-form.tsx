@@ -520,13 +520,11 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         onDirtyChange?.(0, false);
         onClose();
       } catch (error) {
-        ToggleError(
-          isPartyDuplicatedIdentifier(error)
-            ? PARTY_DUPLICATE_MESSAGE
-            : isEdit
-              ? "Failed to update decision"
-              : "Failed to save decision",
-        );
+        if (isPartyDuplicatedIdentifier(error)) {
+          ToggleError(PARTY_DUPLICATE_MESSAGE);
+        } else {
+          ToggleError(isEdit ? "Failed to update decision" : "Failed to save decision");
+        }
       } finally {
         onIsSavingChange?.(false);
       }

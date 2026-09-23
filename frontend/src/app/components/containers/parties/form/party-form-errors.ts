@@ -83,8 +83,8 @@ export const setFieldError = (form: { setFieldMeta: Function }, fieldName: strin
 // Removes the message this module set, leaving any validator error on the field in place
 export const clearFieldError = (form: { setFieldMeta: Function }, fieldName: string) => {
   form.setFieldMeta(fieldName, (meta: Record<string, unknown>) => {
-    const errorMap = { ...((meta?.errorMap as Record<string, unknown>) ?? {}) };
-    const errorSourceMap = { ...((meta?.errorSourceMap as Record<string, unknown>) ?? {}) };
+    const errorMap = { ...(meta?.errorMap as Record<string, unknown>) };
+    const errorSourceMap = { ...(meta?.errorSourceMap as Record<string, unknown>) };
     delete errorMap.onSubmit;
     delete errorSourceMap.onSubmit;
     return { ...meta, errorMap, errorSourceMap };
