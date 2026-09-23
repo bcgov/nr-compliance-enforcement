@@ -2,7 +2,7 @@ import { getUserAgency } from "@/app/service/user-service";
 import { Contravention, Legislation, InspectionParty, InvestigationParty } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert } from "react-bootstrap";
+import { Alert, Button } from "react-bootstrap";
 import {
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
@@ -284,24 +284,49 @@ export const ContraventionDetailsForm = ({
     };
   }, [isAnimalInformationVisible, isAnimalInformationMandatory]);
 
+  // Optional animal information stays behind a button so it doesn't clutter the form. A contravention
+  // that already carries animal information opens revealed.
+  const [isAnimalInformationRevealed, setIsAnimalInformationRevealed] = useState(!!contravention?.speciesCode);
+  const isAnimalInformationShown =
+    isAnimalInformationVisible && (isAnimalInformationMandatory || isAnimalInformationRevealed);
+
+  useEffect(() => {
+    animalInformationRef.current = {
+      isVisible: isAnimalInformationShown,
+      // Revealed optional animal information is all-or-nothing, so it is required once shown
+      isMandatory: isAnimalInformationShown,
+    };
+  }, [isAnimalInformationShown]);
+
   // Quantity defaults to 1 only for mandatory animal information. The ref marks a value as the default,
   // so it can be withdrawn if the legislation changes, without touching a quantity loaded in edit mode.
   const isQuantityDefaultedRef = useRef(false);
+
   useEffect(() => {
     if (form.getFieldMeta("quantity")?.isDirty) return;
 
     const quantity = form.getFieldValue("quantity");
 
-    if (isAnimalInformationMandatory && !quantity) {
+    if (isAnimalInformationShown && !quantity) {
       form.setFieldValue("quantity", "1");
       form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
       isQuantityDefaultedRef.current = true;
-    } else if (!isAnimalInformationMandatory && isQuantityDefaultedRef.current && quantity === "1") {
+    } else if (!isAnimalInformationShown && isQuantityDefaultedRef.current && quantity === "1") {
       form.setFieldValue("quantity", "");
       form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
       isQuantityDefaultedRef.current = false;
     }
-  }, [isAnimalInformationMandatory, form]);
+  }, [isAnimalInformationShown, form]);
+
+  const removeAnimalInformation = () => {
+    markDirty();
+    setIsAnimalInformationRevealed(false);
+    isQuantityDefaultedRef.current = false;
+    for (const name of ["speciesCode", "speciesOtherText", "quantity", "wildlifeManagementUnitCode"] as const) {
+      form.setFieldValue(name, "");
+      form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: false, errorMap: {} }));
+    }
+  };
 
   const findOptionByValue = (options: any[], value: string) =>
     value ? options.find((opt) => opt.value === value) : null;
@@ -790,13 +815,26 @@ export const ContraventionDetailsForm = ({
             )}
           />
         )}
-        {isAnimalInformationVisible && (
+
+        {isAnimalInformationVisible && !isAnimalInformationShown && (
+          <Button
+            id="add-animal-information-button"
+            variant="outline-primary"
+            size="sm"
+            className="my-3"
+            onClick={() => setIsAnimalInformationRevealed(true)}
+          >
+            <i className="bi bi-plus-circle me-1" /> Add animal info
+          </Button>
+        )}
+
+        {isAnimalInformationShown && (
           <>
             <FormField
               form={form}
               name="speciesCode"
               label="Species"
-              required={isAnimalInformationMandatory}
+              required
               validators={{
                 onChange: z.string().refine((val) => !animalInformationRef.current.isMandatory || !!val, {
                   message: "Species is required",
@@ -830,7 +868,7 @@ export const ContraventionDetailsForm = ({
                 form={form}
                 name="speciesOtherText"
                 label="Other species"
-                required={isAnimalInformationMandatory}
+                required
                 validators={{
                   onChange: z
                     .string()
@@ -876,7 +914,7 @@ export const ContraventionDetailsForm = ({
               form={form}
               name="quantity"
               label="Quantity"
-              required={isAnimalInformationMandatory}
+              required
               validators={{
                 onChange: z
                   .string()
@@ -919,7 +957,7 @@ export const ContraventionDetailsForm = ({
               form={form}
               name="wildlifeManagementUnitCode"
               label="Wildlife management unit"
-              required={isAnimalInformationMandatory}
+              required
               validators={{
                 onChange: z.string().refine((val) => !animalInformationRef.current.isMandatory || !!val, {
                   message: "Wildlife management unit is required",
@@ -947,6 +985,17 @@ export const ContraventionDetailsForm = ({
                 />
               )}
             />
+            {!isAnimalInformationMandatory && (
+              <Button
+                id="remove-animal-information-button"
+                variant="outline-danger"
+                size="sm"
+                className="my-3"
+                onClick={removeAnimalInformation}
+              >
+                <i className="bi bi-trash me-1" /> Remove animal info
+              </Button>
+            )}
           </>
         )}
       </form>
