@@ -46,7 +46,7 @@ VALUES
     ('WLDSHEEP', 'Sheep, (General)', 'Sheep, (General)', 420, false, true, 'postgres', true),
     ('CBHSHEEP', 'Sheep, California Big Horn', 'Sheep, California Big Horn', 430, false, false, 'postgres', true),
     ('DLLSHEEP', 'Sheep, Dall', 'Sheep, Dall', 440, false, false, 'postgres', true),
-    ('RBHSHEEP', 'Sheep, Rocky Mountain Big Horn', 'Sheep, Rock Mountain Big Horn', 450, false, false, 'postgres', true),
+    ('RBHSHEEP', 'Sheep, Rocky Mountain Big Horn', 'Sheep, Rocky Mountain Big Horn', 450, false, false, 'postgres', true),
     ('STNSHEEP', 'Sheep, Stone', 'Sheep, Stone', 460, false, false, 'postgres', true),
     ('SHLFISH', 'Shellfish, (General)', 'Shellfish, (General)', 470, false, false, 'postgres', true),
     ('SHRBIRD', 'Shorebirds, (General)', 'Shorebirds, (General)', 480, false, false, 'postgres', true),
