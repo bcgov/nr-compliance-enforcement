@@ -488,9 +488,28 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       return;
     }
 
-    if (party.partyIdentifier) {
-      setAddMatchGuid(party.partyIdentifier);
+    const sharedPartyGuid = party.partyIdentifier;
+
+    if (!sharedPartyGuid) {
+      return;
     }
+
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: SAVE_CONFIRM,
+        data: {
+          title: `Add ${getPartyName(party)} to investigation`,
+          warning:
+            "Selecting this profile will replace any information entered in the form. The profile can be edited once it has been added to the investigation.",
+          cancelText: "Cancel",
+          saveText: "Confirm",
+        },
+        callback: () => {
+          setAddMatchGuid(sharedPartyGuid);
+        },
+      }),
+    );
   };
 
   useEffect(() => {
