@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { readFileSync } from "node:fs";
 import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 import { logger } from "./common/logger.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -59,11 +60,20 @@ logger.log(`Var check - COMPLAINT_POSTGRESQL_HOST: ${process.env.COMPLAINT_POSTG
 logger.log(`Var check - COMPLAINT_POSTGRESQL_DATABASE: ${process.env.COMPLAINT_POSTGRESQL_DATABASE}`);
 logger.log(`Var check - COMPLAINT_POSTGRESQL_USER: ${process.env.COMPLAINT_POSTGRESQL_USER}`);
 logger.log(`Var check - COMPLAINT_POSTGRESQL_ENABLE_LOGGING: ${process.env.COMPLAINT_POSTGRESQL_ENABLE_LOGGING}`);
+logger.log(`Var check - POSTGRES_SSL: ${process.env.POSTGRES_SSL}`);
+logger.log(`Var check - POSTGRES_CA_FILE: ${process.env.POSTGRES_CA_FILE}`);
 if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
   logger.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD present");
 } else {
   logger.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD not present");
 }
+
+// Setting POSTGRES_CA_FILE with a mounted CA will verify it, otherwise just encrypts.
+const pgSsl = () => {
+  if (process.env.POSTGRES_SSL !== "true") return false;
+  const ca = process.env.POSTGRES_CA_FILE;
+  return ca ? { ca: readFileSync(ca, "utf8") } : { rejectUnauthorized: false };
+};
 
 @Module({
   imports: [
@@ -77,6 +87,7 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
           database: process.env.COMPLAINT_POSTGRESQL_DATABASE || "postgres",
           username: process.env.COMPLAINT_POSTGRESQL_USER || "postgres",
           password: process.env.COMPLAINT_POSTGRESQL_PASSWORD,
+          ssl: pgSsl(),
           schema: "complaint",
           autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
           logging: process.env.POSTGRESQL_ENABLE_LOGGING === "true",

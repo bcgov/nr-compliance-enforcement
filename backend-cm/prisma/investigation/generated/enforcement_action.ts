@@ -23,9 +23,6 @@ export class enforcement_action {
   date_issued: Date;
 
   @ApiProperty({ type: String })
-  geo_organization_unit_code_ref: string;
-
-  @ApiProperty({ type: String })
   app_user_guid_ref: string;
 
   @ApiProperty({ type: Boolean })

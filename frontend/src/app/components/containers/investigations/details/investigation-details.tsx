@@ -187,7 +187,6 @@ export const GET_INVESTIGATION = gql`
               shortDescription
             }
             dateIssued
-            geoOrganizationUnitCode
             appUserIdentifier
             activeIndicator
             comment
