@@ -38,7 +38,7 @@ import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
-import { getPartyMissingFields, getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
+import { getPartyMissingFields, isPartyProfileComplete } from "@/app/common/party-name";
 import { isPartyDuplicatedIdentifier } from "@/app/components/containers/parties/form/party-form-errors";
 import { PARTY_DUPLICATE_MESSAGE } from "@/app/components/containers/parties/form/party-unique-fields";
 import { joinWithAnd } from "@/app/common/methods";
