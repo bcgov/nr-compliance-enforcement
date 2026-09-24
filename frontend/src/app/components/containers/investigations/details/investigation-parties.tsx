@@ -61,30 +61,6 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
     navigate(`/investigation/${investigationGuid}/party/add`);
   };
 
-  const handleRemoveParty = useCallback(
-    (partyIdentifier: string, partyName: string) => {
-      dispatch(
-        openModal({
-          modalSize: "md",
-          modalType: SAVE_CONFIRM,
-          data: {
-            title: "Remove Party",
-            description: `Are you sure you want to remove ${partyName} from this investigation? This action cannot be undone.`,
-            cancelText: "No, go back",
-            saveText: "Yes, remove party",
-          },
-          callback: () => {
-            removePartyMutation.mutate({
-              investigationGuid: investigationGuid,
-              partyIdentifier: partyIdentifier,
-            });
-          },
-        }),
-      );
-    },
-    [dispatch, investigationGuid, removePartyMutation],
-  );
-
   const parties = (investigationData?.parties ?? []).filter(Boolean) as InvestigationParty[];
 
   // Fetch parties on contraventions so we can unlink them and leave dirty data
@@ -134,6 +110,37 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
     [isLoadingAttachments, partiesOnContraventions, partiesTakenByAttachment],
   );
 
+  const handleRemoveParty = useCallback(
+    (partyIdentifier: string, partyName: string) => {
+      // "Taken by" only exists in the object store, so the refusal has to be explained here
+      const blockedReason = removeBlockedReason({ partyIdentifier });
+      if (blockedReason) {
+        ToggleError(blockedReason);
+        return;
+      }
+
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: SAVE_CONFIRM,
+          data: {
+            title: "Remove Party",
+            description: `Are you sure you want to remove ${partyName} from this investigation? This action cannot be undone.`,
+            cancelText: "No, go back",
+            saveText: "Yes, remove party",
+          },
+          callback: () => {
+            removePartyMutation.mutate({
+              investigationGuid: investigationGuid,
+              partyIdentifier: partyIdentifier,
+            });
+          },
+        }),
+      );
+    },
+    [dispatch, investigationGuid, removePartyMutation, removeBlockedReason],
+  );
+
   return (
     <>
       <div className="row align-items-center">
@@ -158,7 +165,6 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
           <PartiesList
             parties={parties}
             onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
-            removeBlockedReason={removeBlockedReason}
             onViewParty={(partyIdentifier) => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}`)}
             onUpdateParty={
               isReadOnly
