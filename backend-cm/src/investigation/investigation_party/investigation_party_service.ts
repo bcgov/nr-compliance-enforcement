@@ -169,6 +169,10 @@ export class InvestigationPartyService {
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
+    for (const createdPartyGuid of createdPartyGuids) {
+      await this.publishIfEligible(createdPartyGuid);
+    }
+
     const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
     return refreshedInvestigation.parties.filter((party) => createdPartyGuids.includes(party.partyIdentifier));
   }
@@ -847,6 +851,51 @@ export class InvestigationPartyService {
     return await this.partyService.create(prepared.input, prepared.identifiers);
   }
 
+  // Minimum information a party to be published to global.
+  private _hasMinimumInfo(party: InvestigationParty): boolean {
+    if (party.person) {
+      return !!(party.person.firstName?.trim() && party.person.lastName?.trim() && party.person.dateOfBirth);
+    }
+    return !!party.business?.name?.trim();
+  }
+
+  /**
+   * Publishes a local party to the shared registry as soon as it has minimum information.
+   * Returns the shared party guid when a publish happened, otherwise null.
+   */
+  async publishIfEligible(partyIdentifier: string): Promise<string | null> {
+    const investigationParty = await this.prisma.investigation_party.findUnique({
+      where: { investigation_party_guid: partyIdentifier },
+    });
+
+    if (!investigationParty) {
+      return null;
+    }
+
+    const investigation = await this.investigationService.findOne(investigationParty.investigation_guid);
+    const party = investigation.parties.find((p) => p.partyIdentifier === partyIdentifier && p.isActive);
+
+    if (!party || !this._hasMinimumInfo(party)) {
+      return null;
+    }
+
+    const prepared = await this.prepareSharedParty(partyIdentifier);
+
+    if (!prepared) {
+      return null;
+    }
+
+    let sharedParty: Party;
+
+    await withRlsTransaction(this.prisma, async (db) => {
+      await this.linkToSharedParty(db, partyIdentifier, prepared);
+      sharedParty = await this.createSharedParty(prepared);
+      await this.stampSharedPartyUpdate(db, partyIdentifier, sharedParty.updatedDateTime);
+    });
+
+    return sharedParty.partyIdentifier;
+  }
+
   async findManyByRef(partyRefId: string): Promise<InvestigationParty[]> {
     if (!partyRefId || partyRefId.length === 0) {
       return [];
@@ -936,6 +985,10 @@ export class InvestigationPartyService {
         await this.stampSharedPartyUpdate(tx, input.partyIdentifier, updatedSharedParty.updatedDateTime);
       }
     });
+
+    if (!existingParty.partyReference) {
+      await this.publishIfEligible(input.partyIdentifier);
+    }
 
     return await this.investigationService.findOne(investigationGuid);
   }

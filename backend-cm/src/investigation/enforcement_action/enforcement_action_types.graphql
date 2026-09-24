@@ -8,7 +8,6 @@ type EnforcementAction {
   activeIndicator: Boolean!
   ticket: Ticket
   comment: String
-  publishedPartyReference: String
   issuingOfficerIdentifier: String
   dateServed: DateTime
   warningNumber: String
