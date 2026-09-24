@@ -1,5 +1,6 @@
 // party-match-card.tsx
 import { FC, Fragment, ReactNode, useState } from "react";
+import { Link } from "react-router-dom";
 import { Badge, Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
@@ -96,8 +97,6 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   );
   const businessNumber =
     businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER)?.identifierValue ?? "-";
-  const worksafeBCNumber =
-    businessIdentifiers.find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER)?.identifierValue ?? "-";
 
   const addresses = (party.addresses ?? []).filter((a): a is Address => a != null);
   const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0];
@@ -164,7 +163,14 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
       <div className="d-flex justify-content-between align-items-center pt-2 px-3">
         <div className="w-100 border-bottom d-flex align-items-center gap-2 pb-2">
           <i className={`bi ${isBusiness ? "bi-building" : "bi-person"} text-muted fs-6`} />
-          <span className="comp-party-match-card-name">{name}</span>
+          <Link
+            to={`/party/${party.partyIdentifier}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="comp-party-match-card-name"
+          >
+            {name}
+          </Link>
           {(isBusiness ? anyMatched("businessName") : anyMatched("firstName", "lastName", "middleNames")) && (
             <i className="bi bi-circle-fill text-success comp-party-match-card-matched-dot" />
           )}
@@ -180,7 +186,6 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
           <>
             {detailRow("Doing business as", aliases, anyMatched("alias"))}
             {detailRow("Business number", businessNumber, anyMatched("businessNumber"))}
-            {detailRow("WorkSafeBC number", worksafeBCNumber, anyMatched("worksafeBCNumber"))}
             {detailRow("Primary phone", phone, anyMatched("phone"))}
             {detailRow("Primary address", address, anyMatched("addressLine", "city", "province", "country"))}
             {showMoreInfo && detailRow("Email", email, anyMatched("email"))}

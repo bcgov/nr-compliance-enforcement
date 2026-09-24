@@ -94,6 +94,7 @@ export const AvailableCodeTables = [
   "eye-colour-type",
   "facial-hair-style-type",
   "investigation-source-code",
+  "wildlife-management-unit-type",
 ];
 
 export const AvailableAgencies = ["cos"];

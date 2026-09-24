@@ -38,7 +38,7 @@ test.describe("HWCR Outcome Equipment", () => {
 
   test("it requires valid user input", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032456", true, page);
-    await validateComplaint(page, "23-032456", "Racoon");
+    await validateComplaint(page, "23-032456", "Raccoon");
 
     //Run before exery test in order to make re-runnable.
     await deleteAllEquipments(page);
@@ -57,7 +57,7 @@ test.describe("HWCR Outcome Equipment", () => {
 
   test("it can save equipment", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032456", true, page);
-    await validateComplaint(page, "23-032456", "Racoon");
+    await validateComplaint(page, "23-032456", "Raccoon");
 
     //Run before exery test in order to make re-runnable.
     await deleteAllEquipments(page);
@@ -80,7 +80,7 @@ test.describe("HWCR Outcome Equipment", () => {
 
   test("it can edit an existing equipment", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032456", true, page);
-    await validateComplaint(page, "23-032456", "Racoon");
+    await validateComplaint(page, "23-032456", "Raccoon");
 
     const $equipment = page.locator(".comp-outcome-equipment");
 
@@ -99,7 +99,7 @@ test.describe("HWCR Outcome Equipment", () => {
 
   test("it can delete an existing equipment", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032456", true, page);
-    await validateComplaint(page, "23-032456", "Racoon");
+    await validateComplaint(page, "23-032456", "Raccoon");
 
     const $equipment = page.locator(".comp-outcome-equipment");
     await $equipment.locator("#equipment-delete-button").click();

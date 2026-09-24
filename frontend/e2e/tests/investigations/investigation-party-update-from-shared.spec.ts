@@ -94,6 +94,11 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await expect(matchCard).toBeVisible();
     await matchCard.getByRole("button", { name: "Select profile" }).click();
 
+    const confirmModal = page.locator(".modal").first();
+    await expect(confirmModal).toBeVisible();
+    await expect(confirmModal).toContainText(`Add ${businessName} to investigation`);
+    await confirmModal.locator("button", { hasText: "Confirm" }).click();
+
     await page.waitForURL(/\/investigation\/[^/]+\/party\/[0-9a-f-]{36}$/);
     investigationPartyPath = new URL(page.url()).pathname;
     await expect(page.locator(".comp-box-complaint-id").getByText(businessName, { exact: true }).first()).toBeVisible();

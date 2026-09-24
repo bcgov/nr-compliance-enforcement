@@ -83,7 +83,6 @@ import {
   getOfficeByGeoCode,
   searchAppUsers,
 } from "../../external_api/shared_data";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
 import { formatPhonenumber, getFileType } from "../../common/methods";
@@ -94,6 +93,7 @@ import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dt
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 import { EventPublisherService } from "../event_publisher/event_publisher.service";
+import { Species } from "src/types/models/code-tables/species";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -101,23 +101,6 @@ type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 export class ComplaintService {
   private readonly logger = new Logger(ComplaintService.name);
   private readonly mapper: Mapper;
-
-  @InjectRepository(Complaint)
-  private readonly complaintsRepository: Repository<Complaint>;
-  @InjectRepository(HwcrComplaint)
-  private readonly _wildlifeComplaintRepository: Repository<HwcrComplaint>;
-  @InjectRepository(AllegationComplaint)
-  private readonly _allegationComplaintRepository: Repository<AllegationComplaint>;
-  @InjectRepository(GirComplaint)
-  private readonly _girComplaintRepository: Repository<GirComplaint>;
-  @InjectRepository(ComplaintUpdate)
-  private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>;
-  @InjectRepository(ComplaintReferral)
-  private readonly _complaintReferralRepository: Repository<ComplaintReferral>;
-  @InjectRepository(ActionTaken)
-  private readonly _actionTakenRepository: Repository<ActionTaken>;
-  @InjectRepository(SpeciesCode)
-  private readonly _speciesRepository: Repository<SpeciesCode>;
 
   constructor(
     @Inject(REQUEST)
@@ -132,6 +115,20 @@ export class ComplaintService {
     private readonly _linkedComplaintsXrefService: LinkedComplaintXrefService,
     private readonly dataSource: DataSource,
     private readonly eventPublisherService: EventPublisherService,
+    @InjectRepository(Complaint)
+    private readonly complaintsRepository: Repository<Complaint>,
+    @InjectRepository(HwcrComplaint)
+    private readonly _wildlifeComplaintRepository: Repository<HwcrComplaint>,
+    @InjectRepository(AllegationComplaint)
+    private readonly _allegationComplaintRepository: Repository<AllegationComplaint>,
+    @InjectRepository(GirComplaint)
+    private readonly _girComplaintRepository: Repository<GirComplaint>,
+    @InjectRepository(ComplaintUpdate)
+    private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>,
+    @InjectRepository(ComplaintReferral)
+    private readonly _complaintReferralRepository: Repository<ComplaintReferral>,
+    @InjectRepository(ActionTaken)
+    private readonly _actionTakenRepository: Repository<ActionTaken>,
   ) {
     this.mapper = mapper;
 
@@ -174,11 +171,11 @@ export class ComplaintService {
 
   private _getSortTable = (column: string): string => {
     switch (column) {
-      case "species_code":
       case "hwcr_complaint_nature_code":
         return "wildlife";
+      case "species_code":
       case "last_name":
-        // last_name sorting is handled via GraphQL API in applyLastNameSort method
+        // species and last_name sorting is handled via GraphQL API
         return "complaint";
       case "gir_type_code":
         return "general";
@@ -193,6 +190,54 @@ export class ComplaintService {
         return "complaint";
     }
   };
+
+  // Fetches species from GraphQL and returns a map of species sorted by species_name
+  private async getSpeciesSortMap(token: string): Promise<Map<string, number>> {
+    try {
+      const species = (await this._codeTableService.getCodeTableByName("species", token)) as unknown as Species[];
+
+      const sorted = [...species].sort((a, b) => {
+        const speciesA = (a.shortDescription || "").toLowerCase();
+        const speciesB = (b.shortDescription || "").toLowerCase();
+        return speciesA.localeCompare(speciesB);
+      });
+
+      const sortMap = new Map<string, number>();
+      for (const [index, species] of sorted.entries()) {
+        if (species.species) {
+          sortMap.set(species.species, index);
+        }
+      }
+
+      return sortMap;
+    } catch (error) {
+      this.logger.error(`Error building species sort map: ${error}`);
+      return new Map();
+    }
+  }
+
+  // Applies area_name sorting to a query builder using a CASE statement
+  private applySpeciesSort(
+    builder: SelectQueryBuilder<any>,
+    sortMap: Map<string, number>,
+    orderBy: "ASC" | "DESC",
+  ): void {
+    if (sortMap.size === 0) {
+      builder.orderBy("complaint.complaint_identifier", orderBy);
+      return;
+    }
+
+    let caseStatement = "(CASE wildlife.species_code_ref ";
+
+    for (const [speciesCode, position] of sortMap) {
+      caseStatement += `WHEN '${speciesCode.replaceAll("'", "''")}' THEN ${position} `;
+    }
+    caseStatement += "ELSE 9999 END)";
+
+    builder.addSelect(caseStatement, "species_sort_order");
+    builder.orderBy("species_sort_order", orderBy);
+    builder.addOrderBy("complaint.incident_reported_utc_timestmp", "DESC");
+  }
 
   // Fetches geo org units from GraphQL and returns a map of areaCode sorted by area_name
   private async getAreaNameSortMap(token: string): Promise<Map<string, number>> {
@@ -318,7 +363,6 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife")
           .leftJoin("wildlife.complaint_identifier", "complaint")
-          .leftJoin("wildlife.species_code", "species_code")
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
           .leftJoin("attractants.attractant_code", "attractant_code")
@@ -384,15 +428,7 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
-          .leftJoin("wildlife.species_code", "species_code")
           .leftJoin("complaint.complaint_referral", "complaint_referral")
-          .addSelect([
-            "species_code.species_code",
-            "species_code.short_description",
-            "species_code.long_description",
-            "species_code.large_carnivore_ind",
-          ])
-
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .addSelect([
             "complaint_nature_code.hwcr_complaint_nature_code",
@@ -570,7 +606,7 @@ export class ComplaintService {
         }
 
         if (speciesCode) {
-          builder.andWhere("wildlife.species_code = :SpeciesCode", {
+          builder.andWhere("wildlife.species_code_ref = :SpeciesCode", {
             SpeciesCode: speciesCode,
           });
         }
@@ -593,6 +629,7 @@ export class ComplaintService {
     let caseSearchData = [];
     let orgGeoCodes: string[] = [];
     let appUserGuids: string[] = [];
+    let speciesCodes: string[] = [];
 
     builder
       .leftJoin("complaint.complaint_update", "complaint_update")
@@ -646,6 +683,21 @@ export class ComplaintService {
         }
 
         caseSearchData = data.getComplaintOutcomesBySearchString;
+      }
+
+      // Species descriptions live in the shared schema and can't be joined, so match the codes here
+      try {
+        const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+        const lowercaseQuery = query.toLowerCase();
+        speciesCodes = speciesTable
+          .filter(
+            (species: any) =>
+              species.shortDescription?.toLowerCase().includes(lowercaseQuery) ||
+              species.longDescription?.toLowerCase().includes(lowercaseQuery),
+          )
+          .map((species: any) => species.species);
+      } catch (error) {
+        this.logger.error(`Error searching species by description: ${error}`);
       }
     }
 
@@ -730,13 +782,6 @@ export class ComplaintService {
               query: `%${query}%`,
             });
 
-            qb.orWhere("species_code.short_description ILIKE :query", {
-              query: `%${query}%`,
-            });
-            qb.orWhere("species_code.long_description ILIKE :query", {
-              query: `%${query}%`,
-            });
-
             qb.orWhere("wildlife.hwcr_complaint_nature_code ILIKE :query", {
               query: `%${query}%`,
             });
@@ -747,6 +792,9 @@ export class ComplaintService {
             qb.orWhere("attractant_code.long_description ILIKE :query", {
               query: `%${query}%`,
             });
+            if (speciesCodes.length > 0) {
+              qb.orWhere("wildlife.species_code_ref IN (:...speciesCodes)", { speciesCodes });
+            }
             break;
           }
           case "SECTOR":
@@ -1173,7 +1221,9 @@ export class ComplaintService {
       if (caseComplaintIds.length > 0) {
         builder.andWhere(
           new Brackets((qb) => {
-            qb.where("complaint.complaint_identifier IN(:...case_ids)", { case_ids: caseComplaintIds }).orWhere(hasCoors);
+            qb.where("complaint.complaint_identifier IN(:...case_ids)", { case_ids: caseComplaintIds }).orWhere(
+              hasCoors,
+            );
           }),
         );
       } else {
@@ -1498,6 +1548,10 @@ export class ComplaintService {
           // Special handling for last_name sort since it's source is the GraphQL API
           const lastNameSortMap = await this.getLastNameSortMap(token);
           this.applyLastNameSort(builder, lastNameSortMap, orderBy);
+        } else if (sortBy === "species_code") {
+          // Special handling for species sort since it's source is the GraphQL API
+          const speciesSortMap = await this.getSpeciesSortMap(token);
+          this.applySpeciesSort(builder, speciesSortMap, orderBy);
         } else {
           builder
             .orderBy(sortString, orderBy, "NULLS LAST")
@@ -2220,7 +2274,7 @@ export class ComplaintService {
                 hwcr_complaint_nature_code: {
                   hwcr_complaint_nature_code: natureOfComplaint,
                 },
-                species_code: { species_code: species },
+                species_code_ref: species,
                 other_attractants_text: otherAttractants,
                 update_user_id: idir,
               })
@@ -2373,7 +2427,7 @@ export class ComplaintService {
           const hwcr = {
             hwcr_complaint_guid: hwcrId,
             complaint_identifier: complaintId,
-            species_code: species,
+            species_code_ref: species,
             hwcr_complaint_nature_code: natureOfComplaint,
             other_attractants_text: otherAttractants,
             create_user_id: idir,
@@ -2755,19 +2809,18 @@ export class ComplaintService {
     };
 
     const _applyWildlifeData = async (wildlife) => {
+      const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
       for (const animal of wildlife) {
+        // Convert species code from shared
+        const species = speciesTable?.find((item: any) => item.species === animal.species)?.shortDescription;
+        animal.species = species;
+
         const wildlifeActions = animal.actions;
 
         const drugAction = wildlifeActions?.find((item) => item.actionCode === "ADMNSTRDRG");
         const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
         let drugActor = drugAction?.actor;
         let drugDate = drugAction?.date;
-
-        //-- Case Management doesn't keep the species codes as we are source of truth
-
-        const builder = this._speciesRepository.createQueryBuilder("species").where({ species_code: animal.species });
-        const result = await builder.getOne();
-        animal.species = result.short_description;
 
         //-- Convert Officer Guids to Names in parallel
         animal.officer = outcomeAction?.actor;
@@ -3084,6 +3137,18 @@ export class ComplaintService {
         } catch (error) {
           this.logger.error(`Failed to fetch app user ${data.officerAssigned} for report: ${error}`);
           data.officerAssigned = "Not Assigned";
+        }
+      }
+
+      //-- get species from GraphQL
+      if (data.species) {
+        // Convert species code from shared
+        try {
+          const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+          const species = speciesTable?.find((item: any) => item.species === data.species)?.shortDescription;
+          data.species = species;
+        } catch (error) {
+          this.logger.error(`Failed to fetch species ${data.species} for report: ${error}`);
         }
       }
 

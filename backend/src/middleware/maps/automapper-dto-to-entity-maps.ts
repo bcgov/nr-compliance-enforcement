@@ -279,16 +279,8 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.otherAttractants),
     ),
     forMember(
-      (dest) => dest.species_code,
-      mapFrom((src) => {
-        const { species } = src;
-
-        const record = {
-          species_code: species,
-        };
-
-        return record;
-      }),
+      (dest) => dest.species_code_ref,
+      mapFrom((src) => src.species),
     ),
     forMember(
       (dest) => dest.hwcr_complaint_nature_code,

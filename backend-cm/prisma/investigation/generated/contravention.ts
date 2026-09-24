@@ -33,6 +33,18 @@ export class contravention {
   @ApiPropertyOptional({ type: String })
   geo_organization_unit_code_ref?: string;
 
+  @ApiPropertyOptional({ type: String })
+  wildlife_management_unit_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  species_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  species_other_text?: string;
+
+  @ApiPropertyOptional({ type: Number })
+  quantity?: number;
+
   @ApiPropertyOptional({ type: () => investigation })
   investigation?: investigation;
 
