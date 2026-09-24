@@ -21,7 +21,7 @@ import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/comm
 import { getBusinessIdentifier, getPartyMissingFields, getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
-const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
+const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "CMPLNNT", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
 // Can we genercize this in the future?
 interface Props {
