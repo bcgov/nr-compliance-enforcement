@@ -10,8 +10,8 @@ export class enforcement_order {
   @ApiProperty({ type: String })
   enforcement_action_guid: string;
 
-  @ApiPropertyOptional({ type: String })
-  order_type_code?: string;
+  @ApiProperty({ type: String })
+  order_type_code: string;
 
   @ApiPropertyOptional({ type: Boolean })
   remediation_required_ind?: boolean;
@@ -43,6 +43,6 @@ export class enforcement_order {
   @ApiProperty({ type: () => order_status_code })
   order_status_code_enforcement_order_order_status_codeToorder_status_code: order_status_code;
 
-  @ApiPropertyOptional({ type: () => order_type_code })
-  order_type_code_enforcement_order_order_type_codeToorder_type_code?: order_type_code;
+  @ApiProperty({ type: () => order_type_code })
+  order_type_code_enforcement_order_order_type_codeToorder_type_code: order_type_code;
 }
