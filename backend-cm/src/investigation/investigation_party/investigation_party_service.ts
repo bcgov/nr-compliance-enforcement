@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import {
   CreateInvestigationPartyInput,
   InvestigationParty,
@@ -64,6 +64,7 @@ import {
   mapPartyToInvestigationPartyCreateInput,
   mapPartyToInvestigationPartyUpdateInput,
 } from "./party-to-investigation-party.mapper";
+import { buildPartyUniqueFieldCheck } from "../../shared/party/party-uniqueness";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -86,6 +87,30 @@ export class InvestigationPartyService {
   ) {}
 
   private readonly logger = new Logger(InvestigationPartyService.name);
+
+  /**
+   * Blocks a role change when the party is associated with any active contravention.
+   * Changing the role would otherwise orphan the party's contravention associations.
+   */
+  private async _assertRoleChangeAllowed(partyIdentifier: string, currentRole: string, newRole: string): Promise<void> {
+    if (currentRole === newRole) {
+      return;
+    }
+
+    const contraventionCount = await this.prisma.contravention_party_xref.count({
+      where: {
+        investigation_party_guid: partyIdentifier,
+        active_ind: true,
+        contravention: { active_ind: true },
+      },
+    });
+
+    if (contraventionCount > 0) {
+      throw new BadRequestException(
+        "This party's role cannot be changed while they are associated with a contravention. Remove the party from all contraventions before changing their role.",
+      );
+    }
+  }
 
   private _validateBusinessInput(business: { name?: string; addresses?: CreateInvestigationAddressInput[] }): void {
     for (const address of business.addresses ?? []) {
@@ -156,6 +181,8 @@ export class InvestigationPartyService {
       }
 
       this._validateExternalIdInput(input.externalIds);
+
+      await this.partyService.validateUniquePartyFields(buildPartyUniqueFieldCheck(input), input.partyReference);
     }
 
     const investigation = await this.investigationService.findOne(investigationGuid);
@@ -630,6 +657,8 @@ export class InvestigationPartyService {
 
     this._validateExternalIdInput(input.externalIds);
 
+    await this.partyService.validateUniquePartyFields(buildPartyUniqueFieldCheck(input), input.partyReference);
+
     const investigation = await this.investigationService.findOne(investigationGuid);
     const existingParty = investigation.parties.some((p) => p.partyIdentifier === partyIdentifier && p.isActive);
 
@@ -911,11 +940,19 @@ export class InvestigationPartyService {
       );
     }
 
+    await this._assertRoleChangeAllowed(
+      input.partyIdentifier,
+      existingParty.partyAssociationRole,
+      input.partyAssociationRole,
+    );
+
     if (input.business) {
       this._validateBusinessInput(input.business);
     }
 
     this._validateExternalIdInput(input.externalIds);
+
+    await this.partyService.validateUniquePartyFields(buildPartyUniqueFieldCheck(input), existingParty.partyReference);
 
     resolveSharedReferences(existingParty, input);
 

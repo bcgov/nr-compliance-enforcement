@@ -50,6 +50,9 @@ import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { geocodeAddressIfNeeded } from "@/app/common/geocoder";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { Species } from "@/app/types/app/code-tables/species";
+import { selectCodeTables } from "@/app/store/reducers/code-table-selectors";
 
 type ComplaintDtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
@@ -1038,10 +1041,13 @@ export const selectActiveComplaintCollaborators = (state: RootState): Collaborat
 };
 
 export const selectComplaintLargeCarnivoreInd = createSelector(
-  (state: RootState) => state.complaints.complaint,
-  (complaint): boolean => {
-    const complaintData = complaint as WildlifeComplaint;
-    return complaintData ? complaintData.isLargeCarnivore : false;
+  [(state: RootState) => state.complaints.complaint, selectCodeTables],
+  (complaint, codeTables): boolean => {
+    const speciesCode = (complaint as WildlifeComplaint)?.species;
+    if (!speciesCode) return false;
+
+    const { [CODE_TABLE_TYPES.SPECIES]: species } = codeTables;
+    return (species as Species[]).find((entry) => entry.species === speciesCode)?.isLargeCarnivore ?? false;
   },
 );
 

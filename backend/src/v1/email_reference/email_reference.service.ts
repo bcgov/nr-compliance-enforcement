@@ -6,10 +6,11 @@ import { EmailReference } from "../../v1/email_reference/entities/email_referenc
 @Injectable()
 export class EmailReferenceService {
   private readonly logger = new Logger(EmailReferenceService.name);
-  @InjectRepository(EmailReference)
-  private readonly emailReferenceRepository: Repository<EmailReference>;
 
-  constructor() {}
+  constructor(
+    @InjectRepository(EmailReference)
+    private readonly emailReferenceRepository: Repository<EmailReference>,
+  ) {}
 
   async findActiveByAgency(agencyCode: any): Promise<any> {
     try {

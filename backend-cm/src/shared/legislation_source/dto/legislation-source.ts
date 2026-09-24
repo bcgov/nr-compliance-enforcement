@@ -1,6 +1,9 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { legislation_source } from "../../../../prisma/shared/generated/legislation_source";
 
+// M = Mandatory, O = Optional, H = Hidden
+export type AnimalInformationDisplayType = "M" | "O" | "H";
+
 export interface LegislationSource {
   legislationSourceGuid: string;
   shortDescription: string;
@@ -12,6 +15,7 @@ export interface LegislationSource {
   activeInd: boolean;
   parentLegislationSourceGuid: string | null;
   externalKey: string | null;
+  animalInformationDisplayType: AnimalInformationDisplayType;
   createUserId?: string;
   createUtcTimestamp?: Date;
 }
@@ -24,6 +28,7 @@ export interface CreateLegislationSourceInput {
   agencyCode: string;
   sourceType?: string;
   effectiveDate?: string;
+  animalInformationDisplayType?: AnimalInformationDisplayType;
   createUserId: string;
 }
 
@@ -36,6 +41,7 @@ export interface UpdateLegislationSourceInput {
   agencyCode?: string;
   activeInd?: boolean;
   updateUserId: string;
+  animalInformationDisplayType?: AnimalInformationDisplayType;
 }
 
 export const mapPrismaLegislationSourceToLegislationSource = (mapper: Mapper) => {
@@ -90,6 +96,10 @@ export const mapPrismaLegislationSourceToLegislationSource = (mapper: Mapper) =>
     forMember(
       (dest) => dest.createUtcTimestamp,
       mapFrom((src) => src.create_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.animalInformationDisplayType,
+      mapFrom((src) => src.animal_information_display_code ?? null),
     ),
   );
 };

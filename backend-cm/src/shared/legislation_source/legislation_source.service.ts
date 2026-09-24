@@ -60,6 +60,9 @@ export class LegislationSourceService {
           regulations_source_url: input.regulationsSourceUrl ?? null,
           agency_code: input.agencyCode,
           source_type: input.sourceType ?? "BCLAWS",
+          ...(input.animalInformationDisplayType !== undefined && {
+            animal_information_display_code: input.animalInformationDisplayType,
+          }),
           active_ind: true,
           create_user_id: input.createUserId,
           create_utc_timestamp: new Date(),
@@ -122,6 +125,7 @@ export class LegislationSourceService {
         regulations_source_url: null,
         agency_code: parent.agency_code,
         source_type: sourceType,
+        animal_information_display_code: parent.animal_information_display_code,
         parent_legislation_source_guid: parentSourceGuid,
         external_key: externalKey,
         active_ind: true,
@@ -134,18 +138,37 @@ export class LegislationSourceService {
   }
 
   async update(input: UpdateLegislationSourceInput): Promise<LegislationSource> {
-    const source = await this.prisma.legislation_source.update({
-      where: { legislation_source_guid: input.legislationSourceGuid },
-      data: {
-        ...(input.shortDescription !== undefined && { short_description: input.shortDescription }),
-        ...(input.longDescription !== undefined && { long_description: input.longDescription }),
-        ...(input.sourceUrl !== undefined && { source_url: input.sourceUrl }),
-        ...(input.regulationsSourceUrl !== undefined && { regulations_source_url: input.regulationsSourceUrl }),
-        ...(input.agencyCode !== undefined && { agency_code: input.agencyCode }),
-        ...(input.activeInd !== undefined && { active_ind: input.activeInd }),
-        update_user_id: input.updateUserId,
-        update_utc_timestamp: new Date(),
-      },
+    const source = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.legislation_source.update({
+        where: { legislation_source_guid: input.legislationSourceGuid },
+        data: {
+          ...(input.shortDescription !== undefined && { short_description: input.shortDescription }),
+          ...(input.longDescription !== undefined && { long_description: input.longDescription }),
+          ...(input.sourceUrl !== undefined && { source_url: input.sourceUrl }),
+          ...(input.regulationsSourceUrl !== undefined && { regulations_source_url: input.regulationsSourceUrl }),
+          ...(input.agencyCode !== undefined && { agency_code: input.agencyCode }),
+          ...(input.activeInd !== undefined && { active_ind: input.activeInd }),
+          ...(input.animalInformationDisplayType !== undefined && {
+            animal_information_display_code: input.animalInformationDisplayType,
+          }),
+          update_user_id: input.updateUserId,
+          update_utc_timestamp: new Date(),
+        },
+      });
+
+      // Regulations inherit the act's animal information setting, so cascade any change to them
+      if (input.animalInformationDisplayType !== undefined) {
+        await tx.legislation_source.updateMany({
+          where: { parent_legislation_source_guid: input.legislationSourceGuid },
+          data: {
+            animal_information_display_code: input.animalInformationDisplayType,
+            update_user_id: input.updateUserId,
+            update_utc_timestamp: new Date(),
+          },
+        });
+      }
+
+      return updated;
     });
 
     return this.mapToDto(source);
@@ -221,6 +244,7 @@ export class LegislationSourceService {
       activeInd: source.active_ind,
       parentLegislationSourceGuid: source.parent_legislation_source_guid ?? null,
       externalKey: source.external_key ?? null,
+      animalInformationDisplayType: source.animal_information_display_code,
       createUserId: source.create_user_id,
       createUtcTimestamp: source.create_utc_timestamp,
     };

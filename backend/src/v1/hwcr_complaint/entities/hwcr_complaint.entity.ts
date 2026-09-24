@@ -2,7 +2,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "node:crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
-import { SpeciesCode } from "../../species_code/entities/species_code.entity";
 import { HwcrComplaintNatureCode } from "../../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AttractantHwcrXref } from "../../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
@@ -29,9 +28,8 @@ export class HwcrComplaint {
     example: "BOBCAT",
     description: "A human readable code used to identify a wildlife species.",
   })
-  @ManyToOne(() => SpeciesCode)
-  @JoinColumn({ name: "species_code" })
-  species_code: SpeciesCode;
+  @Column()
+  species_code_ref: string;
 
   @ApiProperty({
     example: "HUMINJ",
@@ -82,7 +80,7 @@ export class HwcrComplaint {
 
   constructor(
     complaint_identifier?: Complaint,
-    species_code?: SpeciesCode,
+    species_code_ref?: string,
     hwcr_complaint_nature_code?: HwcrComplaintNatureCode,
     attractant_hwcr_xref?: AttractantHwcrXref[],
     other_attractants_text?: string,
@@ -92,7 +90,7 @@ export class HwcrComplaint {
     update_utc_timestamp?: Date,
   ) {
     this.complaint_identifier = complaint_identifier;
-    this.species_code = species_code;
+    this.species_code_ref = species_code_ref;
     this.hwcr_complaint_nature_code = hwcr_complaint_nature_code;
     this.attractant_hwcr_xref = attractant_hwcr_xref;
     this.other_attractants_text = other_attractants_text;

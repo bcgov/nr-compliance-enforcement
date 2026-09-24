@@ -43,7 +43,7 @@ test.describe("Complaint Edit Page spec - Edit View", () => {
     methodComplaintReceived: "Observed in field",
     natureOfComplaint: "Aggressive - present/recent",
     natureOfComplaintIndex: 1,
-    species: "Black Bear",
+    species: "Bear, Black",
     speciesIndex: 1,
     status: "Open",
     statusIndex: 0,

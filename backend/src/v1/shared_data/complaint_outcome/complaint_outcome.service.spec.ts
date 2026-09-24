@@ -25,22 +25,16 @@ import {
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
-  MockCosOrganizationUnitCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
-  MockOrganizationUnitCodeTableRepository,
-  MockOrganizationUnitTypeCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
   MockReportedByCodeTableRepository,
-  MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
   MockGirTypeCodeRepository,
-  MockTeamCodeRepository,
   MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../../test/mocks/mock-code-table-repositories";
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AppUserComplaintXrefCode } from "../../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
-import { SpeciesCode } from "../../species_code/entities/species_code.entity";
 import { AppUserComplaintXref } from "../../app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { ComplaintTypeCode } from "../../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
@@ -111,10 +105,6 @@ describe("Testing: Complaint Outcome Service", () => {
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),

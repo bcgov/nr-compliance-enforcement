@@ -20,10 +20,10 @@ export class CdogsService implements ExternalApiService {
   readonly clientSecret: string;
   readonly grantType: string;
 
-  @Inject(ConfigurationService)
-  readonly configService: ConfigurationService;
-
-  constructor() {
+  constructor(
+    @Inject(ConfigurationService)
+    readonly configService: ConfigurationService,
+  ) {
     this.authApi = process.env.COMS_JWT_AUTH_URI;
     this.baseUri = process.env.CDOGS_URI;
     this.clientId = process.env.CDOGS_CLIENT_ID;

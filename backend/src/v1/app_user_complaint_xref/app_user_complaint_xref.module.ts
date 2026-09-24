@@ -13,7 +13,7 @@ import { FeatureFlagModule } from "../feature_flag/feature_flag.module";
   imports: [
     TypeOrmModule.forFeature([AppUserComplaintXref]),
     forwardRef(() => ComplaintModule),
-    EmailModule,
+    forwardRef(() => EmailModule),
     WebeocModule,
     AppUserModule,
     FeatureFlagModule,

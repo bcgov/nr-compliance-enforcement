@@ -33,7 +33,7 @@ export interface SubjectQueryResult {
       hwcr_outcome_actioned_by_code: string;
       short_description: string;
     };
-    species_code: string;
+    species_code_ref: string;
     create_utc_timestamp: Date;
     drug_administered: {
       drug_administered_guid: string;
