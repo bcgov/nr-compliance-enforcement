@@ -247,7 +247,6 @@ export class EnforcementActionService {
             contravention_party_xref_guid: xref.contravention_party_xref_guid,
             enforcement_action_code: input.enforcementActionCode,
             date_issued: input.dateIssued,
-            geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
             app_user_guid_ref: input.appUserIdentifier,
             comment: input.comment ?? null,
             issuing_officer_guid_ref: input.issuingOfficerIdentifier ?? null,
@@ -337,7 +336,6 @@ export class EnforcementActionService {
           data: {
             enforcement_action_code: input.enforcementActionCode,
             date_issued: input.dateIssued,
-            geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
             app_user_guid_ref: input.appUserIdentifier,
             comment: input.comment ?? null,
             issuing_officer_guid_ref: input.issuingOfficerIdentifier ?? null,

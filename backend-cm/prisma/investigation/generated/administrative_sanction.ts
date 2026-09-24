@@ -16,8 +16,8 @@ export class administrative_sanction {
   @ApiProperty({ type: Date })
   effective_date: Date;
 
-  @ApiProperty({ type: Date })
-  end_date: Date;
+  @ApiPropertyOptional({ type: Date })
+  end_date?: Date;
 
   @ApiProperty({ type: String })
   sanction_status_code: string;
