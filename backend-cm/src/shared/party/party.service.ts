@@ -397,6 +397,19 @@ export class PartyService {
     }
   }
 
+  // A published profile must still have a value for name / dob when editing
+  private _validatePublishedPersonInput(person?: { firstName?: string; lastName?: string; dateOfBirth?: Date }): void {
+    if (!person?.firstName?.trim()) {
+      throw new Error("First name is required for published parties.");
+    }
+    if (!person.lastName?.trim()) {
+      throw new Error("Last name is required for published parties.");
+    }
+    if (!person.dateOfBirth) {
+      throw new Error("Date of birth is required for published parties.");
+    }
+  }
+
   private _normalizeIdentifierValue(value?: string): string {
     return value?.trim() ?? "";
   }
@@ -2343,6 +2356,10 @@ export class PartyService {
 
     if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
       this._validateBusinessInput(input.business);
+    }
+
+    if (input.partyTypeCode === PARTY_TYPES.Person) {
+      this._validatePublishedPersonInput(input.person);
     }
 
     await this.validateUniquePartyFields(buildPartyUniqueFieldCheck(input), partyIdentifier);

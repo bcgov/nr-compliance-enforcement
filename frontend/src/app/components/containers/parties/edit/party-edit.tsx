@@ -487,6 +487,7 @@ const PartyEdit: FC = () => {
               <PersonForm
                 form={form}
                 isDisabled={isDisabled}
+                isPublished={isEditMode}
               />
             )}
             {partyTypeValue === "ORG" && (
