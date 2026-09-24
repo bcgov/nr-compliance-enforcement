@@ -30,9 +30,9 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
         </Modal.Header>
       )}
       <Modal.Body>
-        {warningList.map((warningText, index) => (
+        {warningList.map((warningText) => (
           <Alert
-            key={index}
+            key={warningText}
             variant="warning"
             className="comp-complaint-details-alert"
           >
