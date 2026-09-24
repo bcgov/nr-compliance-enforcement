@@ -1,14 +1,15 @@
 import { Repository } from "typeorm";
-import { Injectable, Logger, Inject, Scope, forwardRef } from "@nestjs/common";
+import { Injectable, Logger, Inject, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "./../complaint/entities/complaint.entity";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { REQUEST } from "@nestjs/core";
-import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
+import { AppUserComplaintXref } from "../app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { EmailService } from "../../v1/email/email.service";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 import { DocumentService } from "../../v1/document/document.service";
+import { ComplaintService } from "../complaint/complaint.service";
 import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
 import { CreateComplaintReferralEmailLogDto } from "../complaint_referral_email_log/dto/create-complaint_referral_email_log.dto";
 import { randomUUID } from "node:crypto";
@@ -16,24 +17,25 @@ import { asUUID } from "src/common/methods";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintReferralService {
-  @InjectRepository(ComplaintReferral)
-  private readonly complaintReferralRepository: Repository<ComplaintReferral>;
-  @InjectRepository(Complaint)
-  private readonly complaintRepository: Repository<Complaint>;
-
   constructor(
     @Inject(REQUEST)
     private readonly request: Request,
-    @Inject(forwardRef(() => AppUserComplaintXrefService))
-    private readonly _personService: AppUserComplaintXrefService,
     @Inject(EmailService)
     private readonly _emailService: EmailService,
     @Inject(FeatureFlagService)
     private readonly _featureFlagService: FeatureFlagService,
     @Inject(DocumentService)
     private readonly _documentService: DocumentService,
+    @Inject(ComplaintService)
+    private readonly _complaintService: ComplaintService,
     @Inject(ComplaintReferralEmailLogService)
     private readonly _complaintReferralEmailLogService: ComplaintReferralEmailLogService,
+    @InjectRepository(ComplaintReferral)
+    private readonly complaintReferralRepository: Repository<ComplaintReferral>,
+    @InjectRepository(Complaint)
+    private readonly complaintRepository: Repository<Complaint>,
+    @InjectRepository(AppUserComplaintXref)
+    private readonly appUserComplaintXrefRepository: Repository<AppUserComplaintXref>,
   ) {}
 
   private readonly logger = new Logger(ComplaintReferralService.name);
@@ -78,15 +80,20 @@ export class ComplaintReferralService {
 
       await this.complaintRepository.update({ complaint_identifier: id }, updateData);
     }
-    // Clear the officer assigned to the complaint
-    this._personService.clearAssignedAppUser(createComplaintReferralDto.complaint_identifier);
+    // Clear the officer assigned to the complaint.
+    await this.appUserComplaintXrefRepository.update(
+      { complaint_identifier: id as any, app_user_complaint_xref_code: "ASSIGNEE" as any, active_ind: true },
+      { active_ind: false, update_user_id: idir, update_utc_timestamp: new Date() },
+    );
 
     if (sendEmail) {
       const senderEmail = user.email ?? process.env.CEDS_EMAIL;
       const { given_name, family_name } = user;
       const senderName = `${given_name} ${family_name}`;
+      const complaint = await this._complaintService.findById(id, type, undefined, token);
       const recipientList = await this._emailService.sendReferralEmail(
         createComplaintReferralDto,
+        complaint,
         senderEmail,
         senderName,
         complaintExport,

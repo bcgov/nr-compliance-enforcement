@@ -64,7 +64,7 @@ test.describe("HWCR Outcome Prevention and Education", () => {
     };
     const $outcome = page.locator("#outcome-preventions");
     await $outcome.locator("#outcome-report-add-prevention").click();
-    await validateComplaint(page, "23-030330", "Black Bear");
+    await validateComplaint(page, "23-030330", "Bear, Black");
     await fillInHWCSection($outcome, page, params);
     //expand checkboxes for validating in view state
     params.checkboxes = [
@@ -76,7 +76,7 @@ test.describe("HWCR Outcome Prevention and Education", () => {
 
   test("it can cancel prevention and education edits", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true, page);
-    await validateComplaint(page, "23-030330", "Black Bear");
+    await validateComplaint(page, "23-030330", "Bear, Black");
     const $preventionAndEducation = page.locator("#outcome-preventions");
     if (await $preventionAndEducation.locator("#prevention-edit-button").count()) {
       await $preventionAndEducation.locator("#prevention-edit-button").click();
@@ -104,7 +104,7 @@ test.describe("HWCR Outcome Prevention and Education", () => {
 
   test("it can edit an existing prevention and education", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true, page);
-    await validateComplaint(page, "23-030330", "Black Bear");
+    await validateComplaint(page, "23-030330", "Bear, Black");
     const $preventionAndEducation = page.locator("#outcome-preventions");
     if (await $preventionAndEducation.locator("#prevention-edit-button").count()) {
       await $preventionAndEducation.locator("#prevention-edit-button").click();
@@ -132,7 +132,7 @@ test.describe("HWCR Outcome Prevention and Education", () => {
 
   test("it can delete an existing prevention and education", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true, page);
-    await validateComplaint(page, "23-030330", "Black Bear");
+    await validateComplaint(page, "23-030330", "Bear, Black");
     const $preventionAndEducation = page.locator("#outcome-preventions");
     if (await $preventionAndEducation.locator("#prevention-delete-button").count()) {
       await $preventionAndEducation.locator("#prevention-delete-button").first().click();

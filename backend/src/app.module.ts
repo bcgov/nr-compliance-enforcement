@@ -13,7 +13,6 @@ import { ComplaintModule } from "./v1/complaint/complaint.module";
 import { ViolationCodeModule } from "./v1/violation_code/violation_code.module";
 import { AllegationComplaintModule } from "./v1/allegation_complaint/allegation_complaint.module";
 import { AppUserModule } from "./v1/app_user/app_user.module";
-import { SpeciesCodeModule } from "./v1/species_code/species_code.module";
 import { HwcrComplaintNatureCodeModule } from "./v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.module";
 import { AttractantCodeModule } from "./v1/attractant_code/attractant_code.module";
 import { HwcrComplaintModule } from "./v1/hwcr_complaint/hwcr_complaint.module";
@@ -94,7 +93,6 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
     ViolationCodeModule,
     AllegationComplaintModule,
     AppUserModule,
-    SpeciesCodeModule,
     HwcrComplaintNatureCodeModule,
     AttractantCodeModule,
     HwcrComplaintModule,

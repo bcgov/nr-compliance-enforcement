@@ -8,10 +8,13 @@ import { ComplaintMethodReceivedCode } from "../complaint_method_received_code/e
 @Injectable()
 export class CompMthdRecvCdAgcyCdXrefService {
   private readonly logger = new Logger(CompMthdRecvCdAgcyCdXrefService.name);
-  @InjectRepository(CompMthdRecvCdAgcyCdXref)
-  private compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
 
-  constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(CompMthdRecvCdAgcyCdXref)
+    private compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>,
+    @Inject(REQUEST) private request: Request,
+    private dataSource: DataSource,
+  ) {}
 
   async findAll(): Promise<CompMthdRecvCdAgcyCdXref[]> {
     return this.compMthdRecvCdAgcyCdXrefRepository.find({
