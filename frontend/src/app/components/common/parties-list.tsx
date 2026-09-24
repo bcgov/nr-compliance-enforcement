@@ -28,6 +28,7 @@ interface Props {
   companies?: (InvestigationParty | InspectionParty)[];
   people?: (InvestigationParty | InspectionParty)[];
   parties?: (InvestigationParty | InspectionParty)[];
+  removeBlockedReason?: (party: InvestigationParty | InspectionParty) => string | null;
   onRemoveParty?: (partyIdentifier: string, partyName: string) => void;
   onViewParty?: (partyIdentifier: string) => void;
   onUpdateParty?: (partyIdentifier: string) => void;
@@ -38,6 +39,7 @@ const PartiesList: React.FC<Props> = ({
   companies,
   people,
   parties,
+  removeBlockedReason,
   onRemoveParty,
   onViewParty,
   onUpdateParty,
@@ -135,11 +137,13 @@ const PartiesList: React.FC<Props> = ({
 
   const renderRemoveButton = (party: InvestigationParty | InspectionParty) => {
     if (!onRemoveParty) return null;
+    const blockedReason = removeBlockedReason?.(party) ?? null;
     return (
       <Button
         size="sm"
         variant="outline-primary"
         onClick={() => onRemoveParty(party.partyIdentifier, getPartyRemoveName(party))}
+        disabled={!!blockedReason}
       >
         <i className="bi bi-trash me-2"></i> Remove
       </Button>

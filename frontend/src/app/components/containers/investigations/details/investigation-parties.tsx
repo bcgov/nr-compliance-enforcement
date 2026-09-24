@@ -3,10 +3,12 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { SAVE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import { useQuery } from "@tanstack/react-query";
 import { gql } from "graphql-request";
+import { fetchAttachmentsWithMetadata } from "@common/attachment-utils";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
@@ -85,6 +87,53 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
 
   const parties = (investigationData?.parties ?? []).filter(Boolean) as InvestigationParty[];
 
+  // Fetch parties on contraventions so we can unlink them and leave dirty data
+  const partiesOnContraventions = useMemo(
+    () =>
+      new Set(
+        (investigationData?.contraventions ?? []).flatMap(
+          (contravention) =>
+            contravention?.investigationParty
+              ?.map((party) => party?.partyIdentifier)
+              .filter((partyIdentifier): partyIdentifier is string => !!partyIdentifier) ?? [],
+        ),
+      ),
+    [investigationData?.contraventions],
+  );
+
+  // taken by is not in the db so we need to fetch against object store
+  const { data: attachments, isLoading: isLoadingAttachments } = useQuery({
+    queryKey: ["investigation-attachment-taken-by", investigationGuid],
+    queryFn: () => fetchAttachmentsWithMetadata(investigationGuid),
+    staleTime: 5 * 60 * 1000,
+    enabled: !isReadOnly,
+  });
+
+  const partiesTakenByAttachment = useMemo(
+    () =>
+      new Set(
+        (attachments ?? []).map((attachment) => attachment.takenBy).filter((takenBy): takenBy is string => !!takenBy),
+      ),
+    [attachments],
+  );
+
+  const removeBlockedReason = useCallback(
+    (party: { partyIdentifier: string }): string | null => {
+      // Prevent accidental removal in case coms request times out
+      if (isLoadingAttachments) {
+        return "Checking whether this party can be removed.";
+      }
+      if (partiesOnContraventions.has(party.partyIdentifier)) {
+        return "This party is associated with a contravention and cannot be removed.";
+      }
+      if (partiesTakenByAttachment.has(party.partyIdentifier)) {
+        return "This party is associated with attachments that were taken by them and cannot be removed.";
+      }
+      return null;
+    },
+    [isLoadingAttachments, partiesOnContraventions, partiesTakenByAttachment],
+  );
+
   return (
     <>
       <div className="row align-items-center">
@@ -109,6 +158,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
           <PartiesList
             parties={parties}
             onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
+            removeBlockedReason={removeBlockedReason}
             onViewParty={(partyIdentifier) => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}`)}
             onUpdateParty={
               isReadOnly
