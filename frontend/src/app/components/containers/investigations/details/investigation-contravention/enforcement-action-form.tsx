@@ -615,7 +615,13 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const renderYesNoField = (name: string, label: string, id: string) =>
     renderSelectField(name, label, YES_NO_OPTIONS, { id });
 
-  const renderDateField = (name: string, label: string, id: string, config: { required?: boolean } = {}) => {
+  const renderDateField = (
+    name: string,
+    label: string,
+    id: string,
+    maxDate: Date | undefined,
+    config: { required?: boolean } = {},
+  ) => {
     const { required = false } = config;
     const validator = required ? dateValidator : optionalDateValidator;
     return (
@@ -629,7 +635,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           <ValidationDatePicker
             classNamePrefix="comp-details-edit-calendar-input"
             className="comp-details-input full-width"
-            maxDate={new Date()}
+            maxDate={maxDate}
             id={id}
             onChange={(date: Date, _time: string | null) => field.handleChange(date)}
             selectedDate={field.state.value}
@@ -785,7 +791,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         <>
           <div className="row mb-3">
             <div className="col-6">
-              {renderDateField("dateIssued", "Date issued", "enforcement-action-date-issued", { required: true })}
+              {renderDateField("dateIssued", "Date issued", "enforcement-action-date-issued", new Date(), {
+                required: true,
+              })}
             </div>
             <div className="col-6">
               {renderSelectField("issuingOfficer", "Issuing officer", officerOptions, {
@@ -798,7 +806,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 
           <div className="row mb-3">
             <div className="col-6">
-              {renderDateField("dateServed", "Date served", "enforcement-action-date-served", { required: true })}
+              {renderDateField("dateServed", "Date served", "enforcement-action-date-served", new Date(), {
+                required: true,
+              })}
             </div>
             <div className="col-6">
               {renderSelectField("servingOfficer", "Serving officer", officerOptions, {
@@ -873,6 +883,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                     "appealHearingDate",
                     "Appeal hearing date",
                     "enforcement-action-ticket-appeal-hearing-date",
+                    undefined,
                   )}
                 </div>
               </div>
@@ -883,12 +894,14 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  {renderDateField("effectiveDate", "Effective date", "enforcement-action-effective-date", {
+                  {renderDateField("effectiveDate", "Effective date", "enforcement-action-effective-date", undefined, {
                     required: true,
                   })}
                 </div>
                 <div className="col-6">
-                  {renderDateField("endDate", "End date", "enforcement-action-end-date", { required: true })}
+                  {renderDateField("endDate", "End date", "enforcement-action-end-date", undefined, {
+                    required: true,
+                  })}
                 </div>
               </div>
               <div className="row mb-3">
@@ -918,6 +931,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                     "appealHearingDate",
                     "Appeal hearing date",
                     "enforcement-action-order-appeal-hearing-date",
+                    undefined,
                   )}
                 </div>
               </div>
@@ -937,10 +951,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  {renderDateField("hearingDate", "Hearing date", "enforcement-action-rj-hearing-date")}
+                  {renderDateField("hearingDate", "Hearing date", "enforcement-action-rj-hearing-date", undefined)}
                 </div>
                 <div className="col-6">
-                  {renderDateField("decisionDate", "Decision date", "enforcement-action-rj-decision-date")}
+                  {renderDateField("decisionDate", "Decision date", "enforcement-action-rj-decision-date", undefined)}
                 </div>
               </div>
               <div className="row mb-3">
