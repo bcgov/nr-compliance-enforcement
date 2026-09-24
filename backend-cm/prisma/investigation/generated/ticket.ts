@@ -43,6 +43,9 @@ export class ticket {
   @ApiPropertyOptional({ type: Date })
   appeal_hearing_date?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  notice_of_cancellation_number?: string;
+
   @ApiProperty({ type: () => enforcement_action })
   enforcement_action: enforcement_action;
 
