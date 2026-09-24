@@ -286,6 +286,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketAmount: enforcementAction?.ticket?.ticketAmount?.toString() ?? "",
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
       ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "INPR",
+      noticeOfCancellationNumber: enforcementAction?.ticket?.noticeOfCancellationNumber ?? "",
       // Warning
       warningNumber: enforcementAction?.warningNumber ?? "",
       // Administrative Sanction
@@ -359,6 +360,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketNumber: value.ticketNumber,
       ticketTypeCode: value.ticketTypeCode || null,
       appealHearingDate: value.appealHearingDate ? new Date(value.appealHearingDate).toISOString() : null,
+      noticeOfCancellationNumber: value.noticeOfCancellationNumber,
     };
   };
 
@@ -879,6 +881,18 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                     "Appeal hearing date",
                     "enforcement-action-ticket-appeal-hearing-date",
                     undefined,
+                  )}
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderTextField(
+                    "noticeOfCancellationNumber",
+                    "Notice of cancellation number",
+                    "Enter notice of cancellation number",
+                    {
+                      maxLength: 32,
+                    },
                   )}
                 </div>
               </div>

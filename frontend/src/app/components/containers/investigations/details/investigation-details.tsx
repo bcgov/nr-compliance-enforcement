@@ -214,6 +214,7 @@ export const GET_INVESTIGATION = gql`
               paidDate
               ticketTypeCode
               appealHearingDate
+              noticeOfCancellationNumber
             }
           }
         }

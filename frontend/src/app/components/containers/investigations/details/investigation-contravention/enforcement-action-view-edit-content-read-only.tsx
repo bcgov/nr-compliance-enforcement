@@ -165,6 +165,11 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
                 <div className="col-6">
                   <Field label="Appeal hearing date">{formatDate(ticket.appealHearingDate)}</Field>
                 </div>
+                <div className="col-6">
+                  <Field label="Notice of cancellation number">
+                    {ticket.noticeOfCancellationNumber ? `${ticket.noticeOfCancellationNumber}` : "—"}
+                  </Field>
+                </div>
               </>
             )}
 

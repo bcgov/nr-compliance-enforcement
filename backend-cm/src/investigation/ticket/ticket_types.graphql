@@ -8,4 +8,5 @@ type Ticket {
   paidDate: Date
   ticketTypeCode: String
   appealHearingDate: Date
+  noticeOfCancellationNumber: String
 }
