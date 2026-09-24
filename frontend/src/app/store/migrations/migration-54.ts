@@ -1,5 +1,5 @@
 export const RefreshCourtProsecutionStatus = {
-  53: (state: any) => {
+  54: (state: any) => {
     return {
       ...state,
       codeTables: {
