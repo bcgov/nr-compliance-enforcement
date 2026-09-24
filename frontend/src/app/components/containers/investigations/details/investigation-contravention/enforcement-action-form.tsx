@@ -39,6 +39,8 @@ import {
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
 import { getPartyMissingFields, isPartyProfileComplete } from "@/app/common/party-name";
+import { isPartyDuplicatedIdentifier } from "@/app/components/containers/parties/form/party-form-errors";
+import { PARTY_DUPLICATE_MESSAGE } from "@/app/components/containers/parties/form/party-unique-fields";
 import { joinWithAnd } from "@/app/common/methods";
 import Option from "@apptypes/app/option";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
@@ -518,8 +520,12 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         showSaveSuccessToast();
         onDirtyChange?.(0, false);
         onClose();
-      } catch {
-        ToggleError(isEdit ? "Failed to update decision" : "Failed to save decision");
+      } catch (error) {
+        if (isPartyDuplicatedIdentifier(error)) {
+          ToggleError(PARTY_DUPLICATE_MESSAGE);
+        } else {
+          ToggleError(isEdit ? "Failed to update decision" : "Failed to save decision");
+        }
       } finally {
         onIsSavingChange?.(false);
       }

@@ -30,6 +30,11 @@ import Option from "@apptypes/app/option";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { PartyAliasFields } from "@/app/components/containers/parties/form/party-alias-fields";
 import { PartyExternalIdFields } from "@/app/components/containers/parties/form/party-external-id-fields";
+import {
+  clearFieldError,
+  DRIVERS_LICENSE_FIELD,
+  getFieldErrorMessage,
+} from "@/app/components/containers/parties/form/party-form-errors";
 
 type PersonFormProps = {
   form: any;
@@ -408,10 +413,13 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             type="input"
             inputClass="comp-form-control comp-details-input"
             defaultValue={field.state.value}
-            error={field.state.meta.errors?.[0]?.message || ""}
+            error={getFieldErrorMessage(field)}
             maxLength={50}
             onChange={(evt: any) => {
               field.handleChange(evt?.target?.value || "");
+              if (field.state.meta.errors?.length) {
+                clearFieldError(form, DRIVERS_LICENSE_FIELD);
+              }
               if (!evt?.target?.value) {
                 form.setFieldValue("driversLicenseClass", null);
                 form.setFieldValue("driversLicenseCountryCode", null);
