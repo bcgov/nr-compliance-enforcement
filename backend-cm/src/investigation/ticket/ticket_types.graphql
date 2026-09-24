@@ -6,4 +6,6 @@ type Ticket {
   ticketNumber: String!
   activeIndicator: Boolean!
   paidDate: Date
+  ticketTypeCode: String
+  appealHearingDate: Date
 }

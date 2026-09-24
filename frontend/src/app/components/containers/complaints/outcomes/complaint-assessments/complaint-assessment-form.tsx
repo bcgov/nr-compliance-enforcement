@@ -54,7 +54,18 @@ import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
 
 // ERS/GIR assessments use their own justification codes, separate from the HWC set
-const ERS_GIR_JUSTIFICATION_CODES = new Set(["NOINFID", "NORES", "PKNOINFID", "PKNORES"]);
+const ERS_GIR_JUSTIFICATION_CODES = new Set([
+  "COMPOPRTY",
+  "DUPLPREV",
+  "LOWINVVIA",
+  "NOOFFID",
+  "OUTSDJURD",
+  "PKCOMPOPR",
+  "PKDUPLPRV",
+  "PKLOWINV",
+  "PKNOOFFID",
+  "PKOUTSDJR",
+]);
 
 type Props = {
   id: string;

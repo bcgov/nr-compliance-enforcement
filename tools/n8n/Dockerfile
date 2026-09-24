@@ -1,5 +1,6 @@
 # Node 22 LTS on UBI9 so globalThis.File is present
-FROM registry.access.redhat.com/ubi9/nodejs-22:9.8-1781010268
+# registry.access.redhat.com/ubi9/nodejs-22:9.8-1781010268 as of 2026-09-15
+FROM registry.access.redhat.com/ubi9/nodejs-22@sha256:9f48c9a6dbfd0d347e0b3512748e40b8aaee7cd3e39a35aae0742446b193b16f
 # dockerfile source https://github.com/bcgov/put/blob/main/containers/workflow/Dockerfile
 
 ENV HOME=/opt/app-root/src \

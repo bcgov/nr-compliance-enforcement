@@ -407,10 +407,11 @@ export class LegislationVersionService {
     });
   }
 
+  // Failed versions are not retried until they are reset to PENDING
   async getImportableVersions(sourceType: string): Promise<ImportableLegislationVersion[]> {
     const versions = await this.prisma.legislation_version.findMany({
       where: {
-        import_status: { in: NON_SUCCESS_STATUSES },
+        import_status: "PENDING",
         parent_legislation_version_guid: null,
         legislation_source: { active_ind: true, source_type: sourceType },
       },

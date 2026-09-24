@@ -15,11 +15,21 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
+import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { selectEnforcementActionsByAgency, selectTicketOutcomes } from "@/app/store/reducers/code-table-selectors";
+import {
+  selectAdministrativePenaltyStatuses,
+  selectCourtProsecutionStatuses,
+  selectEnforcementActionsByAgency,
+  selectOrderStatuses,
+  selectOrderTypes,
+  selectSanctionStatuses,
+  selectSanctionTypes,
+  selectTicketOutcomes,
+  selectTicketTypes,
+} from "@/app/store/reducers/code-table-selectors";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
@@ -28,13 +38,34 @@ import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
-import { getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
+import { getPartyMissingFields, getPartyName, isPartyProfileComplete } from "@/app/common/party-name";
+import { joinWithAnd } from "@/app/common/methods";
+import Option from "@apptypes/app/option";
 import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
-import { NON_EA_DECISION_CODES } from "./enforcement-action-constants";
+import {
+  NON_EA_DECISION_CODES,
+  CODE_WARNING,
+  CODE_VIOLATION_TICKET,
+  CODE_ADMINISTRATIVE_SANCTION,
+  CODE_ORDER,
+  CODE_RESTORATIVE_JUSTICE,
+  CODE_COURT_PROSECUTION,
+  CODE_ADMINISTRATIVE_PENALTY,
+  COMMENT_DECISION_CODES,
+} from "./enforcement-action-constants";
 import { Attachment } from "@/app/common/attachment-utils";
 
-const VIOLATION_TICKET_CODES = new Set(["FDVT"]);
-const DIVIDER_BEFORE_CODE = "ADPN"; // Administrative Penalty
+const YES_NO_OPTIONS = [
+  { value: "true", label: "Yes" },
+  { value: "false", label: "No" },
+];
+
+const boolToOption = (value: boolean | null | undefined): string => {
+  if (value == null) return "";
+  return value ? "true" : "false";
+};
+const optionToBool = (value: string): boolean | null => (value === "" ? null : value === "true");
+const toDateOrNull = (value?: string | Date | null): Date | null => (value ? new Date(value) : null);
 
 // ticket_amount is stored as Decimal(10, 2) so enforce max amount
 const ticketAmountValidator = z
@@ -57,27 +88,48 @@ const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   }
 `;
 
+const ENFORCEMENT_ACTION_FIELDS = `
+  enforcementActionIdentifier
+  enforcementActionCode {
+    enforcementActionCode
+    shortDescription
+  }
+  dateIssued
+  geoOrganizationUnitCode
+  appUserIdentifier
+  activeIndicator
+  comment
+  issuingOfficerIdentifier
+  dateServed
+  warningNumber
+  sanctionTypeCode
+  effectiveDate
+  endDate
+  sanctionStatusCode
+  orderTypeCode
+  orderStatusCode
+  remediationRequired
+  appealHearingDate
+  hearingDate
+  decisionDate
+  courtProsecutionStatusCode
+  administrativePenaltyStatusCode
+  approvalInd
+  ticket {
+    ticketIdentifier
+    ticketOutcomeCode
+    ticketAmount
+    ticketNumber
+    ticketTypeCode
+    appealHearingDate
+  }
+`;
+
 const CREATE_ENFORCEMENT_ACTION = gql`
   mutation CreateEnforcementAction($input: CreateEnforcementActionInput!) {
     createEnforcementAction(input: $input) {
-      enforcementActionIdentifier
       publishedPartyReference
-      enforcementActionCode {
-        enforcementActionCode
-        shortDescription
-      }
-      dateIssued
-      geoOrganizationUnitCode
-      appUserIdentifier
-      activeIndicator
-      comment
-      ticket {
-        ticketIdentifier
-        ticketOutcomeCode
-        ticketAmount
-        ticketNumber
-        paidDate
-      }
+      ${ENFORCEMENT_ACTION_FIELDS}
     }
   }
 `;
@@ -85,23 +137,7 @@ const CREATE_ENFORCEMENT_ACTION = gql`
 const UPDATE_ENFORCEMENT_ACTION = gql`
   mutation UpdateEnforcementAction($input: UpdateEnforcementActionInput!) {
     updateEnforcementAction(input: $input) {
-      enforcementActionIdentifier
-      enforcementActionCode {
-        enforcementActionCode
-        shortDescription
-      }
-      dateIssued
-      geoOrganizationUnitCode
-      appUserIdentifier
-      activeIndicator
-      comment
-      ticket {
-        ticketIdentifier
-        ticketOutcomeCode
-        ticketAmount
-        ticketNumber
-        paidDate
-      }
+      ${ENFORCEMENT_ACTION_FIELDS}
     }
   }
 `;
@@ -118,6 +154,7 @@ interface EnforcementActionFormProps {
   investigationGuid: string;
   contravention?: Contravention;
   party?: InvestigationParty;
+  primaryInvestigatorGuid?: string;
   enforcementAction?: EnforcementAction;
   existingAttachments: Attachment[];
   onDirtyChange?: (index: number, isDirty: boolean) => void;
@@ -133,6 +170,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   investigationGuid,
   contravention,
   party,
+  primaryInvestigatorGuid,
   enforcementAction,
   existingAttachments,
   onDirtyChange,
@@ -150,13 +188,19 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const willPublishParty = !isEdit && !!party && !party.partyReference;
 
   const dispatch = useAppDispatch();
-  const currentUserGuid = useAppSelector(selectAppUserGuid);
   const agency = useAppSelector(selectOfficerAgency);
   const officersInAgency = useAppSelector((state) => selectOfficersByAgency(state, agency));
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const enforcementActionSelector = useMemo(() => selectEnforcementActionsByAgency(agency), [agency]);
   const enforcementActionOptions = useAppSelector(enforcementActionSelector);
   const ticketOutcomeOptions = useAppSelector(selectTicketOutcomes);
+  const ticketTypeOptions = useAppSelector(selectTicketTypes);
+  const sanctionTypeOptions = useAppSelector(selectSanctionTypes);
+  const sanctionStatusOptions = useAppSelector(selectSanctionStatuses);
+  const orderTypeOptions = useAppSelector(selectOrderTypes);
+  const orderStatusOptions = useAppSelector(selectOrderStatuses);
+  const courtProsecutionStatusOptions = useAppSelector(selectCourtProsecutionStatuses);
+  const administrativePenaltyStatusOptions = useAppSelector(selectAdministrativePenaltyStatuses);
 
   const isRestrictedToCommentDecisions = !isPartyProfileComplete(party);
 
@@ -176,7 +220,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     });
   }, [enforcementActionOptions, isRestrictedToCommentDecisions]);
 
-  const dividerIndex = enforcementActionSelectOptions.findIndex((opt) => opt.value === DIVIDER_BEFORE_CODE);
+  const dividerIndex = enforcementActionSelectOptions.findIndex((opt) => opt.value === CODE_ADMINISTRATIVE_PENALTY);
   const enforcementActionSelectGroups =
     dividerIndex === -1
       ? enforcementActionSelectOptions
@@ -195,14 +239,20 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     label: `${o.last_name}, ${o.first_name}`,
   }));
 
-  const [isViolationTicket, setIsViolationTicket] = useState(
-    VIOLATION_TICKET_CODES.has(enforcementAction?.enforcementActionCode?.enforcementActionCode ?? ""),
-  );
-  const [isNonEADecision, setIsNonEADecision] = useState(
-    NON_EA_DECISION_CODES.has(enforcementAction?.enforcementActionCode?.enforcementActionCode ?? ""),
-  );
+  const [selectedCode, setSelectedCode] = useState(
+    enforcementAction?.enforcementActionCode?.enforcementActionCode ?? "",
+  ); //selected decision code
+  const [hasDecision, setHasDecision] = useState(!!selectedCode);
 
-  const [hasDecision, setHasDecision] = useState(!!enforcementAction?.enforcementActionCode?.enforcementActionCode);
+  const isNonEADecision = NON_EA_DECISION_CODES.has(selectedCode);
+  const isWarning = selectedCode === CODE_WARNING;
+  const isViolationTicket = selectedCode === CODE_VIOLATION_TICKET;
+  const isAdministrativeSanction = selectedCode === CODE_ADMINISTRATIVE_SANCTION;
+  const isOrder = selectedCode === CODE_ORDER;
+  const isRestorativeJustice = selectedCode === CODE_RESTORATIVE_JUSTICE;
+  const isCourtProsecution = selectedCode === CODE_COURT_PROSECUTION;
+  const isAdministrativePenalty = selectedCode === CODE_ADMINISTRATIVE_PENALTY;
+  const hasCommentField = isNonEADecision || COMMENT_DECISION_CODES.has(selectedCode);
 
   const saveMutation = useGraphQLMutation(CREATE_ENFORCEMENT_ACTION);
   const updateMutation = useGraphQLMutation(UPDATE_ENFORCEMENT_ACTION);
@@ -223,17 +273,51 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       .refine((val) => val !== null, { message: "Date is required" }),
   );
 
+  const optionalDateValidator = z.preprocess((val) => {
+    if (!val) return null;
+    if (val instanceof Date) return val;
+    return new Date(val as string);
+  }, z.date().nullable());
+
   const form = useForm({
     defaultValues: {
       dateIssued: enforcementAction?.dateIssued ? new Date(enforcementAction.dateIssued) : new Date(),
       community: enforcementAction?.geoOrganizationUnitCode ?? contravention?.community ?? "",
-      servingOfficer: enforcementAction?.appUserIdentifier ?? currentUserGuid ?? "",
+      servingOfficer: enforcementAction?.appUserIdentifier ?? primaryInvestigatorGuid ?? "",
+      issuingOfficer: enforcementAction?.issuingOfficerIdentifier ?? primaryInvestigatorGuid ?? "",
+      dateServed: enforcementAction?.dateServed ? new Date(enforcementAction.dateServed) : new Date(),
       enforcementActionCode: enforcementAction?.enforcementActionCode?.enforcementActionCode ?? "",
+      comment: enforcementAction?.comment ?? "",
+      // Violation Ticket
+      ticketTypeCode: enforcementAction?.ticket?.ticketTypeCode ?? "",
       ticketAmount: enforcementAction?.ticket?.ticketAmount?.toString() ?? "",
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
-      ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "ISUD",
-      paidDate: enforcementAction?.ticket?.paidDate ? new Date(enforcementAction.ticket.paidDate) : null,
-      comment: enforcementAction?.comment ?? "",
+      ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "",
+      // Warning
+      warningNumber: enforcementAction?.warningNumber ?? "",
+      // Administrative Sanction
+      sanctionTypeCode: enforcementAction?.sanctionTypeCode ?? "",
+      effectiveDate: enforcementAction?.effectiveDate ? new Date(enforcementAction.effectiveDate) : null,
+      endDate: enforcementAction?.endDate ? new Date(enforcementAction.endDate) : null,
+      sanctionStatusCode: enforcementAction?.sanctionStatusCode ?? "",
+      // Order
+      orderTypeCode: enforcementAction?.orderTypeCode ?? "",
+      orderStatusCode: enforcementAction?.orderStatusCode ?? "",
+      // Shared: Order/Violation Ticket appeal hearing date
+      appealHearingDate: toDateOrNull(
+        enforcementAction?.ticket?.appealHearingDate ?? enforcementAction?.appealHearingDate,
+      ),
+      // Shared: Order/Restorative Justice/Court Prosecution/Administrative Penalty
+      remediationRequired: boolToOption(enforcementAction?.remediationRequired),
+      // Restorative Justice
+      hearingDate: enforcementAction?.hearingDate ? new Date(enforcementAction.hearingDate) : null,
+      decisionDate: enforcementAction?.decisionDate ? new Date(enforcementAction.decisionDate) : null,
+      // Court Prosecution
+      courtProsecutionStatusCode: enforcementAction?.courtProsecutionStatusCode ?? "",
+      // Shared: Court Prosecution/Administrative Penalty
+      approvalInd: boolToOption(enforcementAction?.approvalInd),
+      // Administrative Penalty
+      administrativePenaltyStatusCode: enforcementAction?.administrativePenaltyStatusCode ?? "",
     },
     onSubmit: async () => {},
   });
@@ -280,18 +364,64 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketOutcomeCode: value.ticketOutcomeCode,
       ticketAmount: Number.parseFloat(value.ticketAmount),
       ticketNumber: value.ticketNumber,
-      paidDate: value.ticketOutcomeCode === "PAID" && value.paidDate ? new Date(value.paidDate).toISOString() : null,
+      ticketTypeCode: value.ticketTypeCode || null,
+      appealHearingDate: value.appealHearingDate ? new Date(value.appealHearingDate).toISOString() : null,
     };
   };
 
-  // Comment only applies to Unfounded/Unresolved decisions. Always included (as null otherwise)
-  // so switching away from one of those decisions clears out a stale comment.
+  const buildDecisionDetailFields = (value: FormValues) => {
+    switch (selectedCode) {
+      case CODE_WARNING:
+        return { warningNumber: value.warningNumber };
+      case CODE_ADMINISTRATIVE_SANCTION:
+        return {
+          sanctionTypeCode: value.sanctionTypeCode,
+          effectiveDate: value.effectiveDate ? new Date(value.effectiveDate).toISOString() : null,
+          endDate: value.endDate ? new Date(value.endDate).toISOString() : null,
+          sanctionStatusCode: value.sanctionStatusCode,
+        };
+      case CODE_ORDER:
+        return {
+          orderTypeCode: value.orderTypeCode || null,
+          remediationRequired: optionToBool(value.remediationRequired),
+          appealHearingDate: value.appealHearingDate ? new Date(value.appealHearingDate).toISOString() : null,
+          orderStatusCode: value.orderStatusCode,
+        };
+      case CODE_RESTORATIVE_JUSTICE:
+        return {
+          hearingDate: value.hearingDate ? new Date(value.hearingDate).toISOString() : null,
+          decisionDate: value.decisionDate ? new Date(value.decisionDate).toISOString() : null,
+          remediationRequired: optionToBool(value.remediationRequired),
+        };
+      case CODE_COURT_PROSECUTION:
+        return {
+          approvalInd: optionToBool(value.approvalInd),
+          remediationRequired: optionToBool(value.remediationRequired),
+          courtProsecutionStatusCode: value.courtProsecutionStatusCode,
+        };
+      case CODE_ADMINISTRATIVE_PENALTY:
+        return {
+          approvalInd: optionToBool(value.approvalInd),
+          remediationRequired: optionToBool(value.remediationRequired),
+          administrativePenaltyStatusCode: value.administrativePenaltyStatusCode,
+        };
+      default:
+        return {};
+    }
+  };
+
+  // Comment applies to Unfounded/Unsolved plus other decisions
   const buildCommentField = (value: FormValues) => ({
-    comment: isNonEADecision ? value.comment : null,
+    comment: hasCommentField ? value.comment : null,
   });
 
-  // Everything that follows a successful save. Best effort: a failure here is logged but never
-  // reported as a failed save, because the enforcement action itself is already persisted.
+  // Issuing officer/date served apply to every decision except Unfounded/Unsolved
+  const buildMutualFields = (value: FormValues) => ({
+    issuingOfficerIdentifier: isNonEADecision ? null : value.issuingOfficer,
+    dateServed: isNonEADecision || !value.dateServed ? null : new Date(value.dateServed).toISOString(),
+  });
+
+  // Everything that follows a successful save
   const runPostSaveSideEffects = async (
     enforcementActionId: string,
     value: FormValues,
@@ -357,7 +487,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             dateIssued: value.dateIssued,
             geoOrganizationUnitCode: value.community,
             appUserIdentifier: value.servingOfficer,
+            ...buildMutualFields(value),
             ...buildTicketFields(value),
+            ...buildDecisionDetailFields(value),
             ...buildCommentField(value),
           };
           await updateMutation.mutateAsync({ input });
@@ -370,7 +502,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             dateIssued: value.dateIssued,
             geoOrganizationUnitCode: value.community,
             appUserIdentifier: value.servingOfficer,
+            ...buildMutualFields(value),
             ...buildTicketFields(value),
+            ...buildDecisionDetailFields(value),
             ...buildCommentField(value),
           };
           const created: any = await saveMutation.mutateAsync({ input });
@@ -389,16 +523,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         onIsSavingChange?.(false);
       }
     });
-  }, [
-    onRequestSave,
-    isEdit,
-    isViolationTicket,
-    isNonEADecision,
-    enforcementAction,
-    contravention,
-    party,
-    investigationGuid,
-  ]);
+  }, [onRequestSave, isEdit, selectedCode, enforcementAction, contravention, party, investigationGuid]);
 
   // Expose delete to modal
   useEffect(() => {
@@ -423,6 +548,135 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     });
   }, [onRequestDelete, isEdit, enforcementAction, investigationGuid]);
 
+  const renderCommentField = () => (
+    <div className="row mb-3">
+      <div className="col-12">
+        <FormField
+          form={form}
+          name="comment"
+          label="Comment"
+          render={(field) => (
+            <ValidationTextArea
+              id="enforcement-action-comment"
+              className="comp-form-control comp-details-input"
+              rows={4}
+              value={field.state.value}
+              onChange={(value: string) => field.handleChange(value)}
+              placeholderText="Enter a comment"
+              maxLength={4000}
+              errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+            />
+          )}
+        />
+      </div>
+    </div>
+  );
+
+  const renderSelectField = (
+    name: string,
+    label: string,
+    options: Option[],
+    config: { id: string; required?: boolean; placeholder?: string; isClearable?: boolean },
+  ) => {
+    const { id, required = false, placeholder = "Select", isClearable = true } = config;
+    return (
+      <FormField
+        form={form}
+        name={name}
+        label={label}
+        required={required}
+        validators={
+          required
+            ? {
+                onChange: z.string().min(1, `${label} is required`),
+                onSubmit: z.string().min(1, `${label} is required`),
+              }
+            : undefined
+        }
+        render={(field) => (
+          <CompSelect
+            id={id}
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={options}
+            value={options.find((opt) => opt.value === field.state.value)}
+            onChange={(option) => field.handleChange(option?.value ?? "")}
+            placeholder={placeholder}
+            isClearable={isClearable}
+            showInactive={false}
+            enableValidation
+            errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
+          />
+        )}
+      />
+    );
+  };
+
+  const renderYesNoField = (name: string, label: string, id: string) =>
+    renderSelectField(name, label, YES_NO_OPTIONS, { id });
+
+  const renderDateField = (name: string, label: string, id: string, config: { required?: boolean } = {}) => {
+    const { required = false } = config;
+    const validator = required ? dateValidator : optionalDateValidator;
+    return (
+      <FormField
+        form={form}
+        name={name}
+        label={label}
+        required={required}
+        validators={{ onChange: validator, onSubmit: validator }}
+        render={(field) => (
+          <ValidationDatePicker
+            classNamePrefix="comp-details-edit-calendar-input"
+            className="comp-details-input full-width"
+            maxDate={new Date()}
+            id={id}
+            onChange={(date: Date, _time: string | null) => field.handleChange(date)}
+            selectedDate={field.state.value}
+            errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+            vertical={true}
+          />
+        )}
+      />
+    );
+  };
+
+  const renderTextField = (
+    name: string,
+    label: string,
+    placeholder: string,
+    config: { required?: boolean; maxLength?: number } = {},
+  ) => {
+    const { required = false, maxLength } = config;
+    let validator = z.string();
+    if (required) validator = validator.min(1, `${label} is required`);
+    if (maxLength !== undefined)
+      validator = validator.max(maxLength, `${label} must be ${maxLength} characters or fewer`);
+    const validators = required || maxLength !== undefined ? { onChange: validator, onSubmit: validator } : undefined;
+    return (
+      <FormField
+        form={form}
+        name={name}
+        label={label}
+        required={required}
+        validators={validators}
+        render={(field) => (
+          <CompInput
+            id={`enforcement-action-${name}`}
+            divid={`enforcement-action-${name}-value`}
+            type="input"
+            inputClass="comp-form-control"
+            error={field.state.meta.errors?.[0]?.message ?? ""}
+            onChange={(evt: any) => field.handleChange(evt.target.value)}
+            value={field.state.value}
+            placeholder={placeholder}
+            maxLength={maxLength}
+          />
+        )}
+      />
+    );
+  };
+
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       {willPublishParty && (
@@ -445,7 +699,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             >
               <i className="bi bi-info-circle-fill pe-2" />
               {party
-                ? "This profile is incomplete. Enforcement actions are unavailable."
+                ? `This profile is incomplete. Add ${joinWithAnd(getPartyMissingFields(party))} before logging an enforcement action.`
                 : "The party is unknown. Enforcement actions are unavailable."}
             </Alert>
           )}
@@ -476,10 +730,17 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 options={enforcementActionSelectGroups}
                 value={enforcementActionSelectOptions.find((opt) => opt.value === field.state.value)}
                 onChange={(option) => {
-                  field.handleChange(option?.value ?? "");
-                  setIsViolationTicket(VIOLATION_TICKET_CODES.has(option?.value ?? ""));
-                  setIsNonEADecision(NON_EA_DECISION_CODES.has(option?.value ?? ""));
-                  setHasDecision(!!option?.value);
+                  const newCode = option?.value ?? "";
+                  // The comment field is shared across decision types (Unfounded/Unsolved plus
+                  // Administrative Sanction/Restorative Justice/Administrative Penalty) - clear it
+                  // when the decision type changes so a comment written for one decision can't be
+                  // carried over and saved against a different one.
+                  if (newCode !== selectedCode) {
+                    form.setFieldValue("comment", "");
+                  }
+                  field.handleChange(newCode);
+                  setSelectedCode(newCode);
+                  setHasDecision(!!newCode);
                 }}
                 placeholder="Select"
                 isClearable
@@ -492,124 +753,80 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         </div>
       </div>
 
-      {isNonEADecision && (
-        <div className="row mb-3">
-          <div className="col-12">
-            <FormField
-              form={form}
-              name="comment"
-              label="Comment"
-              render={(field) => (
-                <ValidationTextArea
-                  id="enforcement-action-comment"
-                  className="comp-form-control comp-details-input"
-                  rows={4}
-                  value={field.state.value}
-                  onChange={(value: string) => field.handleChange(value)}
-                  placeholderText="Enter a comment"
-                  maxLength={4000}
-                  errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                />
-              )}
-            />
-          </div>
-        </div>
-      )}
+      {isNonEADecision && renderCommentField()}
 
       {!isNonEADecision && hasDecision && (
         <>
           <div className="row mb-3">
             <div className="col-6">
-              <FormField
-                form={form}
-                name="dateIssued"
-                label="Date issued"
-                required
-                validators={{
-                  onChange: dateValidator,
-                  onSubmit: dateValidator,
-                }}
-                render={(field) => (
-                  <ValidationDatePicker
-                    classNamePrefix="comp-details-edit-calendar-input"
-                    className="comp-details-input full-width"
-                    id="enforcement-action-date-issued"
-                    maxDate={new Date()}
-                    onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                    selectedDate={field.state.value}
-                    errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                    vertical={true}
-                  />
-                )}
-              />
+              {renderDateField("dateIssued", "Date issued", "enforcement-action-date-issued", { required: true })}
             </div>
             <div className="col-6">
-              <FormField
-                form={form}
-                name="community"
-                label="Community"
-                required
-                validators={{
-                  onChange: z.string().min(1, "Community is required"),
-                  onSubmit: z.string().min(1, "Community is required"),
-                }}
-                render={(field) => (
-                  <CompSelect
-                    id="enforcement-action-community"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={communityOptions}
-                    value={communityOptions.find((opt) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value ?? "")}
-                    placeholder="Select community"
-                    isClearable
-                    showInactive={false}
-                    enableValidation
-                    errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                  />
-                )}
-              />
+              {renderSelectField("issuingOfficer", "Issuing officer", officerOptions, {
+                id: "enforcement-action-issuing-officer",
+                required: true,
+                placeholder: "Select officer",
+              })}
             </div>
           </div>
 
           <div className="row mb-3">
             <div className="col-6">
-              <FormField
-                form={form}
-                name="servingOfficer"
-                label="Serving officer"
-                required
-                validators={{
-                  onChange: z.string().min(1, "Serving officer is required"),
-                  onSubmit: z.string().min(1, "Serving officer is required"),
-                }}
-                render={(field) => (
-                  <CompSelect
-                    id="enforcement-action-serving-officer"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={officerOptions}
-                    value={officerOptions.find((opt) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value ?? "")}
-                    placeholder="Select officer"
-                    isClearable
-                    showInactive={false}
-                    enableValidation
-                    errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                  />
-                )}
-              />
+              {renderDateField("dateServed", "Date served", "enforcement-action-date-served", { required: true })}
+            </div>
+            <div className="col-6">
+              {renderSelectField("servingOfficer", "Serving officer", officerOptions, {
+                id: "enforcement-action-serving-officer",
+                required: true,
+                placeholder: "Select officer",
+              })}
             </div>
           </div>
+
+          <div className="row mb-3">
+            <div className="col-6">
+              {renderSelectField("community", "Community", communityOptions, {
+                id: "enforcement-action-community",
+                required: true,
+                placeholder: "Select community",
+              })}
+            </div>
+          </div>
+
+          {isWarning && (
+            <div className="row mb-3">
+              <div className="col-6">
+                {renderTextField("warningNumber", "Warning number", "Enter warning number", {
+                  required: true,
+                  maxLength: 32,
+                })}
+              </div>
+            </div>
+          )}
 
           {isViolationTicket && (
             <>
               <div className="row mb-3">
                 <div className="col-6">
+                  {renderSelectField("ticketTypeCode", "Ticket type", ticketTypeOptions, {
+                    id: "enforcement-action-ticket-type",
+                    required: true,
+                    placeholder: "Select ticket type",
+                  })}
+                </div>
+                <div className="col-6">
+                  {renderTextField("ticketNumber", "Ticket number", "Enter ticket number", {
+                    required: true,
+                    maxLength: 32,
+                  })}
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6">
                   <FormField
                     form={form}
                     name="ticketAmount"
-                    label="Ticket amount"
+                    label="Amount"
                     required
                     validators={{
                       onChange: ticketAmountValidator,
@@ -629,97 +846,174 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                           }
                         }}
                         value={field.state.value}
-                        placeholder="Enter ticket amount"
+                        placeholder="Enter amount"
                       />
                     )}
                   />
                 </div>
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="ticketOutcomeCode"
-                    label="Ticket outcome"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Ticket outcome is required"),
-                      onSubmit: z.string().min(1, "Ticket outcome is required"),
-                    }}
-                    render={(field) => (
-                      <CompSelect
-                        id="enforcement-action-ticket-outcome"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={ticketOutcomeOptions}
-                        value={ticketOutcomeOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value ?? "")}
-                        placeholder="Select outcome"
-                        isClearable={false}
-                        showInactive={false}
-                        enableValidation
-                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                      />
-                    )}
-                  />
+                  {renderSelectField("ticketOutcomeCode", "Status", ticketOutcomeOptions, {
+                    id: "enforcement-action-ticket-outcome",
+                    required: true,
+                    placeholder: "Select status",
+                    isClearable: false,
+                  })}
                 </div>
               </div>
-              <div className="row">
+              <div className="row mb-3">
                 <div className="col-6">
-                  <FormField
-                    form={form}
-                    name="ticketNumber"
-                    label="Ticket number"
-                    required
-                    validators={{
-                      onChange: z.string().min(1, "Ticket number is required"),
-                      onSubmit: z.string().min(1, "Ticket number is required"),
-                    }}
-                    render={(field) => (
-                      <CompInput
-                        id="enforcement-action-ticket-number"
-                        divid="enforcement-action-ticket-number-value"
-                        type="input"
-                        inputClass="comp-form-control"
-                        error={field.state.meta.errors?.[0]?.message ?? ""}
-                        onChange={(evt: any) => field.handleChange(evt.target.value)}
-                        value={field.state.value}
-                        placeholder="Enter ticket number"
-                      />
-                    )}
-                  />
+                  {renderDateField(
+                    "appealHearingDate",
+                    "Appeal hearing date",
+                    "enforcement-action-ticket-appeal-hearing-date",
+                  )}
                 </div>
-                <form.Subscribe selector={(state) => state.values.ticketOutcomeCode}>
-                  {(ticketOutcomeCode) =>
-                    ticketOutcomeCode === "PAID" && (
-                      <div className="col-6">
-                        <FormField
-                          form={form}
-                          name="paidDate"
-                          label="Date paid"
-                          required
-                          validators={{
-                            onChange: dateValidator,
-                            onSubmit: dateValidator,
-                          }}
-                          render={(field) => (
-                            <ValidationDatePicker
-                              classNamePrefix="comp-details-edit-calendar-input"
-                              className="comp-details-input full-width"
-                              maxDate={new Date()}
-                              id="enforcement-action-date-paid"
-                              onChange={(date: Date, _time: string | null) => field.handleChange(date)}
-                              selectedDate={field.state.value}
-                              errMsg={field.state.meta.errors?.[0]?.message ?? ""}
-                              vertical={true}
-                            />
-                          )}
-                        />
-                      </div>
-                    )
-                  }
-                </form.Subscribe>
               </div>
             </>
           )}
+
+          {isAdministrativeSanction && (
+            <>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderSelectField("sanctionTypeCode", "Sanction type", sanctionTypeOptions, {
+                    id: "enforcement-action-sanction-type",
+                    required: true,
+                    placeholder: "Select sanction type",
+                  })}
+                </div>
+                <div className="col-6">
+                  {renderDateField("effectiveDate", "Effective date", "enforcement-action-effective-date", {
+                    required: true,
+                  })}
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderDateField("endDate", "End date", "enforcement-action-end-date", { required: true })}
+                </div>
+                <div className="col-6">
+                  {renderSelectField("sanctionStatusCode", "Status", sanctionStatusOptions, {
+                    id: "enforcement-action-sanction-status",
+                    required: true,
+                    placeholder: "Select status",
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {isOrder && (
+            <>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderSelectField("orderTypeCode", "Order type", orderTypeOptions, {
+                    id: "enforcement-action-order-type",
+                    placeholder: "Select order type",
+                  })}
+                </div>
+                <div className="col-6">
+                  {renderYesNoField(
+                    "remediationRequired",
+                    "Remediation required",
+                    "enforcement-action-order-remediation-required",
+                  )}
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderDateField(
+                    "appealHearingDate",
+                    "Appeal hearing date",
+                    "enforcement-action-order-appeal-hearing-date",
+                  )}
+                </div>
+                <div className="col-6">
+                  {renderSelectField("orderStatusCode", "Status", orderStatusOptions, {
+                    id: "enforcement-action-order-status",
+                    required: true,
+                    placeholder: "Select status",
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {isRestorativeJustice && (
+            <>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderDateField("hearingDate", "Hearing date", "enforcement-action-rj-hearing-date")}
+                </div>
+                <div className="col-6">
+                  {renderDateField("decisionDate", "Decision date", "enforcement-action-rj-decision-date")}
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderYesNoField(
+                    "remediationRequired",
+                    "Remediation required",
+                    "enforcement-action-rj-remediation-required",
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {isCourtProsecution && (
+            <>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderYesNoField("approvalInd", "Approval", "enforcement-action-cp-approval")}
+                </div>
+                <div className="col-6">
+                  {renderYesNoField(
+                    "remediationRequired",
+                    "Remediation required",
+                    "enforcement-action-cp-remediation-required",
+                  )}
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderSelectField("courtProsecutionStatusCode", "Status", courtProsecutionStatusOptions, {
+                    id: "enforcement-action-cp-status",
+                    required: true,
+                    placeholder: "Select status",
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {isAdministrativePenalty && (
+            <>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderYesNoField("approvalInd", "Approval", "enforcement-action-ap-approval")}
+                </div>
+                <div className="col-6">
+                  {renderYesNoField(
+                    "remediationRequired",
+                    "Remediation required",
+                    "enforcement-action-ap-remediation-required",
+                  )}
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6">
+                  {renderSelectField("administrativePenaltyStatusCode", "Status", administrativePenaltyStatusOptions, {
+                    id: "enforcement-action-ap-status",
+                    required: true,
+                    placeholder: "Select status",
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {COMMENT_DECISION_CODES.has(selectedCode) && renderCommentField()}
 
           <EnforcementActionAttachmentSection
             ref={attachmentsRef}

@@ -97,6 +97,15 @@ export type AddressUpdateInput = {
   province?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AdministrativePenaltyStatusCode = {
+  __typename?: 'AdministrativePenaltyStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  administrativePenaltyStatusCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type AgeCode = {
   __typename?: 'AgeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -544,6 +553,15 @@ export type CountrySubdivision = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type CourtProsecutionStatusCode = {
+  __typename?: 'CourtProsecutionStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  courtProsecutionStatusCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type CreateAppUserInput = {
   agencyCode?: InputMaybe<Scalars['String']['input']>;
   authUserGuid?: InputMaybe<Scalars['String']['input']>;
@@ -595,17 +613,34 @@ export type CreateDecisionInput = {
 };
 
 export type CreateEnforcementActionInput = {
+  administrativePenaltyStatusCode?: InputMaybe<Scalars['String']['input']>;
   appUserIdentifier: Scalars['String']['input'];
+  appealHearingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  approvalInd?: InputMaybe<Scalars['Boolean']['input']>;
   comment?: InputMaybe<Scalars['String']['input']>;
   contraventionIdentifier: Scalars['String']['input'];
+  courtProsecutionStatusCode?: InputMaybe<Scalars['String']['input']>;
   dateIssued: Scalars['DateTime']['input'];
+  dateServed?: InputMaybe<Scalars['DateTime']['input']>;
+  decisionDate?: InputMaybe<Scalars['DateTime']['input']>;
+  effectiveDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode: Scalars['String']['input'];
   geoOrganizationUnitCode: Scalars['String']['input'];
+  hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
+  orderStatusCode?: InputMaybe<Scalars['String']['input']>;
+  orderTypeCode?: InputMaybe<Scalars['String']['input']>;
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
   partyIdentifier?: InputMaybe<Scalars['String']['input']>;
+  remediationRequired?: InputMaybe<Scalars['Boolean']['input']>;
+  sanctionStatusCode?: InputMaybe<Scalars['String']['input']>;
+  sanctionTypeCode?: InputMaybe<Scalars['String']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
+  ticketTypeCode?: InputMaybe<Scalars['String']['input']>;
+  warningNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateEquipmentInput = {
@@ -1038,15 +1073,31 @@ export type EarTagInput = {
 export type EnforcementAction = {
   __typename?: 'EnforcementAction';
   activeIndicator: Scalars['Boolean']['output'];
+  administrativePenaltyStatusCode?: Maybe<Scalars['String']['output']>;
   appUserIdentifier: Scalars['String']['output'];
+  appealHearingDate?: Maybe<Scalars['DateTime']['output']>;
+  approvalInd?: Maybe<Scalars['Boolean']['output']>;
   comment?: Maybe<Scalars['String']['output']>;
   contraventionPartyXrefIdentifier: Scalars['String']['output'];
+  courtProsecutionStatusCode?: Maybe<Scalars['String']['output']>;
   dateIssued: Scalars['DateTime']['output'];
+  dateServed?: Maybe<Scalars['DateTime']['output']>;
+  decisionDate?: Maybe<Scalars['DateTime']['output']>;
+  effectiveDate?: Maybe<Scalars['DateTime']['output']>;
+  endDate?: Maybe<Scalars['DateTime']['output']>;
   enforcementActionCode: EnforcementActionCode;
   enforcementActionIdentifier: Scalars['String']['output'];
   geoOrganizationUnitCode: Scalars['String']['output'];
+  hearingDate?: Maybe<Scalars['DateTime']['output']>;
+  issuingOfficerIdentifier?: Maybe<Scalars['String']['output']>;
+  orderStatusCode?: Maybe<Scalars['String']['output']>;
+  orderTypeCode?: Maybe<Scalars['String']['output']>;
   publishedPartyReference?: Maybe<Scalars['String']['output']>;
+  remediationRequired?: Maybe<Scalars['Boolean']['output']>;
+  sanctionStatusCode?: Maybe<Scalars['String']['output']>;
+  sanctionTypeCode?: Maybe<Scalars['String']['output']>;
   ticket?: Maybe<Ticket>;
+  warningNumber?: Maybe<Scalars['String']['output']>;
 };
 
 export type EnforcementActionCode = {
@@ -2282,6 +2333,24 @@ export type Office = {
   officeGuid?: Maybe<Scalars['String']['output']>;
 };
 
+export type OrderStatusCode = {
+  __typename?: 'OrderStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  orderStatusCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type OrderTypeCode = {
+  __typename?: 'OrderTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  orderTypeCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type OutcomeAgencyCode = {
   __typename?: 'OutcomeAgencyCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -2345,6 +2414,28 @@ export type Party = {
   updatedDateTime?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type PartyAssociationRole = {
+  __typename?: 'PartyAssociationRole';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  caseActivityTypeCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  partyAssociationRole?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type PartyCreateInput = {
+  addresses?: InputMaybe<Array<InputMaybe<AddressInput>>>;
+  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
+  business?: InputMaybe<BusinessInput>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  externalIds?: InputMaybe<Array<InputMaybe<PartyExternalIdInput>>>;
+  longDescription?: InputMaybe<Scalars['String']['input']>;
+  partyTypeCode: Scalars['String']['input'];
+  person?: InputMaybe<PersonInput>;
+  shortDescription?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type PartyExternalId = {
   __typename?: 'PartyExternalId';
   externalIdCode: Scalars['String']['output'];
@@ -2366,7 +2457,6 @@ export type PartyExternalIdInput = {
   externalIdCode: Scalars['String']['input'];
   externalIdValue: Scalars['String']['input'];
   partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
-  partyGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PartyExternalIdMatchInput = {
@@ -2378,29 +2468,6 @@ export type PartyExternalIdUpdateInput = {
   externalIdCode: Scalars['String']['input'];
   externalIdValue: Scalars['String']['input'];
   partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
-  partyGuid?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type PartyAssociationRole = {
-  __typename?: 'PartyAssociationRole';
-  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  caseActivityTypeCode?: Maybe<Scalars['String']['output']>;
-  displayOrder?: Maybe<Scalars['Int']['output']>;
-  longDescription?: Maybe<Scalars['String']['output']>;
-  partyAssociationRole?: Maybe<Scalars['String']['output']>;
-  shortDescription?: Maybe<Scalars['String']['output']>;
-};
-
-export type PartyCreateInput = {
-  addresses?: InputMaybe<Array<InputMaybe<AddressInput>>>;
-  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
-  business?: InputMaybe<BusinessInput>;
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  externalIds?: InputMaybe<Array<PartyExternalIdInput>>;
-  longDescription?: InputMaybe<Scalars['String']['input']>;
-  partyTypeCode: Scalars['String']['input'];
-  person?: InputMaybe<PersonInput>;
-  shortDescription?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PartyFilters = {
@@ -2449,14 +2516,12 @@ export type PartyTypeCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
-/* eslint-disable */
-
 export type PartyUpdateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressUpdateInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  externalIds?: InputMaybe<Array<PartyExternalIdUpdateInput>>;
+  externalIds?: InputMaybe<Array<InputMaybe<PartyExternalIdUpdateInput>>>;
   images?: InputMaybe<Array<InputMaybe<ImageUpdateInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
@@ -2642,6 +2707,7 @@ export type Query = {
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
   InspectionParties: Array<Maybe<InspectionParty>>;
   InvestigationParties: Array<Maybe<InvestigationParty>>;
+  administrativePenaltyStatusCodes: Array<Maybe<AdministrativePenaltyStatusCode>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
   appUser?: Maybe<AppUser>;
@@ -2663,6 +2729,7 @@ export type Query = {
   cosGeoOrgUnits: Array<Maybe<CosGeoOrgUnit>>;
   countries: Array<Maybe<Country>>;
   countrySubdivisions: Array<Maybe<CountrySubdivision>>;
+  courtProsecutionStatusCodes: Array<Maybe<CourtProsecutionStatusCode>>;
   diaryDates?: Maybe<Array<DiaryDate>>;
   diaryDatesByTask?: Maybe<Array<DiaryDate>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
@@ -2720,14 +2787,16 @@ export type Query = {
   office?: Maybe<Office>;
   offices: Array<Maybe<Office>>;
   officesByZone: Array<Maybe<Office>>;
+  orderStatusCodes: Array<Maybe<OrderStatusCode>>;
+  orderTypeCodes: Array<Maybe<OrderTypeCode>>;
   outcomeAgencyCodes: Array<Maybe<OutcomeAgencyCode>>;
   park?: Maybe<Park>;
   parkArea?: Maybe<ParkArea>;
   parkAreas: Array<Maybe<ParkArea>>;
   parks?: Maybe<Array<Maybe<Park>>>;
   party?: Maybe<Party>;
-  partyExternalIdCodes: Array<Maybe<PartyExternalIdCode>>;
   partyAssociationRoles: Array<Maybe<PartyAssociationRole>>;
+  partyExternalIdCodes: Array<Maybe<PartyExternalIdCode>>;
   partyHistoryCaseFiles?: Maybe<Array<Maybe<CaseFile>>>;
   partyHistoryInspections?: Maybe<Array<Maybe<Inspection>>>;
   partyHistoryInvestigations?: Maybe<Array<Maybe<Investigation>>>;
@@ -2736,6 +2805,8 @@ export type Query = {
   person?: Maybe<Person>;
   referencedLegislationGuids: Array<Maybe<Scalars['String']['output']>>;
   regulationVersions: Array<Maybe<LegislationVersion>>;
+  sanctionStatusCodes: Array<Maybe<SanctionStatusCode>>;
+  sanctionTypeCodes: Array<Maybe<SanctionTypeCode>>;
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
   searchActivityNotes?: Maybe<Array<ActivityNote>>;
@@ -2760,6 +2831,7 @@ export type Query = {
   teams: Array<Maybe<Team>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
   ticketOutcomeCodes: Array<Maybe<TicketOutcomeCode>>;
+  ticketTypeCodes: Array<Maybe<TicketTypeCode>>;
 };
 
 
@@ -3191,6 +3263,24 @@ export type ReviewInput = {
   userId: Scalars['String']['input'];
 };
 
+export type SanctionStatusCode = {
+  __typename?: 'SanctionStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  sanctionStatusCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type SanctionTypeCode = {
+  __typename?: 'SanctionTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  sanctionTypeCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type ScheduleCode = {
   __typename?: 'ScheduleCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -3302,12 +3392,14 @@ export type ThreatLevelCode = {
 export type Ticket = {
   __typename?: 'Ticket';
   activeIndicator: Scalars['Boolean']['output'];
+  appealHearingDate?: Maybe<Scalars['Date']['output']>;
   enforcementActionIdentifier: Scalars['String']['output'];
   paidDate?: Maybe<Scalars['Date']['output']>;
   ticketAmount: Scalars['Float']['output'];
   ticketIdentifier: Scalars['String']['output'];
   ticketNumber: Scalars['String']['output'];
   ticketOutcomeCode: Scalars['String']['output'];
+  ticketTypeCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type TicketOutcomeCode = {
@@ -3317,6 +3409,15 @@ export type TicketOutcomeCode = {
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
   ticketOutcomeCode?: Maybe<Scalars['String']['output']>;
+};
+
+export type TicketTypeCode = {
+  __typename?: 'TicketTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  ticketTypeCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type UpdateAppUserInput = {
@@ -3360,16 +3461,33 @@ export type UpdateDecisionInput = {
 };
 
 export type UpdateEnforcementActionInput = {
+  administrativePenaltyStatusCode?: InputMaybe<Scalars['String']['input']>;
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
+  appealHearingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  approvalInd?: InputMaybe<Scalars['Boolean']['input']>;
   comment?: InputMaybe<Scalars['String']['input']>;
+  courtProsecutionStatusCode?: InputMaybe<Scalars['String']['input']>;
   dateIssued?: InputMaybe<Scalars['DateTime']['input']>;
+  dateServed?: InputMaybe<Scalars['DateTime']['input']>;
+  decisionDate?: InputMaybe<Scalars['DateTime']['input']>;
+  effectiveDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
   enforcementActionIdentifier: Scalars['String']['input'];
   geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
+  hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
+  orderStatusCode?: InputMaybe<Scalars['String']['input']>;
+  orderTypeCode?: InputMaybe<Scalars['String']['input']>;
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
+  remediationRequired?: InputMaybe<Scalars['Boolean']['input']>;
+  sanctionStatusCode?: InputMaybe<Scalars['String']['input']>;
+  sanctionTypeCode?: InputMaybe<Scalars['String']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
+  ticketTypeCode?: InputMaybe<Scalars['String']['input']>;
+  warningNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateEquipmentInput = {
@@ -3462,7 +3580,6 @@ export type UpdateInvestigationPartyExternalIdInput = {
   externalIdCode: Scalars['String']['input'];
   externalIdValue: Scalars['String']['input'];
   partyExternalIdGuid?: InputMaybe<Scalars['String']['input']>;
-  partyExternalIdReference?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateInvestigationPartyInput = {

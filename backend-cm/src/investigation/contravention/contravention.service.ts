@@ -30,21 +30,38 @@ export class ContraventionService {
 
     try {
       await withRlsTransaction(this.prisma, async (db) => {
-        const contravention = await db.contravention.create({
-          data: {
-            investigation_guid: contraventionInput.investigationGuid,
-            legislation_guid_ref: contraventionInput.legislationReference,
-            contravention_date: contraventionInput.date,
-            geo_organization_unit_code_ref: contraventionInput.community,
-            active_ind: true,
-            create_user_id: this.user.getIdirUsername(),
-            create_utc_timestamp: new Date(),
-          },
-        });
+        const contraventionData = {
+          investigation_guid: contraventionInput.investigationGuid,
+          legislation_guid_ref: contraventionInput.legislationReference,
+          contravention_date: contraventionInput.date,
+          geo_organization_unit_code_ref: contraventionInput.community,
+          active_ind: true,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+        };
 
-        const parties = contraventionInput.investigationPartyGuids;
+        for (const party of contraventionInput.investigationPartyGuids) {
+          // Check if there is an existing unknown contravention on the investigation
+          // as we don't want duplicates.
+          if (party === null) {
+            const existingUnknownContravention = await db.contravention.findFirst({
+              where: {
+                investigation_guid: contraventionInput.investigationGuid,
+                legislation_guid_ref: contraventionInput.legislationReference,
+                contravention_date: contraventionInput.date,
+                geo_organization_unit_code_ref: contraventionInput.community,
+                active_ind: true,
+                contravention_party_xref: {
+                  some: { investigation_party_guid: null, active_ind: true },
+                },
+              },
+            });
 
-        for (const party of parties) {
+            if (existingUnknownContravention) continue;
+          }
+
+          const contravention = await db.contravention.create({ data: contraventionData });
+
           await db.contravention_party_xref.create({
             data: {
               contravention_guid: contravention.contravention_guid,
@@ -138,6 +155,10 @@ export class ContraventionService {
     return await this.investigationService.findOne(investigationGuid);
   }
 
+  private hasActiveDecision(xrefs: { enforcement_action: { active_ind: boolean }[] }[]): boolean {
+    return xrefs.some((xref) => xref.enforcement_action.some((action) => action.active_ind));
+  }
+
   async update(contraventionGuid: string, input: CreateUpdateContraventionInput): Promise<Investigation> {
     const stored = await this.prisma.contravention.findUnique({
       where: { contravention_guid: contraventionGuid },
@@ -165,59 +186,111 @@ export class ContraventionService {
           include: {
             contravention_party_xref: {
               where: { active_ind: true },
+              include: {
+                enforcement_action: { where: { active_ind: true } },
+              },
             },
           },
         });
 
         if (!originalContravention) throw new Error("Contravention not found");
 
-        const investigationPartyGuid = input.investigationPartyGuids?.[0];
+        const investigationPartyGuid = input.investigationPartyGuids?.[0] ?? null;
 
-        if (investigationPartyGuid === null) {
-          if (input.selectedPartyGuid) {
-            await db.contravention_party_xref.updateMany({
-              where: {
-                contravention_guid: contraventionGuid,
-                active_ind: true,
-                investigation_party_guid: input.selectedPartyGuid,
-              },
-              data: {
-                active_ind: false,
-                update_user_id: this.user.getIdirUsername(),
-                update_utc_timestamp: new Date(),
-              },
-            });
-          }
-        } else {
-          const existingParty = originalContravention.contravention_party_xref.filter(
-            (xref) => xref.investigation_party_guid == input.selectedPartyGuid,
-          );
+        // Check if there is an existing unknown contravention on the investigation
+        // as we don't want duplicates.
+        const duplicateUnknownContravention =
+          investigationPartyGuid === null
+            ? await db.contravention.findFirst({
+                where: {
+                  investigation_guid: input.investigationGuid,
+                  legislation_guid_ref: input.legislationReference,
+                  contravention_date: input.date,
+                  geo_organization_unit_code_ref: input.community,
+                  active_ind: true,
+                  contravention_guid: { not: contraventionGuid },
+                  contravention_party_xref: {
+                    some: { investigation_party_guid: null, active_ind: true },
+                  },
+                },
+                include: {
+                  contravention_party_xref: {
+                    where: { active_ind: true },
+                    include: {
+                      enforcement_action: { where: { active_ind: true } },
+                    },
+                  },
+                },
+              })
+            : null;
 
-          if (existingParty?.length > 0) {
-            await db.contravention_party_xref.updateMany({
-              where: {
-                contravention_guid: contraventionGuid,
-                investigation_party_guid: existingParty[0].investigation_party_guid,
-                active_ind: true,
-              },
-              data: {
-                update_user_id: this.user.getIdirUsername(),
-                update_utc_timestamp: new Date(),
-                investigation_party_guid: investigationPartyGuid,
-              },
-            });
-          } else {
-            await db.contravention_party_xref.create({
-              data: {
-                contravention_guid: contraventionGuid,
-                investigation_party_guid: investigationPartyGuid,
-                active_ind: true,
-                create_user_id: this.user.getIdirUsername(),
-                create_utc_timestamp: new Date(),
-              },
-            });
+        if (duplicateUnknownContravention) {
+          const editedHasDecision = this.hasActiveDecision(originalContravention.contravention_party_xref);
+          const duplicateHasDecision = this.hasActiveDecision(duplicateUnknownContravention.contravention_party_xref);
+
+          if (editedHasDecision && duplicateHasDecision) {
+            throw new GraphQLError(
+              "This change would merge two unknown party contraventions that both have decisions recorded against them.",
+              {},
+            );
           }
+
+          // Merging discards one of the two records, so keep whichever carries the decision.
+          const guidToDeactivate = editedHasDecision
+            ? duplicateUnknownContravention.contravention_guid
+            : contraventionGuid;
+
+          await db.contravention_party_xref.updateMany({
+            where: { contravention_guid: guidToDeactivate, active_ind: true },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
+
+          await db.contravention.update({
+            where: { contravention_guid: guidToDeactivate },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
+
+          // The edited record survives, so let it fall through and pick up the field changes
+          if (!editedHasDecision) return;
         }
+
+        const existingParty = originalContravention.contravention_party_xref.filter(
+          (xref) => xref.investigation_party_guid == input.selectedPartyGuid,
+        );
+
+        if (existingParty?.length > 0) {
+          await db.contravention_party_xref.updateMany({
+            where: {
+              contravention_guid: contraventionGuid,
+              investigation_party_guid: existingParty[0].investigation_party_guid,
+              active_ind: true,
+            },
+            data: {
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+              investigation_party_guid: investigationPartyGuid,
+            },
+          });
+        } else {
+          await db.contravention_party_xref.create({
+            data: {
+              contravention_guid: contraventionGuid,
+              investigation_party_guid: investigationPartyGuid,
+              active_ind: true,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+            },
+          });
+        }
+
         await db.contravention.update({
           where: { contravention_guid: contraventionGuid },
           data: {

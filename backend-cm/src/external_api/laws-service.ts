@@ -1,6 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { XMLParser } from "fast-xml-parser";
+import { Logger } from "@nestjs/common";
+
+const logger = new Logger("LawsService");
 
 export interface Regulation {
   id: string;
@@ -12,17 +15,31 @@ const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.en
 
 const proxyConfig: AxiosRequestConfig = httpsProxyAgent ? { proxy: false, httpsAgent: httpsProxyAgent } : {};
 
+// The Federal Laws API fails to connect on occasion, so retry a few times to mitigate.
+const MAX_FETCH_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 1000;
+
 export const fetchXml = async (url: string, apiName: string, useProxy = false): Promise<string> => {
-  try {
-    // setting ProxyConfig proxy: false also stops axios from auto-proxying via the HTTPS_PROXY env var
-    const response = await axios.get(url, useProxy ? proxyConfig : { proxy: false });
-    return response.data;
-  } catch (error: any) {
-    const msg = error?.message || String(error);
-    let prefix = "Error";
-    if (error?.response) prefix = "Request Failed";
-    else if (error?.request) prefix = "No response received from";
-    throw new Error(`${apiName} ${prefix}: ${url}, ${msg}`);
+  for (let attempt = 1; ; attempt++) {
+    try {
+      // setting ProxyConfig proxy: false also stops axios from auto-proxying via the HTTPS_PROXY env var
+      const response = await axios.get(url, useProxy ? proxyConfig : { proxy: false });
+      return response.data;
+    } catch (error: any) {
+      // Retry dropped connections (e.g. ECONNRESET) before giving up
+      if (error?.request && !error?.response && attempt < MAX_FETCH_ATTEMPTS) {
+        logger.warn(
+          `No response from ${url} (${error?.code ?? "unknown"}), retrying (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS * attempt));
+        continue;
+      }
+      const msg = error?.message || String(error);
+      let prefix = "Error";
+      if (error?.response) prefix = "Request Failed";
+      else if (error?.request) prefix = "No response received from";
+      throw new Error(`${apiName} ${prefix}: ${url}, ${msg}`);
+    }
   }
 };
 
@@ -35,6 +52,7 @@ const parseDocumentsFromXml = (xmlString: string): any[] => {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "@_",
+    parseTagValue: false, // document id's must be parsed as strings
   });
 
   const parsed = parser.parse(xmlString);
@@ -57,6 +75,8 @@ const parseDocumentsFromXml = (xmlString: string): any[] => {
  * Fetches the regulations from the BC Laws Content API and parses it
  * Recursively fetch documents from any directories (CIVIX_DOCUMENT_TYPE === "dir")
  * For directories with multipart documents (ID ending in _multi), import only the multipart
+ * Skips "Amendments Not in Force" directories, which may have a second copy of the regulation
+ * (Not sure why, since it seems to be in force but there are several examples of this)
  * @param contentApiUrl - The Content API URL for the regulations
  * @returns Set of regulation documents
  */
@@ -87,6 +107,10 @@ export const getBcLawsRegulations = async (contentApiUrl: string): Promise<Regul
     const title = doc.CIVIX_DOCUMENT_TITLE;
     const docType = doc.CIVIX_DOCUMENT_TYPE;
     const status = doc.CIVIX_DOCUMENT_STATUS || null;
+
+    if (title === "Amendments Not in Force") {
+      continue;
+    }
 
     if (docType === "dir" && id) {
       const subFolderUrl = contentApiUrl.endsWith("/") ? `${contentApiUrl}${id}/` : `${contentApiUrl}/${id}/`;

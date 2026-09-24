@@ -126,11 +126,13 @@ async function importSingleRegulation(
     logger.log(`  URL: ${fetchUrl}`);
     const xmlString = await fetchXml(fetchUrl, "BC Laws API");
     const parsedDocument = parseBcLawsXml(xmlString);
+    // The Content API title has the regulation number (eg "340/82") that the XML title is missing
+    parsedDocument.root.sectionTitle = reg.title;
 
     const regSource = await legislationSourceService.upsertRegulationSource(
       actVersion.source.legislationSourceGuid,
       reg.id,
-      parsedDocument.metadata.title,
+      reg.title,
       actVersion.source.sourceType,
     );
 
@@ -146,7 +148,7 @@ async function importSingleRegulation(
     );
 
     const context: InsertLegislationContext = {
-      actTitle: parsedDocument.metadata.title,
+      actTitle: reg.title,
       legislationVersionGuid: regVersion.legislationVersionGuid,
       legislationService,
       logger,
@@ -163,7 +165,7 @@ async function importSingleRegulation(
     );
 
     errors.push(...context.errors);
-    logger.log(`  Completed: ${parsedDocument.metadata.title} - ${count} records`);
+    logger.log(`  Completed: ${reg.title} - ${count} records`);
     return count;
   } catch (error) {
     const errorMsg = `Regulation ${reg.title}: ${error instanceof Error ? error.message : String(error)}`;
@@ -298,7 +300,7 @@ async function importLegislationVersion(
 
 /**
  * Imports BC Laws documents for the legislation versions waiting to be imported
- * Versions that have already been imported are skipped
+ * Versions that have already been imported or failed are skipped
  */
 export async function runBcLawsImport(
   legislationService: LegislationService,
@@ -310,12 +312,14 @@ export async function runBcLawsImport(
   logger.log("Fetching legislation versions to import from database...");
 
   try {
-    // Get the pending and failed BC Laws versions of active sources
+    // Get the pending BC Laws versions of active sources
     const versions = await legislationVersionService.getImportableVersions("BCLAWS");
 
     if (versions.length === 0) {
-      logger.log("No legislation versions to import. All versions have already been imported.");
-      logger.log("To re-import a version, set its import_status to PENDING in the legislation_version table.");
+      logger.log("No pending legislation versions to import.");
+      logger.log(
+        "To import a version again, including a failed one, reset it or set its import_status to PENDING in the legislation_version table.",
+      );
       return;
     }
 

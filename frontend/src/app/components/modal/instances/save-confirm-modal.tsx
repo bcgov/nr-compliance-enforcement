@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Alert } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 
@@ -11,7 +11,7 @@ type SaveConfirmProps = {
 export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
 
-  const { title, description, cancelText, saveText } = modalData;
+  const { title, warning, description, cancelText, saveText } = modalData;
 
   const handleConfirm = () => {
     submit();
@@ -26,6 +26,17 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
         </Modal.Header>
       )}
       <Modal.Body>
+        {warning && (
+          <Alert
+            variant="warning"
+            className="comp-complaint-details-alert"
+          >
+            <div className="d-flex align-items-center gap-2">
+              <i className="bi bi-info-circle" />
+              <span>{warning}</span>
+            </div>
+          </Alert>
+        )}
         <p>{description}</p>
       </Modal.Body>
       <Modal.Footer>
