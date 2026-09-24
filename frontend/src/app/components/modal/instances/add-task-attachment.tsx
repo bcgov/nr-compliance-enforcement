@@ -468,7 +468,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                   error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
                   onChange={(evt: any) => field.handleChange(evt.target.value)}
                   value={field.state.value}
-                  placeholder="Enter description"
+                  placeholder="Describe what the file is"
                 />
               )}
             />
@@ -489,7 +489,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                   error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
                   onChange={(evt: any) => field.handleChange(evt.target.value)}
                   value={field.state.value}
-                  placeholder="Enter title"
+                  placeholder="Enter the subject of the file, or what the file is about"
                 />
               )}
             />
@@ -559,7 +559,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                       error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
                       onChange={(evt: any) => field.handleChange(evt.target.value)}
                       value={field.state.value}
-                      placeholder="Enter location"
+                      placeholder="Enter where the file was taken"
                       maxLength={1024}
                     />
                   )}
