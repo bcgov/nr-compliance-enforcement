@@ -21,7 +21,7 @@ import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/comm
 import { getBusinessIdentifier, getPartyMissingFields, getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
-const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
+const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "CMPLNNT", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
 // Can we genercize this in the future?
 interface Props {
@@ -114,9 +114,7 @@ const PartiesList: React.FC<Props> = ({
   const getPrimaryContactName = (business: InvestigationBusiness): string => {
     const contactPeople = (business.contactPeople ?? []).filter(Boolean) as InvestigationBusinessPerson[];
     const primary = contactPeople.find((cp) => cp.isPrimary) ?? contactPeople[0];
-    const person = primary?.person;
-    if (!person) return "-";
-    return [person.firstName, person.lastName].filter(Boolean).join(", ") || "-";
+    return getPartyName({ person: primary?.person });
   };
 
   const isGlobalParty = (party: InvestigationParty | InspectionParty): boolean => {
