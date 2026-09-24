@@ -29,6 +29,7 @@ import { getPartyName } from "@/app/common/party-name";
 import Option from "@apptypes/app/option";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
+import { CompInput } from "@/app/components/common/comp-input";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
@@ -891,13 +892,14 @@ export const ContraventionDetailsForm = ({
                 }}
                 render={(field) => (
                   <>
-                    <input
+                    <CompInput
                       id="species-other-input"
-                      type="text"
-                      className="form-control comp-form-control"
+                      divid="species-other-input-div"
+                      type="input"
+                      inputClass="form-control comp-form-control"
                       maxLength={200}
                       value={field.state.value}
-                      onChange={(event) => {
+                      onChange={(event: any) => {
                         markDirty();
                         field.handleChange(event.target.value);
                       }}
@@ -935,13 +937,14 @@ export const ContraventionDetailsForm = ({
               }}
               render={(field) => (
                 <>
-                  <input
+                  <CompInput
                     id="quantity-input"
-                    type="text"
-                    inputMode="numeric"
-                    className="form-control comp-form-control"
+                    divid="quantity-input-div"
+                    type="input"
+                    maxLength={9}
+                    inputClass="form-control comp-form-control"
                     value={field.state.value}
-                    onChange={(event) => {
+                    onChange={(event: any) => {
                       markDirty();
                       // Digits only
                       field.handleChange(event.target.value.replaceAll(/\D/g, ""));

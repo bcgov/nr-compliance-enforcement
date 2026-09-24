@@ -60,7 +60,10 @@ BEGIN
 	FROM complaint.hwcr_complaint hc 
 	WHERE hc.complaint_identifier = _complaint_identifier;
 
-    select hch.data_after_executed_operation ->> 'species_code_ref'
+    select COALESCE(
+             hch.data_after_executed_operation ->> 'species_code_ref',
+             hch.data_after_executed_operation ->> 'species_code'
+           )
     into _original_species_code
     from complaint.complaint c inner join complaint.hwcr_complaint hc on c.complaint_identifier = hc.complaint_identifier
     inner join complaint.hwcr_complaint_h hch on hc.hwcr_complaint_guid = hch.target_row_id

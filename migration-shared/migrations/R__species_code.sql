@@ -4,7 +4,7 @@ INSERT INTO shared.species_code
 VALUES
     ('BLKBEAR', 'Bear, Black', 'Bear, Black', 10, true, true, 'postgres', true),
     ('GRZBEAR', 'Bear, Grizzly', 'Bear, Grizzly', 20, true, true, 'postgres', true),
-    ('KRMBEAR', 'Bear, Kermode', 'Bear, Kermode', 30, true, false, 'postgres', true),
+    ('KRMBEAR', 'Bear, Kermode', 'Bear, Kermode', 30, false, false, 'postgres', true),
     ('BEAVER', 'Beaver', 'Beaver', 40, false, false, 'postgres', true),
     ('BISON', 'Bison', 'Bison', 50, false, true, 'postgres', true),
     ('BOBCAT', 'Bobcat', 'Bobcat', 60, false, true, 'postgres', true),
@@ -12,7 +12,7 @@ VALUES
     ('CATTLE', 'Cattle', 'Cattle', 80, false, false, 'postgres', true),
     ('COUGAR', 'Cougar', 'Cougar', 90, true, true, 'postgres', true),
     ('COYOTE', 'Coyote', 'Coyote', 100, true, true, 'postgres', true),
-    ('CRWRVN', 'Crow/Raven', 'Crow/Raven', 110, true, false, 'postgres', true),
+    ('CRWRVN', 'Crow/Raven', 'Crow/Raven', 110, false, false, 'postgres', true),
     ('DEER', 'Deer, (General)', 'Deer, (General)', 120, false, true, 'postgres', true),
     ('DEERBT', 'Deer, Black-Tailed', 'Deer, Black-Tailed', 130, false, false, 'postgres', true),
     ('DEERMU', 'Deer, Mule', 'Deer, Mule', 140, false, false, 'postgres', true),
