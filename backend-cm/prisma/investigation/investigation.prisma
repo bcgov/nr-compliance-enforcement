@@ -127,7 +127,6 @@ model enforcement_action {
   contravention_party_xref_guid                                                               String                    @db.Uuid
   enforcement_action_code                                                                     String                    @db.VarChar(16)
   date_issued                                                                                 DateTime                  @db.Date
-  geo_organization_unit_code_ref                                                              String                    @db.VarChar(16)
   app_user_guid_ref                                                                           String                    @db.Uuid
   active_ind                                                                                  Boolean                   @default(true)
   create_user_id                                                                              String                    @db.VarChar(32)
@@ -1002,7 +1001,7 @@ model administrative_sanction {
   enforcement_action_guid                                                                 String               @db.Uuid
   sanction_type_code                                                                      String               @db.VarChar(16)
   effective_date                                                                          DateTime             @db.Date
-  end_date                                                                                DateTime             @db.Date
+  end_date                                                                                DateTime?            @db.Date
   sanction_status_code                                                                    String               @db.VarChar(16)
   active_ind                                                                              Boolean              @default(true)
   create_user_id                                                                          String               @db.VarChar(32)
@@ -1078,7 +1077,7 @@ model court_prosecution_status_code {
 model enforcement_order {
   enforcement_order_guid                                                   String             @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   enforcement_action_guid                                                  String             @db.Uuid
-  order_type_code                                                          String?            @db.VarChar(16)
+  order_type_code                                                          String             @db.VarChar(16)
   remediation_required_ind                                                 Boolean?
   appeal_hearing_date                                                      DateTime?          @db.Date
   order_status_code                                                        String             @db.VarChar(16)
@@ -1089,7 +1088,7 @@ model enforcement_order {
   update_utc_timestamp                                                     DateTime?          @db.Timestamp(6)
   enforcement_action                                                       enforcement_action @relation(fields: [enforcement_action_guid], references: [enforcement_action_guid], onDelete: NoAction, onUpdate: NoAction)
   order_status_code_enforcement_order_order_status_codeToorder_status_code order_status_code  @relation("enforcement_order_order_status_codeToorder_status_code", fields: [order_status_code], references: [order_status_code], onDelete: NoAction, onUpdate: NoAction)
-  order_type_code_enforcement_order_order_type_codeToorder_type_code       order_type_code?   @relation("enforcement_order_order_type_codeToorder_type_code", fields: [order_type_code], references: [order_type_code], onDelete: NoAction, onUpdate: NoAction)
+  order_type_code_enforcement_order_order_type_codeToorder_type_code       order_type_code    @relation("enforcement_order_order_type_codeToorder_type_code", fields: [order_type_code], references: [order_type_code], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("investigation")
 }

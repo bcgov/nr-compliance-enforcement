@@ -639,7 +639,6 @@ export type CreateEnforcementActionInput = {
   effectiveDate?: InputMaybe<Scalars['DateTime']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode: Scalars['String']['input'];
-  geoOrganizationUnitCode: Scalars['String']['input'];
   hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
   issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
   orderStatusCode?: InputMaybe<Scalars['String']['input']>;
@@ -1105,7 +1104,6 @@ export type EnforcementAction = {
   endDate?: Maybe<Scalars['DateTime']['output']>;
   enforcementActionCode: EnforcementActionCode;
   enforcementActionIdentifier: Scalars['String']['output'];
-  geoOrganizationUnitCode: Scalars['String']['output'];
   hearingDate?: Maybe<Scalars['DateTime']['output']>;
   issuingOfficerIdentifier?: Maybe<Scalars['String']['output']>;
   orderStatusCode?: Maybe<Scalars['String']['output']>;
@@ -3529,7 +3527,6 @@ export type UpdateEnforcementActionInput = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
   enforcementActionIdentifier: Scalars['String']['input'];
-  geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
   hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
   issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
   orderStatusCode?: InputMaybe<Scalars['String']['input']>;
