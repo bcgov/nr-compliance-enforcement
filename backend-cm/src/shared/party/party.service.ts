@@ -40,6 +40,7 @@ import { toDateString } from "src/common/custom_scalars";
 import { PersonInput } from "src/shared/person/dto/person.input";
 import {
   buildPartyUniqueFieldCheck,
+  CANADA_COUNTRY_CODE,
   DRIVERS_LICENSE_FIELD_CODE,
   DRIVERS_LICENSE_FIELD_LABEL,
   hasMatchableUniqueValue,
@@ -469,12 +470,21 @@ export class PartyService {
     const driversLicenseNumber = check.driversLicenseNumber?.trim();
 
     if (hasMatchableUniqueValue(driversLicenseNumber)) {
+      const countryCode = check.driversLicenseCountryCode?.trim() || null;
+      // Canada issues licence numbers per province
+      const provinceClause =
+        countryCode === CANADA_COUNTRY_CODE
+          ? Prisma.sql`AND pe.drivers_license_country_subdivision_code IS NOT DISTINCT FROM ${check.driversLicenseCountrySubdivisionCode?.trim() || null}::text`
+          : Prisma.empty;
+
       lookups.push(
         Prisma.sql`SELECT pe.party_guid, ${DRIVERS_LICENSE_FIELD_CODE}::text AS field_code, ${DRIVERS_LICENSE_FIELD_LABEL}::text AS field_label, pe.drivers_license_number AS field_value
           FROM shared.person pe
           JOIN shared.party p ON p.party_guid = pe.party_guid
           WHERE pe.drivers_license_number IS NOT NULL
-            AND shared.f_match_norm(pe.drivers_license_number) = shared.f_match_norm(${driversLicenseNumber})`,
+            AND shared.f_match_norm(pe.drivers_license_number) = shared.f_match_norm(${driversLicenseNumber})
+            AND pe.drivers_license_country_code IS NOT DISTINCT FROM ${countryCode}::text
+            ${provinceClause}`,
       );
     }
 

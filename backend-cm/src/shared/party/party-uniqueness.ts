@@ -6,14 +6,21 @@ export const PARTY_DUPLICATE_MESSAGE =
 export const DRIVERS_LICENSE_FIELD_CODE = "DRIVERS_LICENSE";
 export const DRIVERS_LICENSE_FIELD_LABEL = "Driver's licence";
 
-export interface PartyUniqueFieldCheck {
+export const CANADA_COUNTRY_CODE = "CA";
+
+interface DriversLicenseFields {
   driversLicenseNumber?: string | null;
+  driversLicenseCountryCode?: string | null;
+  driversLicenseCountrySubdivisionCode?: string | null;
+}
+
+export interface PartyUniqueFieldCheck extends DriversLicenseFields {
   businessIdentifierValue?: string | null;
   externalIds?: { externalIdCode?: string | null; externalIdValue?: string | null }[];
 }
 
 interface PartyUniqueFieldCheckSource {
-  person?: { driversLicenseNumber?: string | null } | null;
+  person?: DriversLicenseFields | null;
   business?: {
     businessIdentifiers?: { identifierCode?: string | null; identifierValue?: string | null }[] | null;
   } | null;
@@ -22,6 +29,8 @@ interface PartyUniqueFieldCheckSource {
 
 export const buildPartyUniqueFieldCheck = (input: PartyUniqueFieldCheckSource): PartyUniqueFieldCheck => ({
   driversLicenseNumber: input.person?.driversLicenseNumber ?? null,
+  driversLicenseCountryCode: input.person?.driversLicenseCountryCode ?? null,
+  driversLicenseCountrySubdivisionCode: input.person?.driversLicenseCountrySubdivisionCode ?? null,
   businessIdentifierValue:
     input.business?.businessIdentifiers?.find(
       (identifier) => identifier.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,

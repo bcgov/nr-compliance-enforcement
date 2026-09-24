@@ -25,7 +25,11 @@ const CHECK_PARTY_UNIQUE_FIELDS = gql`
 
 export const buildUniqueFieldCheckInput = (values: any): PartyUniqueFieldCheckInput => ({
   ...(values?.partyType === PartyTypeCodes.PERSON && values?.driversLicenseNumber?.trim()
-    ? { driversLicenseNumber: values.driversLicenseNumber.trim() }
+    ? {
+        driversLicenseNumber: values.driversLicenseNumber.trim(),
+        driversLicenseCountryCode: values.driversLicenseCountryCode || null,
+        driversLicenseCountrySubdivisionCode: values.driversLicenseCountrySubdivisionCode || null,
+      }
     : {}),
   ...(values?.partyType === PartyTypeCodes.ORGANIZATION && values?.businessNumber?.identifierValue?.trim()
     ? { businessIdentifierValue: values.businessNumber.identifierValue.trim() }

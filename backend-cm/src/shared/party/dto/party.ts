@@ -240,6 +240,14 @@ export class PartyUniqueFieldCheckInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
+  driversLicenseCountryCode?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  driversLicenseCountrySubdivisionCode?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
   businessIdentifierValue?: string;
 
   @Field(() => [PartyExternalIdInput], { nullable: true })

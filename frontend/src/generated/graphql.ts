@@ -2518,6 +2518,8 @@ export type PartyTypeCode = {
 
 export type PartyUniqueFieldCheckInput = {
   businessIdentifierValue?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountrySubdivisionCode?: InputMaybe<Scalars['String']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   externalIds?: InputMaybe<Array<PartyExternalIdInput>>;
 };
