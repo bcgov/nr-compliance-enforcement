@@ -66,7 +66,6 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
 
   const existingAttachments = attachmentsQuery.data ?? [];
 
-  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const enforcementActionCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.ENFORCEMENT_ACTION_TYPE));
   const ticketOutcomeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.TICKET_OUTCOME_TYPE));
   const ticketTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.TICKET_TYPE));
@@ -79,8 +78,6 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
     selectCodeTable(CODE_TABLE_TYPES.ADMINISTRATIVE_PENALTY_STATUS_TYPE),
   );
   const officers = useAppSelector(selectOfficers);
-
-  const communityLabel = areaCodes.find((c) => c.area === enforcementAction?.geoOrganizationUnitCode)?.areaName ?? "";
 
   const enforcementActionLabel =
     enforcementActionCodes.find(
@@ -102,18 +99,17 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
       ticketTypeCodes.find((c) => c.ticketTypeCode === enforcementAction?.ticket?.ticketTypeCode)?.shortDescription ??
       "",
     sanctionType:
-      sanctionTypeCodes.find((c) => c.sanctionTypeCode === enforcementAction?.sanctionTypeCode)?.shortDescription ??
-      "",
+      sanctionTypeCodes.find((c) => c.sanctionTypeCode === enforcementAction?.sanctionTypeCode)?.shortDescription ?? "",
     sanctionStatus:
       sanctionStatusCodes.find((c) => c.sanctionStatusCode === enforcementAction?.sanctionStatusCode)
         ?.shortDescription ?? "",
-    orderType:
-      orderTypeCodes.find((c) => c.orderTypeCode === enforcementAction?.orderTypeCode)?.shortDescription ?? "",
+    orderType: orderTypeCodes.find((c) => c.orderTypeCode === enforcementAction?.orderTypeCode)?.shortDescription ?? "",
     orderStatus:
       orderStatusCodes.find((c) => c.orderStatusCode === enforcementAction?.orderStatusCode)?.shortDescription ?? "",
     courtProsecutionStatus:
-      courtProsecutionStatusCodes.find((c) => c.courtProsecutionStatusCode === enforcementAction?.courtProsecutionStatusCode)
-        ?.shortDescription ?? "",
+      courtProsecutionStatusCodes.find(
+        (c) => c.courtProsecutionStatusCode === enforcementAction?.courtProsecutionStatusCode,
+      )?.shortDescription ?? "",
     administrativePenaltyStatus:
       administrativePenaltyStatusCodes.find(
         (c) => c.administrativePenaltyStatusCode === enforcementAction?.administrativePenaltyStatusCode,
@@ -130,7 +126,6 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
             contraventionLabel={
               <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
             }
-            communityLabel={communityLabel}
             servingOfficerLabel={servingOfficerLabel}
             issuingOfficerLabel={issuingOfficerLabel}
             enforcementActionLabel={enforcementActionLabel}

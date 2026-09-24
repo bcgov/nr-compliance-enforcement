@@ -95,7 +95,6 @@ const ENFORCEMENT_ACTION_FIELDS = `
     shortDescription
   }
   dateIssued
-  geoOrganizationUnitCode
   appUserIdentifier
   activeIndicator
   comment
@@ -190,7 +189,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const dispatch = useAppDispatch();
   const agency = useAppSelector(selectOfficerAgency);
   const officersInAgency = useAppSelector((state) => selectOfficersByAgency(state, agency));
-  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const enforcementActionSelector = useMemo(() => selectEnforcementActionsByAgency(agency), [agency]);
   const enforcementActionOptions = useAppSelector(enforcementActionSelector);
   const ticketOutcomeOptions = useAppSelector(selectTicketOutcomes);
@@ -228,11 +226,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           { options: enforcementActionSelectOptions.slice(0, dividerIndex) },
           { options: enforcementActionSelectOptions.slice(dividerIndex) },
         ];
-
-  const communityOptions = areaCodes.map((c) => ({
-    value: c.area ?? "",
-    label: c.areaName ?? "",
-  }));
 
   const officerOptions = [...(officersInAgency ?? [])].map((o) => ({
     value: o.app_user_guid,
@@ -282,7 +275,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const form = useForm({
     defaultValues: {
       dateIssued: enforcementAction?.dateIssued ? new Date(enforcementAction.dateIssued) : new Date(),
-      community: enforcementAction?.geoOrganizationUnitCode ?? contravention?.community ?? "",
       servingOfficer: enforcementAction?.appUserIdentifier ?? primaryInvestigatorGuid ?? "",
       issuingOfficer: enforcementAction?.issuingOfficerIdentifier ?? primaryInvestigatorGuid ?? "",
       dateServed: enforcementAction?.dateServed ? new Date(enforcementAction.dateServed) : new Date(),
@@ -302,7 +294,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       sanctionStatusCode: enforcementAction?.sanctionStatusCode ?? "ISUD",
       // Order
       orderTypeCode: enforcementAction?.orderTypeCode ?? "",
-      orderStatusCode: enforcementAction?.orderStatusCode ?? "",
+      orderStatusCode: enforcementAction?.orderStatusCode ?? "ISUD",
       // Shared: Order/Violation Ticket appeal hearing date
       appealHearingDate: toDateOrNull(
         enforcementAction?.ticket?.appealHearingDate ?? enforcementAction?.appealHearingDate,
@@ -485,7 +477,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             enforcementActionIdentifier: enforcementAction!.enforcementActionIdentifier,
             enforcementActionCode: value.enforcementActionCode,
             dateIssued: value.dateIssued,
-            geoOrganizationUnitCode: value.community,
             appUserIdentifier: value.servingOfficer,
             ...buildMutualFields(value),
             ...buildTicketFields(value),
@@ -500,7 +491,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             partyIdentifier: party?.partyIdentifier,
             enforcementActionCode: value.enforcementActionCode,
             dateIssued: value.dateIssued,
-            geoOrganizationUnitCode: value.community,
             appUserIdentifier: value.servingOfficer,
             ...buildMutualFields(value),
             ...buildTicketFields(value),
@@ -771,6 +761,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             {renderSelectField("orderTypeCode", "Order type", orderTypeOptions, {
               id: "enforcement-action-order-type",
               placeholder: "Select order type",
+              required: true,
             })}
           </div>
         )}
@@ -900,7 +891,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 </div>
                 <div className="col-6">
                   {renderDateField("endDate", "End date", "enforcement-action-end-date", undefined, {
-                    required: true,
+                    required: false,
                   })}
                 </div>
               </div>

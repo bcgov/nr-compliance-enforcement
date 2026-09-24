@@ -36,7 +36,6 @@ interface EnforcementActionViewEditContentReadOnlyProps {
   enforcementAction: EnforcementAction;
   party?: InvestigationParty;
   contraventionLabel: React.ReactNode;
-  communityLabel: string;
   servingOfficerLabel: string;
   issuingOfficerLabel: string;
   enforcementActionLabel: string;
@@ -57,7 +56,6 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
   enforcementAction,
   party,
   contraventionLabel,
-  communityLabel,
   servingOfficerLabel,
   issuingOfficerLabel,
   enforcementActionLabel,
@@ -69,6 +67,29 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
   const ticket = enforcementAction.ticket;
   const code = enforcementAction.enforcementActionCode?.enforcementActionCode ?? "";
   const isNonEADecision = NON_EA_DECISION_CODES.has(code);
+
+  let decisionDetail: { label: string; value?: string } | null = null;
+
+  switch (code) {
+    case CODE_ADMINISTRATIVE_SANCTION:
+      decisionDetail = {
+        label: "Sanction type",
+        value: decisionDetailLabels.sanctionType,
+      };
+      break;
+    case CODE_ORDER:
+      decisionDetail = {
+        label: "Order type",
+        value: decisionDetailLabels.orderType,
+      };
+      break;
+    case CODE_VIOLATION_TICKET:
+      decisionDetail = {
+        label: "Ticket type",
+        value: decisionDetailLabels.ticketType,
+      };
+      break;
+  }
 
   const attachmentContent =
     attachments.length === 0 ? (
@@ -107,7 +128,9 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
             <div className="col-6">
               <Field label="Decision">{enforcementActionLabel || "—"}</Field>
             </div>
-            <div className="col-6"></div>
+            <div className="col-6">
+              {decisionDetail ? <Field label={decisionDetail.label}>{decisionDetail.value || "—"}</Field> : null}
+            </div>
             <div className="col-6">
               <Field label="Date issued">{formatDate(enforcementAction.dateIssued)}</Field>
             </div>
@@ -120,9 +143,6 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
             <div className="col-6">
               <Field label="Serving officer">{servingOfficerLabel || "—"}</Field>
             </div>
-            <div className="col-6">
-              <Field label="Community">{communityLabel || "—"}</Field>
-            </div>
 
             {code === CODE_WARNING && (
               <div className="col-6">
@@ -132,9 +152,6 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
 
             {code === CODE_VIOLATION_TICKET && ticket && (
               <>
-                <div className="col-6">
-                  <Field label="Ticket type">{decisionDetailLabels.ticketType || "—"}</Field>
-                </div>
                 <div className="col-6">
                   <Field label="Ticket number">{ticket.ticketNumber || "—"}</Field>
                 </div>
@@ -153,9 +170,6 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
             {code === CODE_ADMINISTRATIVE_SANCTION && (
               <>
                 <div className="col-6">
-                  <Field label="Sanction type">{decisionDetailLabels.sanctionType || "—"}</Field>
-                </div>
-                <div className="col-6">
                   <Field label="Effective date">{formatDate(enforcementAction.effectiveDate)}</Field>
                 </div>
                 <div className="col-6">
@@ -169,9 +183,6 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
 
             {code === CODE_ORDER && (
               <>
-                <div className="col-6">
-                  <Field label="Order type">{decisionDetailLabels.orderType || "—"}</Field>
-                </div>
                 <div className="col-6">
                   <Field label="Remediation required">{formatYesNo(enforcementAction.remediationRequired)}</Field>
                 </div>

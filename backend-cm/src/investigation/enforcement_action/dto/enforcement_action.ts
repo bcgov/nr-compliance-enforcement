@@ -9,7 +9,6 @@ export class EnforcementAction {
   partyIdentifier: string | null; // null unknown party
   enforcementActionCode: EnforcementActionCode;
   dateIssued: Date;
-  geoOrganizationUnitCode: string;
   appUserIdentifier: string;
   activeIndicator: boolean;
   ticket?: [Ticket];
@@ -46,7 +45,6 @@ export class EnforcementAction {
 type EnforcementActionDecisionFields = {
   enforcementActionCode: string;
   dateIssued: Date;
-  geoOrganizationUnitCode: string;
   appUserIdentifier: string;
   ticketOutcomeCode?: string;
   ticketAmount?: number;
@@ -111,10 +109,6 @@ export const mapPrismaEnforcementActionToEnforcementAction = (mapper: Mapper) =>
     forMember(
       (dest) => dest.dateIssued,
       mapFrom((src) => src.date_issued),
-    ),
-    forMember(
-      (dest) => dest.geoOrganizationUnitCode,
-      mapFrom((src) => src.geo_organization_unit_code_ref),
     ),
     forMember(
       (dest) => dest.appUserIdentifier,
