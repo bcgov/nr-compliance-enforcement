@@ -6,6 +6,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { COMMON_TASK_CATEGORY_CODES } from "./detail/task-detail-edit-modal";
 
 type Props = {
   assignedOfficerIds: string[];
@@ -24,6 +25,10 @@ export const TaskFilter: FC<Props> = ({ assignedOfficerIds }) => {
     value: String(c.value ?? ""),
     label: String(c.label ?? ""),
   }));
+  const categoryGroups = [
+    { options: categoryOptions.filter((opt) => COMMON_TASK_CATEGORY_CODES.has(opt.value ?? "")) },
+    { label: "Other", options: categoryOptions.filter((opt) => !COMMON_TASK_CATEGORY_CODES.has(opt.value ?? "")) },
+  ];
 
   const statusOptions: Option[] = taskStatuses.map((s) => ({
     value: String(s.value ?? ""),
@@ -68,7 +73,7 @@ export const TaskFilter: FC<Props> = ({ assignedOfficerIds }) => {
             classNames={{
               menu: () => "top-layer-select",
             }}
-            options={categoryOptions}
+            options={categoryGroups}
             placeholder="Select"
             enableValidation={false}
             value={selectedCategory}
