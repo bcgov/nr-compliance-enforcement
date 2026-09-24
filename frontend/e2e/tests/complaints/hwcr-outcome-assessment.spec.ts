@@ -16,7 +16,7 @@ test.describe("HWCR Outcome Assessments", () => {
 
   test("it requires at least one assessment action on create", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032063", true, page);
-    await validateComplaint(page, "23-032063", "Black Bear");
+    await validateComplaint(page, "23-032063", "Bear, Black");
 
     const $assessmentSection = page.locator("#outcome-assessments");
     if (await $assessmentSection.locator("#outcome-report-add-assessment").count()) {
@@ -36,7 +36,7 @@ test.describe("HWCR Outcome Assessments", () => {
 
   test("it can save assessment where action is required", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032063", true, page);
-    await validateComplaint(page, "23-032063", "Black Bear");
+    await validateComplaint(page, "23-032063", "Bear, Black");
 
     const $assessmentSection = page.locator("#outcome-assessments");
     if (await $assessmentSection.locator("#outcome-report-add-assessment").count()) {
@@ -60,7 +60,7 @@ test.describe("HWCR Outcome Assessments", () => {
 
   test("it can cancel assessment edits", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032063", true, page);
-    await validateComplaint(page, "23-032063", "Black Bear");
+    await validateComplaint(page, "23-032063", "Bear, Black");
     const $assessment = page.locator("#outcome-assessment").first();
 
     await $assessment.locator("#assessment-edit-button").click();
@@ -84,7 +84,7 @@ test.describe("HWCR Outcome Assessments", () => {
 
   test("it can edit an existing assessment", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032063", true, page);
-    await validateComplaint(page, "23-032063", "Black Bear");
+    await validateComplaint(page, "23-032063", "Bear, Black");
     const $assessment = page.locator("#outcome-assessment").first();
     await $assessment.locator("#assessment-edit-button").click();
 

@@ -1,8 +1,8 @@
 import { getUserAgency } from "@/app/service/user-service";
 import { Contravention, Legislation, InspectionParty, InvestigationParty } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert } from "react-bootstrap";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Alert, Button } from "react-bootstrap";
 import {
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
@@ -19,12 +19,17 @@ import { LegislationVersion, useLegislationVersions } from "@/app/graphql/hooks/
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
+import {
+  selectAllSpeciesCodeDropdown,
+  selectCommunityCodeDropdown,
+  selectWildlifeManagementUnitCodeDropdown,
+} from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
 import { getPartyName } from "@/app/common/party-name";
 import Option from "@apptypes/app/option";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
+import { CompInput } from "@/app/components/common/comp-input";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
@@ -32,6 +37,10 @@ export interface ContraventionDetailsFormValues {
   selectedSection: string;
   // Edit mode selects a single party; add mode selects one or more
   selectedPartyGuids: (string | null)[];
+  speciesCode: string | null;
+  speciesOtherText: string | null;
+  quantity: number | null;
+  wildlifeManagementUnitCode: string | null;
 }
 
 interface ContraventionDetailsFormProps {
@@ -132,6 +141,10 @@ export const ContraventionDetailsForm = ({
       subsection: "",
       parties: [] as Option[],
       party: partyGuid ?? UNKNOWN_PARTY_VALUE,
+      speciesCode: "",
+      speciesOtherText: "",
+      quantity: "",
+      wildlifeManagementUnitCode: "",
     },
     onSubmit: async () => {},
   });
@@ -151,7 +164,7 @@ export const ContraventionDetailsForm = ({
 
       for (const name of names) {
         form.setFieldValue(name, "");
-        form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: true }));
+        form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: false, errorMap: {} }));
         localStateSetters[name]?.("");
       }
     },
@@ -160,6 +173,8 @@ export const ContraventionDetailsForm = ({
 
   const userAgency = getUserAgency();
   const communityCodes = useAppSelector(selectCommunityCodeDropdown);
+  const speciesCodes = useAppSelector(selectAllSpeciesCodeDropdown);
+  const wildlifeManagementUnitCodes = useAppSelector(selectWildlifeManagementUnitCodeDropdown);
 
   const [act, setAct] = useState("");
   const [regulation, setRegulation] = useState("");
@@ -255,6 +270,65 @@ export const ContraventionDetailsForm = ({
   const actSupersededDates = getSupersededVersionDates(selectedAct, actVersions);
   const regulationSupersededDates = getSupersededVersionDates(selectedRegulation, regulationVersions);
 
+  const animalInformationDisplayType: string = (selectedRegulation ?? selectedAct)?.animalInformationDisplayType ?? "H";
+  const isAnimalInformationVisible = !!act && animalInformationDisplayType !== "H";
+  const isAnimalInformationMandatory = isAnimalInformationVisible && animalInformationDisplayType === "M";
+  const speciesCode = useStore(form.baseStore, (state) => state.values.speciesCode);
+
+  // Validators and getValues read this at call time rather than capturing it at render, so a field
+  // left mounted from an earlier legislation selection is judged against the current one
+  const animalInformationRef = useRef({ isVisible: false, isMandatory: false });
+  useEffect(() => {
+    animalInformationRef.current = {
+      isVisible: isAnimalInformationVisible,
+      isMandatory: isAnimalInformationMandatory,
+    };
+  }, [isAnimalInformationVisible, isAnimalInformationMandatory]);
+
+  // Optional animal information stays behind a button so it doesn't clutter the form. A contravention
+  // that already carries animal information opens revealed.
+  const [isAnimalInformationRevealed, setIsAnimalInformationRevealed] = useState(!!contravention?.speciesCode);
+  const isAnimalInformationShown =
+    isAnimalInformationVisible && (isAnimalInformationMandatory || isAnimalInformationRevealed);
+
+  useEffect(() => {
+    animalInformationRef.current = {
+      isVisible: isAnimalInformationShown,
+      // Revealed optional animal information is all-or-nothing, so it is required once shown
+      isMandatory: isAnimalInformationShown,
+    };
+  }, [isAnimalInformationShown]);
+
+  // Quantity defaults to 1 only for mandatory animal information. The ref marks a value as the default,
+  // so it can be withdrawn if the legislation changes, without touching a quantity loaded in edit mode.
+  const isQuantityDefaultedRef = useRef(false);
+
+  useEffect(() => {
+    if (form.getFieldMeta("quantity")?.isDirty) return;
+
+    const quantity = form.getFieldValue("quantity");
+
+    if (isAnimalInformationShown && !quantity) {
+      form.setFieldValue("quantity", "1");
+      form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      isQuantityDefaultedRef.current = true;
+    } else if (!isAnimalInformationShown && isQuantityDefaultedRef.current && quantity === "1") {
+      form.setFieldValue("quantity", "");
+      form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      isQuantityDefaultedRef.current = false;
+    }
+  }, [isAnimalInformationShown, form]);
+
+  const removeAnimalInformation = () => {
+    markDirty();
+    setIsAnimalInformationRevealed(false);
+    isQuantityDefaultedRef.current = false;
+    for (const name of ["speciesCode", "speciesOtherText", "quantity", "wildlifeManagementUnitCode"] as const) {
+      form.setFieldValue(name, "");
+      form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: false, errorMap: {} }));
+    }
+  };
+
   const findOptionByValue = (options: any[], value: string) =>
     value ? options.find((opt) => opt.value === value) : null;
 
@@ -274,6 +348,25 @@ export const ContraventionDetailsForm = ({
     return !hasErrors;
   }, [form]);
 
+  const getAnimalInformationValues = () => {
+    const selectedSpecies = form.getFieldValue("speciesCode");
+    const selectedUnit = form.getFieldValue("wildlifeManagementUnitCode");
+    const quantity = form.getFieldValue("quantity");
+
+    // Hidden legislation records no animal information. Neither does optional legislation where the
+    // officer left it empty, so the defaulted quantity isn't saved on its own.
+    if (!animalInformationRef.current.isVisible || (!selectedSpecies && !selectedUnit)) {
+      return { speciesCode: null, speciesOtherText: null, quantity: null, wildlifeManagementUnitCode: null };
+    }
+
+    return {
+      speciesCode: selectedSpecies || null,
+      speciesOtherText: selectedSpecies === "OTHER" ? form.getFieldValue("speciesOtherText").trim() || null : null,
+      quantity: quantity ? Number(quantity) : null,
+      wildlifeManagementUnitCode: selectedUnit || null,
+    };
+  };
+
   // Expose values to modal
   const getValues = useCallback(
     (): ContraventionDetailsFormValues => ({
@@ -285,6 +378,7 @@ export const ContraventionDetailsForm = ({
         : form
             .getFieldValue("parties")
             .map((option) => (!option.value || option.value === UNKNOWN_PARTY_VALUE ? null : option.value)),
+      ...getAnimalInformationValues(),
     }),
     [formattedContraventionDate, form, party],
   );
@@ -313,6 +407,24 @@ export const ContraventionDetailsForm = ({
     if (contravention.community) {
       form.setFieldValue("communityCode", contravention.community);
       form.setFieldMeta("communityCode", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+
+    // Populate animal information
+    if (contravention.speciesCode) {
+      form.setFieldValue("speciesCode", contravention.speciesCode);
+      form.setFieldMeta("speciesCode", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+    if (contravention.speciesOtherText) {
+      form.setFieldValue("speciesOtherText", contravention.speciesOtherText);
+      form.setFieldMeta("speciesOtherText", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+    if (contravention.quantity != null) {
+      form.setFieldValue("quantity", String(contravention.quantity));
+      form.setFieldMeta("quantity", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+    if (contravention.wildlifeManagementUnitCode) {
+      form.setFieldValue("wildlifeManagementUnitCode", contravention.wildlifeManagementUnitCode);
+      form.setFieldMeta("wildlifeManagementUnitCode", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
 
     // Populate legislation fields - these come from legislationQuery so are handled separately
@@ -703,6 +815,191 @@ export const ContraventionDetailsForm = ({
               </div>
             )}
           />
+        )}
+
+        {isAnimalInformationVisible && !isAnimalInformationShown && (
+          <Button
+            id="add-animal-information-button"
+            variant="outline-primary"
+            size="sm"
+            className="my-3"
+            onClick={() => setIsAnimalInformationRevealed(true)}
+          >
+            <i className="bi bi-plus-circle me-1" /> Add animal info
+          </Button>
+        )}
+
+        {isAnimalInformationShown && (
+          <>
+            <FormField
+              form={form}
+              name="speciesCode"
+              label="Species"
+              required
+              validators={{
+                onChange: z.string().refine((val) => !animalInformationRef.current.isMandatory || !!val, {
+                  message: "Species is required",
+                }),
+                onSubmit: z.string().refine((val) => !animalInformationRef.current.isMandatory || !!val, {
+                  message: "Species is required",
+                }),
+              }}
+              render={(field) => (
+                <CompSelect
+                  id="species-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={speciesCodes}
+                  value={findOptionByValue(speciesCodes, field.state.value)}
+                  onChange={(option) => {
+                    markDirty();
+                    field.handleChange(option?.value || "");
+                  }}
+                  placeholder="Select species"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+
+            {speciesCode === "OTHER" && (
+              <FormField
+                form={form}
+                name="speciesOtherText"
+                label="Other species"
+                required
+                validators={{
+                  onChange: z
+                    .string()
+                    .refine(
+                      (val) =>
+                        !animalInformationRef.current.isVisible ||
+                        form.getFieldValue("speciesCode") !== "OTHER" ||
+                        !!val.trim(),
+                      { message: "Other species is required" },
+                    ),
+                  onSubmit: z
+                    .string()
+                    .refine(
+                      (val) =>
+                        !animalInformationRef.current.isVisible ||
+                        form.getFieldValue("speciesCode") !== "OTHER" ||
+                        !!val.trim(),
+                      { message: "Other species is required" },
+                    ),
+                }}
+                render={(field) => (
+                  <>
+                    <CompInput
+                      id="species-other-input"
+                      divid="species-other-input-div"
+                      type="input"
+                      inputClass="form-control comp-form-control"
+                      maxLength={200}
+                      value={field.state.value}
+                      onChange={(event: any) => {
+                        markDirty();
+                        field.handleChange(event.target.value);
+                      }}
+                    />
+                    {field.state.meta.errors?.[0]?.message && (
+                      <div className="error-message">{field.state.meta.errors[0].message}</div>
+                    )}
+                  </>
+                )}
+              />
+            )}
+
+            <FormField
+              form={form}
+              name="quantity"
+              label="Quantity"
+              required
+              validators={{
+                onChange: z
+                  .string()
+                  .refine((val) => !animalInformationRef.current.isMandatory || !!val, {
+                    message: "Quantity is required",
+                  })
+                  .refine((val) => !animalInformationRef.current.isVisible || !val || Number(val) >= 1, {
+                    message: "Quantity must be at least 1",
+                  }),
+                onSubmit: z
+                  .string()
+                  .refine((val) => !animalInformationRef.current.isMandatory || !!val, {
+                    message: "Quantity is required",
+                  })
+                  .refine((val) => !animalInformationRef.current.isVisible || !val || Number(val) >= 1, {
+                    message: "Quantity must be at least 1",
+                  }),
+              }}
+              render={(field) => (
+                <>
+                  <CompInput
+                    id="quantity-input"
+                    divid="quantity-input-div"
+                    type="input"
+                    maxLength={9}
+                    inputClass="form-control comp-form-control"
+                    value={field.state.value}
+                    onChange={(event: any) => {
+                      markDirty();
+                      // Digits only
+                      field.handleChange(event.target.value.replaceAll(/\D/g, ""));
+                    }}
+                  />
+                  {field.state.meta.errors?.[0]?.message && (
+                    <div className="error-message">{field.state.meta.errors[0].message}</div>
+                  )}
+                </>
+              )}
+            />
+            <FormField
+              form={form}
+              name="wildlifeManagementUnitCode"
+              label="Wildlife management unit"
+              required
+              validators={{
+                onChange: z.string().refine((val) => !animalInformationRef.current.isMandatory || !!val, {
+                  message: "Wildlife management unit is required",
+                }),
+                onSubmit: z.string().refine((val) => !animalInformationRef.current.isMandatory || !!val, {
+                  message: "Wildlife management unit is required",
+                }),
+              }}
+              render={(field) => (
+                <CompSelect
+                  id="wildlife-management-unit-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={wildlifeManagementUnitCodes}
+                  value={findOptionByValue(wildlifeManagementUnitCodes, field.state.value)}
+                  onChange={(option) => {
+                    markDirty();
+                    field.handleChange(option?.value || "");
+                  }}
+                  placeholder="Select WMU"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+            {!isAnimalInformationMandatory && (
+              <Button
+                id="remove-animal-information-button"
+                variant="outline-danger"
+                size="sm"
+                className="my-3"
+                onClick={removeAnimalInformation}
+              >
+                <i className="bi bi-trash me-1" /> Remove animal info
+              </Button>
+            )}
+          </>
         )}
       </form>
       {errorMessages.length > 0 && (

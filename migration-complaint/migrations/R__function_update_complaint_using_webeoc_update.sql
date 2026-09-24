@@ -55,12 +55,15 @@ BEGIN
     FROM   complaint.insert_and_return_code(_update_webeoc_species, 'speciescd');
    
     -- get the current species code
-   	SELECT hc.species_code 
+   	SELECT hc.species_code_ref 
    	INTO _current_species_code
 	FROM complaint.hwcr_complaint hc 
 	WHERE hc.complaint_identifier = _complaint_identifier;
 
-    select hch.data_after_executed_operation ->> 'species_code'
+    select COALESCE(
+             hch.data_after_executed_operation ->> 'species_code_ref',
+             hch.data_after_executed_operation ->> 'species_code'
+           )
     into _original_species_code
     from complaint.complaint c inner join complaint.hwcr_complaint hc on c.complaint_identifier = hc.complaint_identifier
     inner join complaint.hwcr_complaint_h hch on hc.hwcr_complaint_guid = hch.target_row_id
@@ -69,7 +72,7 @@ BEGIN
 
     if ((_update_species_code <> _original_species_code) and (_update_species_code <> _current_species_code)) then 
     	update complaint.hwcr_complaint
-    	set species_code = _update_species_code
+    	set species_code_ref = _update_species_code
     	where complaint_identifier = _complaint_identifier;
     end if;
 

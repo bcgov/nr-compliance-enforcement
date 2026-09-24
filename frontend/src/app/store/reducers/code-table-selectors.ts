@@ -1,6 +1,6 @@
 import { RootState } from "@store/store";
 import { createSelector } from "@reduxjs/toolkit";
-const selectCodeTables = (state: RootState) => state.codeTables;
+export const selectCodeTables = (state: RootState) => state.codeTables;
 
 export const selectDischargeDropdown = createSelector([selectCodeTables], (codeTables) => {
   const { discharge: items } = codeTables;
@@ -226,4 +226,9 @@ export const selectHairLengths = createSelector([selectCodeTables], (codeTables)
 export const selectFacialHairStyles = createSelector([selectCodeTables], (codeTables) => {
   const { "facial-hair-style-type": items } = codeTables;
   return items.map(({ facialHairStyleCode: value, shortDescription: label }) => ({ label, value }));
+});
+
+export const selectWildlifeManagementUnits = createSelector([selectCodeTables], (codeTables) => {
+  const { "wildlife-management-unit-type": items } = codeTables;
+  return items.map(({ wildlifeManagementUnitCode: value, shortDescription: label }) => ({ label, value }));
 });
