@@ -13,10 +13,10 @@ export class ChesService implements ExternalApiService {
   readonly clientSecret: string;
   readonly grantType: string;
 
-  @Inject(ConfigurationService)
-  readonly configService: ConfigurationService;
-
-  constructor() {
+  constructor(
+    @Inject(ConfigurationService)
+    readonly configService: ConfigurationService,
+  ) {
     this.authApi = process.env.CHES_TOKEN_ENDPOINT;
     this.baseUri = process.env.CHES_URI;
     this.clientId = process.env.CHES_CLIENT_ID;

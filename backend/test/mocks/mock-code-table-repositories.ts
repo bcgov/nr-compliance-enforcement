@@ -290,57 +290,6 @@ const personTypes = [
   },
 ];
 
-const species = [
-  {
-    species_code: "BISON",
-    short_description: "Bison",
-    long_description: "Bison",
-    display_order: 1,
-    active_ind: true,
-    legacy_code: null,
-  },
-  {
-    species_code: "BLKBEAR",
-    short_description: "Black Bear",
-    long_description: "Black Bear",
-    display_order: 2,
-    active_ind: true,
-    legacy_code: null,
-  },
-  {
-    species_code: "BOBCAT",
-    short_description: "Bobcat",
-    long_description: "Bobcat",
-    display_order: 3,
-    active_ind: true,
-    legacy_code: null,
-  },
-  {
-    species_code: "COUGAR",
-    short_description: "Cougar",
-    long_description: "Cougar",
-    display_order: 4,
-    active_ind: true,
-    legacy_code: null,
-  },
-  {
-    species_code: "COYOTE",
-    short_description: "Coyote",
-    long_description: "Coyote",
-    display_order: 5,
-    active_ind: true,
-    legacy_code: null,
-  },
-  {
-    species_code: "DEER",
-    short_description: "Deer",
-    long_description: "Deer",
-    display_order: 6,
-    active_ind: true,
-    legacy_code: null,
-  },
-];
-
 const violations = [
   {
     violation_code: "AINVSPC",
@@ -675,32 +624,6 @@ const communities = [
   { code: "AHST", name: "Ahousat", zone: "CENISL", region: "WSTCST" },
 ];
 
-const single = (name: string = "default", idx: number = 0): any => {
-  switch (name) {
-    case "agency": {
-      return idx <= agencyCollection.length ? agencyCollection[idx] : agencyCollection[0];
-    }
-    case "attractant": {
-      return idx <= attractants.length ? attractants[idx] : attractants[0];
-    }
-    case "complaint-status": {
-      return idx <= complaitStatus.length ? complaitStatus[idx] : complaitStatus[0];
-    }
-    case "nature-of-complaint": {
-      return idx <= natureOfComplaints.length ? natureOfComplaints[idx] : natureOfComplaints[0];
-    }
-    case "person-complaint": {
-      return idx <= personTypes.length ? personTypes[idx] : personTypes[0];
-    }
-    case "species": {
-      return idx <= species.length ? species[idx] : species[0];
-    }
-    case "default":
-    default:
-      return null;
-  }
-};
-
 export const MockAgencyCodeTableRepository = () => ({
   find: jest.fn().mockResolvedValue(agencyCollection),
   createQueryBuilder: jest.fn(() => ({
@@ -764,15 +687,6 @@ export const MockPersonComplaintCodeTableRepository = () => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(personTypes),
-  })),
-});
-
-export const MockSpeciesCodeTableRepository = () => ({
-  find: jest.fn().mockResolvedValue(species),
-  createQueryBuilder: jest.fn(() => ({
-    leftJoinAndSelect: jest.fn().mockReturnThis(),
-    where: jest.fn().mockReturnThis(),
-    getMany: jest.fn().mockResolvedValue(species),
   })),
 });
 

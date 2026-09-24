@@ -17,9 +17,6 @@ import { getAppUserByGuid } from "../../external_api/shared_data";
 
 @Injectable()
 export class AppUserComplaintXrefService {
-  @InjectRepository(AppUserComplaintXref)
-  private readonly repository: Repository<AppUserComplaintXref>;
-
   private readonly logger = new Logger(AppUserComplaintXrefService.name);
 
   constructor(
@@ -33,6 +30,8 @@ export class AppUserComplaintXrefService {
     @Inject(FeatureFlagService)
     private readonly _featureFlagService: FeatureFlagService,
     private readonly _appUserService: AppUserService,
+    @InjectRepository(AppUserComplaintXref)
+    private readonly repository: Repository<AppUserComplaintXref>,
   ) {}
 
   async create(createAppUserComplaintXrefDto: CreateAppUserComplaintXrefDto): Promise<AppUserComplaintXref> {
@@ -238,25 +237,6 @@ export class AppUserComplaintXrefService {
     return newAppUserComplaintXref;
   }
 
-  async clearAssignedAppUser(complaintIdentifier: string): Promise<void> {
-    try {
-      const unassignedAppUserComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
-      if (unassignedAppUserComplaintXref) {
-        this.logger.debug(
-          `Unassigning app user xref ${unassignedAppUserComplaintXref.appUserComplaintXrefGuid} existing app user ${unassignedAppUserComplaintXref.app_user_guid} from complaint ${unassignedAppUserComplaintXref?.complaint_identifier?.complaint_identifier}`,
-        );
-        await this.repository.update(unassignedAppUserComplaintXref.appUserComplaintXrefGuid, {
-          active_ind: false,
-        });
-        // Update the complaint last updated date on the parent record
-        await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier);
-      }
-    } catch (err) {
-      this.logger.error(err);
-      throw new BadRequestException(err);
-    }
-  }
-
   remove(id: string) {
     return `This action removes a #${id} appUserComplaintXref`;
   }
@@ -338,7 +318,17 @@ export class AppUserComplaintXrefService {
       );
       if (sendEmail && leadAgencyActive && collaboratorAgencyActive) {
         try {
-          await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user, token);
+          const complaint = await this._complaintService.findById(
+            complaintIdentifier,
+            sendCollaboratorEmailDto.complaintType,
+          );
+          await this._emailService.sendCollaboratorEmail(
+            complaintIdentifier,
+            complaint,
+            sendCollaboratorEmailDto,
+            user,
+            token,
+          );
         } catch (error) {
           this.logger.error(`Error sending collaborator email.`, error);
         }

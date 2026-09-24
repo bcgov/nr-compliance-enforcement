@@ -11,10 +11,13 @@ import { getIdirFromRequest } from "../../common/get-idir-from-request";
 @Injectable()
 export class AttractantHwcrXrefService {
   private readonly logger = new Logger(AttractantHwcrXrefService.name);
-  @InjectRepository(AttractantHwcrXref)
-  private attractantHwcrXrefRepository: Repository<AttractantHwcrXref>;
 
-  constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(AttractantHwcrXref)
+    private attractantHwcrXrefRepository: Repository<AttractantHwcrXref>,
+    @Inject(REQUEST) private request: Request,
+    private dataSource: DataSource,
+  ) {}
 
   async create(queryRunner: QueryRunner, createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto) {
     const createdValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);

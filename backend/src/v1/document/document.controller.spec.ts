@@ -24,7 +24,6 @@ import {
   MockComplaintStatusCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
-  MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
@@ -33,7 +32,6 @@ import {
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsRepositoryV2,
-  MockComplaintsAgencyRepository,
   MockComplaintReferralEmailLogRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
@@ -55,7 +53,6 @@ import { AppUserComplaintXref } from "../app_user_complaint_xref/entities/app_us
 import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
 import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
@@ -119,10 +116,6 @@ describe("DocumentController", () => {
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),

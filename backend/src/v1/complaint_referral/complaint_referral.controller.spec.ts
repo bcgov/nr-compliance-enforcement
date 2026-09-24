@@ -34,7 +34,6 @@ import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
@@ -128,10 +127,6 @@ describe("ComplaintReferralController", () => {
         },
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
           useValue: {},
         },
         {

@@ -21,13 +21,13 @@ export class CssService implements ExternalApiService {
   readonly env: string;
   readonly maxPages: number;
 
-  @Inject(ConfigurationService)
-  readonly configService: ConfigurationService;
-
   @Inject(CACHE_MANAGER)
   readonly cacheManager: Cache;
 
-  constructor() {
+  constructor(
+    @Inject(ConfigurationService)
+    readonly configService: ConfigurationService,
+  ) {
     this.authApi = process.env.CSS_TOKEN_URL;
     this.baseUri = process.env.CSS_URL;
     this.clientId = process.env.CSS_CLIENT_ID;

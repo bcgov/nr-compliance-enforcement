@@ -20,10 +20,11 @@ export class WebeocService {
   private readonly COOKIE_CACHE_KEY = "webeoc_session_cookie";
   private readonly COOKIE_EXPIRATION_TIME = 20 * 60 * 1000; // 20 minutes in milliseconds
 
-  @Inject(ConfigurationService)
-  readonly configService: ConfigurationService;
-
-  constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {
+  constructor(
+    @Inject(ConfigurationService)
+    readonly configService: ConfigurationService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+  ) {
     this.baseUri = process.env.WEBEOC_URL;
     this.userName = process.env.WEBEOC_WRITE_USERNAME;
     this.password = process.env.WEBEOC_WRITE_PASSWORD;

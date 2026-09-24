@@ -56,6 +56,7 @@ import {
   COMMENT_DECISION_CODES,
 } from "./enforcement-action-constants";
 import { Attachment } from "@/app/common/attachment-utils";
+import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
 
 const YES_NO_OPTIONS = [
   { value: "true", label: "Yes" },
@@ -696,26 +697,25 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       )}
 
       {contravention && (
-        <div className="border rounded bg-bc-brand-background-light-gray text-dark px-3 py-3 mb-4">
-          {isRestrictedToCommentDecisions && (
-            <Alert
-              variant="warning"
-              id="enforcement-action-restricted-decisions-notice"
-              className="px-2 py-2"
-            >
-              <i className="bi bi-info-circle-fill pe-2" />
-              {party
-                ? `This profile is incomplete. Add ${joinWithAnd(getPartyMissingFields(party))} before logging an enforcement action.`
-                : "The party is unknown. Enforcement actions are unavailable."}
-            </Alert>
-          )}
-          <div className="text-muted small mb-1">Party</div>
-          <div className="mb-2">{getPartyName(party)}</div>
-          <div className="text-muted small mb-1">Contravention</div>
-          <div>
-            <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
-          </div>
-        </div>
+        <ContraventionSummary
+          contravention={contravention}
+          party={party}
+          contraventionLabel={<ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />}
+          notice={
+            isRestrictedToCommentDecisions ? (
+              <Alert
+                variant="warning"
+                id="enforcement-action-restricted-decisions-notice"
+                className="px-2 py-2"
+              >
+                <i className="bi bi-info-circle-fill pe-2" />
+                {party
+                  ? `This profile is incomplete. Add ${joinWithAnd(getPartyMissingFields(party))} before logging an enforcement action.`
+                  : "The party is unknown. Enforcement actions are unavailable."}
+              </Alert>
+            ) : undefined
+          }
+        />
       )}
       <div className="row mb-3">
         <div className="col-6">

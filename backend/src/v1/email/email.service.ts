@@ -1,10 +1,8 @@
-import { Inject, Injectable, Logger, forwardRef } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ChesService } from "../../external_api/ches/ches.service";
 import { generateReferralEmailBody } from "../../email_templates/referrals";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
-import { ComplaintService } from "../../v1/complaint/complaint.service";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
-import { SpeciesCodeService } from "../../v1/species_code/species_code.service";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
@@ -24,9 +22,6 @@ export class EmailService {
   constructor(
     private readonly _chesService: ChesService,
     private readonly _emailReferenceService: EmailReferenceService,
-    @Inject(forwardRef(() => ComplaintService))
-    private readonly _complaintService: ComplaintService,
-    private readonly _speciesCodeService: SpeciesCodeService,
     private readonly _natureOfComplaintService: HwcrComplaintNatureCodeService,
     private readonly _violationCodeService: ViolationCodeService,
     private readonly _girTypeCodeService: GirTypeCodeService,
@@ -60,7 +55,7 @@ export class EmailService {
     return recipientList;
   }
 
-  private async _getComplaintDetailsByType(type, complaint, communityName) {
+  private async _getComplaintDetailsByType(type, complaint, communityName, token) {
     let subjectTypeDescription = type;
     let bodyTypeDescription = type;
     let complaintSummaryText = "";
@@ -71,7 +66,11 @@ export class EmailService {
         subjectTypeDescription = "HWC";
         bodyTypeDescription = "Human wildlife conflict";
         const wildlifeComplaint = complaint as WildlifeComplaintDto;
-        const speciesName = (await this._speciesCodeService.findOne(wildlifeComplaint.species)).short_description;
+        // Convert species code from shared
+        const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+        const speciesName = speciesTable?.find(
+          (item: any) => item.species === wildlifeComplaint.species,
+        )?.shortDescription;
         const natureOfComplaint = (await this._natureOfComplaintService.findOne(wildlifeComplaint.natureOfComplaint))
           .long_description;
         complaintSummaryText = `${bodyTypeDescription}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
@@ -106,6 +105,7 @@ export class EmailService {
 
   sendReferralEmail = async (
     createComplaintReferralDto,
+    complaint,
     senderEmailAddress,
     senderName,
     exportContentBuffer,
@@ -124,7 +124,6 @@ export class EmailService {
 
     const { type, fileName } = createComplaintReferralDto.documentExportParams;
     try {
-      const complaint = await this._complaintService.findById(id, type, undefined, token);
       const base64Content = Buffer.from(exportContentBuffer.data).toString("base64");
       const emailAttachments = [
         {
@@ -174,7 +173,7 @@ export class EmailService {
       )?.longDescription;
 
       const { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails } =
-        await this._getComplaintDetailsByType(type, complaint, communityName);
+        await this._getComplaintDetailsByType(type, complaint, communityName, token);
 
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
       const emailSubject = externalAgencyInd
@@ -225,6 +224,7 @@ export class EmailService {
 
   sendCollaboratorEmail = async (
     complaintId,
+    complaint,
     sendCollaboratorEmailDto: SendCollaboratorEmalDto,
     user,
     token: string,
@@ -242,7 +242,6 @@ export class EmailService {
       const collaborator = collaboratorUserRes[0];
       const { email, lastName, firstName } = collaborator;
       const collaboratorName = `${firstName} ${lastName}`;
-      const complaint = await this._complaintService.findById(complaintId, complaintType);
       const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
       const owningAgency = agencyTable?.find((agency: any) => agency.agency === complaint.ownedBy)?.shortDescription;
       let subjectAdditionalDetails = "";
@@ -254,9 +253,11 @@ export class EmailService {
           const complaintAsWildlife = complaint as WildlifeComplaintDto;
           subjectTypeDescription = "HWC";
           complaintTypeDescription = "Human wildlife conflict";
-          const { short_description: speciesName } = await this._speciesCodeService.findOne(
-            complaintAsWildlife.species,
-          );
+          // Convert species code from shared
+          const speciesTable = await this._codeTableService.getCodeTableByName("species", token);
+          const speciesName = speciesTable?.find(
+            (item: any) => item.species === complaintAsWildlife.species,
+          )?.shortDescription;
           const { long_description: natureOfComplaint } = await this._natureOfComplaintService.findOne(
             complaintAsWildlife.natureOfComplaint,
           );
