@@ -102,18 +102,17 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
       ticketTypeCodes.find((c) => c.ticketTypeCode === enforcementAction?.ticket?.ticketTypeCode)?.shortDescription ??
       "",
     sanctionType:
-      sanctionTypeCodes.find((c) => c.sanctionTypeCode === enforcementAction?.sanctionTypeCode)?.shortDescription ??
-      "",
+      sanctionTypeCodes.find((c) => c.sanctionTypeCode === enforcementAction?.sanctionTypeCode)?.shortDescription ?? "",
     sanctionStatus:
       sanctionStatusCodes.find((c) => c.sanctionStatusCode === enforcementAction?.sanctionStatusCode)
         ?.shortDescription ?? "",
-    orderType:
-      orderTypeCodes.find((c) => c.orderTypeCode === enforcementAction?.orderTypeCode)?.shortDescription ?? "",
+    orderType: orderTypeCodes.find((c) => c.orderTypeCode === enforcementAction?.orderTypeCode)?.shortDescription ?? "",
     orderStatus:
       orderStatusCodes.find((c) => c.orderStatusCode === enforcementAction?.orderStatusCode)?.shortDescription ?? "",
     courtProsecutionStatus:
-      courtProsecutionStatusCodes.find((c) => c.courtProsecutionStatusCode === enforcementAction?.courtProsecutionStatusCode)
-        ?.shortDescription ?? "",
+      courtProsecutionStatusCodes.find(
+        (c) => c.courtProsecutionStatusCode === enforcementAction?.courtProsecutionStatusCode,
+      )?.shortDescription ?? "",
     administrativePenaltyStatus:
       administrativePenaltyStatusCodes.find(
         (c) => c.administrativePenaltyStatusCode === enforcementAction?.administrativePenaltyStatusCode,
@@ -138,6 +137,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
             decisionDetailLabels={decisionDetailLabels}
             attachments={existingAttachments}
             isLoadingAttachments={attachmentsQuery.isLoading}
+            contravention={contravention}
           />
         )}
       </div>

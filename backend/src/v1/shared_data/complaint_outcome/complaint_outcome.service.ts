@@ -39,6 +39,12 @@ export class ComplaintOutcomeService {
   private readonly mapper: Mapper;
 
   constructor(
+    // The linked complaint xref and complaint repositories are needed if an assessment being created is also linking two
+    // complaints. The codeTableService is needed to fetch the status used to update the closing complaint's status.
+    @InjectRepository(LinkedComplaintXref)
+    private readonly _linkedComplaintXrefRepository: Repository<LinkedComplaintXref>,
+    @InjectRepository(Complaint)
+    private readonly _complaintsRepository: Repository<Complaint>,
     @Inject(REQUEST) private readonly request: Request,
     @InjectMapper() mapper,
     private readonly complaintService: ComplaintService,
@@ -68,13 +74,6 @@ export class ComplaintOutcomeService {
       return null;
     }
   };
-
-  // The linked complaint xref and complaint repositories are needed if an assessment being created is also linking two
-  // complaints. The codeTableService is needed to fetch the status used to update the closing complaint's status.
-  @InjectRepository(LinkedComplaintXref)
-  private readonly _linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
-  @InjectRepository(Complaint)
-  private readonly _complaintsRepository: Repository<Complaint>;
 
   /**
    * If the assessment is linking the complaint to another, the assessment (CM db) and a linked complaint xref

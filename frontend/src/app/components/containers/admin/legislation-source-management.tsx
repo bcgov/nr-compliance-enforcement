@@ -17,6 +17,8 @@ import {
   LegislationSource,
   CreateLegislationSourceInput,
   UpdateLegislationSourceInput,
+  AnimalInformationDisplayType,
+  animalInformationDisplayTypeOptions,
 } from "@/app/graphql/hooks/useLegislationSourceQuery";
 import { useLegislationVersions } from "@/app/graphql/hooks/useLegislationVersionQuery";
 import { LegislationVersionHistory } from "@/app/components/containers/admin/legislation-version-history";
@@ -36,6 +38,7 @@ interface EditingSource {
   sourceType: string;
   activeInd: boolean;
   effectiveDate: Date | undefined;
+  animalInformationDisplayType: AnimalInformationDisplayType;
 }
 
 const emptySource: EditingSource = {
@@ -47,6 +50,7 @@ const emptySource: EditingSource = {
   sourceType: "BCLAWS",
   activeInd: true,
   effectiveDate: undefined,
+  animalInformationDisplayType: "H",
 };
 
 const sourceTypeOptions: Option[] = [
@@ -198,6 +202,7 @@ export const LegislationSourceManagement: FC = () => {
       sourceType: source.sourceType ?? "BCLAWS",
       activeInd: source.activeInd,
       effectiveDate: undefined,
+      animalInformationDisplayType: source.animalInformationDisplayType,
     });
     setIsEditing(true);
     setShowModal(true);
@@ -225,6 +230,7 @@ export const LegislationSourceManagement: FC = () => {
           editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         activeInd: editingSource.activeInd,
+        animalInformationDisplayType: editingSource.animalInformationDisplayType,
       };
       updateMutation.mutate({ input });
     } else {
@@ -237,6 +243,7 @@ export const LegislationSourceManagement: FC = () => {
         agencyCode: editingSource.agencyCode,
         sourceType: editingSource.sourceType,
         effectiveDate: formatDateObjectAsString(editingSource.effectiveDate, { format: "date" }) || undefined,
+        animalInformationDisplayType: editingSource.animalInformationDisplayType,
       };
       createMutation.mutate({ input });
     }
@@ -250,6 +257,9 @@ export const LegislationSourceManagement: FC = () => {
     const agency = agencies.find((a) => a.value === code);
     return agency?.label ?? code;
   };
+
+  const getAnimalInformationLabel = (code: AnimalInformationDisplayType) =>
+    animalInformationDisplayTypeOptions.find((option) => option.value === code)?.label ?? code;
 
   const getStatusBadge = (source: LegislationSource) => {
     if (!source.activeInd) return <span className="badge comp-status-badge-closed">Inactive</span>;
@@ -289,6 +299,14 @@ export const LegislationSourceManagement: FC = () => {
       isSortable: true,
       getValue: (source) => getAgencyLabel(source.agencyCode),
       renderCell: (source) => getAgencyLabel(source.agencyCode),
+    },
+    {
+      label: "Animal information",
+      headerClassName: "comp-cell-width-130",
+      cellClassName: "comp-cell-width-130",
+      isSortable: true,
+      getValue: (source) => getAnimalInformationLabel(source.animalInformationDisplayType),
+      renderCell: (source) => getAnimalInformationLabel(source.animalInformationDisplayType),
     },
     {
       label: "Source URLs",
@@ -385,6 +403,7 @@ export const LegislationSourceManagement: FC = () => {
               <LegislationVersionHistory
                 legislationSourceGuid={source.legislationSourceGuid}
                 agencyCode={source.agencyCode}
+                animalInformationDisplayType={source.animalInformationDisplayType}
               />
             )}
             isLoading={isLoading}
@@ -515,6 +534,32 @@ export const LegislationSourceManagement: FC = () => {
                   showInactive={false}
                   enableValidation={false}
                   isClearable={true}
+                />
+              </div>
+            </div>
+
+            <div className="comp-details-form-row">
+              <label htmlFor="animal-information-select">
+                Animal Information<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-edit-input">
+                <CompSelect
+                  id="animal-information-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={animalInformationDisplayTypeOptions}
+                  value={animalInformationDisplayTypeOptions.find(
+                    (option) => option.value === editingSource.animalInformationDisplayType,
+                  )}
+                  onChange={(option: Option | null) =>
+                    setEditingSource({
+                      ...editingSource,
+                      animalInformationDisplayType: (option?.value as AnimalInformationDisplayType) ?? "H",
+                    })
+                  }
+                  showInactive={false}
+                  enableValidation={false}
+                  isClearable={false}
                 />
               </div>
             </div>

@@ -10,10 +10,13 @@ import { UUID } from "node:crypto";
 @Injectable()
 export class FeatureFlagService {
   private readonly logger = new Logger(FeatureFlagService.name);
-  @InjectRepository(FeatureAgencyXref)
-  private featureAgencyXrefRepository: Repository<FeatureAgencyXref>;
 
-  constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(FeatureAgencyXref)
+    private featureAgencyXrefRepository: Repository<FeatureAgencyXref>,
+    @Inject(REQUEST) private request: Request,
+    private dataSource: DataSource,
+  ) {}
 
   async create(queryRunner: QueryRunner, createFeatureAgencyXrefDto: CreateFeatureAgencyXrefDto) {
     const createdValue = await this.featureAgencyXrefRepository.create(createFeatureAgencyXrefDto);

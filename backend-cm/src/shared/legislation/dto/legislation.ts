@@ -1,6 +1,7 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { legislation } from "../../../../prisma/shared/generated/legislation";
 import { toDateString } from "../../../common/custom_scalars";
+import { AnimalInformationDisplayType } from "src/shared/legislation_source/dto/legislation-source";
 
 export class Legislation {
   legislationGuid: string;
@@ -17,6 +18,7 @@ export class Legislation {
   legislationSourceGuid: string;
   versionEffectiveDate: string | null;
   sourceUrl: string | null;
+  animalInformationDisplayType: AnimalInformationDisplayType | null;
 }
 
 type LegislationVersionAndConfiguration = {
@@ -24,6 +26,7 @@ type LegislationVersionAndConfiguration = {
   legislation_source_guid: string;
   version_effective_date: Date | null;
   source_url: string | null;
+  animal_information_display_code?: AnimalInformationDisplayType | null;
 };
 
 export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
@@ -82,6 +85,12 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.sourceUrl,
       mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).source_url),
+    ),
+    forMember(
+      (dest) => dest.animalInformationDisplayType,
+      mapFrom(
+        (src) => (src as legislation & LegislationVersionAndConfiguration).animal_information_display_code ?? null,
+      ),
     ),
   );
 };

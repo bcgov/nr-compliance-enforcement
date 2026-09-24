@@ -51,7 +51,7 @@ test.describe("Complaints on map tests", () => {
         await selectItemById("zone-select-id", "Cariboo Thompson", page);
         await selectItemById("community-select-id", "Blue River", page);
         await selectItemById("nature-of-complaint-select-id", "Food Conditioned", page);
-        await selectItemById("species-select-id", "Black Bear", page);
+        await selectItemById("species-select-id", "Bear, Black", page);
       } else {
         // add the alegation filters
         // add the region filter

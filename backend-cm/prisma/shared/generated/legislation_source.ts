@@ -45,6 +45,9 @@ export class legislation_source {
   @ApiPropertyOptional({ type: String })
   external_key?: string;
 
+  @ApiProperty({ type: String })
+  animal_information_display_code: string = "H";
+
   @ApiProperty({ type: () => agency_code })
   agency_code_legislation_source_agency_codeToagency_code: agency_code;
 

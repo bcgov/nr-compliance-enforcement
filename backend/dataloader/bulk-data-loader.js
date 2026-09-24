@@ -112,7 +112,7 @@ const generateHWCRData = (complaint_identifier) => {
     ...commonFields,
     report_type: 'HWCR',
     nature_of_complaint: faker.helpers.arrayElement(['Sightings', 'Food Conditioned', 'Confined', 'Human injury/death', 'Wildlife in trap']),
-    species: faker.helpers.arrayElement(['Black bear', 'Deer', 'Wolf', 'Moose', 'Cougar', 'Wolverine', 'Elk', 'Rattlesnake']),
+    species: faker.helpers.arrayElement(['Bear, black', 'Deer', 'Wolf', 'Moose', 'Cougar', 'Wolverine', 'Elk', 'Rattlesnake']),
     attractants_list: faker.helpers.arrayElement(['BBQ', 'Crops', 'Pet Food', 'Beehive', 'Freezer', 'Pets', 'Garbage', 'Industrial Camp']),
   };
 };
@@ -540,7 +540,7 @@ const addComplaintOutcomes = async (fraction) => {
 
   await run("add complaint_outcome.wildlife", `
     INSERT INTO complaint_outcome.wildlife
-      (complaint_outcome_guid, species_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+      (complaint_outcome_guid, species_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
     SELECT co.complaint_outcome_guid, 'BISON', 'Bulk Data Load', now(), 'Bulk Data Load', now()
     FROM complaint_outcome.complaint_outcome co
     WHERE (abs(hashtext(co.complaint_outcome_guid::text || 'wildlife')) % 100) < 30
