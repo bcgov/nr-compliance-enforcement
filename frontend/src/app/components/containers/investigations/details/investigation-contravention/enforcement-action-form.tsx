@@ -751,6 +751,32 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             )}
           />
         </div>
+        {isAdministrativeSanction && (
+          <div className="col-6">
+            {renderSelectField("sanctionTypeCode", "Sanction type", sanctionTypeOptions, {
+              id: "enforcement-action-sanction-type",
+              required: true,
+              placeholder: "Select sanction type",
+            })}
+          </div>
+        )}
+        {isOrder && (
+          <div className="col-6">
+            {renderSelectField("orderTypeCode", "Order type", orderTypeOptions, {
+              id: "enforcement-action-order-type",
+              placeholder: "Select order type",
+            })}
+          </div>
+        )}
+        {isViolationTicket && (
+          <div className="col-6">
+            {renderSelectField("ticketTypeCode", "Ticket type", ticketTypeOptions, {
+              id: "enforcement-action-ticket-type",
+              required: true,
+              placeholder: "Select ticket type",
+            })}
+          </div>
+        )}
       </div>
 
       {isNonEADecision && renderCommentField()}
@@ -783,16 +809,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             </div>
           </div>
 
-          <div className="row mb-3">
-            <div className="col-6">
-              {renderSelectField("community", "Community", communityOptions, {
-                id: "enforcement-action-community",
-                required: true,
-                placeholder: "Select community",
-              })}
-            </div>
-          </div>
-
           {isWarning && (
             <div className="row mb-3">
               <div className="col-6">
@@ -808,20 +824,11 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  {renderSelectField("ticketTypeCode", "Ticket type", ticketTypeOptions, {
-                    id: "enforcement-action-ticket-type",
-                    required: true,
-                    placeholder: "Select ticket type",
-                  })}
-                </div>
-                <div className="col-6">
                   {renderTextField("ticketNumber", "Ticket number", "Enter ticket number", {
                     required: true,
                     maxLength: 32,
                   })}
                 </div>
-              </div>
-              <div className="row mb-3">
                 <div className="col-6">
                   <FormField
                     form={form}
@@ -851,6 +858,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                     )}
                   />
                 </div>
+              </div>
+              <div className="row mb-3">
                 <div className="col-6">
                   {renderSelectField("ticketOutcomeCode", "Status", ticketOutcomeOptions, {
                     id: "enforcement-action-ticket-outcome",
@@ -859,8 +868,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                     isClearable: false,
                   })}
                 </div>
-              </div>
-              <div className="row mb-3">
                 <div className="col-6">
                   {renderDateField(
                     "appealHearingDate",
@@ -876,22 +883,15 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  {renderSelectField("sanctionTypeCode", "Sanction type", sanctionTypeOptions, {
-                    id: "enforcement-action-sanction-type",
-                    required: true,
-                    placeholder: "Select sanction type",
-                  })}
-                </div>
-                <div className="col-6">
                   {renderDateField("effectiveDate", "Effective date", "enforcement-action-effective-date", {
                     required: true,
                   })}
                 </div>
-              </div>
-              <div className="row mb-3">
                 <div className="col-6">
                   {renderDateField("endDate", "End date", "enforcement-action-end-date", { required: true })}
                 </div>
+              </div>
+              <div className="row mb-3">
                 <div className="col-6">
                   {renderSelectField("sanctionStatusCode", "Status", sanctionStatusOptions, {
                     id: "enforcement-action-sanction-status",
@@ -907,20 +907,12 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             <>
               <div className="row mb-3">
                 <div className="col-6">
-                  {renderSelectField("orderTypeCode", "Order type", orderTypeOptions, {
-                    id: "enforcement-action-order-type",
-                    placeholder: "Select order type",
-                  })}
-                </div>
-                <div className="col-6">
                   {renderYesNoField(
                     "remediationRequired",
                     "Remediation required",
                     "enforcement-action-order-remediation-required",
                   )}
                 </div>
-              </div>
-              <div className="row mb-3">
                 <div className="col-6">
                   {renderDateField(
                     "appealHearingDate",
@@ -928,6 +920,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                     "enforcement-action-order-appeal-hearing-date",
                   )}
                 </div>
+              </div>
+              <div className="row mb-3">
                 <div className="col-6">
                   {renderSelectField("orderStatusCode", "Status", orderStatusOptions, {
                     id: "enforcement-action-order-status",
