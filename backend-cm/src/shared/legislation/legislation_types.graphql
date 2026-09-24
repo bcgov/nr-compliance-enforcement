@@ -13,6 +13,7 @@ type Legislation {
   legislationSourceGuid: String
   versionEffectiveDate: String
   sourceUrl: String
+  animalInformationDisplayType: AnimalInformationDisplayType
 }
 
 type LegislationType {

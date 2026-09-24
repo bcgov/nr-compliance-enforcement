@@ -445,6 +445,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                   isClearable={true}
                   showInactive={false}
                   enableValidation={true}
+                  isDisabled={attachment}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
                   menuPlacement="bottom"
                 />

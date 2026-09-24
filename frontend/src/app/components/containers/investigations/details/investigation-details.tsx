@@ -219,6 +219,10 @@ export const GET_INVESTIGATION = gql`
         }
         date
         community
+        speciesCode
+        speciesOtherText
+        quantity
+        wildlifeManagementUnitCode
       }
       leadAgency
       locationAddress

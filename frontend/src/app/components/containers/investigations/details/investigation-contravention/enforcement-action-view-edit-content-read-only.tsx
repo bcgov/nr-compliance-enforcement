@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { format } from "date-fns";
-import { EnforcementAction, InvestigationParty } from "@/generated/graphql";
+import { Contravention, EnforcementAction, InvestigationParty } from "@/generated/graphql";
 import { Attachment, MAX_ATTACHMENT_PREVIEWS } from "@/app/common/attachment-utils";
-import { getPartyName } from "@/app/common/party-name";
 import {
   NON_EA_DECISION_CODES,
   CODE_WARNING,
@@ -15,6 +14,7 @@ import {
   COMMENT_DECISION_CODES,
 } from "./enforcement-action-constants";
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
+import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
 
 const formatDate = (value?: string | Date | null): string => (value ? format(new Date(value), "yyyy-MM-dd") : "—");
 const formatYesNo = (value?: boolean | null): string => {
@@ -43,6 +43,7 @@ interface EnforcementActionViewEditContentReadOnlyProps {
   decisionDetailLabels: DecisionDetailLabels;
   attachments: Attachment[];
   isLoadingAttachments: boolean;
+  contravention: Contravention;
 }
 
 const Field: FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
@@ -63,6 +64,7 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
   decisionDetailLabels,
   attachments,
   isLoadingAttachments,
+  contravention,
 }) => {
   const ticket = enforcementAction.ticket;
   const code = enforcementAction.enforcementActionCode?.enforcementActionCode ?? "";
@@ -104,12 +106,11 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
     );
   return (
     <>
-      <div className="border rounded bg-bc-brand-background-light-gray text-dark px-3 py-3 mb-4">
-        <div className="text-muted small mb-1">Party</div>
-        <div className="mb-2">{getPartyName(party)}</div>
-        <div className="text-muted small mb-1">Contravention</div>
-        <div>{contraventionLabel}</div>
-      </div>
+      <ContraventionSummary
+        contravention={contravention}
+        party={party}
+        contraventionLabel={contraventionLabel}
+      />
 
       {isNonEADecision ? (
         <div className="row">

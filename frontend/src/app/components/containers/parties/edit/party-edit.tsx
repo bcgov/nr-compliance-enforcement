@@ -51,6 +51,8 @@ import {
   handleBusinessPartyMutationError,
   scrollToFirstFieldError,
 } from "@/app/components/containers/parties/form/party-form-errors";
+import { PARTY_DUPLICATE_MESSAGE } from "@/app/components/containers/parties/form/party-unique-fields";
+import { useUniqueFieldCheck } from "@/app/components/containers/parties/hooks/use-unique-field-check";
 import { PartyAttachments } from "../attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
@@ -295,11 +297,17 @@ const PartyEdit: FC = () => {
     },
   });
 
+  const { uniqueFieldConflict, checkUniqueFieldConflicts, handleDuplicateIdentifierError } = useUniqueFieldCheck(
+    form,
+    isEditMode ? id : undefined,
+  );
+
   const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
     onError: (error: any) => {
       console.error("Error creating party:", error);
-      handleBusinessPartyMutationError(form, error, "Failed to create party");
       setPendingAttachmentsSaveAfterCreate(false);
+      if (handleDuplicateIdentifierError(error)) return;
+      handleBusinessPartyMutationError(form, error, "Failed to create party");
     },
     onSuccess: (data: any) => {
       const newPartyIdentifier = data.createParty.partyIdentifier;
@@ -323,6 +331,7 @@ const PartyEdit: FC = () => {
     },
     onError: (error: any) => {
       console.error("Error updating party:", error);
+      if (handleDuplicateIdentifierError(error)) return;
       handleBusinessPartyMutationError(form, error, "Failed to update party");
     },
   });
@@ -388,6 +397,9 @@ const PartyEdit: FC = () => {
         return;
       }
     }
+    if (await checkUniqueFieldConflicts()) {
+      return;
+    }
     if (isEditMode) {
       setTriggerSaveAttachments((n) => n + 1);
       setTimeout(() => {
@@ -397,7 +409,7 @@ const PartyEdit: FC = () => {
       setPendingAttachmentsSaveAfterCreate(true);
       form.handleSubmit();
     }
-  }, [form, isEditMode, partyData, currentFormValues]);
+  }, [form, isEditMode, partyData, currentFormValues, checkUniqueFieldConflicts]);
 
   const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
@@ -425,7 +437,9 @@ const PartyEdit: FC = () => {
         partyIdentifier={id}
         badges={
           <PartyBadges
-            isSafetyConcern={!!(partyData?.party?.person?.safetyConcernIndicator || partyData?.party?.business?.safetyConcernIndicator)}
+            isSafetyConcern={
+              !!(partyData?.party?.person?.safetyConcernIndicator || partyData?.party?.business?.safetyConcernIndicator)
+            }
             isYoungPerson={personIsYoung}
           />
         }
@@ -435,7 +449,10 @@ const PartyEdit: FC = () => {
         <div className="comp-details-section-header">
           <h3>Identifying information</h3>
         </div>
-        <FormErrorBanner form={form} />
+        <FormErrorBanner
+          form={form}
+          errorMessage={uniqueFieldConflict ? PARTY_DUPLICATE_MESSAGE : undefined}
+        />
         <form
           onSubmit={(e) => {
             e.preventDefault();

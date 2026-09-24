@@ -24,7 +24,6 @@ import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
-import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 import { AppUserComplaintXref } from "../app_user_complaint_xref/entities/app_user_complaint_xref.entity";
@@ -38,21 +37,15 @@ import {
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
-  MockCosOrganizationUnitCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
-  MockOrganizationUnitCodeTableRepository,
-  MockOrganizationUnitTypeCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
   MockReportedByCodeTableRepository,
-  MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
   MockGirTypeCodeRepository,
-  MockTeamCodeRepository,
   MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintReferralEmailLogRepository,
-  MockComplaintsAgencyRepository,
   MockComplaintsRepositoryV2,
   MockComplaintUpdatesRepository,
   MockUpdateComplaintsRepository,
@@ -172,10 +165,6 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),
@@ -452,10 +441,6 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(SpeciesCode),
-          useFactory: MockSpeciesCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),

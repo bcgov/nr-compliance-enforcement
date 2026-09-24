@@ -38,6 +38,7 @@ import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
 import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
 import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
+import { WildlifeManagementUnitType } from "@/app/types/app/code-tables/wildlife-management-unit-type";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -385,6 +386,17 @@ export const fetchFacialHairStyleTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<FacialHairStyleType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.FACIAL_HAIR_STYLE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchWildlifeManagementUnits = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.WILDLIFE_MANAGEMENT_UNIT}`,
+  );
+  const response = await get<Array<WildlifeManagementUnitType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.WILDLIFE_MANAGEMENT_UNIT, data: response };
     dispatch(setCodeTable(payload));
   }
 };

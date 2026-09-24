@@ -22,7 +22,7 @@ test.describe("HWCR Outcome Notes", () => {
 
   test("it requires valid user input", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032454", true, page);
-    await validateComplaint(page, "23-032454", "Black Bear");
+    await validateComplaint(page, "23-032454", "Bear, Black");
 
     // Delete any note records if they exist
     const $notes = page.locator("#outcome-note");
@@ -69,7 +69,7 @@ test.describe("HWCR Outcome Notes", () => {
 
   test("it can save note", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032454", true, page);
-    await validateComplaint(page, "23-032454", "Black Bear");
+    await validateComplaint(page, "23-032454", "Bear, Black");
 
     const $outcome = page.locator(".comp-hwcr-outcome-report");
     await $outcome.locator("#outcome-report-add-note").click();
@@ -101,7 +101,7 @@ test.describe("HWCR Outcome Notes", () => {
 
   test("it can cancel note edits", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032454", true, page);
-    await validateComplaint(page, "23-032454", "Black Bear");
+    await validateComplaint(page, "23-032454", "Bear, Black");
     const $notes = page.locator(".comp-outcome-notes");
     await $notes.locator("#notes-edit-button").click();
 
@@ -116,7 +116,7 @@ test.describe("HWCR Outcome Notes", () => {
 
   test("it can edit an existing note", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032454", true, page);
-    await validateComplaint(page, "23-032454", "Black Bear");
+    await validateComplaint(page, "23-032454", "Bear, Black");
     const $notes = page.locator(".comp-outcome-notes");
 
     await expect($notes.locator("#notes-edit-button").first()).toBeVisible({ timeout: 15000 });
@@ -143,7 +143,7 @@ test.describe("HWCR Outcome Notes", () => {
 
   test("it can delete an existing note", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032454", true, page);
-    await validateComplaint(page, "23-032454", "Black Bear");
+    await validateComplaint(page, "23-032454", "Bear, Black");
     const $notes = page.locator(".comp-outcome-notes");
     await $notes.locator("#notes-delete-button").click();
     await page.locator(".modal-footer > .btn-primary").click();

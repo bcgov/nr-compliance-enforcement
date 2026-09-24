@@ -4,7 +4,7 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import { Button } from "react-bootstrap";
 import { DropdownOption } from "@apptypes/app/drop-down-option";
-import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
+import { clearFieldError, getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyExternalIdFormValue } from "@/app/components/containers/parties/form/party-form-utils";
 
 type PartyExternalIdFieldsProps = {
@@ -55,7 +55,10 @@ export const PartyExternalIdFields: FC<PartyExternalIdFieldsProps> = ({
                   className="comp-details-input"
                   options={externalIdOptions}
                   value={externalIdOptions?.find((opt: any) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value ?? "")}
+                  onChange={(option) => {
+                    field.handleChange(option?.value ?? "");
+                    clearFieldError(form, `externalIds[${index}].externalIdValue`);
+                  }}
                   placeholder="Select external ID"
                   isClearable={true}
                   showInactive={false}
@@ -92,7 +95,12 @@ export const PartyExternalIdFields: FC<PartyExternalIdFieldsProps> = ({
                   value={field.state.value}
                   error={getFieldErrorMessage(field)}
                   maxLength={64}
-                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                  onChange={(evt: any) => {
+                    field.handleChange(evt?.target?.value || "");
+                    if (getFieldErrorMessage(field)) {
+                      clearFieldError(form, `externalIds[${index}].externalIdValue`);
+                    }
+                  }}
                   placeholder="Enter ID"
                   disabled={isDisabled}
                 />

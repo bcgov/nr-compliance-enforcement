@@ -144,6 +144,15 @@ export type AliasUpdateInput = {
   name: Scalars['String']['input'];
 };
 
+export enum AnimalInformationDisplayType {
+  /** Hidden: not visible. */
+  H = 'H',
+  /** Mandatory: always visible and required. */
+  M = 'M',
+  /** Optional: visible but not required. */
+  O = 'O'
+}
+
 export type AppUser = {
   __typename?: 'AppUser';
   agencyCode?: Maybe<Scalars['String']['output']>;
@@ -512,6 +521,10 @@ export type Contravention = {
   investigationParty?: Maybe<Array<Maybe<InvestigationParty>>>;
   isActive: Scalars['Boolean']['output'];
   legislationIdentifierRef: Scalars['String']['output'];
+  quantity?: Maybe<Scalars['Int']['output']>;
+  speciesCode?: Maybe<Scalars['String']['output']>;
+  speciesOtherText?: Maybe<Scalars['String']['output']>;
+  wildlifeManagementUnitCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type ContraventionStats = {
@@ -810,6 +823,7 @@ export type CreateInvestigationPersonInput = {
 
 export type CreateLegislationSourceInput = {
   agencyCode: Scalars['String']['input'];
+  animalInformationDisplayType?: InputMaybe<AnimalInformationDisplayType>;
   effectiveDate?: InputMaybe<Scalars['String']['input']>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   regulationsSourceUrl?: InputMaybe<Scalars['String']['input']>;
@@ -845,7 +859,11 @@ export type CreateUpdateContraventionInput = {
   investigationGuid: Scalars['String']['input'];
   investigationPartyGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   legislationReference: Scalars['String']['input'];
+  quantity?: InputMaybe<Scalars['Int']['input']>;
   selectedPartyGuid?: InputMaybe<Scalars['String']['input']>;
+  speciesCode?: InputMaybe<Scalars['String']['input']>;
+  speciesOtherText?: InputMaybe<Scalars['String']['input']>;
+  wildlifeManagementUnitCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateUpdateExhibitInput = {
@@ -1704,6 +1722,7 @@ export type Legislation = {
   __typename?: 'Legislation';
   alternateText?: Maybe<Scalars['String']['output']>;
   ancestors?: Maybe<Array<Maybe<Legislation>>>;
+  animalInformationDisplayType?: Maybe<AnimalInformationDisplayType>;
   citation?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
   fullCitation?: Maybe<Scalars['String']['output']>;
@@ -1722,6 +1741,7 @@ export type LegislationSource = {
   __typename?: 'LegislationSource';
   activeInd: Scalars['Boolean']['output'];
   agencyCode: Scalars['String']['output'];
+  animalInformationDisplayType: AnimalInformationDisplayType;
   createUserId?: Maybe<Scalars['String']['output']>;
   createUtcTimestamp?: Maybe<Scalars['String']['output']>;
   externalKey?: Maybe<Scalars['String']['output']>;
@@ -2514,6 +2534,21 @@ export type PartyTypeCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type PartyUniqueFieldCheckInput = {
+  businessIdentifierValue?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountrySubdivisionCode?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
+  externalIds?: InputMaybe<Array<PartyExternalIdInput>>;
+};
+
+export type PartyUniqueFieldConflict = {
+  __typename?: 'PartyUniqueFieldConflict';
+  fieldCode: Scalars['String']['output'];
+  shortDescription: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type PartyUpdateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressUpdateInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
@@ -2721,6 +2756,7 @@ export type Query = {
   checkCaseNameExists: Scalars['Boolean']['output'];
   checkInspectionNameExists: Scalars['Boolean']['output'];
   checkInvestigationNameExists: Scalars['Boolean']['output'];
+  checkPartyUniqueFields: Array<PartyUniqueFieldConflict>;
   complexionCodes: Array<Maybe<ComplexionCode>>;
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
@@ -2820,6 +2856,7 @@ export type Query = {
   searchParties: PartyResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
+  speciesCodes: Array<Maybe<SpeciesCode>>;
   task?: Maybe<Task>;
   taskCategoryTypeCodes: Array<Maybe<TaskCategoryTypeCode>>;
   taskStatusCodes: Array<Maybe<TaskStatusCode>>;
@@ -2830,6 +2867,7 @@ export type Query = {
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
   ticketOutcomeCodes: Array<Maybe<TicketOutcomeCode>>;
   ticketTypeCodes: Array<Maybe<TicketTypeCode>>;
+  wildlifeManagementUnitCodes: Array<Maybe<wildlifeManagementUnitCode>>;
 };
 
 
@@ -2894,6 +2932,12 @@ export type QuerycheckInvestigationNameExistsArgs = {
   excludeInvestigationGuid?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
   name: Scalars['String']['input'];
+};
+
+
+export type QuerycheckPartyUniqueFieldsArgs = {
+  excludePartyIdentifier?: InputMaybe<Scalars['String']['input']>;
+  input: PartyUniqueFieldCheckInput;
 };
 
 
@@ -3325,6 +3369,17 @@ export type SexCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type SpeciesCode = {
+  __typename?: 'SpeciesCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOnComplaintIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  largeCarnivoreIndicator?: Maybe<Scalars['Boolean']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  speciesCode?: Maybe<Scalars['String']['output']>;
+};
+
 export type Task = {
   __typename?: 'Task';
   activeIndicator: Scalars['Boolean']['output'];
@@ -3635,6 +3690,7 @@ export type UpdateLegislationConfigurationInput = {
 export type UpdateLegislationSourceInput = {
   activeInd?: InputMaybe<Scalars['Boolean']['input']>;
   agencyCode?: InputMaybe<Scalars['String']['input']>;
+  animalInformationDisplayType?: InputMaybe<AnimalInformationDisplayType>;
   legislationSourceGuid: Scalars['String']['input'];
   longDescription?: InputMaybe<Scalars['String']['input']>;
   regulationsSourceUrl?: InputMaybe<Scalars['String']['input']>;
@@ -3710,6 +3766,15 @@ export type WildlifeInput = {
   sex?: InputMaybe<Scalars['String']['input']>;
   species: Scalars['String']['input'];
   tags?: InputMaybe<Array<InputMaybe<EarTagInput>>>;
+};
+
+export type wildlifeManagementUnitCode = {
+  __typename?: 'wildlifeManagementUnitCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  wildlifeManagementUnitCode?: Maybe<Scalars['String']['output']>;
 };
 
 

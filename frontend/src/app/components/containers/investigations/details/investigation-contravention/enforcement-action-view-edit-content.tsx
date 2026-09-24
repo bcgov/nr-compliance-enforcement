@@ -133,6 +133,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
             decisionDetailLabels={decisionDetailLabels}
             attachments={existingAttachments}
             isLoadingAttachments={attachmentsQuery.isLoading}
+            contravention={contravention}
           />
         )}
       </div>

@@ -3,7 +3,6 @@ import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 //-- entities
 import { AppUserComplaintXref } from "../../v1/app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { Complaint } from "../../v1/complaint/entities/complaint.entity";
-import { SpeciesCode } from "../../v1/species_code/entities/species_code.entity";
 import { HwcrComplaintNatureCode } from "../../v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AttractantCode } from "../../v1/attractant_code/entities/attractant_code.entity";
 import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";
@@ -14,15 +13,7 @@ import { ReportedByCode } from "../../v1/reported_by_code/entities/reported_by_c
 import { GirComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
 
 //-- models (dto for now)
-import {
-  Agency,
-  Attractant,
-  GirType,
-  NatureOfComplaint,
-  ReportedBy,
-  Species,
-  Violation,
-} from "../../types/models/code-tables";
+import { Attractant, GirType, NatureOfComplaint, ReportedBy, Violation } from "../../types/models/code-tables";
 import { DelegateDto } from "../../types/models/app_user/delegate";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
@@ -30,7 +21,6 @@ import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/
 import { SectorComplaintDto } from "../../types/models/complaints/dtos/sector-complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
-import { format, toDate, toZonedTime } from "date-fns-tz";
 import { GirTypeCode } from "../../v1/gir_type_code/entities/gir_type_code.entity";
 import { AllegationReportData } from "../../types/models/reports/complaints/allegation-report-data";
 import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";
@@ -247,38 +237,6 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
   );
 };
 
-const speciesCodeToSpeciesDtoMap = (mapper: Mapper) => {
-  createMap<SpeciesCode, Species>(
-    mapper,
-    "SpeciesCode",
-    "SpeciesDto",
-    forMember(
-      (destination) => destination.species,
-      mapFrom((source) => source.species_code),
-    ),
-    forMember(
-      (destination) => destination.legacy,
-      mapFrom((source) => source.legacy_code),
-    ),
-    forMember(
-      (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description),
-    ),
-    forMember(
-      (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description),
-    ),
-    forMember(
-      (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind),
-    ),
-    forMember(
-      (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order),
-    ),
-  );
-};
-
 const natureOfComplaintCodeToNatureOfComplaintDtoMap = (mapper: Mapper) => {
   createMap<HwcrComplaintNatureCode, NatureOfComplaint>(
     mapper,
@@ -417,7 +375,6 @@ const violationCodeToViolationDto = (mapper: Mapper) => {
 };
 
 export const applyWildlifeComplaintMap = (mapper: Mapper) => {
-  speciesCodeToSpeciesDtoMap(mapper);
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
@@ -618,19 +575,8 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.species,
-      mapFrom((src) => {
-        const item = mapper.map<SpeciesCode, Species>(src.species_code, "SpeciesCode", "SpeciesDto");
-        if (item !== null) {
-          return item.species;
-        }
-
-        return "";
-      }),
-    ),
-    forMember(
-      (destination) => destination.isLargeCarnivore,
-      mapFrom((src) => src.species_code.large_carnivore_ind),
+      (dest) => dest.species,
+      mapFrom((src) => src.species_code_ref),
     ),
     forMember(
       (destination) => destination.natureOfComplaint,
@@ -1387,7 +1333,6 @@ const girTypeCodeToGirTypeCodeDto = (mapper: Mapper) => {
 export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();
 
-  speciesCodeToSpeciesDtoMap(mapper);
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
@@ -1614,15 +1559,8 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
 
     //--
     forMember(
-      (destination) => destination.species,
-      mapFrom((src) => {
-        const item = mapper.map<SpeciesCode, Species>(src.species_code, "SpeciesCode", "SpeciesDto");
-        if (item !== null) {
-          return item.longDescription;
-        }
-
-        return "";
-      }),
+      (dest) => dest.species,
+      mapFrom((src) => src.species_code_ref),
     ),
     forMember(
       (destination) => destination.natureOfComplaint,

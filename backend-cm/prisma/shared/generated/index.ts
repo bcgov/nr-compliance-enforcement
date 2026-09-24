@@ -73,6 +73,8 @@ import { legislation_source_h as _legislation_source_h } from "./legislation_sou
 import { legislation_version as _legislation_version } from "./legislation_version";
 import { legislation_version_h as _legislation_version_h } from "./legislation_version_h";
 import { nickname as _nickname } from "./nickname";
+import { species_code as _species_code } from "./species_code";
+import { wildlife_management_unit_code as _wildlife_management_unit_code } from "./wildlife_management_unit_code";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -150,6 +152,8 @@ export namespace PrismaModel {
   export class legislation_version extends _legislation_version {}
   export class legislation_version_h extends _legislation_version_h {}
   export class nickname extends _nickname {}
+  export class species_code extends _species_code {}
+  export class wildlife_management_unit_code extends _wildlife_management_unit_code {}
 
   export const extraModels = [
     agency_code,
@@ -227,5 +231,7 @@ export namespace PrismaModel {
     legislation_version,
     legislation_version_h,
     nickname,
+    species_code,
+    wildlife_management_unit_code,
   ];
 }

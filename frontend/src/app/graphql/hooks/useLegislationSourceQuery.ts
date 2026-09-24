@@ -1,6 +1,16 @@
 import { useGraphQLQuery } from "@/app/graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { gql } from "graphql-request";
+import Option from "@apptypes/app/option";
+
+// M = Mandatory, O = Optional, H = Hidden
+export type AnimalInformationDisplayType = "M" | "O" | "H";
+
+export const animalInformationDisplayTypeOptions: Option[] = [
+  { value: "M", label: "Mandatory" },
+  { value: "O", label: "Optional" },
+  { value: "H", label: "Hidden" },
+];
 
 export interface LegislationSource {
   legislationSourceGuid: string;
@@ -13,6 +23,7 @@ export interface LegislationSource {
   agencyCode: string;
   sourceType: string;
   activeInd: boolean;
+  animalInformationDisplayType: AnimalInformationDisplayType;
   createUserId?: string;
   createUtcTimestamp?: string;
 }
@@ -25,6 +36,7 @@ export interface CreateLegislationSourceInput {
   agencyCode: string;
   sourceType?: string;
   effectiveDate?: string;
+  animalInformationDisplayType?: AnimalInformationDisplayType;
 }
 
 export interface UpdateLegislationSourceInput {
@@ -35,6 +47,7 @@ export interface UpdateLegislationSourceInput {
   regulationsSourceUrl?: string;
   agencyCode?: string;
   activeInd?: boolean;
+  animalInformationDisplayType?: AnimalInformationDisplayType;
 }
 
 const GET_LEGISLATION_SOURCES = gql`
@@ -50,6 +63,7 @@ const GET_LEGISLATION_SOURCES = gql`
       agencyCode
       sourceType
       activeInd
+      animalInformationDisplayType
       createUserId
     }
   }
@@ -68,6 +82,7 @@ const GET_LEGISLATION_SOURCE = gql`
       agencyCode
       sourceType
       activeInd
+      animalInformationDisplayType
     }
   }
 `;
@@ -83,6 +98,7 @@ const CREATE_LEGISLATION_SOURCE = gql`
       agencyCode
       sourceType
       activeInd
+      animalInformationDisplayType
     }
   }
 `;
@@ -98,6 +114,7 @@ const UPDATE_LEGISLATION_SOURCE = gql`
       agencyCode
       sourceType
       activeInd
+      animalInformationDisplayType
     }
   }
 `;

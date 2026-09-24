@@ -1,6 +1,6 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { contravention } from "../../../../prisma/investigation/generated/contravention";
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType, Int } from "@nestjs/graphql";
 import { InvestigationParty } from "src/investigation/investigation_party/dto/investigation_party";
 
 export class Contravention {
@@ -11,6 +11,10 @@ export class Contravention {
   isActive: boolean;
   date: Date;
   community: string;
+  speciesCode?: string;
+  speciesOtherText?: string;
+  quantity?: number;
+  wildlifeManagementUnitCode?: string;
   selectedPartyGuid?: string;
 }
 
@@ -33,6 +37,18 @@ export class CreateUpdateContraventionInput {
 
   @Field(() => String, { nullable: true })
   selectedPartyGuid?: string | null;
+
+  @Field(() => String, { nullable: true })
+  speciesCode?: string | null;
+
+  @Field(() => String, { nullable: true })
+  speciesOtherText?: string | null;
+
+  @Field(() => Int, { nullable: true })
+  quantity?: number | null;
+
+  @Field(() => String, { nullable: true })
+  wildlifeManagementUnitCode?: string | null;
 }
 
 export const mapPrismaContreventionToContravention = (mapper: Mapper) => {
@@ -83,6 +99,22 @@ export const mapPrismaContreventionToContravention = (mapper: Mapper) => {
     forMember(
       (dest) => dest.community,
       mapFrom((src) => src.geo_organization_unit_code_ref),
+    ),
+    forMember(
+      (dest) => dest.speciesCode,
+      mapFrom((src) => src.species_code_ref),
+    ),
+    forMember(
+      (dest) => dest.speciesOtherText,
+      mapFrom((src) => src.species_other_text),
+    ),
+    forMember(
+      (dest) => dest.quantity,
+      mapFrom((src) => src.quantity),
+    ),
+    forMember(
+      (dest) => dest.wildlifeManagementUnitCode,
+      mapFrom((src) => src.wildlife_management_unit_code_ref),
     ),
   );
 };

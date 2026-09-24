@@ -28,6 +28,17 @@ BEGIN
 
     truncated_short_description := LEFT(webeoc_value, 50);
 
+    -- Species codes now live in shared.species_code, which this function cannot reach, so a new
+    -- code can no longer be created here. An unmapped species falls back to the unknown code.
+    IF code_table_type = 'speciescd' THEN
+        SELECT live_data_value INTO live_code_value
+        FROM complaint.staging_metadata_mapping
+        WHERE staged_data_value = webeoc_value
+        AND entity_code = code_table_type;
+
+        RETURN COALESCE(live_code_value, 'UNKNOWN');
+    END IF;
+
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
         WHEN 'reprtdbycd' THEN
@@ -36,9 +47,6 @@ BEGIN
         WHEN 'geoorgutcd' THEN
             target_code_table := 'geo_organization_unit_code';
             column_name := 'geo_organization_unit_code';
-        WHEN 'speciescd' THEN
-            target_code_table := 'species_code';
-            column_name := 'species_code';
         WHEN 'cmpltntrcd' THEN
             target_code_table := 'hwcr_complaint_nature_code';
             column_name := 'hwcr_complaint_nature_code';

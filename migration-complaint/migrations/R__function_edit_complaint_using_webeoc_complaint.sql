@@ -338,7 +338,7 @@ BEGIN
     FROM   complaint.insert_and_return_code(_edit_webeoc_species, 'speciescd');
    
     -- get the current species code
-   	SELECT hc.species_code 
+   	SELECT hc.species_code_ref 
    	INTO _current_species_code
 	FROM complaint.hwcr_complaint hc 
 	WHERE hc.complaint_identifier = _complaint_identifier;
@@ -346,7 +346,7 @@ BEGIN
 
     if (_edit_species_code <> _current_species_code) then 
     	update complaint.hwcr_complaint
-    	set species_code = _edit_species_code
+    	set species_code_ref = _edit_species_code
     	where complaint_identifier = _complaint_identifier;
     end if;
    
