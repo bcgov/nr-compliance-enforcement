@@ -14,7 +14,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import {
@@ -31,7 +31,6 @@ import {
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { copyInvestigationPartyAttachmentsToSharedParty } from "@/app/common/attachment-upload-helper";
 import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
@@ -128,7 +127,6 @@ const ENFORCEMENT_ACTION_FIELDS = `
 const CREATE_ENFORCEMENT_ACTION = gql`
   mutation CreateEnforcementAction($input: CreateEnforcementActionInput!) {
     createEnforcementAction(input: $input) {
-      publishedPartyReference
       ${ENFORCEMENT_ACTION_FIELDS}
     }
   }
@@ -184,10 +182,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   const isEdit = !!enforcementAction;
   const attachmentsRef = useRef<EnforcementActionAttachmentSectionHandle>(null);
 
-  //Check if party is local or global (i.e. if it has a partyReference, it is global)
-  const willPublishParty = !isEdit && !!party && !party.partyReference;
-
-  const dispatch = useAppDispatch();
   const agency = useAppSelector(selectOfficerAgency);
   const officersInAgency = useAppSelector((state) => selectOfficersByAgency(state, agency));
   const enforcementActionSelector = useMemo(() => selectEnforcementActionsByAgency(agency), [agency]);
@@ -415,11 +409,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   });
 
   // Everything that follows a successful save
-  const runPostSaveSideEffects = async (
-    enforcementActionId: string,
-    value: FormValues,
-    publishedPartyReference: string | null,
-  ) => {
+  const runPostSaveSideEffects = async (enforcementActionId: string, value: FormValues) => {
     try {
       const enforcementActionLabel =
         enforcementActionOptions.find((opt) => opt.value === value.enforcementActionCode)?.label ?? "";
@@ -432,34 +422,13 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         location: "",
       });
       await updateTimestampMutation.mutateAsync({ investigationGuid });
-
-      // The party's attachments live in COMS under the investigation's tags, which the shared party
-      // page never looks at. Copy them across so the newly published profile carries them.
-      if (publishedPartyReference && party?.partyIdentifier) {
-        const failedFiles = await copyInvestigationPartyAttachmentsToSharedParty({
-          dispatch,
-          investigationGuid,
-          investigationPartyGuid: party.partyIdentifier,
-          sharedPartyGuid: publishedPartyReference,
-        });
-
-        if (failedFiles.length > 0) {
-          ToggleError(`Party was saved, but these attachments could not be copied: ${failedFiles.join(", ")}`);
-        }
-      }
     } catch (sideEffectError) {
       console.error("Enforcement action saved, but a post-save update failed", sideEffectError);
     }
   };
 
   const showSaveSuccessToast = () => {
-    if (isEdit) {
-      ToggleSuccess("Decision updated successfully");
-    } else if (willPublishParty) {
-      ToggleSuccess("Decision and party details saved successfully");
-    } else {
-      ToggleSuccess("Decision saved successfully");
-    }
+    ToggleSuccess(isEdit ? "Decision updated successfully" : "Decision saved successfully");
   };
 
   // Expose save to modal
@@ -472,7 +441,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       onIsSavingChange?.(true);
       try {
         let enforcementActionId: string;
-        let publishedPartyReference: string | null = null;
         if (isEdit) {
           const input: UpdateEnforcementActionInput = {
             enforcementActionIdentifier: enforcementAction!.enforcementActionIdentifier,
@@ -500,10 +468,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           };
           const created: any = await saveMutation.mutateAsync({ input });
           enforcementActionId = created.createEnforcementAction.enforcementActionIdentifier;
-          publishedPartyReference = created.createEnforcementAction.publishedPartyReference ?? null;
         }
 
-        await runPostSaveSideEffects(enforcementActionId, value, publishedPartyReference);
+        await runPostSaveSideEffects(enforcementActionId, value);
 
         showSaveSuccessToast();
         onDirtyChange?.(0, false);
@@ -680,16 +647,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      {willPublishParty && (
-        <Alert
-          variant="warning"
-          id="enforcement-action-publish-party-notice"
-        >
-          <i className="bi bi-info-circle-fill pe-2" /> Saving this decision will also save the details of the party
-          involved for use in future investigations.
-        </Alert>
-      )}
-
       {contravention && (
         <ContraventionSummary
           contravention={contravention}

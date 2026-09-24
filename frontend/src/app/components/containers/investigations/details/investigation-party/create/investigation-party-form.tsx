@@ -44,12 +44,16 @@ import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
 import { getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
-import { buildSharedPartyAttachmentReferences } from "@/app/common/attachment-upload-helper";
+import {
+  buildSharedPartyAttachmentReferences,
+  copyInvestigationPartyAttachmentsToSharedParty,
+} from "@/app/common/attachment-upload-helper";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
     addPartyToInvestigation(investigationGuid: $investigationGuid, input: $input) {
       partyIdentifier
+      partyReference
     }
   }
 `;
@@ -60,6 +64,7 @@ const UPDATE_INVESTIGATION_PARTY = gql`
       investigationGuid
       parties {
         partyIdentifier
+        partyReference
       }
     }
   }
@@ -135,6 +140,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const copyInFlightRef = useRef(false);
   const [copyPending, setCopyPending] = useState(false);
   const [attachmentsSaving, setAttachmentsSaving] = useState(false);
+  const justPublishedRef = useRef(false);
 
   const isLinkedParty = !!editParty?.partyReference;
 
@@ -237,11 +243,30 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     setTriggerSaveAttachments((n) => n + 1);
   };
 
+  // The party's attachments live in COMS under the investigation's tags, which the shared party
+  // page never looks at. Copy them across so a newly published profile carries them.
+  const copyPartyAttachmentsToSharedParty = async (investigationPartyGuid: string, sharedPartyGuid: string) => {
+    const failedFiles = await copyInvestigationPartyAttachmentsToSharedParty({
+      dispatch,
+      investigationGuid,
+      investigationPartyGuid,
+      sharedPartyGuid,
+    });
+
+    if (failedFiles.length > 0) {
+      ToggleError(`Party was saved, but these attachments could not be copied: ${failedFiles.join(", ")}`);
+    }
+  };
+
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_TO_INVESTIGATION, {
     invalidateQueries: [["getInvestigation", investigationGuid]],
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       const created = data?.addPartyToInvestigation?.[0];
       if (created?.partyIdentifier) setPartyIdentifier(created.partyIdentifier);
+      justPublishedRef.current = !!created?.partyReference;
+      if (created?.partyIdentifier && created?.partyReference) {
+        await copyPartyAttachmentsToSharedParty(created.partyIdentifier, created.partyReference);
+      }
       flushAttachmentsThenNavigate();
     },
     onError: (error: any) => {
@@ -260,7 +285,15 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       ["searchPartyEvents", editParty?.partyReference],
       ["searchParties"],
     ],
-    onSuccess: () => {
+    onSuccess: async (data: any) => {
+      const updatedParty = data?.updateInvestigationParty?.parties?.find(
+        (p: any) => p.partyIdentifier === editParty?.partyIdentifier,
+      );
+      const newlyPublished = !isLinkedParty && !!updatedParty?.partyReference;
+      justPublishedRef.current = newlyPublished;
+      if (newlyPublished && editParty?.partyIdentifier) {
+        await copyPartyAttachmentsToSharedParty(editParty.partyIdentifier, updatedParty.partyReference);
+      }
       flushAttachmentsThenNavigate();
     },
     onError: (error: any) => {
@@ -309,6 +342,21 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const partyTypeValue = useStore(form.store, (state) => state.values.partyType);
 
+  // Mirrors the backend's minimum-information check (InvestigationPartyService._hasMinimumInfo):
+  // a person needs first name, last name and date of birth; a business only needs its name, which
+  // is required to be published to global.
+  const minimumInfoValues = useStore(form.store, (state) => ({
+    firstName: state.values.firstName,
+    lastName: state.values.lastName,
+    dateOfBirth: state.values.dateOfBirth,
+    businessName: state.values.businessName,
+  }));
+  const hasMinimumInfo =
+    partyTypeValue === PartyTypeCodes.ORGANIZATION
+      ? !!minimumInfoValues.businessName?.trim()
+      : !!(minimumInfoValues.firstName?.trim() && minimumInfoValues.lastName?.trim() && minimumInfoValues.dateOfBirth);
+  const willPublish = !isLinkedParty && hasMinimumInfo;
+
   const partyTypeCodes = partyTypes
     ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
     .filter((party: any) => [PartyTypeCodes.PERSON, PartyTypeCodes.ORGANIZATION].includes(party.value))
@@ -351,6 +399,26 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       return;
     }
 
+    // Warning to publish party in creation if it has minimum info
+    if (!isEditMode && willPublish && matches.length === 0) {
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: SAVE_CONFIRM,
+          data: {
+            title: "Create new party",
+            warnings: ["This profile will be published and available for use in future investigations."],
+            cancelText: "Cancel",
+            saveText: "Save and close",
+          },
+          callback: () => {
+            form.handleSubmit();
+          },
+        }),
+      );
+      return;
+    }
+
     if (matches.length > 0) {
       dispatch(
         openModal({
@@ -358,7 +426,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           modalType: SAVE_CONFIRM,
           data: {
             title: isEditMode ? "Save party" : "Create new party",
-            warning: "Potential matching profiles were found based on the information entered.",
+            warnings: [
+              ...(willPublish
+                ? ["This profile will be published and available for use in future investigations."]
+                : []),
+              "Potential matching profiles were found based on the information entered.",
+            ],
             description:
               "Confirm this party does not match an existing profile before saving, to avoid the creation of duplicate records.",
             cancelText: "Cancel",
@@ -704,7 +777,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   triggerSave={triggerSaveAttachments}
                   onDirtyChange={(_, dirty) => setAttachmentsDirty(dirty)}
                   onSaved={() => {
-                    ToggleSuccess(isEditMode ? "Party updated successfully" : "Party added successfully");
+                    const action = isEditMode ? "updated" : "added";
+                    ToggleSuccess(
+                      justPublishedRef.current
+                        ? `Party ${action} and published for use in future investigations`
+                        : `Party ${action} successfully`,
+                    );
                     navigateToPreviousParty();
                   }}
                 />
