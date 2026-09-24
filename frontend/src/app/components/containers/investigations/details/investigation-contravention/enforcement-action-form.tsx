@@ -292,14 +292,14 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketTypeCode: enforcementAction?.ticket?.ticketTypeCode ?? "",
       ticketAmount: enforcementAction?.ticket?.ticketAmount?.toString() ?? "",
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
-      ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "",
+      ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "INPR",
       // Warning
       warningNumber: enforcementAction?.warningNumber ?? "",
       // Administrative Sanction
       sanctionTypeCode: enforcementAction?.sanctionTypeCode ?? "",
       effectiveDate: enforcementAction?.effectiveDate ? new Date(enforcementAction.effectiveDate) : null,
       endDate: enforcementAction?.endDate ? new Date(enforcementAction.endDate) : null,
-      sanctionStatusCode: enforcementAction?.sanctionStatusCode ?? "",
+      sanctionStatusCode: enforcementAction?.sanctionStatusCode ?? "ISUD",
       // Order
       orderTypeCode: enforcementAction?.orderTypeCode ?? "",
       orderStatusCode: enforcementAction?.orderStatusCode ?? "",
@@ -313,7 +313,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       hearingDate: enforcementAction?.hearingDate ? new Date(enforcementAction.hearingDate) : null,
       decisionDate: enforcementAction?.decisionDate ? new Date(enforcementAction.decisionDate) : null,
       // Court Prosecution
-      courtProsecutionStatusCode: enforcementAction?.courtProsecutionStatusCode ?? "",
+      courtProsecutionStatusCode: enforcementAction?.courtProsecutionStatusCode ?? "INPR",
       // Shared: Court Prosecution/Administrative Penalty
       approvalInd: boolToOption(enforcementAction?.approvalInd),
       // Administrative Penalty
