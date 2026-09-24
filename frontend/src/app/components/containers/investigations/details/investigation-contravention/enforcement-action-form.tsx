@@ -17,8 +17,6 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
-import { selectCodeTable } from "@store/reducers/code-table";
-import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import {
   selectAdministrativePenaltyStatuses,
   selectCourtProsecutionStatuses,
