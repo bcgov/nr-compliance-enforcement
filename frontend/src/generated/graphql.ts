@@ -2536,6 +2536,21 @@ export type PartyTypeCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type PartyUniqueFieldCheckInput = {
+  businessIdentifierValue?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountrySubdivisionCode?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
+  externalIds?: InputMaybe<Array<PartyExternalIdInput>>;
+};
+
+export type PartyUniqueFieldConflict = {
+  __typename?: 'PartyUniqueFieldConflict';
+  fieldCode: Scalars['String']['output'];
+  shortDescription: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type PartyUpdateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressUpdateInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
@@ -2743,6 +2758,7 @@ export type Query = {
   checkCaseNameExists: Scalars['Boolean']['output'];
   checkInspectionNameExists: Scalars['Boolean']['output'];
   checkInvestigationNameExists: Scalars['Boolean']['output'];
+  checkPartyUniqueFields: Array<PartyUniqueFieldConflict>;
   complexionCodes: Array<Maybe<ComplexionCode>>;
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
@@ -2918,6 +2934,12 @@ export type QuerycheckInvestigationNameExistsArgs = {
   excludeInvestigationGuid?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
   name: Scalars['String']['input'];
+};
+
+
+export type QuerycheckPartyUniqueFieldsArgs = {
+  excludePartyIdentifier?: InputMaybe<Scalars['String']['input']>;
+  input: PartyUniqueFieldCheckInput;
 };
 
 

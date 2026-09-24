@@ -3,8 +3,9 @@ import notificationInvalid from "@assets/images/notification-invalid.png";
 
 interface FormStatusProps {
   form: ReactFormApi<any, any, any, any, any, any, any, any, any, any, any, any>;
+  errorMessage?: string;
 }
-export const FormErrorBanner = ({ form }: FormStatusProps) => {
+export const FormErrorBanner = ({ form, errorMessage }: FormStatusProps) => {
   return (
     <form.Subscribe
       selector={(state) => {
@@ -13,7 +14,7 @@ export const FormErrorBanner = ({ form }: FormStatusProps) => {
       }}
     >
       {([canSubmit, isAnyFieldValidating]) => {
-        if (!canSubmit && !isAnyFieldValidating) {
+        if ((!canSubmit && !isAnyFieldValidating) || errorMessage) {
           return (
             <div
               id="complaint-error-notification"
@@ -25,6 +26,7 @@ export const FormErrorBanner = ({ form }: FormStatusProps) => {
                 className="filter-image-spacing"
               />{" "}
               Errors in form
+              {errorMessage ? `. ${errorMessage}` : ""}
             </div>
           );
         }

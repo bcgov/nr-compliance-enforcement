@@ -79,6 +79,21 @@ type PartyMatchResult {
   matchedFields: [PartyMatchedField!]!
 }
 
+input PartyUniqueFieldCheckInput {
+  driversLicenseNumber: String
+  driversLicenseCountryCode: String
+  driversLicenseCountrySubdivisionCode: String
+  businessIdentifierValue: String
+  externalIds: [PartyExternalIdInput!]
+}
+
+# A unique identifier that is already in use by a published profile
+type PartyUniqueFieldConflict {
+  fieldCode: String!
+  shortDescription: String!
+  value: String!
+}
+
 # Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
 input PartyMatchInput {
   partyTypeCode: String!
