@@ -23,14 +23,14 @@ export const LegislationRow: FC<LegislationRowProps> = ({ contravention, partyRe
 
   // No enforcement actions: still show the citation
   if (enforcementActionRows.length === 0) {
-    return <p className="ms-4 mb-1">{displayText}</p>;
+    return <p className="mb-1">{displayText}</p>;
   }
 
   return (
     <>
       {matchingParty?.enforcementActions?.map((enforcementAction) => (
         <p
-          className="ms-4 mb-1"
+          className="mb-1"
           key={enforcementAction?.enforcementActionIdentifier}
         >
           {displayText}{" "}

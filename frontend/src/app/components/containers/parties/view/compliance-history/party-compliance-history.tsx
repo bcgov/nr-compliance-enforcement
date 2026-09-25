@@ -20,8 +20,16 @@ import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
 import Option from "@apptypes/app/option";
-import { PartyComplianceActivity, PartyComplianceRelation } from "@/app/types/app/shared/party-compliance-history";
+import {
+  PartyComplianceActivity,
+  PartyComplianceHistoryRow,
+  PartyComplianceRelation,
+} from "@/app/types/app/shared/party-compliance-history";
 import LegislationRow from "@/app/components/containers/parties/view/compliance-history/legislation-row";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { CompColumn } from "@/app/types/app/comp-tables";
+import { CompTable } from "@/app/components/common/comp-table";
+import { SORT_TYPES } from "@/app/constants/sort-direction";
 
 const GET_INVESTIGATIONS_BY_PARTY = gql`
   query GetInvestigationsByParty($partyId: String!, $partyType: String!) {
@@ -39,8 +47,10 @@ const GET_INVESTIGATIONS_BY_PARTY = gql`
         shortDescription
       }
       primaryInvestigatorGuid
+      supervisorGuid
       contraventions {
         contraventionIdentifier
+        date
         legislationIdentifierRef
         investigationParty {
           partyReference
@@ -114,6 +124,24 @@ const buildActivityPath = (activity: PartyComplianceActivity): string => {
   const segment = activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection";
   return `/${segment}/${activity.id}`;
 };
+
+// One row per contravention; open investigations and those without contraventions get a single row with no contravention details.
+const buildHistoryRows = (activities: PartyComplianceActivity[]): PartyComplianceHistoryRow[] =>
+  activities.flatMap<PartyComplianceHistoryRow>((activity) => {
+    const contraventions = activity.status === "Open" ? [] : (activity.contraventions ?? []);
+    if (contraventions.length === 0) {
+      return [{ rowKey: activity.id ?? "", activity, contravention: null }];
+    }
+    return contraventions.map((contravention) => ({
+      rowKey: `${activity.id}-${contravention.contraventionIdentifier}`,
+      activity,
+      contravention,
+    }));
+  });
+
+// TODO is this right date?
+const getContraventionDate = (row: PartyComplianceHistoryRow) =>
+  row.contravention?.date ? parseUTCDateToLocal(row.contravention.date, null) : null;
 
 interface PartyComplianceHistoryProps {
   partyReference: string;
@@ -215,6 +243,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
             sameAgency: currenInvestigation?.leadAgency === userAgency,
             status: currenInvestigation?.investigationStatus?.shortDescription ?? "",
             primaryInvestigatorName: getOfficerName(currenInvestigation?.primaryInvestigatorGuid ?? ""),
+            supervisorName: getOfficerName(currenInvestigation?.supervisorGuid ?? ""),
             contraventions: (currenInvestigation?.contraventions as Contravention[]) ?? null,
           });
         }
@@ -321,44 +350,120 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
     .flatMap((relation) => relation.activities ?? [])
     .toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""));
 
+  const historyRows = buildHistoryRows(activities);
+
+  const columns: CompColumn<PartyComplianceHistoryRow>[] = [
+    {
+      label: "Investigation",
+      sortKey: "name",
+      isSortable: true,
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      getValue: (row) => (row.activity.name ?? "").toLowerCase(),
+      renderCell: (row) =>
+        row.activity.sameAgency ? (
+          <Link
+            to={buildActivityPath(row.activity)}
+            className="comp-cell-link"
+          >
+            {row.activity.name}
+          </Link>
+        ) : (
+          <span>{row.activity.name}</span>
+        ),
+    },
+    {
+      label: "Role",
+      sortKey: "role",
+      isSortable: true,
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      getValue: (row) => (row.activity.role ?? "").toLowerCase(),
+      renderCell: (row) => <Badge bg="species-badge comp-species-badge">{row.activity.role}</Badge>,
+    },
+    {
+      label: "Date",
+      sortKey: "date",
+      isSortable: true,
+      headerClassName: "comp-cell-width-100 comp-cell-min-width-100",
+      cellClassName: "comp-cell-width-100 comp-cell-min-width-100",
+      getValue: (row) => getContraventionDate(row)?.getTime() ?? 0,
+      renderCell: (row) => {
+        const contraventionDate = getContraventionDate(row);
+        return contraventionDate ? formatDateObjectAsString(contraventionDate, { format: "date" }) : "";
+      },
+    },
+    {
+      label: "Outcomes",
+      headerClassName: "comp-cell-width-250 comp-cell-min-width-250",
+      cellClassName: "comp-cell-width-250 comp-cell-min-width-250",
+      renderCell: (row) =>
+        row.contravention ? (
+          <LegislationRow
+            contravention={row.contravention}
+            partyReference={partyReference}
+          />
+        ) : (
+          ""
+        ),
+    },
+    {
+      label: "Primary investigator",
+      sortKey: "primaryInvestigator",
+      isSortable: true,
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      getValue: (row) => (row.activity.primaryInvestigatorName ?? "").toLowerCase(),
+      renderCell: (row) => row.activity.primaryInvestigatorName ?? "",
+    },
+    {
+      label: "Supervisor",
+      sortKey: "supervisor",
+      isSortable: true,
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      getValue: (row) => (row.activity.supervisorName ?? "").toLowerCase(),
+      renderCell: (row) => row.activity.supervisorName ?? "",
+    },
+    {
+      label: "Agency",
+      sortKey: "agency",
+      isSortable: true,
+      headerClassName: "comp-cell-width-100 comp-cell-min-width-100",
+      cellClassName: "comp-cell-width-100 comp-cell-min-width-100",
+      getValue: (row) => (row.activity.leadAgency ?? "").toLowerCase(),
+      renderCell: (row) => row.activity.leadAgency ?? "",
+    },
+    {
+      label: "Status",
+      sortKey: "status",
+      isSortable: true,
+      headerClassName: "comp-cell-width-100 comp-cell-min-width-100",
+      cellClassName: "comp-cell-width-100 comp-cell-min-width-100",
+      getValue: (row) => (row.activity.status ?? "").toLowerCase(),
+      renderCell: (row) => (
+        <Badge
+          bg="species-badge comp-species-badge"
+          className={`${applyStatusClass(row.activity.status ?? "")}`}
+        >
+          {row.activity.status}
+        </Badge>
+      ),
+    },
+  ];
+
   return (
-    <div>
-      {activities.map((activity) => (
-        <div key={activity.id}>
-          <p className="mb-1">
-            <Badge
-              bg="species-badge comp-species-badge"
-              className="ms-2"
-            >
-              {activity.role}
-            </Badge>{" "}
-            {activity.sameAgency ? (
-              <Link to={buildActivityPath(activity)}>{activity.name}</Link>
-            ) : (
-              <span>{activity.name}</span>
-            )}
-            <span className="ms-2">
-              Primary investigator: {activity.primaryInvestigatorName}
-              {activity.leadAgency && ` (${activity.leadAgency})`}
-            </span>{" "}
-            <Badge
-              bg="species-badge comp-species-badge"
-              className={`${applyStatusClass(activity.status ?? "")}`}
-            >
-              {activity.status}
-            </Badge>
-          </p>
-          {activity.status !== "Open" &&
-            activity.contraventions?.map((contravention: Contravention) => (
-              <LegislationRow
-                key={contravention.contraventionIdentifier}
-                contravention={contravention}
-                partyReference={partyReference}
-              />
-            ))}
-        </div>
-      ))}
-    </div>
+    <CompTable
+      data={historyRows}
+      tableIdentifier="party-compliance-history"
+      isFixedHeight={false}
+      columns={columns}
+      getRowKey={(row) => row.rowKey}
+      defaultSort="name"
+      defaultSortDirection={SORT_TYPES.ASC}
+      emptyMessage="No compliance and enforcement history."
+      itemLabel="records"
+    />
   );
 };
 
