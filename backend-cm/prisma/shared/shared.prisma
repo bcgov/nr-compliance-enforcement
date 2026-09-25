@@ -729,6 +729,7 @@ model party {
   update_user_id           String?             @db.VarChar(32)
   update_utc_timestamp     DateTime?           @db.Timestamp(6)
   created_by_app_user_guid String?             @db.Uuid
+  active_ind               Boolean             @default(true)
   address                  address[]
   alias                    alias[]
   business                 business?
