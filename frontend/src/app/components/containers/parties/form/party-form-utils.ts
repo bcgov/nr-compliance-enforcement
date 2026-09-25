@@ -4,7 +4,6 @@ import {
   InvestigationPersonFacialHairStyleCodeRef,
   PartyExternalId,
   PersonFacialHairStyleCode,
-  PersonInput,
   PersonUpdateInput,
   UpdateInvestigationBusinessIdentifierInput,
 } from "@/generated/graphql";
