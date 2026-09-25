@@ -21,7 +21,7 @@ import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/comm
 import { getBusinessIdentifier, getPartyMissingFields, getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
-const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
+const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "CMPLNNT", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
 // Can we genercize this in the future?
 interface Props {
@@ -108,9 +108,7 @@ const PartiesList: React.FC<Props> = ({
   const getPrimaryContactName = (business: InvestigationBusiness): string => {
     const contactPeople = (business.contactPeople ?? []).filter(Boolean) as InvestigationBusinessPerson[];
     const primary = contactPeople.find((cp) => cp.isPrimary) ?? contactPeople[0];
-    const person = primary?.person;
-    if (!person) return "-";
-    return [person.firstName, person.lastName].filter(Boolean).join(", ") || "-";
+    return getPartyName({ person: primary?.person });
   };
 
   const isGlobalParty = (party: InvestigationParty | InspectionParty): boolean => {
@@ -223,15 +221,13 @@ const PartiesList: React.FC<Props> = ({
       const aliases = getAliases(invParty.aliases) || "-";
       const primaryContact = getPrimaryContactName(invParty.business);
       const businessNumber = getBusinessIdentifier(invParty.business, BusinessIdentifiers.BUSINESS_NUMBER) || "-";
-      const worksafeBCNumber = getBusinessIdentifier(invParty.business, BusinessIdentifiers.WSBC_NUMBER) || "-";
       const address = getPartyAddress(invParty.addresses);
       const missingFields = getPartyMissingFields(invParty);
       const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
       return (
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Doing business as", aliases, "Business number", businessNumber)}
-          {renderDetailRow("WorkSafeBC number", worksafeBCNumber, "Primary contact", primaryContact)}
-          {renderDetailRow("Primary address", address, "", "")}
+          {renderDetailRow("Primary contact", primaryContact, "Primary address", address)}
           {invParty.isUpToDate === false && renderNotUpToDateAlert(invParty.partyIdentifier)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">

@@ -7,7 +7,11 @@ import { usePartyFormFields } from "@/app/components/containers/parties/hooks/us
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { z } from "zod";
 import { Button, Form } from "react-bootstrap";
-import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
+import {
+  BUSINESS_NUMBER_FIELD,
+  clearFieldError,
+  getFieldErrorMessage,
+} from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyContactFields } from "@/app/components/containers/parties/form/party-contact-fields";
 import { PartyAliasFields } from "@/app/components/containers/parties/form/party-alias-fields";
 import { PartyExternalIdFields } from "@/app/components/containers/parties/form/party-external-id-fields";
@@ -163,7 +167,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
             onChange={(evt: any) => {
               field.handleChange(evt?.target?.value || "");
               if (getFieldErrorMessage(field)) {
-                field.setMeta({ errorMap: {}, errorSourceMap: {} });
+                clearFieldError(form, BUSINESS_NUMBER_FIELD);
               }
             }}
             disabled={isDisabled}

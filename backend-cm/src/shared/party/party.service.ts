@@ -13,6 +13,7 @@ import {
   PartyMatchInput,
   PartyMatchResult,
   PartyResult,
+  PartyUniqueFieldConflict,
   PartyUpdateInput,
 } from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
@@ -37,6 +38,15 @@ import { PartyExternalId, PartyExternalIdInput } from "src/shared/party_external
 import { ContactMethods } from "src/enum/contact-method.enum";
 import { toDateString } from "src/common/custom_scalars";
 import { PersonInput } from "src/shared/person/dto/person.input";
+import {
+  buildPartyUniqueFieldCheck,
+  CANADA_COUNTRY_CODE,
+  DRIVERS_LICENSE_FIELD_CODE,
+  DRIVERS_LICENSE_FIELD_LABEL,
+  hasMatchableUniqueValue,
+  PARTY_DUPLICATE_MESSAGE,
+  PartyUniqueFieldCheck,
+} from "./party-uniqueness";
 
 type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, extra?: Record<string, any>) => void;
 
@@ -416,6 +426,104 @@ export class PartyService {
     return dateOfBirth ? null : approximateAgeCode;
   }
 
+  async findUniqueFieldConflicts(
+    check: PartyUniqueFieldCheck,
+    excludePartyIdentifier?: string | null,
+  ): Promise<PartyUniqueFieldConflict[]> {
+    const lookups = this._buildUniqueFieldLookups(check);
+
+    if (!lookups.length) {
+      return [];
+    }
+
+    const exclusion = excludePartyIdentifier
+      ? Prisma.sql`WHERE m.party_guid::text <> ${excludePartyIdentifier}`
+      : Prisma.empty;
+
+    const matches = await this.prisma.$queryRaw<{ field_code: string; field_label: string; field_value: string }[]>(
+      Prisma.sql`WITH matched AS (${Prisma.join(lookups, " UNION ALL ")})
+        SELECT DISTINCT m.field_code, m.field_label, m.field_value
+        FROM matched m
+        ${exclusion}`,
+    );
+
+    return matches.map((match) => ({
+      fieldCode: match.field_code,
+      shortDescription: match.field_label,
+      value: match.field_value,
+    }));
+  }
+
+  async validateUniquePartyFields(check: PartyUniqueFieldCheck, excludePartyIdentifier?: string | null): Promise<void> {
+    const conflicts = await this.findUniqueFieldConflicts(check, excludePartyIdentifier);
+
+    if (conflicts.length) {
+      this.logger.warn(
+        `Duplicate party identifiers rejected: ${conflicts.map((conflict) => conflict.fieldCode).join(", ")}`,
+      );
+      throw new Error(PARTY_DUPLICATE_MESSAGE);
+    }
+  }
+
+  private _buildUniqueFieldLookups(check: PartyUniqueFieldCheck): Prisma.Sql[] {
+    const lookups: Prisma.Sql[] = [];
+    const driversLicenseNumber = check.driversLicenseNumber?.trim();
+
+    if (hasMatchableUniqueValue(driversLicenseNumber)) {
+      const countryCode = check.driversLicenseCountryCode?.trim() || null;
+      // Canada issues licence numbers per province
+      const provinceClause =
+        countryCode === CANADA_COUNTRY_CODE
+          ? Prisma.sql`AND pe.drivers_license_country_subdivision_code IS NOT DISTINCT FROM ${check.driversLicenseCountrySubdivisionCode?.trim() || null}::text`
+          : Prisma.empty;
+
+      lookups.push(
+        Prisma.sql`SELECT pe.party_guid, ${DRIVERS_LICENSE_FIELD_CODE}::text AS field_code, ${DRIVERS_LICENSE_FIELD_LABEL}::text AS field_label, pe.drivers_license_number AS field_value
+          FROM shared.person pe
+          JOIN shared.party p ON p.party_guid = pe.party_guid
+          WHERE pe.drivers_license_number IS NOT NULL
+            AND shared.f_match_norm(pe.drivers_license_number) = shared.f_match_norm(${driversLicenseNumber})
+            AND pe.drivers_license_country_code IS NOT DISTINCT FROM ${countryCode}::text
+            ${provinceClause}`,
+      );
+    }
+
+    const businessIdentifierValue = check.businessIdentifierValue?.trim();
+
+    if (hasMatchableUniqueValue(businessIdentifierValue)) {
+      lookups.push(
+        Prisma.sql`SELECT b.party_guid, ${BusinessIdentifiers.BUSINESS_NUMBER}::text AS field_code, bic.short_description AS field_label, bi.identifier_value AS field_value
+          FROM shared.business_identifier bi
+          JOIN shared.business b ON b.business_guid = bi.business_guid
+          JOIN shared.business_identifier_code bic ON bic.business_identifier_code = bi.business_identifier_code
+          WHERE bi.active_ind = true
+            AND bi.business_identifier_code = ${BusinessIdentifiers.BUSINESS_NUMBER}
+            AND shared.f_match_norm(bi.identifier_value) = shared.f_match_norm(${businessIdentifierValue})
+            AND b.party_guid IS NOT NULL`,
+      );
+    }
+
+    for (const externalId of check.externalIds ?? []) {
+      const externalIdCode = externalId.externalIdCode?.trim();
+      const externalIdValue = externalId.externalIdValue?.trim();
+
+      if (!externalIdCode || !hasMatchableUniqueValue(externalIdValue)) {
+        continue;
+      }
+
+      lookups.push(
+        Prisma.sql`SELECT pei.party_guid, ${externalIdCode}::text AS field_code, peic.short_description AS field_label, pei.external_id_value AS field_value
+          FROM shared.party_external_id pei
+          JOIN shared.party_external_id_code peic ON peic.party_external_id_code = pei.party_external_id_code
+          WHERE pei.active_ind = true
+            AND pei.party_external_id_code = ${externalIdCode}
+            AND shared.f_match_norm(pei.external_id_value) = shared.f_match_norm(${externalIdValue})`,
+      );
+    }
+
+    return lookups;
+  }
+
   async findOne(id: string) {
     const prismaParty: any = await this.prisma.party.findUnique({
       where: {
@@ -612,6 +720,8 @@ export class PartyService {
       if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
         this._validateBusinessInput(input.business);
       }
+
+      await this.validateUniquePartyFields(buildPartyUniqueFieldCheck(input));
 
       if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
         data = await this._buildPersonCreateData(input, identifiers);
@@ -2245,6 +2355,8 @@ export class PartyService {
     if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
       this._validateBusinessInput(input.business);
     }
+
+    await this.validateUniquePartyFields(buildPartyUniqueFieldCheck(input), partyIdentifier);
 
     const isBusiness = input.partyTypeCode !== PARTY_TYPES.Person;
 

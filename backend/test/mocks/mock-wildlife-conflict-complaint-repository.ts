@@ -43,7 +43,7 @@ const manyItems = [
       },
       person_complaint_xref: [],
     },
-    species_code: { species_code: "BLKBEAR", short_description: "Black Bear", long_description: "Black Bear" },
+    species_code_ref: "BLKBEAR",
     hwcr_complaint_nature_code: {
       hwcr_complaint_nature_code: "AGGPRES",
       short_description: "AGGPRES",
@@ -85,7 +85,7 @@ const manyItems = [
       },
       person_complaint_xref: [],
     },
-    species_code: { species_code: "BLKBEAR", short_description: "Black Bear", long_description: "Black Bear" },
+    species_code_ref: "BLKBEAR",
     hwcr_complaint_nature_code: {
       hwcr_complaint_nature_code: "AGGPRES",
       short_description: "AGGPRES",
@@ -139,7 +139,7 @@ const manyItems = [
       },
       person_complaint_xref: [],
     },
-    species_code: { species_code: "BLKBEAR", short_description: "Black Bear", long_description: "Black Bear" },
+    species_code_ref: "BLKBEAR",
     hwcr_complaint_nature_code: {
       hwcr_complaint_nature_code: "AGGPRES",
       short_description: "AGGPRES",
@@ -193,7 +193,7 @@ const manyItems = [
       },
       person_complaint_xref: [],
     },
-    species_code: { species_code: "BLKBEAR", short_description: "Black Bear", long_description: "Black Bear" },
+    species_code_ref: "BLKBEAR",
     hwcr_complaint_nature_code: {
       hwcr_complaint_nature_code: "AGGPRES",
       short_description: "AGGPRES",
@@ -240,7 +240,7 @@ const manyItems = [
       },
       person_complaint_xref: [],
     },
-    species_code: { species_code: "BLKBEAR", short_description: "Black Bear", long_description: "Black Bear" },
+    species_code_ref: "BLKBEAR",
     hwcr_complaint_nature_code: {
       hwcr_complaint_nature_code: "AGGPRES",
       short_description: "AGGPRES",
@@ -297,7 +297,7 @@ const singleItem = {
     person_complaint_xref: [],
     reported_by_code: { reported_by_code: "911", long_description: "911", short_description: "911" },
   },
-  species_code: { species_code: "BLKBEAR", short_description: "Black Bear", long_description: "Black Bear" },
+  species_code_ref: "BLKBEAR",
   hwcr_complaint_nature_code: {
     hwcr_complaint_nature_code: "AGGPRES",
     short_description: "AGGPRES",

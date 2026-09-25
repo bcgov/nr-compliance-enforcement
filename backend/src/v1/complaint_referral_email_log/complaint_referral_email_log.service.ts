@@ -8,10 +8,11 @@ import { UUID } from "node:crypto";
 @Injectable()
 export class ComplaintReferralEmailLogService {
   private readonly logger = new Logger(ComplaintReferralEmailLogService.name);
-  @InjectRepository(ComplaintReferralEmailLog)
-  private readonly complaintReferralEmailLogRepository: Repository<ComplaintReferralEmailLog>;
 
-  constructor() {}
+  constructor(
+    @InjectRepository(ComplaintReferralEmailLog)
+    private readonly complaintReferralEmailLogRepository: Repository<ComplaintReferralEmailLog>,
+  ) {}
 
   async create(
     createComplaintReferralEmailLogDto: CreateComplaintReferralEmailLogDto,

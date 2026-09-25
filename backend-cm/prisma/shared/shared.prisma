@@ -607,6 +607,7 @@ model legislation_source {
   source_type                                             String                @default("BCLAWS") @db.VarChar(16)
   parent_legislation_source_guid                          String?               @db.Uuid
   external_key                                            String?               @db.VarChar(64)
+  animal_information_display_code                         String                @default("H") @db.Char(1)
   agency_code_legislation_source_agency_codeToagency_code agency_code           @relation("legislation_source_agency_codeToagency_code", fields: [agency_code], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_agency")
   legislation_source                                      legislation_source?   @relation("legislation_sourceTolegislation_source", fields: [parent_legislation_source_guid], references: [legislation_source_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_parent")
   other_legislation_source                                legislation_source[]  @relation("legislation_sourceTolegislation_source")
@@ -1297,5 +1298,38 @@ model nickname {
   create_utc_timestamp DateTime @default(now()) @db.Timestamp(6)
 
   @@id([name, nickname], map: "nickname_pk")
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model species_code {
+  species_code             String    @id(map: "species_code_pk") @db.VarChar(16)
+  short_description        String    @db.VarChar(64)
+  long_description         String?   @db.VarChar(256)
+  display_order            Int
+  active_ind               Boolean   @default(true)
+  complaint_ind            Boolean   @default(true)
+  large_carnivore_ind      Boolean   @default(false)
+  display_on_complaint_ind Boolean   @default(false)
+  create_user_id           String    @db.VarChar(32)
+  create_utc_timestamp     DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id           String?   @db.VarChar(32)
+  update_utc_timestamp     DateTime? @db.Timestamp(6)
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model wildlife_management_unit_code {
+  wildlife_management_unit_code String    @id(map: "wildlife_management_unit_code_pk") @db.VarChar(16)
+  short_description             String    @db.VarChar(64)
+  long_description              String?   @db.VarChar(256)
+  display_order                 Int
+  active_ind                    Boolean   @default(true)
+  create_user_id                String    @db.VarChar(32)
+  create_utc_timestamp          DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id                String?   @db.VarChar(32)
+  update_utc_timestamp          DateTime? @db.Timestamp(6)
+
   @@schema("shared")
 }

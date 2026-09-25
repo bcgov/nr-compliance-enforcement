@@ -1,7 +1,13 @@
-import { InspectionParty, InvestigationBusiness, InvestigationParty, Party } from "@/generated/graphql";
+import { InvestigationBusiness, InvestigationParty } from "@/generated/graphql";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 
-export const getPartyName = (party?: InvestigationParty | InspectionParty | Party | null): string => {
+type PartyNameParts = {
+  person?: { firstName?: string | null; middleNames?: string | null; lastName?: string | null } | null;
+  business?: { name?: string | null } | null;
+  placeholderName?: string | null;
+};
+
+export const getPartyName = (party?: PartyNameParts | null): string => {
   if (!party) return "Unknown party";
   if (party.person) {
     const { firstName, middleNames, lastName } = party.person;
@@ -13,7 +19,7 @@ export const getPartyName = (party?: InvestigationParty | InspectionParty | Part
     if (name) return name;
   }
   if (party.business?.name) return party.business.name;
-  if ("placeholderName" in party && party.placeholderName) return party.placeholderName;
+  if (party.placeholderName) return party.placeholderName;
   return "-";
 };
 

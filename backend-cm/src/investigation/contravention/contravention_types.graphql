@@ -6,6 +6,10 @@ type Contravention {
   isActive: Boolean!
   date: DateTime
   community: String
+  speciesCode: String
+  speciesOtherText: String
+  quantity: Int
+  wildlifeManagementUnitCode: String
 }
 
 input CreateUpdateContraventionInput {
@@ -15,4 +19,8 @@ input CreateUpdateContraventionInput {
   date: DateTime
   community: String
   selectedPartyGuid: String
+  speciesCode: String
+  speciesOtherText: String
+  quantity: Int
+  wildlifeManagementUnitCode: String
 }

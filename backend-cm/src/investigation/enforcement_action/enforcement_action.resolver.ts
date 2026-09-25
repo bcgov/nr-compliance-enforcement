@@ -54,7 +54,7 @@ export class EnforcementActionResolver {
     } catch (error) {
       this.logger.error("Create enforcement action error:", error?.message ?? error);
       throw new GraphQLError("Error creating enforcement action", {
-        extensions: { code: "INTERNAL_SERVER_ERROR" },
+        extensions: { code: "INTERNAL_SERVER_ERROR", originalError: error.message },
       });
     }
   }

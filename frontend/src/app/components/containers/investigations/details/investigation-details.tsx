@@ -187,7 +187,6 @@ export const GET_INVESTIGATION = gql`
               shortDescription
             }
             dateIssued
-            geoOrganizationUnitCode
             appUserIdentifier
             activeIndicator
             comment
@@ -220,6 +219,10 @@ export const GET_INVESTIGATION = gql`
         }
         date
         community
+        speciesCode
+        speciesOtherText
+        quantity
+        wildlifeManagementUnitCode
       }
       leadAgency
       locationAddress

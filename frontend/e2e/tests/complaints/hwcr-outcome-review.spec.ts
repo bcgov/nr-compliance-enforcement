@@ -21,7 +21,7 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
 
   test("it can save review", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030851", true, page);
-    await validateComplaint(page, "23-030851", "Black Bear");
+    await validateComplaint(page, "23-030851", "Bear, Black");
 
     const $review = page.locator(".comp-outcome-report-file-review");
 
@@ -49,7 +49,7 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
 
   test("it can not change complaint status if review is required", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030851", true, page);
-    await validateComplaint(page, "23-030851", "Black Bear");
+    await validateComplaint(page, "23-030851", "Bear, Black");
 
     await page.locator("#details-screen-update-status-button").click();
     await expect(page.locator(".status-change-subtext")).toHaveText(/Complaint is pending review\./);
@@ -58,7 +58,7 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
 
   test("it can cancel review edits", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030851", true, page);
-    await validateComplaint(page, "23-030851", "Black Bear");
+    await validateComplaint(page, "23-030851", "Bear, Black");
 
     const $review = page.locator(".comp-outcome-report-file-review");
     await $review.locator("#review-edit-button").click();
@@ -70,7 +70,7 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
 
   test("it can edit an existing review", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030851", true, page);
-    await validateComplaint(page, "23-030851", "Black Bear");
+    await validateComplaint(page, "23-030851", "Bear, Black");
 
     const $review = page.locator(".comp-outcome-report-file-review");
 

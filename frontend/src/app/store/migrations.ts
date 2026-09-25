@@ -49,6 +49,8 @@ import { InvestigationSourceCodes } from "./migrations/migration-49";
 import { RemoveTaskSubCategories } from "@/app/store/migrations/migration-50";
 import { RenamePartyTypeToOrganization } from "@/app/store/migrations/migration-51";
 import { AddPartyExternalIdType } from "@/app/store/migrations/migration-52";
+import { RefreshCourtProsecutionStatus } from "@/app/store/migrations/migration-54";
+import { AddWMUType } from "@/app/store/migrations/migration-53";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -112,6 +114,8 @@ migration = {
   ...RemoveTaskSubCategories,
   ...RenamePartyTypeToOrganization,
   ...AddPartyExternalIdType,
+  ...AddWMUType,
+  ...RefreshCourtProsecutionStatus,
 };
 
 export default migration;

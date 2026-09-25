@@ -5,7 +5,6 @@ import { ChesService } from "../../external_api/ches/ches.service";
 import { DocumentService } from "../../v1/document/document.service";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
 import { ComplaintService } from "../../v1/complaint/complaint.service";
-import { SpeciesCodeService } from "../../v1/species_code/species_code.service";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
 import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service";
@@ -48,10 +47,6 @@ describe("EmailController", () => {
         },
         {
           provide: ComplaintService,
-          useValue: {},
-        },
-        {
-          provide: SpeciesCodeService,
           useValue: {},
         },
         {

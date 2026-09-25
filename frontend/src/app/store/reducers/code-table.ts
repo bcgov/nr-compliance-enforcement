@@ -70,6 +70,7 @@ import {
   fetchHairLengthTypes,
   fetchEyeColourTypes,
   fetchFacialHairStyleTypes,
+  fetchWildlifeManagementUnits,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -146,6 +147,7 @@ const initialState: CodeTableState = {
   "hair-length-type": [],
   "eye-colour-type": [],
   "facial-hair-style-type": [],
+  "wildlife-management-unit-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -240,6 +242,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "hair-length-type": hairLengthType,
       "eye-colour-type": eyeColourType,
       "facial-hair-style-type": facialHairStyleType,
+      "wildlife-management-unit-type": wildlifeManagementUnitType,
     },
   } = state;
 
@@ -458,6 +461,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(facialHairStyleType).any()) {
       dispatch(fetchFacialHairStyleTypes());
     }
+    if (!from(wildlifeManagementUnitType).any()) {
+      dispatch(fetchWildlifeManagementUnits());
+    }
   } catch (error) {
     console.error(error);
   }
@@ -539,6 +545,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchHairLengthTypes());
     dispatch(fetchEyeColourTypes());
     dispatch(fetchFacialHairStyleTypes());
+    dispatch(fetchWildlifeManagementUnits());
   } catch (error) {
     console.error(error);
   }
@@ -1049,14 +1056,20 @@ export const selectComplaintStatusWithPendingCodeDropdown = createSelector(
     })),
 );
 
-export const selectSpeciesCodeDropdown = createSelector(
+// The full species list, for contraventions. Complaints use selectSpeciesCodeDropdown instead.
+export const selectAllSpeciesCodeDropdown = createSelector(
   (state: RootState) => state.codeTables.species,
   (species) =>
-    species.map(({ species, longDescription, isActive }) => ({
+    species.map(({ species, longDescription, isActive, isDisplayedOnComplaint }) => ({
       label: longDescription,
       value: species,
       isActive,
+      isDisplayedOnComplaint,
     })),
+);
+
+export const selectSpeciesCodeDropdown = createSelector(selectAllSpeciesCodeDropdown, (species) =>
+  species.filter((entry) => entry.isDisplayedOnComplaint),
 );
 
 export const selectViolationCodeDropdown = (agency: string) =>
@@ -1816,6 +1829,16 @@ export const selectInvestigationSourceCodeDropdown = createSelector(
   (state: RootState) => state.codeTables["investigation-source-code"],
   (items) =>
     items.map(({ investigationSourceCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectWildlifeManagementUnitCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables["wildlife-management-unit-type"],
+  (items) =>
+    items.map(({ wildlifeManagementUnitCode: value, shortDescription: label, activeInd }) => ({
       label,
       value,
       activeInd,

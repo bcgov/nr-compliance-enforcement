@@ -67,6 +67,7 @@ import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
 import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
 import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
+import { WildlifeManagementUnitType } from "@/app/types/app/code-tables/wildlife-management-unit-type";
 
 export interface CodeTableState {
   [key: string]:
@@ -138,6 +139,7 @@ export interface CodeTableState {
     | Array<HairLengthType>
     | Array<EyeColourType>
     | Array<FacialHairStyleType>
+    | Array<WildlifeManagementUnitType>
     | Array<PartyExternalIdType>;
 
   agency: Array<Agency>;
@@ -208,4 +210,5 @@ export interface CodeTableState {
   "hair-length-type": Array<HairLengthType>;
   "eye-colour-type": Array<EyeColourType>;
   "facial-hair-style-type": Array<FacialHairStyleType>;
+  "wildlife-management-unit-type": Array<WildlifeManagementUnitType>;
 }

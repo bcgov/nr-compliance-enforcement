@@ -9,6 +9,7 @@ type LegislationSource {
   activeInd: Boolean!
   parentLegislationSourceGuid: String
   externalKey: String
+  animalInformationDisplayType: AnimalInformationDisplayType!
   createUserId: String
   createUtcTimestamp: String
 }
@@ -21,6 +22,7 @@ input CreateLegislationSourceInput {
   agencyCode: String!
   sourceType: String
   effectiveDate: String
+  animalInformationDisplayType: AnimalInformationDisplayType
 }
 
 input UpdateLegislationSourceInput {
@@ -31,4 +33,14 @@ input UpdateLegislationSourceInput {
   regulationsSourceUrl: String
   agencyCode: String
   activeInd: Boolean
+  animalInformationDisplayType: AnimalInformationDisplayType
+}
+
+enum AnimalInformationDisplayType {
+  "Mandatory: always visible and required."
+  M
+  "Optional: visible but not required."
+  O
+  "Hidden: not visible."
+  H
 }

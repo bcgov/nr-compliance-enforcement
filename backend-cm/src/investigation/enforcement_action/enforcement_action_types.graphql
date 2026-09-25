@@ -3,7 +3,6 @@ type EnforcementAction {
   contraventionPartyXrefIdentifier: String!
   enforcementActionCode: EnforcementActionCode!
   dateIssued: DateTime!
-  geoOrganizationUnitCode: String!
   appUserIdentifier: String!
   activeIndicator: Boolean!
   ticket: Ticket
@@ -32,7 +31,6 @@ input CreateEnforcementActionInput {
   partyIdentifier: String
   enforcementActionCode: String!
   dateIssued: DateTime!
-  geoOrganizationUnitCode: String!
   appUserIdentifier: String!
   ticketOutcomeCode: String
   ticketAmount: Float
@@ -62,7 +60,6 @@ input UpdateEnforcementActionInput {
   enforcementActionIdentifier: String!
   enforcementActionCode: String
   dateIssued: DateTime
-  geoOrganizationUnitCode: String
   appUserIdentifier: String
   ticketOutcomeCode: String
   ticketAmount: Float
