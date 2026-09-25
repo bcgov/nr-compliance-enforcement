@@ -566,10 +566,6 @@ export function buildPersonBase(value: any) {
   };
 }
 
-export function buildPersonForCreate(value: any): PersonInput {
-  return buildPersonBase(value);
-}
-
 export function buildPersonForUpdate(value: any): PersonUpdateInput {
   return { personGuid: value.personGuid, ...buildPersonBase(value) };
 }
