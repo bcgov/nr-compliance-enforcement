@@ -115,11 +115,10 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
           id: "contraventions",
           content: (
             <>
-              {partyName} is associated with{" "}
+              This party is associated with{" "}
               <strong>
                 {contraventionCount} {contraventionCount === 1 ? "contravention" : "contraventions"}
               </strong>
-              {"."}
             </>
           ),
         });
@@ -130,11 +129,10 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
           id: "attachments",
           content: (
             <>
-              {partyName} has{" "}
+              This party is linked to{" "}
               <strong>
                 {attachmentCount} {attachmentCount === 1 ? "attachment" : "attachments"}
-              </strong>{" "}
-              they have taken.
+              </strong>
             </>
           ),
         });

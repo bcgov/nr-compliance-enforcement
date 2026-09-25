@@ -61,7 +61,7 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
         <Button
           variant="primary"
           onClick={handleConfirm}
-          disabled={blockedReasons.length > 0}
+          className={blockedReasons.length > 0 ? "inactive-button" : ""}
         >
           {saveText}
         </Button>
