@@ -16,6 +16,8 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useInvestigationReadOnly } from "../../../hooks/use-investigation-read-only";
 
+export const COMMON_TASK_CATEGORY_CODES = new Set(["EXHIBITS", "NOTESWILLSAYS", "SCENE", "STMTWARNED", "STMTWITNESS"]);
+
 interface TaskDetailEditModalProps {
   show: boolean;
   onHide: () => void;
@@ -48,6 +50,10 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     value: String(c.value ?? ""),
     label: String(c.label ?? ""),
   }));
+  const taskCategoryGroups = [
+    { options: taskCategoryOptions.filter((opt) => COMMON_TASK_CATEGORY_CODES.has(opt.value)) },
+    { label: "Other", options: taskCategoryOptions.filter((opt) => !COMMON_TASK_CATEGORY_CODES.has(opt.value)) },
+  ];
   const assignedOfficer =
     task && officers ? (officers.find((o) => o.app_user_guid === task.assignedUserIdentifier) ?? null) : null;
 
@@ -184,7 +190,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 id="task-detail-edit-category"
                 classNamePrefix="comp-select"
                 className="comp-details-input"
-                options={taskCategoryOptions}
+                options={taskCategoryGroups}
                 value={taskCategoryOptions.find((opt) => opt.value === field.state.value)}
                 onChange={(option) => {
                   const value = option?.value ?? "";
