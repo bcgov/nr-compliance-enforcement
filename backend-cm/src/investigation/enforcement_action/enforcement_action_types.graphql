@@ -54,6 +54,7 @@ input CreateEnforcementActionInput {
   courtProsecutionStatusCode: String
   administrativePenaltyStatusCode: String
   approvalInd: Boolean
+  noticeOfCancellationNumber: String
 }
 
 input UpdateEnforcementActionInput {
@@ -83,4 +84,5 @@ input UpdateEnforcementActionInput {
   courtProsecutionStatusCode: String
   administrativePenaltyStatusCode: String
   approvalInd: Boolean
+  noticeOfCancellationNumber: String
 }

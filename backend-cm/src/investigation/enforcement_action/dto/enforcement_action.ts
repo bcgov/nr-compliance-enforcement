@@ -68,6 +68,7 @@ type EnforcementActionDecisionFields = {
   courtProsecutionStatusCode?: string;
   administrativePenaltyStatusCode?: string;
   approvalInd?: boolean;
+  noticeOfCancellationNumber?: string;
 };
 
 export type CreateEnforcementActionInput = EnforcementActionDecisionFields & {

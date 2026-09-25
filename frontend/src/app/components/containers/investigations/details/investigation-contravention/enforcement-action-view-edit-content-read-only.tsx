@@ -44,6 +44,7 @@ interface EnforcementActionViewEditContentReadOnlyProps {
   attachments: Attachment[];
   isLoadingAttachments: boolean;
   contravention: Contravention;
+  showNoticeOfCancellation: boolean;
 }
 
 const Field: FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
@@ -65,6 +66,7 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
   attachments,
   isLoadingAttachments,
   contravention,
+  showNoticeOfCancellation,
 }) => {
   const ticket = enforcementAction.ticket;
   const code = enforcementAction.enforcementActionCode?.enforcementActionCode ?? "";
@@ -165,6 +167,13 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
                 <div className="col-6">
                   <Field label="Appeal hearing date">{formatDate(ticket.appealHearingDate)}</Field>
                 </div>
+                {showNoticeOfCancellation && (
+                  <div className="col-6">
+                    <Field label="Notice of cancellation number">
+                      {ticket.noticeOfCancellationNumber ? `${ticket.noticeOfCancellationNumber}` : "—"}
+                    </Field>
+                  </div>
+                )}
               </>
             )}
 
