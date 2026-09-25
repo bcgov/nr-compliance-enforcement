@@ -1,6 +1,4 @@
 import { FC, useCallback } from "react";
-import { Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { PartyResult } from "@/generated/graphql";
@@ -63,8 +61,6 @@ const SEARCH_PARTIES = gql`
 `;
 
 const Parties: FC = () => {
-  const navigate = useNavigate();
-
   const { searchValues, setValues, getFilters } = usePartySearch();
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchParties: PartyResult }>(SEARCH_PARTIES, {
@@ -88,10 +84,6 @@ const Parties: FC = () => {
     placeholderData: (previousData) => previousData,
   });
 
-  const handleCreateClick = () => {
-    navigate("/party/create");
-  };
-
   const handleTabChange = useCallback(
     (partyTypeCode: string) => {
       setValues({ partyTypeCode });
@@ -107,13 +99,6 @@ const Parties: FC = () => {
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Parties</h1>
-          <Button
-            onClick={handleCreateClick}
-            variant="primary"
-          >
-            <i className="bi bi-plus-circle" />
-            <span>Create party</span>
-          </Button>
         </div>
 
         <PartyListTabs

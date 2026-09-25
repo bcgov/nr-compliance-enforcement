@@ -12,13 +12,7 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import {
-  BusinessIdentifier,
-  ImageUpdateInput,
-  PartyCreateInput,
-  PartyUpdateInput,
-  PersonFacialHairStyleCode,
-} from "@/generated/graphql";
+import { BusinessIdentifier, ImageUpdateInput, PartyUpdateInput, PersonFacialHairStyleCode } from "@/generated/graphql";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { parse } from "date-fns";
@@ -35,17 +29,15 @@ import {
   buildContactMethods,
   buildContactPeople,
   buildExternalIds,
-  buildPersonForCreate,
   buildPersonForUpdate,
-  createEmptyContactMethod,
   mapAddressesFromPartyData,
   mapAliasesFromPartyData,
   mapExternalIdsFromPartyData,
   mapContactMethodsFromPartyData,
   mapContactPeopleFromPartyData,
-  PartyExternalIdFormValue,
   validateBusinessForm,
-  validatePersonForm,
+  PartyExternalIdFormValue,
+  createEmptyContactMethod,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import {
   handleBusinessPartyMutationError,
@@ -95,32 +87,11 @@ const UPDATE_PARTY_MUTATION = gql`
   }
 `;
 
-const CREATE_PARTY_MUTATION = gql`
-  ${PARTY_PERSON_FRAGMENT}
-  mutation CreateParty($input: PartyCreateInput!) {
-    createParty(input: $input) {
-      partyIdentifier
-      partyTypeCode
-      shortDescription
-      longDescription
-      createdDateTime
-      person {
-        ...PartyPersonFields
-      }
-      business {
-        businessGuid
-        name
-      }
-    }
-  }
-`;
-
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
 
 const PartyEdit: FC = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const isEditMode = !!id;
   const dispatch = useAppDispatch();
 
   const partyTypes = useAppSelector(selectPartyTypeDropdown);
@@ -128,7 +99,6 @@ const PartyEdit: FC = () => {
   const { data: partyData, isLoading } = useGraphQLQuery(GET_PARTY, {
     queryKey: ["party", id],
     variables: { partyIdentifier: id },
-    enabled: isEditMode,
   });
 
   const partyTypeCodes = partyTypes
@@ -142,7 +112,7 @@ const PartyEdit: FC = () => {
     });
 
   const defaultValues = useMemo(() => {
-    if (isEditMode && partyData?.party) {
+    if (partyData?.party) {
       const person = partyData.party.person;
       return {
         partyType: partyData.party.partyTypeCode || "",
@@ -242,13 +212,11 @@ const PartyEdit: FC = () => {
       contacts: [],
       addresses: [],
     };
-  }, [isEditMode, partyData]);
+  }, [partyData]);
 
-  const [partyIdentifier, setPartyIdentifier] = useState<string>(id || "");
   const [attachmentsDirty, setAttachmentsDirty] = useState(false);
   const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(0);
   const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(0);
-  const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
   const pendingImagesRef = useRef<ImageUpdateInput[]>([]);
 
   const form = useForm({
@@ -264,64 +232,25 @@ const PartyEdit: FC = () => {
         }
       }
 
-      if (isEditMode) {
-        const updateInput: PartyUpdateInput = {
-          partyTypeCode: value.partyType,
-          addresses: buildAddresses(value.addresses),
-          contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
-          aliases: buildAliases(value.aliases, true),
-          externalIds: buildExternalIds(value.externalIds, true),
-          images: pendingImagesRef.current,
-          business:
-            value.partyType === "ORG"
-              ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, true))
-              : null,
-          person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
-        };
-        updatePartyMutation.mutate({ partyIdentifier: id, input: updateInput });
-      } else {
-        const createInput: PartyCreateInput = {
-          partyTypeCode: value.partyType,
-          addresses: buildAddresses(value.addresses),
-          contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
-          aliases: buildAliases(value.aliases, false),
-          externalIds: buildExternalIds(value.externalIds, false),
-          business:
-            value.partyType === "ORG"
-              ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, false))
-              : null,
-          person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
-        };
-        createPartyMutation.mutate({ input: createInput });
-      }
+      const updateInput: PartyUpdateInput = {
+        partyTypeCode: value.partyType,
+        addresses: buildAddresses(value.addresses),
+        contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
+        aliases: buildAliases(value.aliases, true),
+        externalIds: buildExternalIds(value.externalIds, true),
+        images: pendingImagesRef.current,
+        business:
+          value.partyType === "ORG" ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, true)) : null,
+        person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
+      };
+      updatePartyMutation.mutate({ partyIdentifier: id, input: updateInput });
     },
   });
 
   const { uniqueFieldConflict, checkUniqueFieldConflicts, handleDuplicateIdentifierError } = useUniqueFieldCheck(
     form,
-    isEditMode ? id : undefined,
+    id,
   );
-
-  const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
-    onError: (error: any) => {
-      console.error("Error creating party:", error);
-      setPendingAttachmentsSaveAfterCreate(false);
-      if (handleDuplicateIdentifierError(error)) return;
-      handleBusinessPartyMutationError(form, error, "Failed to create party");
-    },
-    onSuccess: (data: any) => {
-      const newPartyIdentifier = data.createParty.partyIdentifier;
-      setPartyIdentifier(newPartyIdentifier);
-      if (pendingAttachmentsSaveAfterCreate) {
-        setPendingAttachmentsSaveAfterCreate(false);
-        setTriggerSaveAttachments((n) => n + 1);
-      } else {
-        ToggleSuccess("Party created successfully");
-        allowNavigation();
-        navigate(`/party/${data.createParty.partyIdentifier}`);
-      }
-    },
-  });
 
   const updatePartyMutation = useGraphQLMutation(UPDATE_PARTY_MUTATION, {
     onSuccess: (data: any) => {
@@ -358,13 +287,13 @@ const PartyEdit: FC = () => {
     setTimeout(() => {
       form.reset();
       allowNavigation();
-      if (isEditMode && id) {
+      if (id) {
         navigate(`/party/${id}`);
       } else {
         navigateToPartyList();
       }
     }, 0);
-  }, [navigate, isEditMode, id, form]);
+  }, [navigate, id, form]);
 
   const cancelButtonClick = useCallback(() => {
     dispatch(
@@ -389,29 +318,18 @@ const PartyEdit: FC = () => {
         return;
       }
     }
-    // an added person must have at least one entered field
-    if (!isEditMode && currentValues.partyType === PartyTypeCodes.PERSON) {
-      const validationError = validatePersonForm(currentValues);
-      if (validationError) {
-        ToggleError(validationError);
-        return;
-      }
-    }
+
     if (await checkUniqueFieldConflicts()) {
       return;
     }
-    if (isEditMode) {
-      setTriggerSaveAttachments((n) => n + 1);
-      setTimeout(() => {
-        form.handleSubmit();
-      }, 0);
-    } else {
-      setPendingAttachmentsSaveAfterCreate(true);
-      form.handleSubmit();
-    }
-  }, [form, isEditMode, partyData, currentFormValues, checkUniqueFieldConflicts]);
 
-  const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
+    setTriggerSaveAttachments((n) => n + 1);
+    setTimeout(() => {
+      form.handleSubmit();
+    }, 0);
+  }, [form, partyData, currentFormValues, checkUniqueFieldConflicts]);
+
+  const isSubmitting = updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
   // disable saving from validation start through mutation completion
   const formSubmitting = useStore(form.store, (state: any) => state.isSubmitting) as boolean;
@@ -432,7 +350,7 @@ const PartyEdit: FC = () => {
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
         saveDisabled={saveDisabled}
-        isEditMode={isEditMode}
+        isEditMode={true}
         partyName={partyData?.party ? getPartyName(partyData?.party) : ""}
         partyIdentifier={id}
         badges={
@@ -479,7 +397,7 @@ const PartyEdit: FC = () => {
                   showInactive={false}
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                  isDisabled={isDisabled || isEditMode}
+                  isDisabled={true}
                 />
               )}
             />
@@ -487,6 +405,7 @@ const PartyEdit: FC = () => {
               <PersonForm
                 form={form}
                 isDisabled={isDisabled}
+                isPublished={true}
               />
             )}
             {partyTypeValue === "ORG" && (
@@ -506,7 +425,7 @@ const PartyEdit: FC = () => {
                 <h3>Attachments</h3>
               </div>
               <PartyAttachments
-                partyId={partyIdentifier}
+                partyId={id ?? ""}
                 attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
                 allowUpload
                 allowDelete
@@ -514,13 +433,6 @@ const PartyEdit: FC = () => {
                 triggerCancel={triggerCancelAttachments}
                 onPendingImagesChange={handlePendingImagesChange}
                 onDirtyChange={(index: number, isDirty: boolean) => handleAttachmentsDirtyChange(index, isDirty)}
-                onSaved={() => {
-                  if (!isEditMode) {
-                    ToggleSuccess("Party created successfully");
-                    allowNavigation();
-                    navigate(`/party/${partyIdentifier}`);
-                  }
-                }}
               />
             </>
           )}

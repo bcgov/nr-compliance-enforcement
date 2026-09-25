@@ -160,12 +160,6 @@ const App: FC = () => {
             )}
             {casesFeatureOn && (
               <Route
-                path="/party/create"
-                element={pilotGate(<PartyEdit />)}
-              />
-            )}
-            {casesFeatureOn && (
-              <Route
                 path="/party/:id/edit"
                 element={pilotGate(<PartyEdit />)}
               />

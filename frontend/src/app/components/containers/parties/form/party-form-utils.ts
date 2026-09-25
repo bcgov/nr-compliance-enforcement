@@ -4,7 +4,6 @@ import {
   InvestigationPersonFacialHairStyleCodeRef,
   PartyExternalId,
   PersonFacialHairStyleCode,
-  PersonInput,
   PersonUpdateInput,
   UpdateInvestigationBusinessIdentifierInput,
 } from "@/generated/graphql";
@@ -564,10 +563,6 @@ export function buildPersonBase(value: any) {
     safetyConcernIndicator: value.safetyConcernIndicator || null,
     safetyConcernReason: value.safetyConcernReason || null,
   };
-}
-
-export function buildPersonForCreate(value: any): PersonInput {
-  return buildPersonBase(value);
 }
 
 export function buildPersonForUpdate(value: any): PersonUpdateInput {
