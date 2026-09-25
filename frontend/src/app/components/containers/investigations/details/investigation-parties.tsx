@@ -9,6 +9,7 @@ import { Button } from "react-bootstrap";
 import { useQuery } from "@tanstack/react-query";
 import { gql } from "graphql-request";
 import { fetchAttachmentsWithMetadata } from "@common/attachment-utils";
+import { StatusChangeAdvisoryDetail } from "@/app/components/common/change-status-modal";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
@@ -63,19 +64,22 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
 
   const parties = (investigationData?.parties ?? []).filter(Boolean) as InvestigationParty[];
 
-  // Fetch parties on contraventions so we can unlink them and leave dirty data
-  const partiesOnContraventions = useMemo(
-    () =>
-      new Set(
-        (investigationData?.contraventions ?? []).flatMap(
-          (contravention) =>
-            contravention?.investigationParty
-              ?.map((party) => party?.partyIdentifier)
-              .filter((partyIdentifier): partyIdentifier is string => !!partyIdentifier) ?? [],
-        ),
-      ),
-    [investigationData?.contraventions],
-  );
+  // Removing a party that other records point at would leave those records linked to nothing
+  const contraventionCountByParty = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const contravention of investigationData?.contraventions ?? []) {
+      // A party is only counted once per contravention even if listed on it more than once
+      const partyIdentifiers = new Set(
+        (contravention?.investigationParty ?? [])
+          .map((party) => party?.partyIdentifier)
+          .filter((partyIdentifier): partyIdentifier is string => !!partyIdentifier),
+      );
+      for (const partyIdentifier of partyIdentifiers) {
+        counts.set(partyIdentifier, (counts.get(partyIdentifier) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [investigationData?.contraventions]);
 
   // taken by is not in the db so we need to fetch against object store
   const { data: attachments, isLoading: isLoadingAttachments } = useQuery({
@@ -85,39 +89,67 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
     enabled: !isReadOnly,
   });
 
-  const partiesTakenByAttachment = useMemo(
-    () =>
-      new Set(
-        (attachments ?? []).map((attachment) => attachment.takenBy).filter((takenBy): takenBy is string => !!takenBy),
-      ),
-    [attachments],
-  );
+  const attachmentCountByParty = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const attachment of attachments ?? []) {
+      if (attachment.takenBy) {
+        counts.set(attachment.takenBy, (counts.get(attachment.takenBy) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [attachments]);
 
-  const removeBlockedReason = useCallback(
-    (party: { partyIdentifier: string }): string | null => {
+  const getRemoveBlockedReasons = useCallback(
+    (partyIdentifier: string, partyName: string): StatusChangeAdvisoryDetail[] => {
       // Prevent accidental removal in case coms request times out
       if (isLoadingAttachments) {
-        return "Checking whether this party can be removed.";
+        return [{ id: "checking", content: <>Still checking whether {partyName} can be removed.</> }];
       }
-      if (partiesOnContraventions.has(party.partyIdentifier)) {
-        return "This party is associated with a contravention and cannot be removed.";
+
+      const reasons: StatusChangeAdvisoryDetail[] = [];
+      const contraventionCount = contraventionCountByParty.get(partyIdentifier) ?? 0;
+      const attachmentCount = attachmentCountByParty.get(partyIdentifier) ?? 0;
+
+      if (contraventionCount > 0) {
+        reasons.push({
+          id: "contraventions",
+          content: (
+            <>
+              {partyName} is associated with{" "}
+              <strong>
+                {contraventionCount} {contraventionCount === 1 ? "contravention" : "contraventions"}
+              </strong>
+              {"."}
+            </>
+          ),
+        });
       }
-      if (partiesTakenByAttachment.has(party.partyIdentifier)) {
-        return "This party is associated with attachments that were taken by them and cannot be removed.";
+
+      if (attachmentCount > 0) {
+        reasons.push({
+          id: "attachments",
+          content: (
+            <>
+              {partyName} has{" "}
+              <strong>
+                {attachmentCount} {attachmentCount === 1 ? "attachment" : "attachments"}
+              </strong>{" "}
+              they have taken.
+            </>
+          ),
+        });
       }
-      return null;
+
+      return reasons;
     },
-    [isLoadingAttachments, partiesOnContraventions, partiesTakenByAttachment],
+    [isLoadingAttachments, contraventionCountByParty, attachmentCountByParty],
   );
 
   const handleRemoveParty = useCallback(
     (partyIdentifier: string, partyName: string) => {
       // "Taken by" only exists in the object store, so the refusal has to be explained here
-      const blockedReason = removeBlockedReason({ partyIdentifier });
-      if (blockedReason) {
-        ToggleError(blockedReason);
-        return;
-      }
+      const reasons = getRemoveBlockedReasons(partyIdentifier, partyName);
+      const isBlocked = reasons.length > 0;
 
       dispatch(
         openModal({
@@ -125,8 +157,20 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
           modalType: SAVE_CONFIRM,
           data: {
             title: "Remove Party",
-            description: `Are you sure you want to remove ${partyName} from this investigation? This action cannot be undone.`,
-            cancelText: "No, go back",
+            ...(isBlocked
+              ? {
+                  warning: (
+                    <>
+                      {partyName} <strong>cannot be removed</strong> from this investigation for the following reasons:
+                    </>
+                  ),
+                  reasons,
+                  cancelText: "Close",
+                }
+              : {
+                  description: `Are you sure you want to remove ${partyName} from this investigation? This action cannot be undone.`,
+                  cancelText: "No, go back",
+                }),
             saveText: "Yes, remove party",
           },
           callback: () => {
@@ -138,7 +182,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
         }),
       );
     },
-    [dispatch, investigationGuid, removePartyMutation, removeBlockedReason],
+    [dispatch, investigationGuid, removePartyMutation, getRemoveBlockedReasons],
   );
 
   return (

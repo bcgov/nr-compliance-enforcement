@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Modal, Button, Alert } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
+import { StatusChangeAdvisoryDetail } from "@/app/components/common/change-status-modal";
 
 type SaveConfirmProps = {
   close: () => void;
@@ -11,7 +12,10 @@ type SaveConfirmProps = {
 export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
 
-  const { title, warning, description, cancelText, saveText } = modalData;
+  const { title, warning, description, cancelText, saveText, reasons } = modalData;
+
+  // Reasons the action is refused. Present means blocked, so confirming is not offered.
+  const blockedReasons: StatusChangeAdvisoryDetail[] = reasons ?? [];
 
   const handleConfirm = () => {
     submit();
@@ -38,6 +42,14 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
           </Alert>
         )}
         <p>{description}</p>
+        {blockedReasons.map((reason) => (
+          <div
+            key={reason.id}
+            className="comp-status-advisory-detail"
+          >
+            {reason.content}
+          </div>
+        ))}
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -49,6 +61,7 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
         <Button
           variant="primary"
           onClick={handleConfirm}
+          disabled={blockedReasons.length > 0}
         >
           {saveText}
         </Button>
