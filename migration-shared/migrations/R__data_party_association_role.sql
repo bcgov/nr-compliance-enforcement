@@ -13,6 +13,7 @@ INSERT INTO shared.party_association_role_code (
    ('PTYOFINTRST', 'INSPECTION', 'Party of Interest','Party of Interest',1,true,'system',NOW(), NULL, NULL),
 	 ('WITNESS','INSPECTION', 'Witness','Witness',2,true,'system',NOW(), NULL,NULL),
    ('ASSCTE', 'INVSTGTN', 'Associate','Associate',10,true,'system',NOW(), NULL, NULL),
+   ('CMPLNNT', 'INVSTGTN', 'Complainant','Complainant',15,true,'system',NOW(), NULL, NULL),
 	 ('EXTRNLOFFCR','INVSTGTN', 'External officer','External officer',20,true,'system',NOW(), NULL,NULL),
    ('OTHER', 'INVSTGTN', 'Other','Other',30,true,'system',NOW(), NULL, NULL),
    ('PTYOFINTRST','INVSTGTN', 'Party of Interest','Party of Interest',40,true,'system',NOW(), NULL,NULL),
