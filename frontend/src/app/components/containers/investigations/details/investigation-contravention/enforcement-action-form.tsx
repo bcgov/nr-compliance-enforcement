@@ -310,7 +310,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       // Shared: Court Prosecution/Administrative Penalty
       approvalInd: boolToOption(enforcementAction?.approvalInd),
       // Administrative Penalty
-      administrativePenaltyStatusCode: enforcementAction?.administrativePenaltyStatusCode ?? "",
+      administrativePenaltyStatusCode: enforcementAction?.administrativePenaltyStatusCode ?? "ISUD",
     },
     onSubmit: async () => {},
   });
