@@ -2,6 +2,7 @@ type LegislationSource {
   legislationSourceGuid: String!
   shortDescription: String!
   longDescription: String
+  acronym: String
   sourceUrl: String
   regulationsSourceUrl: String
   agencyCode: String!
@@ -17,6 +18,7 @@ type LegislationSource {
 input CreateLegislationSourceInput {
   shortDescription: String!
   longDescription: String
+  acronym: String
   sourceUrl: String!
   regulationsSourceUrl: String
   agencyCode: String!
@@ -29,6 +31,7 @@ input UpdateLegislationSourceInput {
   legislationSourceGuid: String!
   shortDescription: String
   longDescription: String
+  acronym: String
   sourceUrl: String
   regulationsSourceUrl: String
   agencyCode: String

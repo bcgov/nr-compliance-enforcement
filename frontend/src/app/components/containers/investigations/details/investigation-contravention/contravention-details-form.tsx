@@ -4,6 +4,7 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Button } from "react-bootstrap";
 import {
+  convertActsToOption,
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
   useLegislation,
@@ -256,7 +257,7 @@ export const ContraventionDetailsForm = ({
 
   const legislationQuery = useLegislation(contravention?.legislationIdentifierRef, true);
 
-  const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
+  const actOptions = convertActsToOption(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
 

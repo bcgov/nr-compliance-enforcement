@@ -41,6 +41,7 @@ const SEARCH_LEGISLATION = gql`
       versionEffectiveDate
       sourceUrl
       animalInformationDisplayType
+      sourceAcronym
       legislationText
       sectionTitle
       alternateText
@@ -63,6 +64,7 @@ const GET_LEGISLATION = gql`
       sectionTitle
       alternateText
       legislationText
+      sourceAcronym
       ancestors {
         legislationTypeCode
         legislationGuid
@@ -124,6 +126,22 @@ export const convertLegislationToOption = (legislation: Legislation[] | undefine
       ?.map((legislation) => ({
         label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.
         value: legislation.legislationGuid ?? "",
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)) ?? []
+  );
+};
+
+const formatActLabel = (act: Legislation): string => {
+  const shortName = act.sectionTitle ?? act.legislationText ?? "";
+  return act.sourceAcronym ? `${shortName} (${act.sourceAcronym})` : shortName;
+};
+
+export const convertActsToOption = (acts: Legislation[] | undefined): Option[] => {
+  return (
+    acts
+      ?.map((act) => ({
+        label: formatActLabel(act),
+        value: act.legislationGuid ?? "",
       }))
       .sort((a, b) => a.label.localeCompare(b.label)) ?? []
   );
