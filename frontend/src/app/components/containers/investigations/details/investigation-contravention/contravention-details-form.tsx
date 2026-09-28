@@ -746,7 +746,7 @@ export const ContraventionDetailsForm = ({
                         key={item.legislationGuid}
                         className="contravention-text-segment"
                       >
-                        <p className={`mb-2 ${indentClass}`}>
+                        <p className={`${indentClass}`}>
                           <strong>{item.sectionTitle}</strong>
                         </p>
                       </div>
@@ -759,7 +759,7 @@ export const ContraventionDetailsForm = ({
                         key={item.legislationGuid}
                         className="contravention-text-segment"
                       >
-                        <p className={`mb-2 ${indentClass}`}>
+                        <p className={`${indentClass}`}>
                           <LegislationText>{item.legislationText}</LegislationText>
                         </p>
                       </div>
@@ -802,7 +802,7 @@ export const ContraventionDetailsForm = ({
                         }}
                         className="mt-1"
                       />
-                      <span className={`mb-2 ${indentClass}`}>
+                      <span className={`${indentClass}`}>
                         {item.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
                           <>{`(${displayCitation})`} </>
                         )}
