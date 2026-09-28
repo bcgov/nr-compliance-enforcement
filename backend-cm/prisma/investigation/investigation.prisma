@@ -898,6 +898,7 @@ model ticket {
   update_utc_timestamp                                                DateTime?           @db.Timestamp(6)
   ticket_type_code                                                    String?             @db.VarChar(16)
   appeal_hearing_date                                                 DateTime?           @db.Date
+  notice_of_cancellation_number                                       String?             @db.VarChar(32)
   enforcement_action                                                  enforcement_action  @relation(fields: [enforcement_action_guid], references: [enforcement_action_guid], onDelete: NoAction, onUpdate: NoAction)
   ticket_outcome_code_ticket_ticket_outcome_codeToticket_outcome_code ticket_outcome_code @relation("ticket_ticket_outcome_codeToticket_outcome_code", fields: [ticket_outcome_code], references: [ticket_outcome_code], onDelete: NoAction, onUpdate: NoAction)
   ticket_type_code_ticket_ticket_type_codeToticket_type_code          ticket_type_code?   @relation("ticket_ticket_type_codeToticket_type_code", fields: [ticket_type_code], references: [ticket_type_code], onDelete: NoAction, onUpdate: NoAction)

@@ -11,6 +11,7 @@ export class Ticket {
   paidDate?: Date;
   ticketTypeCode?: string;
   appealHearingDate?: Date;
+  noticeOfCancellationNumber: string;
 }
 
 export const mapPrismaTicketToTicket = (mapper: Mapper) => {
@@ -53,6 +54,10 @@ export const mapPrismaTicketToTicket = (mapper: Mapper) => {
     forMember(
       (dest) => dest.appealHearingDate,
       mapFrom((src) => src.appeal_hearing_date),
+    ),
+    forMember(
+      (dest) => dest.noticeOfCancellationNumber,
+      mapFrom((src) => src.notice_of_cancellation_number),
     ),
   );
 };
