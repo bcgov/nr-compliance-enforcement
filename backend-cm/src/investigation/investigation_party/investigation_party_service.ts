@@ -630,7 +630,7 @@ export class InvestigationPartyService {
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
     await this._assertRemovalAllowed(partyIdentifier);
 
-    await withRlsTransaction(this.prisma, async (db) => {
+    const partyReference = await withRlsTransaction(this.prisma, async (db) => {
       try {
         const investigationParty = await db.investigation_party.findFirst({
           where: {
@@ -653,24 +653,17 @@ export class InvestigationPartyService {
             update_utc_timestamp: new Date(),
           },
         });
-        // check if the party shows up on any other investigations before attempting to deactivate
-        if (investigationParty.party_guid_ref) {
-          const otherInvestigations = await db.investigation_party.count({
-            where: {
-              party_guid_ref: investigationParty.party_guid_ref,
-              active_ind: true,
-              investigation_party_guid: { not: partyIdentifier },
-            },
-          });
-          if (otherInvestigations === 0) {
-            await this.partyService.deactivate(investigationParty.party_guid_ref);
-          }
-        }
+        return investigationParty.party_guid_ref;
       } catch (error) {
         this.logger.error("Error removing investigation party:", error);
         throw error;
       }
     });
+
+    // run after shared schema commit so counts are current
+    if (partyReference) {
+      await this.partyService.deactivateIfUnlinked(partyReference);
+    }
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 

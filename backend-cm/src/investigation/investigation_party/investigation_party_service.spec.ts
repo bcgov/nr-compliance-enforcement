@@ -14,7 +14,6 @@ const makeService = () => {
         party_guid_ref: SHARED_PARTY_GUID,
       }),
       update: jest.fn().mockResolvedValue({}),
-      count: jest.fn().mockResolvedValue(0),
     },
   };
   // withRlsTransaction skips setting claims when there is no request in scope, so the
@@ -27,7 +26,7 @@ const makeService = () => {
     updateInvestigationTimestamp: jest.fn().mockResolvedValue(undefined),
     findOne: jest.fn().mockResolvedValue({ investigationGuid: INVESTIGATION_GUID }),
   };
-  const partyService: any = { deactivate: jest.fn().mockResolvedValue(undefined) };
+  const partyService: any = { deactivateIfUnlinked: jest.fn().mockResolvedValue(undefined) };
 
   const service = new InvestigationPartyService(
     prisma,
@@ -67,26 +66,17 @@ describe("InvestigationPartyService.remove", () => {
     });
   });
 
-  it("deactivates the investigation party and its global profile when this was its last investigation", async () => {
+  it("deactivates the investigation party and hands the shared profile to the party service", async () => {
+    // Whether the shared profile survives is decided on the shared side, across every activity
+    // type, so this side only reports that a link was removed.
     const { service, db, partyService } = makeService();
-    db.investigation_party.count.mockResolvedValue(0);
 
     await service.remove(INVESTIGATION_GUID, PARTY_GUID);
 
     expect(db.investigation_party.update).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ active_ind: false }) }),
     );
-    expect(partyService.deactivate).toHaveBeenCalledWith(SHARED_PARTY_GUID);
-  });
-
-  it("keeps the global profile when another investigation still links to it", async () => {
-    const { service, db, partyService } = makeService();
-    db.investigation_party.count.mockResolvedValue(1);
-
-    await service.remove(INVESTIGATION_GUID, PARTY_GUID);
-
-    expect(db.investigation_party.update).toHaveBeenCalled();
-    expect(partyService.deactivate).not.toHaveBeenCalled();
+    expect(partyService.deactivateIfUnlinked).toHaveBeenCalledWith(SHARED_PARTY_GUID);
   });
 
   it("leaves the shared schema alone for a party that was never published", async () => {
@@ -99,7 +89,7 @@ describe("InvestigationPartyService.remove", () => {
 
     await service.remove(INVESTIGATION_GUID, PARTY_GUID);
 
-    expect(db.investigation_party.count).not.toHaveBeenCalled();
-    expect(partyService.deactivate).not.toHaveBeenCalled();
+    expect(db.investigation_party.update).toHaveBeenCalled();
+    expect(partyService.deactivateIfUnlinked).not.toHaveBeenCalled();
   });
 });

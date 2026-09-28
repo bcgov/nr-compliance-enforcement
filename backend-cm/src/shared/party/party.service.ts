@@ -1,5 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
+import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
+import { InspectionPrismaService } from "../../prisma/inspection/prisma.inspection.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { Prisma } from ".prisma/shared"; // NOSONAR
@@ -377,6 +379,8 @@ export class PartyService {
     @InjectMapper() private readonly mapper: Mapper,
     private readonly paginationUtility: PaginationUtility,
     private readonly eventPublisher: EventPublisherService,
+    private readonly investigationPrisma: InvestigationPrismaService,
+    private readonly inspectionPrisma: InspectionPrismaService,
   ) {}
 
   private readonly logger = new Logger(PartyService.name);
@@ -2292,6 +2296,18 @@ export class PartyService {
         update_utc_timestamp: new Date(),
       },
     });
+  }
+
+  // deactivates a party only if it is not linked to any case activity
+  async deactivateIfUnlinked(partyIdentifier: string): Promise<void> {
+    const where = { party_guid_ref: partyIdentifier, active_ind: true };
+    const links = await Promise.all([
+      this.investigationPrisma.investigation_party.count({ where }),
+      this.inspectionPrisma.inspection_party.count({ where }),
+    ]);
+    if (links.every((count) => count === 0)) {
+      await this.deactivate(partyIdentifier);
+    }
   }
 
   async update(partyIdentifier: string, input: PartyUpdateInput, investigationContext?: string): Promise<Party> {

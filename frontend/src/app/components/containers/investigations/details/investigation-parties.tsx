@@ -85,7 +85,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
   const { data: attachments, isLoading: isLoadingAttachments } = useQuery({
     queryKey: ["investigation-attachment-taken-by", investigationGuid],
     queryFn: () => fetchAttachmentsWithMetadata(investigationGuid),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
     enabled: !isReadOnly,
   });
 
