@@ -683,6 +683,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                 <PersonForm
                   form={form}
                   isDisabled={isDisabled}
+                  isPublished={isLinkedParty}
                 />
               )}
 

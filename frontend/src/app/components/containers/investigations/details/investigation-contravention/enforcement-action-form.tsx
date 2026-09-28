@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "react-bootstrap";
 import { z } from "zod";
@@ -41,7 +41,6 @@ import { isPartyDuplicatedIdentifier } from "@/app/components/containers/parties
 import { PARTY_DUPLICATE_MESSAGE } from "@/app/components/containers/parties/form/party-unique-fields";
 import { joinWithAnd } from "@/app/common/methods";
 import Option from "@apptypes/app/option";
-import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
 import {
   NON_EA_DECISION_CODES,
   CODE_WARNING,
@@ -55,6 +54,9 @@ import {
 } from "./enforcement-action-constants";
 import { Attachment } from "@/app/common/attachment-utils";
 import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
+
+// RSBC 1996 chapter numbers: Firearm Act (c. 145) and Wildlife Act (c. 488)
+export const NOTICE_OF_CANCELLATION_ACT_CITATIONS = new Set(["Chapter 145", "Chapter 488"]);
 
 const YES_NO_OPTIONS = [
   { value: "true", label: "Yes" },
@@ -122,6 +124,7 @@ const ENFORCEMENT_ACTION_FIELDS = `
     ticketNumber
     ticketTypeCode
     appealHearingDate
+    noticeOfCancellationNumber
   }
 `;
 
@@ -164,6 +167,8 @@ interface EnforcementActionFormProps {
   onIsSavingChange?: (isSaving: boolean) => void;
   onClose: () => void;
   onIsBlockedChange?: (isBlocked: boolean) => void;
+  contraventionLabel?: ReactNode;
+  showNoticeOfCancellation: boolean;
 }
 
 export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
@@ -180,6 +185,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   onIsSavingChange,
   onClose,
   onIsBlockedChange,
+  contraventionLabel,
+  showNoticeOfCancellation,
 }) => {
   const isEdit = !!enforcementAction;
   const attachmentsRef = useRef<EnforcementActionAttachmentSectionHandle>(null);
@@ -286,6 +293,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketAmount: enforcementAction?.ticket?.ticketAmount?.toString() ?? "",
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
       ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "INPR",
+      noticeOfCancellationNumber: enforcementAction?.ticket?.noticeOfCancellationNumber ?? "",
       // Warning
       warningNumber: enforcementAction?.warningNumber ?? "",
       // Administrative Sanction
@@ -359,6 +367,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketNumber: value.ticketNumber,
       ticketTypeCode: value.ticketTypeCode || null,
       appealHearingDate: value.appealHearingDate ? new Date(value.appealHearingDate).toISOString() : null,
+      ...(showNoticeOfCancellation && { noticeOfCancellationNumber: value.noticeOfCancellationNumber }),
     };
   };
 
@@ -518,7 +527,16 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         onIsSavingChange?.(false);
       }
     });
-  }, [onRequestSave, isEdit, selectedCode, enforcementAction, contravention, party, investigationGuid]);
+  }, [
+    onRequestSave,
+    isEdit,
+    selectedCode,
+    enforcementAction,
+    contravention,
+    party,
+    investigationGuid,
+    showNoticeOfCancellation,
+  ]);
 
   // Expose delete to modal
   useEffect(() => {
@@ -694,7 +712,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         <ContraventionSummary
           contravention={contravention}
           party={party}
-          contraventionLabel={<ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />}
+          contraventionLabel={contraventionLabel}
           notice={
             isRestrictedToCommentDecisions ? (
               <Alert
@@ -882,6 +900,18 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                   )}
                 </div>
               </div>
+              {showNoticeOfCancellation && (
+                <div className="row mb-3">
+                  <div className="col-6">
+                    {renderTextField(
+                      "noticeOfCancellationNumber",
+                      "Notice of cancellation number",
+                      "Enter notice of cancellation number",
+                      { maxLength: 32 },
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           )}
 
