@@ -69,6 +69,50 @@ import { buildPartyUniqueFieldCheck } from "../../shared/party/party-uniqueness"
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
 
+// Everything mapInvestigationPartyToPartyCreateInput/_hasMinimumInfo need off a single investigation_party
+// row, mirroring the per-party include InvestigationService.findOne uses for the aggregate. Kept as its
+// own query (rather than reusing findOne) so a caller's own transaction client can run it and see that
+// transaction's own uncommitted writes.
+const PARTY_DETAIL_INCLUDE = {
+  investigation_contact_method: { where: { active_ind: true } },
+  investigation_alias: { where: { active_ind: true } },
+  investigation_party_external_id: { where: { active_ind: true } },
+  investigation_attachment_reference: { where: { active_ind: true } },
+  investigation_address: {
+    include: { investigation_contact_method: true },
+    where: { active_ind: true },
+  },
+  investigation_person: {
+    include: {
+      investigation_person_facial_hair_style_code_ref: { where: { active_ind: true } },
+    },
+    where: { active_ind: true },
+  },
+  investigation_business: {
+    where: { active_ind: true },
+    include: {
+      investigation_business_person_xref: {
+        include: {
+          investigation_business_person_address_xref: {
+            where: { active_ind: true },
+            include: { investigation_address: true },
+          },
+          investigation_person: {
+            include: {
+              investigation_person_facial_hair_style_code_ref: { where: { active_ind: true } },
+              investigation_party: {
+                include: { investigation_contact_method: { where: { active_ind: true } } },
+              },
+            },
+          },
+        },
+        where: { active_ind: true },
+      },
+      investigation_business_identifier: { where: { active_ind: true } },
+    },
+  },
+};
+
 // A shared party that has been described and had its guids settled, but not yet written
 export interface PreparedSharedParty {
   input: PartyCreateInput;
@@ -192,13 +236,13 @@ export class InvestigationPartyService {
         const investigationPartyGuid = await this._createSingleParty(db, input, investigation, investigationGuid);
         createdPartyGuids.push(investigationPartyGuid);
       }
+
+      for (const createdPartyGuid of createdPartyGuids) {
+        await this.publishIfEligible(db, createdPartyGuid);
+      }
     });
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
-
-    for (const createdPartyGuid of createdPartyGuids) {
-      await this.publishIfEligible(createdPartyGuid);
-    }
 
     const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
     return refreshedInvestigation.parties.filter((party) => createdPartyGuids.includes(party.partyIdentifier));
@@ -706,10 +750,29 @@ export class InvestigationPartyService {
     return refreshedInvestigation.parties.find((party) => party.partyIdentifier === newPartyGuid);
   }
 
-  // Prepare a shared party with random guids
-  async prepareSharedParty(partyIdentifier: string): Promise<PreparedSharedParty | null> {
-    const investigationParty = await this.prisma.investigation_party.findUnique({
+  /**
+   * Loads a single investigation_party row (with everything the shared-party mapping needs) through
+   * the given Prisma client, so a caller running inside its own transaction sees that transaction's
+   * own uncommitted writes rather than racing a separate connection against them.
+   */
+  private async _loadInvestigationParty(db: any, partyIdentifier: string): Promise<InvestigationParty | null> {
+    const row = await db.investigation_party.findUnique({
       where: { investigation_party_guid: partyIdentifier },
+      include: PARTY_DETAIL_INCLUDE,
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return this.mapper.map(row, "investigation_party", "InvestigationParty");
+  }
+
+  // Prepare a shared party with random guids
+  async prepareSharedParty(db: any, partyIdentifier: string): Promise<PreparedSharedParty | null> {
+    const investigationParty = await db.investigation_party.findUnique({
+      where: { investigation_party_guid: partyIdentifier },
+      select: { party_guid_ref: true },
     });
 
     if (!investigationParty) {
@@ -720,10 +783,9 @@ export class InvestigationPartyService {
       return null;
     }
 
-    const investigation = await this.investigationService.findOne(investigationParty.investigation_guid);
-    const party = investigation.parties.find((p) => p.partyIdentifier === partyIdentifier && p.isActive);
+    const party = await this._loadInvestigationParty(db, partyIdentifier);
 
-    if (!party) {
+    if (!party || !party.isActive) {
       throw new Error("Party not found on this investigation.");
     }
 
@@ -890,37 +952,27 @@ export class InvestigationPartyService {
 
   /**
    * Publishes a local party to the shared registry as soon as it has minimum information.
+   * Runs entirely against the caller's own transaction client so the party save and its publish
+   * commit or roll back together, rather than the publish racing a separate connection against the
+   * caller's still-uncommitted writes.
    * Returns the shared party guid when a publish happened, otherwise null.
    */
-  async publishIfEligible(partyIdentifier: string): Promise<string | null> {
-    const investigationParty = await this.prisma.investigation_party.findUnique({
-      where: { investigation_party_guid: partyIdentifier },
-    });
+  async publishIfEligible(db: any, partyIdentifier: string): Promise<string | null> {
+    const party = await this._loadInvestigationParty(db, partyIdentifier);
 
-    if (!investigationParty) {
+    if (!party || !party.isActive || !this._hasMinimumInfo(party)) {
       return null;
     }
 
-    const investigation = await this.investigationService.findOne(investigationParty.investigation_guid);
-    const party = investigation.parties.find((p) => p.partyIdentifier === partyIdentifier && p.isActive);
-
-    if (!party || !this._hasMinimumInfo(party)) {
-      return null;
-    }
-
-    const prepared = await this.prepareSharedParty(partyIdentifier);
+    const prepared = await this.prepareSharedParty(db, partyIdentifier);
 
     if (!prepared) {
       return null;
     }
 
-    let sharedParty: Party;
-
-    await withRlsTransaction(this.prisma, async (db) => {
-      await this.linkToSharedParty(db, partyIdentifier, prepared);
-      sharedParty = await this.createSharedParty(prepared);
-      await this.stampSharedPartyUpdate(db, partyIdentifier, sharedParty.updatedDateTime);
-    });
+    await this.linkToSharedParty(db, partyIdentifier, prepared);
+    const sharedParty = await this.createSharedParty(prepared);
+    await this.stampSharedPartyUpdate(db, partyIdentifier, sharedParty.updatedDateTime);
 
     return sharedParty.partyIdentifier;
   }
@@ -1020,12 +1072,10 @@ export class InvestigationPartyService {
         );
 
         await this.stampSharedPartyUpdate(tx, input.partyIdentifier, updatedSharedParty.updatedDateTime);
+      } else {
+        await this.publishIfEligible(tx, input.partyIdentifier);
       }
     });
-
-    if (!existingParty.partyReference) {
-      await this.publishIfEligible(input.partyIdentifier);
-    }
 
     return await this.investigationService.findOne(investigationGuid);
   }

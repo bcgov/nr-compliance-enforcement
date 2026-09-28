@@ -11,11 +11,9 @@ type SaveConfirmProps = {
 export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
 
-  const { title, warning, warnings, description, cancelText, saveText } = modalData;
+  const { title, warnings, description, cancelText, saveText } = modalData;
 
-  // `warnings` (plural) stacks multiple alerts in order; `warning` (singular) remains for
-  // existing single-message callers.
-  const warningList: string[] = warnings ?? (warning ? [warning] : []);
+  const warningList: string[] = warnings ?? [];
 
   const handleConfirm = () => {
     submit();
