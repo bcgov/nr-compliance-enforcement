@@ -2,6 +2,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks/useGraphQLQuery";
 import { Legislation } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import Option from "@apptypes/app/option";
+import { GroupBase } from "react-select";
 
 export interface LegislationSearchParams {
   agencyCode: string;
@@ -42,6 +43,7 @@ const SEARCH_LEGISLATION = gql`
       sourceUrl
       animalInformationDisplayType
       sourceAcronym
+      sourceType
       legislationText
       sectionTitle
       alternateText
@@ -145,6 +147,18 @@ export const convertActsToOption = (acts: Legislation[] | undefined): Option[] =
       }))
       .sort((a, b) => a.label.localeCompare(b.label)) ?? []
   );
+};
+
+const FEDERAL_SOURCE_TYPE = "FEDERAL";
+
+// Provincial acts first, federal second; empty groups are dropped so no blank section renders
+export const convertActsToGroupedOptions = (acts: Legislation[] | undefined): GroupBase<Option>[] => {
+  const provincialActs = convertActsToOption(acts?.filter((act) => act.sourceType !== FEDERAL_SOURCE_TYPE));
+  const federalActs = convertActsToOption(acts?.filter((act) => act.sourceType === FEDERAL_SOURCE_TYPE));
+  return [
+    { label: "Provincial", options: provincialActs },
+    { label: "Federal", options: federalActs },
+  ].filter((group) => group.options.length > 0);
 };
 
 /**

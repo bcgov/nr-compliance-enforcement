@@ -15,6 +15,7 @@ type Legislation {
   sourceUrl: String
   animalInformationDisplayType: AnimalInformationDisplayType
   sourceAcronym: String
+  sourceType: String
 }
 
 type LegislationType {

@@ -4,6 +4,7 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Button } from "react-bootstrap";
 import {
+  convertActsToGroupedOptions,
   convertActsToOption,
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
@@ -258,6 +259,7 @@ export const ContraventionDetailsForm = ({
   const legislationQuery = useLegislation(contravention?.legislationIdentifierRef, true);
 
   const actOptions = convertActsToOption(actsQuery.data?.legislations);
+  const actGroups = convertActsToGroupedOptions(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
 
@@ -608,7 +610,7 @@ export const ContraventionDetailsForm = ({
                   id="act-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
-                  options={actOptions}
+                  options={actGroups}
                   value={findOptionByValue(actOptions, act)}
                   onChange={(option) => {
                     markDirty();
