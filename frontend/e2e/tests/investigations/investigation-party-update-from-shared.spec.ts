@@ -1,9 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { selectItemById, waitForSpinner } from "../../utils/helpers";
+import { enterDateTimeInDatePicker, selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
- * Tests for updating an investigation party from the shared party it was copied from
+ * Tests for updating an investigation party from the shared party it was published to
  * Verifies the not up-to-date alert appears once the shared party changes, that editing
  * is blocked while it shows, and that pulling the shared changes clears it
  */
@@ -19,19 +19,19 @@ test.describe("Investigation Party Update From Shared Party", () => {
   const businessName = `Cedar Ridge Contracting ${uniqueBusinessNumber}`;
   const updatedBusinessName = `${businessName} Updated`;
 
-  // Captured from the urls the tests land on, then reused by the tests that follow
+  // Captured from the urls and responses the tests land on, then reused by the tests that follow
   let sharedPartyPath = "";
   let investigationPartyPath = "";
 
-  const openPartiesTab = async (page: Page) => {
+  const openInvestigationTab = async (page: Page, tab: "parties" | "contraventions") => {
     await page.goto(INVESTIGATION_PATH);
     await expect(page.locator("h1.comp-box-complaint-id")).not.toContainText("Unknown", { timeout: 15000 });
-    await page.locator("#parties").click();
+    await page.locator(`#${tab}`).click();
   };
 
   // Remove the party this spec added so the investigation doesn't accumulate duplicate parties
   const removeInvestigationParty = async (page: Page) => {
-    await openPartiesTab(page);
+    await openInvestigationTab(page, "parties");
     const partyCard = page.locator(".party-card--linked", { hasText: businessName }).first();
     if ((await partyCard.count()) === 0) {
       return;
@@ -53,28 +53,9 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await removeInvestigationParty(page);
   });
 
-  test("it publishes a party and copies it into the investigation", async ({ page }) => {
-    await page.goto("/party/create");
-    await waitForSpinner(page);
-
-    // Select party type - Organization
-    await selectItemById("party-type-select", "Organization", page);
-
-    const businessNameInput = page.locator("#businessName");
-    await businessNameInput.fill(businessName);
-
-    const businessNumberInput = page.locator("#businessNumber");
-    await businessNumberInput.fill(uniqueBusinessNumber);
-
-    // Save
-    const saveButton = page.locator("#details-screen-save-button-top");
-    await saveButton.click();
-
-    await page.waitForURL(/\/party\/[0-9a-f-]{36}$/);
-    sharedPartyPath = new URL(page.url()).pathname;
-
-    // Copy the published party onto the investigation
-    await openPartiesTab(page);
+  test("it publishes a party by recording a decision against it", async ({ page }) => {
+    // Add a local business party with everything a decision needs: name, business number and a primary address
+    await openInvestigationTab(page, "parties");
     await page.locator("#add-party-button").click();
 
     await page.waitForURL(/\/investigation\/[^/]+\/party\/add$/);
@@ -85,23 +66,73 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await page.locator("#businessName").fill(businessName);
     await page.locator("#businessNumber").fill(uniqueBusinessNumber);
 
-    // Matching profiles are only searched once a match field is blurred; blur from the name field
-    // so both filled values have settled by the time the blur handler reads them
-    await page.locator("#businessName").click();
-    await page.keyboard.press("Tab");
+    // The first address added is marked primary
+    await page.locator("#add-address-button").click();
+    await page.locator("#address-name-0").fill("Head office");
+    await page.locator("#address-0").fill("123 Main Street");
+    await page.locator("#city-0").fill("Victoria");
 
-    const matchCard = page.locator(".comp-party-match-card", { hasText: businessName });
-    await expect(matchCard).toBeVisible();
-    await matchCard.getByRole("button", { name: "Select profile" }).click();
-
-    const confirmModal = page.locator(".modal").first();
-    await expect(confirmModal).toBeVisible();
-    await expect(confirmModal).toContainText(`Add ${businessName} to investigation`);
-    await confirmModal.locator("button", { hasText: "Confirm" }).click();
+    await page.locator("#party-save-button").click();
 
     await page.waitForURL(/\/investigation\/[^/]+\/party\/[0-9a-f-]{36}$/);
     investigationPartyPath = new URL(page.url()).pathname;
     await expect(page.locator(".comp-box-complaint-id").getByText(businessName, { exact: true }).first()).toBeVisible();
+
+    // Add a contravention against the party
+    await openInvestigationTab(page, "contraventions");
+    await page.getByRole("button", { name: "Add contravention" }).click();
+
+    const contraventionModal = page.locator(".modal").first();
+    await expect(contraventionModal).toBeVisible();
+
+    // The 1st of this month is on or before today, so it passes the max date
+    await enterDateTimeInDatePicker(page, "contravention-date", "01");
+
+    await selectItemById("party-select", businessName, page);
+    // The Forest Act is the only legislation source enabled in the test data
+    await selectItemById("act-select", "Forest Act", page);
+    await selectItemById("section-select", "1 Definitions and interpretation", page);
+    await contraventionModal.getByLabel("Definitions and interpretation").first().check();
+
+    const createContraventionPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/graphql") &&
+        (response.request().postData()?.includes("CreateContravention") ?? false),
+      { timeout: 15000 },
+    );
+    await contraventionModal.getByRole("button", { name: "Save" }).click();
+    await createContraventionPromise;
+    await expect(contraventionModal).toBeHidden();
+
+    // Record a warning against it, which publishes the party. Dates default to today and the
+    // officers default to the investigation's primary investigator
+    const partyGroup = page.locator("div.mb-4", {
+      has: page.locator(".investigation-party-name", { hasText: businessName }),
+    });
+    await partyGroup.getByRole("button", { name: "Add decision" }).first().click();
+
+    const decisionModal = page.locator(".modal").first();
+    await expect(decisionModal).toBeVisible();
+    await expect(decisionModal.locator("#enforcement-action-publish-party-notice")).toBeVisible();
+
+    await selectItemById("enforcement-action-code", "Warning", page);
+    await page.locator("#enforcement-action-warningNumber").fill(`W${uniqueBusinessNumber}`);
+
+    const createDecisionPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/graphql") &&
+        (response.request().postData()?.includes("CreateEnforcementAction") ?? false),
+      { timeout: 15000 },
+    );
+    await decisionModal.getByRole("button", { name: "Save" }).click();
+
+    const createDecisionResponse = await createDecisionPromise;
+    const createDecisionBody = await createDecisionResponse.json();
+    const publishedPartyReference = createDecisionBody?.data?.createEnforcementAction?.publishedPartyReference;
+    expect(publishedPartyReference).toBeTruthy();
+    sharedPartyPath = `/party/${publishedPartyReference}`;
+
+    await expect(page.locator(".Toastify__toast-body", { hasText: "Decision and party details saved" })).toBeVisible();
   });
 
   test("it shows the alert and blocks editing once the shared party changes", async ({ page }) => {
@@ -119,7 +150,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await expect(page.locator(".Toastify__toast-body", { hasText: "Party updated successfully" })).toBeVisible();
     await page.waitForURL(/\/party\/[0-9a-f-]{36}$/);
 
-    await openPartiesTab(page);
+    await openInvestigationTab(page, "parties");
 
     const partyCard = page.locator(".party-card--linked", { hasText: businessName }).first();
     const cardAlert = partyCard.locator("[id^=party-not-up-to-date-alert-]");

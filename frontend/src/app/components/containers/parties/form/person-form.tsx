@@ -39,9 +39,21 @@ import {
 type PersonFormProps = {
   form: any;
   isDisabled: boolean;
+  isPublished?: boolean;
 };
 
-export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
+export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled, isPublished = false }) => {
+  // A published profile must still have a value for name / dob when editing
+  const requiredForPublished = (label: string) => {
+    if (!isPublished) return undefined;
+    return {
+      onChange: ({ value }: { value: string | Date | null | undefined }) => {
+        const hasValue = typeof value === "string" ? !!value.trim() : !!value;
+        return hasValue ? undefined : { message: `${label} is required for published parties` };
+      },
+    };
+  };
+
   const sexCodeOptions = useAppSelector(selectPersonSexDropdown).map((opt: { value: string; label: string }) => ({
     value: opt.value,
     label: opt.label,
@@ -250,6 +262,8 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         form={form}
         name="firstName"
         label="First name"
+        required={isPublished}
+        validators={requiredForPublished("First name")}
         render={(field) => (
           <CompInput
             id="FirstName"
@@ -269,6 +283,8 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         form={form}
         name="lastName"
         label="Last name"
+        required={isPublished}
+        validators={requiredForPublished("Last name")}
         render={(field) => (
           <CompInput
             id="LastName"
@@ -336,6 +352,8 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         form={form}
         name="dateOfBirth"
         label="Date of birth"
+        required={isPublished}
+        validators={requiredForPublished("Date of birth")}
         render={(field) => (
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <ValidationDatePicker
