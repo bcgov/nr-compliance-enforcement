@@ -43,7 +43,7 @@ test.describe("Inspection Details", () => {
     const leadAgency = page.locator("#comp-details-lead-agency-text-id");
     await expect(leadAgency).toBeVisible();
 
-    const dateLoggedSection = page.locator("dt", { hasText: "Date logged" });
+    const dateLoggedSection = page.locator("dt", { hasText: "Date opened" });
     await expect(dateLoggedSection).toBeVisible();
 
     const lastUpdatedSection = page.locator("dt", { hasText: "Last updated" });

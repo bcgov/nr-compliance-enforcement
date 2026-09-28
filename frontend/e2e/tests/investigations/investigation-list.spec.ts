@@ -22,7 +22,7 @@ test.describe("Investigation List View", () => {
     // The table is expandable, so thead has a leading empty th for the chevron toggle.
     const tableHeaders = table.locator("thead tr th");
     await expect(tableHeaders.nth(1)).toContainText("Investigation ID");
-    await expect(tableHeaders.nth(2)).toContainText("Date Opened");
+    await expect(tableHeaders.nth(2)).toContainText("Date opened");
     await expect(tableHeaders.nth(3)).toContainText("Community");
     await expect(tableHeaders.nth(4)).toContainText("Location/address");
     await expect(tableHeaders.nth(5)).toContainText("Status");

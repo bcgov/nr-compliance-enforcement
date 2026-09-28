@@ -10,6 +10,7 @@ export type PartyComplianceActivity = {
   status: string;
   primaryInvestigatorName?: string;
   supervisorName?: string;
+  dateOpened?: Date | null;
   contraventions?: Contravention[] | null;
 };
 

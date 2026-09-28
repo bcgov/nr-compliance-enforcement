@@ -26,7 +26,7 @@ import {
   PartyComplianceRelation,
 } from "@/app/types/app/shared/party-compliance-history";
 import LegislationRow from "@/app/components/containers/parties/view/compliance-history/legislation-row";
-import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { CompTable } from "@/app/components/common/comp-table";
 import { SORT_TYPES } from "@/app/constants/sort-direction";
@@ -139,10 +139,6 @@ const buildHistoryRows = (activities: PartyComplianceActivity[]): PartyComplianc
     }));
   });
 
-// TODO is this right date?
-const getContraventionDate = (row: PartyComplianceHistoryRow) =>
-  row.contravention?.date ? parseUTCDateToLocal(row.contravention.date, null) : null;
-
 interface PartyComplianceHistoryProps {
   partyReference: string;
   partyTypeGuid: string;
@@ -244,6 +240,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
             status: currenInvestigation?.investigationStatus?.shortDescription ?? "",
             primaryInvestigatorName: getOfficerName(currenInvestigation?.primaryInvestigatorGuid ?? ""),
             supervisorName: getOfficerName(currenInvestigation?.supervisorGuid ?? ""),
+            dateOpened: parseUTCTimestampToLocal(currenInvestigation?.openedTimestamp),
             contraventions: (currenInvestigation?.contraventions as Contravention[]) ?? null,
           });
         }
@@ -382,16 +379,13 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       renderCell: (row) => <Badge bg="species-badge comp-species-badge">{row.activity.role}</Badge>,
     },
     {
-      label: "Date",
+      label: "Date opened",
       sortKey: "date",
       isSortable: true,
       headerClassName: "comp-cell-width-100 comp-cell-min-width-100",
       cellClassName: "comp-cell-width-100 comp-cell-min-width-100",
-      getValue: (row) => getContraventionDate(row)?.getTime() ?? 0,
-      renderCell: (row) => {
-        const contraventionDate = getContraventionDate(row);
-        return contraventionDate ? formatDateObjectAsString(contraventionDate, { format: "date" }) : "";
-      },
+      getValue: (row) => formatDateObjectAsString(row.activity.dateOpened, { format: "date" }),
+      renderCell: (row) => formatDateObjectAsString(row.activity.dateOpened, { format: "date" }),
     },
     {
       label: "Outcomes",

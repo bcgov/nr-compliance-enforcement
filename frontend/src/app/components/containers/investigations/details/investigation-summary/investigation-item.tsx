@@ -48,7 +48,7 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
               <dd id="comp-details-created-by"> {createdBy}</dd>
             </div>
             <div>
-              <dt>Date logged</dt>
+              <dt>Date opened</dt>
               <dd id="comp-details-date-logged">
                 {investigationData.openedTimestamp && (
                   <div>
