@@ -5,6 +5,7 @@ export type PartyComplianceActivity = {
   name?: string | null;
   activityType?: string | null;
   leadAgency?: string | null;
+  leadAgencyDescription?: string | null;
   role?: string | null;
   sameAgency?: boolean;
   status: string;

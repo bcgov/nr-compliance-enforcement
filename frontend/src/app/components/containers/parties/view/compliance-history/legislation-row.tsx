@@ -2,7 +2,7 @@ import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@/app/store/reducers/code-table";
-import { FC } from "react";
+import { FC, Fragment } from "react";
 import { Contravention } from "@/generated/graphql";
 
 export type LegislationRowProps = {
@@ -23,28 +23,31 @@ export const LegislationRow: FC<LegislationRowProps> = ({ contravention, partyRe
 
   // No enforcement actions: still show the citation
   if (enforcementActionRows.length === 0) {
-    return <p className="mb-1">{displayText}</p>;
+    return (
+      <div className="party-compliance-outcomes">
+        <span>{displayText}</span>
+      </div>
+    );
   }
 
   return (
-    <>
+    <div className="party-compliance-outcomes">
       {matchingParty?.enforcementActions?.map((enforcementAction) => (
-        <p
-          className="mb-1"
-          key={enforcementAction?.enforcementActionIdentifier}
-        >
-          {displayText}{" "}
-          {enforcementActions.find(
-            (ea) => ea.enforcementActionCode === enforcementAction?.enforcementActionCode.enforcementActionCode,
-          )?.shortDescription ?? ""}
-          {enforcementAction?.ticket?.ticketOutcomeCode &&
-            ` (${
-              ticketOutcomes.find((t) => t.ticketOutcomeCode === enforcementAction?.ticket?.ticketOutcomeCode)
-                ?.shortDescription ?? ""
-            })`}
-        </p>
+        <Fragment key={enforcementAction?.enforcementActionIdentifier}>
+          <span>{displayText}</span>
+          <span>
+            {enforcementActions.find(
+              (ea) => ea.enforcementActionCode === enforcementAction?.enforcementActionCode.enforcementActionCode,
+            )?.shortDescription ?? ""}
+            {enforcementAction?.ticket?.ticketOutcomeCode &&
+              ` (${
+                ticketOutcomes.find((t) => t.ticketOutcomeCode === enforcementAction?.ticket?.ticketOutcomeCode)
+                  ?.shortDescription ?? ""
+              })`}
+          </span>
+        </Fragment>
       ))}
-    </>
+    </div>
   );
 };
 
