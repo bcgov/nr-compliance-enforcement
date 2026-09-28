@@ -785,7 +785,7 @@ export class InvestigationPartyService {
 
     const party = await this._loadInvestigationParty(db, partyIdentifier);
 
-    if (!party || !party.isActive) {
+    if (!party?.isActive) {
       throw new Error("Party not found on this investigation.");
     }
 
@@ -960,7 +960,7 @@ export class InvestigationPartyService {
   async publishIfEligible(db: any, partyIdentifier: string): Promise<string | null> {
     const party = await this._loadInvestigationParty(db, partyIdentifier);
 
-    if (!party || !party.isActive || !this._hasMinimumInfo(party)) {
+    if (!party?.isActive || !this._hasMinimumInfo(party)) {
       return null;
     }
 

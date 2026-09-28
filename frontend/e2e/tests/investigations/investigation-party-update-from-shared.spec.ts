@@ -53,8 +53,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await removeInvestigationParty(page);
   });
 
-  test("it publishes a party by recording a decision against it", async ({ page }) => {
-    // Add a local business party with everything a decision needs: name, business number and a primary address
+  test("it publishes a party as soon as it is saved with minimum information", async ({ page }) => {
     await openInvestigationTab(page, "parties");
     await page.locator("#add-party-button").click();
 
@@ -72,11 +71,34 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await page.locator("#address-0").fill("123 Main Street");
     await page.locator("#city-0").fill("Victoria");
 
+    const addPartyPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/graphql") &&
+        (response.request().postData()?.includes("AddPartyToInvestigation") ?? false),
+      { timeout: 15000 },
+    );
     await page.locator("#party-save-button").click();
+
+    // A business always has enough information to publish, so saving a new one confirms that first
+    const confirmModal = page.locator(".modal").first();
+    await expect(confirmModal).toBeVisible();
+    await expect(
+      confirmModal.getByText("This profile will be published and available for use in future investigations."),
+    ).toBeVisible();
+    await confirmModal.getByRole("button", { name: "Save and close" }).click();
+
+    const addPartyResponse = await addPartyPromise;
+    const addPartyBody = await addPartyResponse.json();
+    const publishedPartyReference = addPartyBody?.data?.addPartyToInvestigation?.[0]?.partyReference;
+    expect(publishedPartyReference).toBeTruthy();
+    sharedPartyPath = `/party/${publishedPartyReference}`;
 
     await page.waitForURL(/\/investigation\/[^/]+\/party\/[0-9a-f-]{36}$/);
     investigationPartyPath = new URL(page.url()).pathname;
     await expect(page.locator(".comp-box-complaint-id").getByText(businessName, { exact: true }).first()).toBeVisible();
+    await expect(
+      page.locator(".Toastify__toast-body", { hasText: "Party added and published for use in future investigations" }),
+    ).toBeVisible();
 
     // Add a contravention against the party
     await openInvestigationTab(page, "contraventions");
@@ -104,8 +126,7 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await createContraventionPromise;
     await expect(contraventionModal).toBeHidden();
 
-    // Record a warning against it, which publishes the party. Dates default to today and the
-    // officers default to the investigation's primary investigator
+    // Dates default to today and the officers default to the investigation's primary investigator
     const partyGroup = page.locator("div.mb-4", {
       has: page.locator(".investigation-party-name", { hasText: businessName }),
     });
@@ -113,7 +134,6 @@ test.describe("Investigation Party Update From Shared Party", () => {
 
     const decisionModal = page.locator(".modal").first();
     await expect(decisionModal).toBeVisible();
-    await expect(decisionModal.locator("#enforcement-action-publish-party-notice")).toBeVisible();
 
     await selectItemById("enforcement-action-code", "Warning", page);
     await page.locator("#enforcement-action-warningNumber").fill(`W${uniqueBusinessNumber}`);
@@ -125,14 +145,9 @@ test.describe("Investigation Party Update From Shared Party", () => {
       { timeout: 15000 },
     );
     await decisionModal.getByRole("button", { name: "Save" }).click();
+    await createDecisionPromise;
 
-    const createDecisionResponse = await createDecisionPromise;
-    const createDecisionBody = await createDecisionResponse.json();
-    const publishedPartyReference = createDecisionBody?.data?.createEnforcementAction?.publishedPartyReference;
-    expect(publishedPartyReference).toBeTruthy();
-    sharedPartyPath = `/party/${publishedPartyReference}`;
-
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Decision and party details saved" })).toBeVisible();
+    await expect(page.locator(".Toastify__toast-body", { hasText: "Decision saved successfully" })).toBeVisible();
   });
 
   test("it shows the alert and blocks editing once the shared party changes", async ({ page }) => {
