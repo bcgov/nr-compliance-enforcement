@@ -7,7 +7,6 @@ type EnforcementAction {
   activeIndicator: Boolean!
   ticket: Ticket
   comment: String
-  publishedPartyReference: String
   issuingOfficerIdentifier: String
   dateServed: DateTime
   warningNumber: String
@@ -54,6 +53,7 @@ input CreateEnforcementActionInput {
   courtProsecutionStatusCode: String
   administrativePenaltyStatusCode: String
   approvalInd: Boolean
+  noticeOfCancellationNumber: String
 }
 
 input UpdateEnforcementActionInput {
@@ -83,4 +83,5 @@ input UpdateEnforcementActionInput {
   courtProsecutionStatusCode: String
   administrativePenaltyStatusCode: String
   approvalInd: Boolean
+  noticeOfCancellationNumber: String
 }

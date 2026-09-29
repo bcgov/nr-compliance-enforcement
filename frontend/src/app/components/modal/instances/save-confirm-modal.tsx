@@ -12,10 +12,12 @@ type SaveConfirmProps = {
 export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
 
-  const { title, warning, description, cancelText, saveText, reasons } = modalData;
+  const { title, warnings, description, cancelText, saveText, reasons } = modalData;
 
   // Reasons the action is refused. Present means blocked, so confirming is not offered.
   const blockedReasons: StatusChangeAdvisoryDetail[] = reasons ?? [];
+  
+  const warningList: string[] = warnings ?? [];
 
   const handleConfirm = () => {
     submit();
@@ -30,17 +32,18 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
         </Modal.Header>
       )}
       <Modal.Body>
-        {warning && (
+        {warningList.map((warningText) => (
           <Alert
+            key={warningText}
             variant="warning"
             className="comp-complaint-details-alert"
           >
             <div className="d-flex align-items-center gap-2">
               <i className="bi bi-info-circle" />
-              <span>{warning}</span>
+              <span>{warningText}</span>
             </div>
           </Alert>
-        )}
+        ))}
         <p>{description}</p>
         {blockedReasons.map((reason) => (
           <div

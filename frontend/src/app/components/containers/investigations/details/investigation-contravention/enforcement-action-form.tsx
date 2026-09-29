@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "react-bootstrap";
 import { z } from "zod";
@@ -14,7 +14,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import {
@@ -31,7 +31,6 @@ import {
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { copyInvestigationPartyAttachmentsToSharedParty } from "@/app/common/attachment-upload-helper";
 import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
@@ -41,7 +40,6 @@ import { isPartyDuplicatedIdentifier } from "@/app/components/containers/parties
 import { PARTY_DUPLICATE_MESSAGE } from "@/app/components/containers/parties/form/party-unique-fields";
 import { joinWithAnd } from "@/app/common/methods";
 import Option from "@apptypes/app/option";
-import { ContraventionLabel } from "@/app/components/containers/investigations/details/investigation-contravention/enforcement-action-view-edit-content";
 import {
   NON_EA_DECISION_CODES,
   CODE_WARNING,
@@ -55,6 +53,9 @@ import {
 } from "./enforcement-action-constants";
 import { Attachment } from "@/app/common/attachment-utils";
 import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
+
+// RSBC 1996 chapter numbers: Firearm Act (c. 145) and Wildlife Act (c. 488)
+export const NOTICE_OF_CANCELLATION_ACT_CITATIONS = new Set(["Chapter 145", "Chapter 488"]);
 
 const YES_NO_OPTIONS = [
   { value: "true", label: "Yes" },
@@ -122,13 +123,13 @@ const ENFORCEMENT_ACTION_FIELDS = `
     ticketNumber
     ticketTypeCode
     appealHearingDate
+    noticeOfCancellationNumber
   }
 `;
 
 const CREATE_ENFORCEMENT_ACTION = gql`
   mutation CreateEnforcementAction($input: CreateEnforcementActionInput!) {
     createEnforcementAction(input: $input) {
-      publishedPartyReference
       ${ENFORCEMENT_ACTION_FIELDS}
     }
   }
@@ -164,6 +165,8 @@ interface EnforcementActionFormProps {
   onIsSavingChange?: (isSaving: boolean) => void;
   onClose: () => void;
   onIsBlockedChange?: (isBlocked: boolean) => void;
+  contraventionLabel?: ReactNode;
+  showNoticeOfCancellation: boolean;
 }
 
 export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
@@ -180,14 +183,12 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   onIsSavingChange,
   onClose,
   onIsBlockedChange,
+  contraventionLabel,
+  showNoticeOfCancellation,
 }) => {
   const isEdit = !!enforcementAction;
   const attachmentsRef = useRef<EnforcementActionAttachmentSectionHandle>(null);
 
-  //Check if party is local or global (i.e. if it has a partyReference, it is global)
-  const willPublishParty = !isEdit && !!party && !party.partyReference;
-
-  const dispatch = useAppDispatch();
   const agency = useAppSelector(selectOfficerAgency);
   const officersInAgency = useAppSelector((state) => selectOfficersByAgency(state, agency));
   const enforcementActionSelector = useMemo(() => selectEnforcementActionsByAgency(agency), [agency]);
@@ -286,6 +287,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketAmount: enforcementAction?.ticket?.ticketAmount?.toString() ?? "",
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
       ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "INPR",
+      noticeOfCancellationNumber: enforcementAction?.ticket?.noticeOfCancellationNumber ?? "",
       // Warning
       warningNumber: enforcementAction?.warningNumber ?? "",
       // Administrative Sanction
@@ -359,6 +361,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketNumber: value.ticketNumber,
       ticketTypeCode: value.ticketTypeCode || null,
       appealHearingDate: value.appealHearingDate ? new Date(value.appealHearingDate).toISOString() : null,
+      ...(showNoticeOfCancellation && { noticeOfCancellationNumber: value.noticeOfCancellationNumber }),
     };
   };
 
@@ -415,11 +418,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   });
 
   // Everything that follows a successful save
-  const runPostSaveSideEffects = async (
-    enforcementActionId: string,
-    value: FormValues,
-    publishedPartyReference: string | null,
-  ) => {
+  const runPostSaveSideEffects = async (enforcementActionId: string, value: FormValues) => {
     try {
       const enforcementActionLabel =
         enforcementActionOptions.find((opt) => opt.value === value.enforcementActionCode)?.label ?? "";
@@ -432,34 +431,13 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         location: "",
       });
       await updateTimestampMutation.mutateAsync({ investigationGuid });
-
-      // The party's attachments live in COMS under the investigation's tags, which the shared party
-      // page never looks at. Copy them across so the newly published profile carries them.
-      if (publishedPartyReference && party?.partyIdentifier) {
-        const failedFiles = await copyInvestigationPartyAttachmentsToSharedParty({
-          dispatch,
-          investigationGuid,
-          investigationPartyGuid: party.partyIdentifier,
-          sharedPartyGuid: publishedPartyReference,
-        });
-
-        if (failedFiles.length > 0) {
-          ToggleError(`Party was saved, but these attachments could not be copied: ${failedFiles.join(", ")}`);
-        }
-      }
     } catch (sideEffectError) {
       console.error("Enforcement action saved, but a post-save update failed", sideEffectError);
     }
   };
 
   const showSaveSuccessToast = () => {
-    if (isEdit) {
-      ToggleSuccess("Decision updated successfully");
-    } else if (willPublishParty) {
-      ToggleSuccess("Decision and party details saved successfully");
-    } else {
-      ToggleSuccess("Decision saved successfully");
-    }
+    ToggleSuccess(isEdit ? "Decision updated successfully" : "Decision saved successfully");
   };
 
   // Expose save to modal
@@ -472,7 +450,6 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       onIsSavingChange?.(true);
       try {
         let enforcementActionId: string;
-        let publishedPartyReference: string | null = null;
         if (isEdit) {
           const input: UpdateEnforcementActionInput = {
             enforcementActionIdentifier: enforcementAction!.enforcementActionIdentifier,
@@ -500,10 +477,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           };
           const created: any = await saveMutation.mutateAsync({ input });
           enforcementActionId = created.createEnforcementAction.enforcementActionIdentifier;
-          publishedPartyReference = created.createEnforcementAction.publishedPartyReference ?? null;
         }
 
-        await runPostSaveSideEffects(enforcementActionId, value, publishedPartyReference);
+        await runPostSaveSideEffects(enforcementActionId, value);
 
         showSaveSuccessToast();
         onDirtyChange?.(0, false);
@@ -518,7 +494,16 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         onIsSavingChange?.(false);
       }
     });
-  }, [onRequestSave, isEdit, selectedCode, enforcementAction, contravention, party, investigationGuid]);
+  }, [
+    onRequestSave,
+    isEdit,
+    selectedCode,
+    enforcementAction,
+    contravention,
+    party,
+    investigationGuid,
+    showNoticeOfCancellation,
+  ]);
 
   // Expose delete to modal
   useEffect(() => {
@@ -680,21 +665,11 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      {willPublishParty && (
-        <Alert
-          variant="warning"
-          id="enforcement-action-publish-party-notice"
-        >
-          <i className="bi bi-info-circle-fill pe-2" /> Saving this decision will also save the details of the party
-          involved for use in future investigations.
-        </Alert>
-      )}
-
       {contravention && (
         <ContraventionSummary
           contravention={contravention}
           party={party}
-          contraventionLabel={<ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />}
+          contraventionLabel={contraventionLabel}
           notice={
             isRestrictedToCommentDecisions ? (
               <Alert
@@ -882,6 +857,18 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                   )}
                 </div>
               </div>
+              {showNoticeOfCancellation && (
+                <div className="row mb-3">
+                  <div className="col-6">
+                    {renderTextField(
+                      "noticeOfCancellationNumber",
+                      "Notice of cancellation number",
+                      "Enter notice of cancellation number",
+                      { maxLength: 32 },
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           )}
 
