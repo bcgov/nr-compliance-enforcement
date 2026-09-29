@@ -35,7 +35,7 @@ export const PartyAddressInformation: FC<PartyAddressInformationProps> = ({ part
     <>
       {addresses.length > 0 ? (
         <section className="comp-details-section">
-          <h3 className="mb-3">{isPerson ? "Address(es)" : "Contact information"}</h3>
+          <h3 className="mb-3">{isPerson ? "Address(es)" : "Address information"}</h3>
           {addresses.map((addr) => {
             const provinceLabel = addr.province
               ? (countrySubdivisions?.find(
@@ -83,7 +83,7 @@ export const PartyAddressInformation: FC<PartyAddressInformationProps> = ({ part
           })}
         </section>
       ) : (
-        <DetailSection title={isPerson ? "Address(es)" : "Contact information"} />
+        <DetailSection title={isPerson ? "Address(es)" : "Address information"} />
       )}
     </>
   );

@@ -449,10 +449,6 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, inc
 
 // Helper to validate business form fields
 export const validateBusinessForm = async (value: any): Promise<string | null> => {
-  if (!value.businessName?.trim()) {
-    return "Name is required.";
-  }
-
   // rows only exist once the user adds one, so every row must be filled in or removed
   const addresses = (value.addresses as AddressFormValue[] | undefined) ?? [];
   if (addresses.some((address) => isDefaultAddress(address))) {
@@ -473,7 +469,23 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
     if (!contact.person?.lastName?.trim()) return "Contact last name is required.";
   }
 
-  return null;
+  const hasSomeText = [
+    value.businessName,
+    value.businessNumber?.identifierValue,
+    value.worksafeBCNumber?.identifierValue,
+  ].some(hasValue);
+
+  // empty address and contact rows were rejected above, so any remaining row is entered information
+  const hasSomeValue =
+    !!value.businessSafetyConcernIndicator ||
+    addresses.length > 0 ||
+    contacts.length > 0 ||
+    (value.aliases ?? []).some((a: any) => hasValue(a?.name)) ||
+    (value.externalIds ?? []).some((eid: any) => hasValue(eid?.externalIdValue)) ||
+    (value.phoneNumbers ?? []).some((p: any) => hasValue(p?.value)) ||
+    (value.emailAddresses ?? []).some((e: any) => hasValue(e?.value));
+
+  return hasSomeText || hasSomeValue ? null : "A party can't be saved without any identifying information.";
 };
 
 // at least one field must be entered
@@ -572,7 +584,7 @@ export function buildPersonForUpdate(value: any): PersonUpdateInput {
 // Helper to build business object for creates
 export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => {
   return {
-    name: value.businessName?.trim(),
+    name: value.businessName?.trim() || null,
     businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
     safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
     safetyConcernReason: value.businessSafetyConcernReason || null,
