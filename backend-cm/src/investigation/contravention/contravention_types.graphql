@@ -5,7 +5,7 @@ type Contravention {
   investigationParty: [InvestigationParty]
   isActive: Boolean!
   date: DateTime
-  community: String
+  community: String!
   speciesCode: String
   speciesOtherText: String
   quantity: Int
@@ -17,7 +17,7 @@ input CreateUpdateContraventionInput {
   investigationPartyGuids: [String]
   legislationReference: String!
   date: DateTime
-  community: String
+  community: String!
   selectedPartyGuid: String
   speciesCode: String
   speciesOtherText: String

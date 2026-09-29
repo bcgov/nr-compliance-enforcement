@@ -514,7 +514,7 @@ export type ContactMethodMatchInput = {
 
 export type Contravention = {
   __typename?: 'Contravention';
-  community?: Maybe<Scalars['String']['output']>;
+  community: Scalars['String']['output'];
   contraventionIdentifier: Scalars['String']['output'];
   date?: Maybe<Scalars['DateTime']['output']>;
   investigationIdentifier: Scalars['String']['output'];
@@ -855,7 +855,7 @@ export type CreatePreventionInput = {
 };
 
 export type CreateUpdateContraventionInput = {
-  community?: InputMaybe<Scalars['String']['input']>;
+  community: Scalars['String']['input'];
   date?: InputMaybe<Scalars['DateTime']['input']>;
   investigationGuid: Scalars['String']['input'];
   investigationPartyGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;

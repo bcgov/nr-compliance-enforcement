@@ -511,8 +511,13 @@ export const ContraventionDetailsForm = ({
           <div className="col-6">
             <FormField
               form={form}
+              required
               name="communityCode"
               label="Community"
+              validators={{
+                onChange: z.string().min(1, "Community is required"),
+                onSubmit: z.string().min(1, "Community is required"),
+              }}
               render={(field) => (
                 <CompSelect
                   id="community-select"
@@ -525,9 +530,9 @@ export const ContraventionDetailsForm = ({
                     field.handleChange(option?.value || "");
                   }}
                   placeholder="Select community"
-                  isClearable={true}
                   showInactive={false}
-                  enableValidation={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
                 />
               )}
             />
