@@ -655,8 +655,30 @@ export class InvestigationPartyService {
     });
   }
 
+  /**
+   * Blocks removal when the party is associated with any active contravention or other future linked records.
+   * Checked to prevent orphan records.
+   */
+  private async _assertRemovalAllowed(partyIdentifier: string): Promise<void> {
+    const contraventionCount = await this.prisma.contravention_party_xref.count({
+      where: {
+        investigation_party_guid: partyIdentifier,
+        active_ind: true,
+        contravention: { active_ind: true },
+      },
+    });
+
+    if (contraventionCount > 0) {
+      throw new BadRequestException(
+        "This party cannot be removed while they are associated with a contravention. Remove the party from all contraventions before removing them from the investigation.",
+      );
+    }
+  }
+
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
-    await withRlsTransaction(this.prisma, async (db) => {
+    await this._assertRemovalAllowed(partyIdentifier);
+
+    const partyReference = await withRlsTransaction(this.prisma, async (db) => {
       try {
         const investigationParty = await db.investigation_party.findFirst({
           where: {
@@ -679,11 +701,17 @@ export class InvestigationPartyService {
             update_utc_timestamp: new Date(),
           },
         });
+        return investigationParty.party_guid_ref;
       } catch (error) {
         this.logger.error("Error removing investigation party:", error);
         throw error;
       }
     });
+
+    // run after shared schema commit so counts are current
+    if (partyReference) {
+      await this.partyService.deactivateIfUnlinked(partyReference);
+    }
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
