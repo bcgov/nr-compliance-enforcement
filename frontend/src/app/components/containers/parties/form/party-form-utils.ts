@@ -584,7 +584,7 @@ export function buildPersonForUpdate(value: any): PersonUpdateInput {
 // Helper to build business object for creates
 export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => {
   return {
-    name: value.businessName?.trim(),
+    name: value.businessName?.trim() || null,
     businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
     safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
     safetyConcernReason: value.businessSafetyConcernReason || null,

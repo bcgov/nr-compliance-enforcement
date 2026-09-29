@@ -641,6 +641,7 @@ export type CreateEnforcementActionInput = {
   enforcementActionCode: Scalars['String']['input'];
   hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
   issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
+  noticeOfCancellationNumber?: InputMaybe<Scalars['String']['input']>;
   orderStatusCode?: InputMaybe<Scalars['String']['input']>;
   orderTypeCode?: InputMaybe<Scalars['String']['input']>;
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -737,7 +738,7 @@ export type CreateInvestigationBusinessInput = {
   businessReference?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<CreateInvestigationContactMethodInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<CreateInvestigationBusinessContactInput>>>;
-  name: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
   safetyConcernIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   safetyConcernReason?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1533,7 +1534,7 @@ export type InvestigationBusiness = {
   businessReference?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   contactPeople?: Maybe<Array<Maybe<InvestigationBusinessPerson>>>;
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   partyGuid: Scalars['String']['output'];
   safetyConcernIndicator?: Maybe<Scalars['Boolean']['output']>;
   safetyConcernReason?: Maybe<Scalars['String']['output']>;
@@ -3530,6 +3531,7 @@ export type UpdateEnforcementActionInput = {
   enforcementActionIdentifier: Scalars['String']['input'];
   hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
   issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
+  noticeOfCancellationNumber?: InputMaybe<Scalars['String']['input']>;
   orderStatusCode?: InputMaybe<Scalars['String']['input']>;
   orderTypeCode?: InputMaybe<Scalars['String']['input']>;
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3601,7 +3603,7 @@ export type UpdateInvestigationBusinessInput = {
   businessIdentifiers?: InputMaybe<Array<InputMaybe<UpdateInvestigationBusinessIdentifierInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<UpdateInvestigationContactMethodInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<UpdateInvestigationBusinessContactInput>>>;
-  name: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
   safetyConcernIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   safetyConcernReason?: InputMaybe<Scalars['String']['input']>;
 };

@@ -394,7 +394,7 @@ export class InvestigationPartyService {
       data: {
         business_guid_ref: input.businessReference,
         investigation_party_guid: investigationPartyGuid,
-        name: input.name,
+        name: input.name?.trim() || null,
         safety_concern_ind: input.safetyConcernIndicator,
         safety_concern_reason: input.safetyConcernReason,
         create_user_id: this.user.getIdirUsername(),
@@ -1262,7 +1262,7 @@ export class InvestigationPartyService {
     await tx.investigation_business.update({
       where: { investigation_business_guid: existingBusiness.businessGuid },
       data: {
-        name: input.name,
+        name: input.name?.trim() || null,
         safety_concern_ind: input.safetyConcernIndicator,
         safety_concern_reason: input.safetyConcernReason,
         update_user_id: this.user.getIdirUsername(),
