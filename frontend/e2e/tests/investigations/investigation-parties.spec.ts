@@ -101,6 +101,14 @@ test.describe("Investigation Party Form", () => {
     const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
+    // A business always has enough information to publish, so saving a new one confirms that first
+    const confirmModal = page.locator(".modal").first();
+    await expect(confirmModal).toBeVisible();
+    await expect(
+      confirmModal.getByText("This profile will be published and available for use in future investigations."),
+    ).toBeVisible();
+    await confirmModal.getByRole("button", { name: "Save and close" }).click();
+
     await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+$/);
     await expect(
       page.locator(".comp-box-complaint-id").getByText("Acme Logging Ltd", { exact: true }).first(),

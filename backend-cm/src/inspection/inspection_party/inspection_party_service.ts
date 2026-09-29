@@ -7,6 +7,7 @@ import { UserService } from "../../common/user.service";
 import { InspectionService } from "../inspection/inspection.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
+import { PartyService } from "../../shared/party/party.service";
 
 @Injectable()
 export class InspectionPartyService {
@@ -15,6 +16,7 @@ export class InspectionPartyService {
     @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
     private readonly inspectionService: InspectionService,
+    private readonly partyService: PartyService,
   ) {}
 
   private readonly logger = new Logger(InspectionPartyService.name);
@@ -91,7 +93,7 @@ export class InspectionPartyService {
   }
 
   async remove(inspectionGuid: string, partyIdentifier: string): Promise<Inspection> {
-    await this.prisma.$transaction(async (tx) => {
+    const partyReference = await this.prisma.$transaction(async (tx) => {
       try {
         const inspectionParty = await tx.inspection_party.findFirst({
           where: {
@@ -114,11 +116,17 @@ export class InspectionPartyService {
             update_utc_timestamp: new Date(),
           },
         });
+        return inspectionParty.party_guid_ref;
       } catch (error) {
         this.logger.error("Error removing inspection party:", error);
         throw error;
       }
     });
+
+    // run after shared schema commit so counts are current
+    if (partyReference) {
+      await this.partyService.deactivateIfUnlinked(partyReference);
+    }
 
     return await this.inspectionService.findOne(inspectionGuid);
   }

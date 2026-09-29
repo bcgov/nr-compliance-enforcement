@@ -3447,6 +3447,7 @@ export type Ticket = {
   activeIndicator: Scalars['Boolean']['output'];
   appealHearingDate?: Maybe<Scalars['Date']['output']>;
   enforcementActionIdentifier: Scalars['String']['output'];
+  noticeOfCancellationNumber?: Maybe<Scalars['String']['output']>;
   paidDate?: Maybe<Scalars['Date']['output']>;
   ticketAmount: Scalars['Float']['output'];
   ticketIdentifier: Scalars['String']['output'];
