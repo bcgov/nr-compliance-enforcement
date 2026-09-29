@@ -111,6 +111,8 @@ interface InvestigationPartyFormProps {
   investigationLabel?: string;
   // Shared party guids already linked to this investigation
   linkedPartyReferences?: string[];
+  // True when the party is on a contravention, so its role cannot be changed
+  isRoleLocked?: boolean;
 }
 
 export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
@@ -118,6 +120,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   editParty,
   investigationLabel,
   linkedPartyReferences = [],
+  isRoleLocked,
 }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -622,19 +625,27 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                 required
                 validators={{ onChange: z.string().min(1, "Investigation role is required") }}
                 render={(field) => (
-                  <CompSelect
-                    id="party-role-select"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input mb-3"
-                    options={partyRoleOptions}
-                    value={partyRoleOptions?.find((opt: any) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value || "")}
-                    placeholder="Select"
-                    isClearable={true}
-                    showInactive={false}
-                    enableValidation={true}
-                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                  />
+                  <>
+                    <CompSelect
+                      id="party-role-select"
+                      classNamePrefix="comp-select"
+                      className={isRoleLocked ? "comp-details-input" : "comp-details-input mb-3"}
+                      options={partyRoleOptions}
+                      value={partyRoleOptions?.find((opt: any) => opt.value === field.state.value)}
+                      onChange={(option) => field.handleChange(option?.value || "")}
+                      placeholder="Select"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                      isDisabled={isDisabled || isRoleLocked}
+                    />
+                    {isRoleLocked && (
+                      <div className="form-text mb-3">
+                        The role cannot be changed because a contravention has been added to this party.
+                      </div>
+                    )}
+                  </>
                 )}
               />
 

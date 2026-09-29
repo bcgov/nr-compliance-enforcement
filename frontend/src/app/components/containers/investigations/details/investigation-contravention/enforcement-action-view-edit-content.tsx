@@ -1,15 +1,15 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Contravention, EnforcementAction, InvestigationParty } from "@/generated/graphql";
+import { Contravention, EnforcementAction, InvestigationParty, Legislation } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { EnforcementActionViewEditContentReadOnly } from "./enforcement-action-view-edit-content-read-only";
-import { EnforcementActionForm } from "./enforcement-action-form";
+import { EnforcementActionForm, NOTICE_OF_CANCELLATION_ACT_CITATIONS } from "./enforcement-action-form";
 import { LegislationText } from "@/app/components/common/legislation-text";
-import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
+import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 
 interface EnforcementActionViewEditContentProps {
   currentStep: number;
@@ -28,14 +28,12 @@ interface EnforcementActionViewEditContentProps {
   onIsBlockedChange?: (isBlocked: boolean) => void;
 }
 
-export const ContraventionLabel: FC<{ legislationIdentifierRef: string }> = ({ legislationIdentifierRef }) => {
-  const legislation = useLegislation(legislationIdentifierRef, false);
-  const legislationData = legislation?.data?.legislation;
-  if (!legislationData) return <span>Loading...</span>;
-  const displayText = legislationData.alternateText ?? legislationData.legislationText;
+export const ContraventionLabel: FC<{ legislation?: Legislation | null }> = ({ legislation }) => {
+  if (!legislation) return <span>Loading...</span>;
+  const displayText = legislation.alternateText ?? legislation.legislationText;
   return (
     <>
-      {legislationData.fullCitation} : <LegislationText>{displayText}</LegislationText>
+      {legislation.fullCitation} : <LegislationText>{displayText}</LegislationText>
     </>
   );
 };
@@ -78,6 +76,20 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
     selectCodeTable(CODE_TABLE_TYPES.ADMINISTRATIVE_PENALTY_STATUS_TYPE),
   );
   const officers = useAppSelector(selectOfficers);
+
+  const legislationQuery = useLegislation(contravention.legislationIdentifierRef, true);
+  const legislation = legislationQuery?.data?.legislation;
+
+  const showNoticeOfCancellation = useMemo(() => {
+    if (!legislation) return false;
+    const nodes = [legislation, ...(legislation.ancestors ?? [])];
+    return nodes.some(
+      (node) =>
+        node?.legislationTypeCode === "ACT" && NOTICE_OF_CANCELLATION_ACT_CITATIONS.has((node.citation ?? "").trim()),
+    );
+  }, [legislation]);
+
+  const contraventionLabel = <ContraventionLabel legislation={legislation} />;
 
   const enforcementActionLabel =
     enforcementActionCodes.find(
@@ -123,9 +135,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
           <EnforcementActionViewEditContentReadOnly
             enforcementAction={enforcementAction}
             party={party}
-            contraventionLabel={
-              <ContraventionLabel legislationIdentifierRef={contravention.legislationIdentifierRef} />
-            }
+            contraventionLabel={contraventionLabel}
             servingOfficerLabel={servingOfficerLabel}
             issuingOfficerLabel={issuingOfficerLabel}
             enforcementActionLabel={enforcementActionLabel}
@@ -134,6 +144,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
             attachments={existingAttachments}
             isLoadingAttachments={attachmentsQuery.isLoading}
             contravention={contravention}
+            showNoticeOfCancellation={showNoticeOfCancellation}
           />
         )}
       </div>
@@ -153,6 +164,8 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
             onIsSavingChange={onIsSavingChange}
             onClose={onClose}
             onIsBlockedChange={onIsBlockedChange}
+            contraventionLabel={contraventionLabel}
+            showNoticeOfCancellation={showNoticeOfCancellation}
           />
         </div>
       )}

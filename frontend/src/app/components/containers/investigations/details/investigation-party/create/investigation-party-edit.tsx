@@ -31,6 +31,16 @@ const InvestigationPartyEdit: FC = () => {
     [isEditMode, parties, partyIdentifier],
   );
 
+  // A party on a contravention cannot have its role changed
+  const isRoleLocked = useMemo(
+    () =>
+      !!editParty &&
+      (data?.getInvestigation?.contraventions ?? []).some((contravention) =>
+        contravention?.investigationParty?.some((party) => party?.partyIdentifier === editParty.partyIdentifier),
+      ),
+    [data, editParty],
+  );
+
   const partyMissing = isEditMode && !isReadOnly && !isLoading && !editParty;
   useEffect(() => {
     if (partyMissing) ToggleError("Party not found");
@@ -83,6 +93,7 @@ const InvestigationPartyEdit: FC = () => {
       editParty={editParty}
       investigationLabel={data?.getInvestigation?.name ?? undefined}
       linkedPartyReferences={parties.map((party) => party.partyReference).filter(Boolean) as string[]}
+      isRoleLocked={isRoleLocked}
     />
   );
 };
