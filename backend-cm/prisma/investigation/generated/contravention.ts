@@ -30,8 +30,8 @@ export class contravention {
   @ApiPropertyOptional({ type: Date })
   contravention_date?: Date;
 
-  @ApiPropertyOptional({ type: String })
-  geo_organization_unit_code_ref?: string;
+  @ApiProperty({ type: String })
+  geo_organization_unit_code_ref: string;
 
   @ApiPropertyOptional({ type: String })
   wildlife_management_unit_code_ref?: string;

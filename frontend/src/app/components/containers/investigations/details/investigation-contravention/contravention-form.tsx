@@ -121,7 +121,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
         investigationGuid: activityGuid,
         legislationReference: step1Values.selectedSection,
         date: step1Values.contraventionDate,
-        community: step1Values.communityCode || null,
+        community: step1Values.communityCode,
         investigationPartyGuids: step1Values.selectedPartyGuids,
         speciesCode: step1Values.speciesCode,
         speciesOtherText: step1Values.speciesOtherText,
