@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { Children, FC, ReactNode } from "react";
 import { Modal, Button, Alert } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
@@ -16,8 +16,9 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
 
   // Reasons the action is refused. Present means blocked, so confirming is not offered.
   const blockedReasons: StatusChangeAdvisoryDetail[] = reasons ?? [];
-  
-  const warningList: string[] = warnings ?? [];
+
+  // Plain strings or JSX. Children.toArray keys them for the static list
+  const warningList: ReactNode[] = warnings ?? [];
 
   const handleConfirm = () => {
     submit();
@@ -32,18 +33,19 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
         </Modal.Header>
       )}
       <Modal.Body>
-        {warningList.map((warningText) => (
-          <Alert
-            key={warningText}
-            variant="warning"
-            className="comp-complaint-details-alert"
-          >
-            <div className="d-flex align-items-center gap-2">
-              <i className="bi bi-info-circle" />
-              <span>{warningText}</span>
-            </div>
-          </Alert>
-        ))}
+        {Children.toArray(
+          warningList.map((warningText) => (
+            <Alert
+              variant="warning"
+              className="comp-complaint-details-alert"
+            >
+              <div className="d-flex align-items-center gap-2">
+                <i className="bi bi-info-circle" />
+                <span>{warningText}</span>
+              </div>
+            </Alert>
+          )),
+        )}
         <p>{description}</p>
         {blockedReasons.map((reason) => (
           <div
