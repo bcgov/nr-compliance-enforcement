@@ -1,0 +1,1 @@
+ALTER TABLE investigation_business ALTER COLUMN name DROP NOT NULL;

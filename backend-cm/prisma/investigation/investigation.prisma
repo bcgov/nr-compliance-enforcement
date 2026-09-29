@@ -433,7 +433,7 @@ model investigation_business {
   investigation_business_guid        String                               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   business_guid_ref                  String?                              @db.Uuid
   investigation_party_guid           String?                              @db.Uuid
-  name                               String                               @db.VarChar(128)
+  name                               String?                              @db.VarChar(128)
   active_ind                         Boolean                              @default(true)
   create_user_id                     String                               @db.VarChar(32)
   create_utc_timestamp               DateTime                             @default(now()) @db.Timestamp(6)

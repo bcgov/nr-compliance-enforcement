@@ -13,8 +13,8 @@ export class investigation_business {
   @ApiPropertyOptional({ type: String })
   investigation_party_guid?: string;
 
-  @ApiProperty({ type: String })
-  name: string;
+  @ApiPropertyOptional({ type: String })
+  name?: string;
 
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;

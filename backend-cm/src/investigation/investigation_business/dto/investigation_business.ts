@@ -15,7 +15,7 @@ import {
 
 export class InvestigationBusiness implements BusinessDto {
   businessGuid: string;
-  name: string;
+  name?: string;
   isActive: boolean;
   partyGuid: string;
   businessReference?: string;
@@ -27,8 +27,8 @@ export class InvestigationBusiness implements BusinessDto {
 
 @InputType()
 export class CreateInvestigationBusinessInput {
-  @Field(() => String)
-  name: string;
+  @Field(() => String, { nullable: true })
+  name?: string;
 
   @Field(() => String)
   businessReference?: string;
@@ -48,8 +48,8 @@ export class CreateInvestigationBusinessInput {
 
 @InputType()
 export class UpdateInvestigationBusinessInput {
-  @Field(() => String)
-  name: string;
+  @Field(() => String, { nullable: true })
+  name?: string;
 
   @Field(() => [UpdateInvestigationBusinessIdentifierInput], { nullable: true })
   businessIdentifiers?: UpdateInvestigationBusinessIdentifierInput[];
