@@ -10,7 +10,6 @@ import {
 } from "src/investigation/enforcement_action/dto/enforcement_action";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { InvestigationService } from "../investigation/investigation.service";
-import { InvestigationPartyService } from "../investigation_party/investigation_party_service";
 import { DECISION_DETAIL_TABLES, DecisionDetailTable, DECISION_DETAIL_INCLUDE } from "./enforcement_action.constants";
 
 @Injectable()
@@ -20,7 +19,6 @@ export class EnforcementActionService {
     private readonly user: UserService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly investigationService: InvestigationService,
-    private readonly investigationPartyService: InvestigationPartyService,
   ) {}
 
   private readonly logger = new Logger(EnforcementActionService.name);
@@ -196,17 +194,8 @@ export class EnforcementActionService {
 
   async create(input: CreateEnforcementActionInput): Promise<EnforcementAction> {
     try {
-      // Promoting investigation_party to shared schema when enforcement action is created against a known party
-
-      // 1. Prepare the party for publishing with a random partyIdentifier
-      const preparedParty = input.partyIdentifier
-        ? await this.investigationPartyService.prepareSharedParty(input.partyIdentifier)
-        : null;
-
       let enforcementAction;
-      let sharedParty;
 
-      // 2. Create enforcement action and update refs to prepared party
       await withRlsTransaction(this.prisma, async (db) => {
         // Looked up inside the transaction (rather than before it) so a concurrent request can't
         // race this read against the on-demand create below and produce two active null-party
@@ -287,23 +276,10 @@ export class EnforcementActionService {
           });
         }
 
-        // 3. Create the shared party in the shared schema
-        if (preparedParty) {
-          await this.investigationPartyService.linkToSharedParty(db, input.partyIdentifier!, preparedParty);
-          sharedParty = await this.investigationPartyService.createSharedParty(preparedParty);
-          await this.investigationPartyService.stampSharedPartyUpdate(
-            db,
-            input.partyIdentifier!,
-            sharedParty.updatedDateTime,
-          );
-        }
-
         await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
       });
 
-      // Handed back so the client can copy the party's COMS attachments onto the new shared party
-      const created = await this.findOne(enforcementAction.enforcement_action_guid);
-      return { ...created, publishedPartyReference: sharedParty?.partyIdentifier ?? null };
+      return await this.findOne(enforcementAction.enforcement_action_guid);
     } catch (error) {
       this.logger.error("Error creating enforcement action:", error);
       throw error;
