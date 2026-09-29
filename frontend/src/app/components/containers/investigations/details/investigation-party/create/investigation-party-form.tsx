@@ -24,6 +24,7 @@ import {
   buildPersonBase,
   createEmptyPartyFormValues,
   mapInvestigationPartyToDefaultValues,
+  validateBusinessForm,
   validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import {
@@ -204,13 +205,14 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
         updatePartyMutation.mutate({ investigationGuid, input });
       } else {
-        // an added person must have at least one entered field
-        if (value.partyType === PartyTypeCodes.PERSON) {
-          const validationError = validatePersonForm(value);
-          if (validationError) {
-            ToggleError(validationError);
-            return;
-          }
+        const validationError =
+          value.partyType === PartyTypeCodes.PERSON
+            ? validatePersonForm(value)
+            : await validateBusinessForm(value, isLinkedParty);
+
+        if (validationError) {
+          ToggleError(validationError);
+          return;
         }
 
         const input: any = {
