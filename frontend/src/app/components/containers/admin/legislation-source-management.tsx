@@ -411,6 +411,7 @@ export const LegislationSourceManagement: FC = () => {
                 legislationSourceGuid={source.legislationSourceGuid}
                 agencyCode={source.agencyCode}
                 animalInformationDisplayType={source.animalInformationDisplayType}
+                acronym={source.acronym}
               />
             )}
             isLoading={isLoading}
@@ -468,11 +469,11 @@ export const LegislationSourceManagement: FC = () => {
             </div>
 
             <div className="comp-details-form-row">
-              <label htmlFor="long-description-input">Acronym</label>
+              <label htmlFor="acronym-input">Acronym</label>
               <div className="comp-details-edit-input">
                 <CompInput
-                  id="long-description-input"
-                  divid="long-description-div"
+                  id="acronym-input"
+                  divid="acronym-div"
                   type="input"
                   inputClass="comp-form-control"
                   placeholder="Optional acronym"

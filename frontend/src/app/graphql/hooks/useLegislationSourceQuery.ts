@@ -45,7 +45,7 @@ export interface UpdateLegislationSourceInput {
   legislationSourceGuid: string;
   shortDescription?: string;
   longDescription?: string;
-  acronym?: string;
+  acronym?: string | null;
   sourceUrl?: string;
   regulationsSourceUrl?: string;
   agencyCode?: string;
