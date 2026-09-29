@@ -65,12 +65,6 @@ const PartiesList: React.FC<Props> = ({
   const getPartyKey = (party: InvestigationParty | InspectionParty): string =>
     party.person?.personGuid ?? party.business?.businessGuid ?? party.partyIdentifier;
 
-  const getPartyRemoveName = (party: InvestigationParty | InspectionParty): string => {
-    if (party.person) return `${party.person.firstName} ${party.person.lastName}`;
-    if (party.business) return party.business.name ?? "";
-    return "-";
-  };
-
   const getDateOfBirth = (person: InvestigationPerson): string => {
     if (person.dateOfBirth) {
       return String(person.dateOfBirth).slice(0, 10);
@@ -137,7 +131,7 @@ const PartiesList: React.FC<Props> = ({
       <Button
         size="sm"
         variant="outline-primary"
-        onClick={() => onRemoveParty(party.partyIdentifier, getPartyRemoveName(party))}
+        onClick={() => onRemoveParty(party.partyIdentifier, getPartyName(party))}
       >
         <i className="bi bi-trash me-2"></i> Remove
       </Button>

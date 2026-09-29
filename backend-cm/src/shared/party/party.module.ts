@@ -4,6 +4,8 @@ import { PartyService } from "./party.service";
 import { PartyHistoryResolver } from "./party-history.resolver";
 import { PartyHistoryService } from "./party-history.service";
 import { PrismaModuleShared } from "../../prisma/shared/prisma.shared.module";
+import { PrismaModuleInvestigation } from "../../prisma/investigation/prisma.investigation.module";
+import { PrismaModuleInspection } from "../../prisma/inspection/prisma.inspection.module";
 import { AutomapperModule } from "@automapper/nestjs";
 import { PaginationModule } from "../../common/pagination.module";
 import { UserModule } from "../../common/user.module";
@@ -16,6 +18,8 @@ import { EventPublisherModule } from "../../event_publisher/event_publisher.modu
 @Module({
   imports: [
     PrismaModuleShared,
+    PrismaModuleInvestigation,
+    PrismaModuleInspection,
     AutomapperModule,
     PaginationModule,
     UserModule,

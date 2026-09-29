@@ -5,7 +5,7 @@ import { BusinessIdentifiers } from "../../enum/business-identifier.enum";
 import { ContactMethods } from "../../enum/contact-method.enum";
 
 const makePartyService = (prisma: any = {}, mapper: any = {}): any =>
-  new PartyService({} as any, {} as any, prisma, mapper, {} as any, {} as any);
+  new PartyService({} as any, {} as any, prisma, mapper, {} as any, {} as any, {} as any, {} as any);
 
 const personInput = (input: Partial<PartyMatchInput> = {}): PartyMatchInput => ({
   partyTypeCode: PARTY_TYPES.Person,
@@ -604,6 +604,41 @@ describe("_buildMatchComparisons", () => {
     expect(text).toContain("AS contact_first_dmeta_eq");
     expect(text).not.toContain("AS contact_last_norm_eq");
     expect(text).toContain("AS alias_norm_eq");
+  });
+});
+
+describe("deactivateIfUnlinked", () => {
+  const makeService = (investigationLinks: number, inspectionLinks: number) => {
+    const prisma = { party: { update: jest.fn().mockResolvedValue({}) } };
+    const service = new PartyService(
+      { getIdirUsername: () => "test" } as any,
+      {} as any,
+      prisma as any,
+      {} as any,
+      {} as any,
+      {} as any,
+      { investigation_party: { count: jest.fn().mockResolvedValue(investigationLinks) } } as any,
+      { inspection_party: { count: jest.fn().mockResolvedValue(inspectionLinks) } } as any,
+    );
+    return { service, prisma };
+  };
+
+  it("retires the profile once no activity of any type links to it", async () => {
+    const { service, prisma } = makeService(0, 0);
+
+    await service.deactivateIfUnlinked("party-1");
+
+    expect(prisma.party.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { party_guid: "party-1" }, data: expect.objectContaining({ active_ind: false }) }),
+    );
+  });
+
+  it("keeps the profile while an activity of another type still links to it", async () => {
+    const { service, prisma } = makeService(0, 1);
+
+    await service.deactivateIfUnlinked("party-1");
+
+    expect(prisma.party.update).not.toHaveBeenCalled();
   });
 });
 
