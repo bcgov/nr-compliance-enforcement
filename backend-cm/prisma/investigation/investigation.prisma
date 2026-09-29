@@ -69,7 +69,7 @@ model contravention {
   update_user_id                    String?                    @db.VarChar(32)
   update_utc_timestamp              DateTime?                  @db.Timestamp(6)
   contravention_date                DateTime?                  @db.Date
-  geo_organization_unit_code_ref    String?                    @db.VarChar(10)
+  geo_organization_unit_code_ref    String                     @db.VarChar(10)
   wildlife_management_unit_code_ref String?                    @db.VarChar(16)
   species_code_ref                  String?                    @db.VarChar(16)
   species_other_text                String?                    @db.VarChar(256)
