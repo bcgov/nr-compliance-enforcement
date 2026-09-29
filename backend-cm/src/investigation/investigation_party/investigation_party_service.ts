@@ -75,6 +75,12 @@ export interface PreparedSharedParty {
   identifiers: PreparedPartyIdentifiers;
 }
 
+type NamedPartyInput = {
+  firstName?: string | null;
+  lastName?: string | null;
+  name?: string | null;
+};
+
 @Injectable()
 export class InvestigationPartyService {
   constructor(
@@ -565,7 +571,7 @@ export class InvestigationPartyService {
     });
   }
 
-  private _hasName(party: { firstName?: string | null; lastName?: string | null; name?: string | null }): boolean {
+  private _hasName(party: NamedPartyInput): boolean {
     return !!(party.firstName?.trim() || party.lastName?.trim() || party.name?.trim());
   }
 
@@ -1186,7 +1192,7 @@ export class InvestigationPartyService {
 
     await this.updatePerson(tx, existingParty.person, input.person);
 
-    await this._syncPlaceholder(tx, investigationGuid, existingParty, input, this._hasName(input.person));
+    await this._syncPlaceholder(tx, investigationGuid, existingParty, input, input.person);
   }
 
   private async _syncPlaceholder(
@@ -1194,9 +1200,9 @@ export class InvestigationPartyService {
     investigationGuid: string,
     existingParty: InvestigationParty,
     input: UpdateInvestigationPartyInput,
-    hasName: boolean,
+    namedInput: NamedPartyInput,
   ) {
-    if (hasName) {
+    if (this._hasName(namedInput)) {
       if (existingParty.placeholderName) {
         await tx.investigation_party.update({
           where: { investigation_party_guid: input.partyIdentifier },
@@ -1224,7 +1230,7 @@ export class InvestigationPartyService {
 
     await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
 
-    await this._syncPlaceholder(tx, investigationGuid, existingParty, input, this._hasName(input.business));
+    await this._syncPlaceholder(tx, investigationGuid, existingParty, input, input.business);
   }
 
   private async updatePerson(tx: any, existingPerson: InvestigationPerson, input: UpdateInvestigationPersonInput) {
