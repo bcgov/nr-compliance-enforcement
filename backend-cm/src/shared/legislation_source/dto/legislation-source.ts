@@ -8,6 +8,7 @@ export interface LegislationSource {
   legislationSourceGuid: string;
   shortDescription: string;
   longDescription: string | null;
+  acronym: string | null;
   sourceUrl: string;
   regulationsSourceUrl: string | null;
   agencyCode: string;
@@ -23,6 +24,7 @@ export interface LegislationSource {
 export interface CreateLegislationSourceInput {
   shortDescription: string;
   longDescription?: string | null;
+  acronym?: string | null;
   sourceUrl: string;
   regulationsSourceUrl?: string | null;
   agencyCode: string;
@@ -36,6 +38,7 @@ export interface UpdateLegislationSourceInput {
   legislationSourceGuid: string;
   shortDescription?: string;
   longDescription?: string | null;
+  acronym?: string | null;
   sourceUrl?: string;
   regulationsSourceUrl?: string | null;
   agencyCode?: string;
@@ -60,6 +63,10 @@ export const mapPrismaLegislationSourceToLegislationSource = (mapper: Mapper) =>
     forMember(
       (dest) => dest.longDescription,
       mapFrom((src) => src.long_description ?? null),
+    ),
+    forMember(
+      (dest) => dest.acronym,
+      mapFrom((src) => src.acronym ?? null),
     ),
     forMember(
       (dest) => dest.sourceUrl,

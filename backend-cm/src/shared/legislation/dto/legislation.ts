@@ -19,6 +19,8 @@ export class Legislation {
   versionEffectiveDate: string | null;
   sourceUrl: string | null;
   animalInformationDisplayType: AnimalInformationDisplayType | null;
+  sourceAcronym: string | null;
+  sourceType: string | null;
 }
 
 type LegislationVersionAndConfiguration = {
@@ -27,6 +29,8 @@ type LegislationVersionAndConfiguration = {
   version_effective_date: Date | null;
   source_url: string | null;
   animal_information_display_code?: AnimalInformationDisplayType | null;
+  source_acronym?: string | null;
+  source_type?: string | null;
 };
 
 export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
@@ -91,6 +95,14 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
       mapFrom(
         (src) => (src as legislation & LegislationVersionAndConfiguration).animal_information_display_code ?? null,
       ),
+    ),
+    forMember(
+      (dest) => dest.sourceAcronym,
+      mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).source_acronym ?? null),
+    ),
+    forMember(
+      (dest) => dest.sourceType,
+      mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).source_type ?? null),
     ),
   );
 };

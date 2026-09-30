@@ -30,6 +30,9 @@ export class party {
   @ApiPropertyOptional({ type: String })
   created_by_app_user_guid?: string;
 
+  @ApiProperty({ type: Boolean })
+  active_ind: boolean = true;
+
   @ApiProperty({ isArray: true, type: () => address })
   address: address[];
 

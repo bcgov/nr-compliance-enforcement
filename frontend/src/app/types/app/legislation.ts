@@ -37,15 +37,15 @@ export const RootLegislationTypes = [LegislationType.ACT, LegislationType.REGULA
  * CSS indent classes for displaying legislation hierarchy
  */
 export enum indentByType {
-  SEC = "ms-0",
-  SUBSEC = "ms-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
-  PAR = "ms-3",
-  SUBPAR = "ms-4",
-  CL = "ms-5", //NOSONAR - same indent as subparagraph
-  SUBCL = "ms-5", //NOSONAR - same indent as subparagraph
-  DEF = "ms-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
-  TEXT = "ms-0", //NOSONAR - text segments inherit parent's indent level but lets set a default
-  TABLE = "ms-0", //NOSONAR - tables are displayed at root level
-  SCHED = "ms-0", //NOSONAR - schedules are structural elements like parts
-  DIV = "ms-0", //NOSONAR - divisions are structural elements like parts
+  SEC = "legislation-indent-0",
+  SUBSEC = "legislation-indent-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
+  PAR = "legislation-indent-1",
+  SUBPAR = "legislation-indent-2",
+  CL = "legislation-indent-3", //NOSONAR - same indent as subparagraph
+  SUBCL = "legislation-indent-4", //NOSONAR - same indent as subparagraph
+  DEF = "legislation-indent-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
+  TEXT = "legislation-indent-0", //NOSONAR - text segments inherit parent's indent level but lets set a default
+  TABLE = "legislation-indent-0", //NOSONAR - tables are displayed at root level
+  SCHED = "legislation-indent-0", //NOSONAR - schedules are structural elements like parts
+  DIV = "legislation-indent-0", //NOSONAR - divisions are structural elements like parts
 }

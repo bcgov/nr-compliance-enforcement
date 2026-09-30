@@ -69,11 +69,61 @@ import { buildPartyUniqueFieldCheck } from "../../shared/party/party-uniqueness"
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
 
+// Everything mapInvestigationPartyToPartyCreateInput/_hasMinimumInfo need off a single investigation_party
+// row, mirroring the per-party include InvestigationService.findOne uses for the aggregate. Kept as its
+// own query (rather than reusing findOne) so a caller's own transaction client can run it and see that
+// transaction's own uncommitted writes.
+const PARTY_DETAIL_INCLUDE = {
+  investigation_contact_method: { where: { active_ind: true } },
+  investigation_alias: { where: { active_ind: true } },
+  investigation_party_external_id: { where: { active_ind: true } },
+  investigation_attachment_reference: { where: { active_ind: true } },
+  investigation_address: {
+    include: { investigation_contact_method: true },
+    where: { active_ind: true },
+  },
+  investigation_person: {
+    include: {
+      investigation_person_facial_hair_style_code_ref: { where: { active_ind: true } },
+    },
+    where: { active_ind: true },
+  },
+  investigation_business: {
+    where: { active_ind: true },
+    include: {
+      investigation_business_person_xref: {
+        include: {
+          investigation_business_person_address_xref: {
+            where: { active_ind: true },
+            include: { investigation_address: true },
+          },
+          investigation_person: {
+            include: {
+              investigation_person_facial_hair_style_code_ref: { where: { active_ind: true } },
+              investigation_party: {
+                include: { investigation_contact_method: { where: { active_ind: true } } },
+              },
+            },
+          },
+        },
+        where: { active_ind: true },
+      },
+      investigation_business_identifier: { where: { active_ind: true } },
+    },
+  },
+};
+
 // A shared party that has been described and had its guids settled, but not yet written
 export interface PreparedSharedParty {
   input: PartyCreateInput;
   identifiers: PreparedPartyIdentifiers;
 }
+
+type NamedPartyInput = {
+  firstName?: string | null;
+  lastName?: string | null;
+  name?: string | null;
+};
 
 @Injectable()
 export class InvestigationPartyService {
@@ -192,6 +242,10 @@ export class InvestigationPartyService {
         const investigationPartyGuid = await this._createSingleParty(db, input, investigation, investigationGuid);
         createdPartyGuids.push(investigationPartyGuid);
       }
+
+      for (const createdPartyGuid of createdPartyGuids) {
+        await this.publishIfEligible(db, createdPartyGuid);
+      }
     });
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
@@ -281,6 +335,15 @@ export class InvestigationPartyService {
 
       if (input.business) {
         await this.createBusiness(db, investigationParty.investigation_party_guid, input.business, investigationGuid);
+
+        if (!this._hasName(input.business)) {
+          await this._assignPlaceholder(
+            db,
+            investigationGuid,
+            investigationParty.investigation_party_guid,
+            input.partyAssociationRole,
+          );
+        }
       }
 
       if (input.person) {
@@ -385,7 +448,7 @@ export class InvestigationPartyService {
       data: {
         business_guid_ref: input.businessReference,
         investigation_party_guid: investigationPartyGuid,
-        name: input.name,
+        name: input.name?.trim() || null,
         safety_concern_ind: input.safetyConcernIndicator,
         safety_concern_reason: input.safetyConcernReason,
         create_user_id: this.user.getIdirUsername(),
@@ -556,8 +619,8 @@ export class InvestigationPartyService {
     });
   }
 
-  private _hasName(person: { firstName?: string | null; lastName?: string | null }): boolean {
-    return !!(person.firstName?.trim() || person.lastName?.trim());
+  private _hasName(party: NamedPartyInput): boolean {
+    return !!(party.firstName?.trim() || party.lastName?.trim() || party.name?.trim());
   }
 
   private async _getRoleLabel(partyAssociationRole?: string | null): Promise<string> {
@@ -607,8 +670,30 @@ export class InvestigationPartyService {
     });
   }
 
+  /**
+   * Blocks removal when the party is associated with any active contravention or other future linked records.
+   * Checked to prevent orphan records.
+   */
+  private async _assertRemovalAllowed(partyIdentifier: string): Promise<void> {
+    const contraventionCount = await this.prisma.contravention_party_xref.count({
+      where: {
+        investigation_party_guid: partyIdentifier,
+        active_ind: true,
+        contravention: { active_ind: true },
+      },
+    });
+
+    if (contraventionCount > 0) {
+      throw new BadRequestException(
+        "This party cannot be removed while they are associated with a contravention. Remove the party from all contraventions before removing them from the investigation.",
+      );
+    }
+  }
+
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
-    await withRlsTransaction(this.prisma, async (db) => {
+    await this._assertRemovalAllowed(partyIdentifier);
+
+    const partyReference = await withRlsTransaction(this.prisma, async (db) => {
       try {
         const investigationParty = await db.investigation_party.findFirst({
           where: {
@@ -631,11 +716,17 @@ export class InvestigationPartyService {
             update_utc_timestamp: new Date(),
           },
         });
+        return investigationParty.party_guid_ref;
       } catch (error) {
         this.logger.error("Error removing investigation party:", error);
         throw error;
       }
     });
+
+    // run after shared schema commit so counts are current
+    if (partyReference) {
+      await this.partyService.deactivateIfUnlinked(partyReference);
+    }
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
@@ -702,10 +793,29 @@ export class InvestigationPartyService {
     return refreshedInvestigation.parties.find((party) => party.partyIdentifier === newPartyGuid);
   }
 
-  // Prepare a shared party with random guids
-  async prepareSharedParty(partyIdentifier: string): Promise<PreparedSharedParty | null> {
-    const investigationParty = await this.prisma.investigation_party.findUnique({
+  /**
+   * Loads a single investigation_party row (with everything the shared-party mapping needs) through
+   * the given Prisma client, so a caller running inside its own transaction sees that transaction's
+   * own uncommitted writes rather than racing a separate connection against them.
+   */
+  private async _loadInvestigationParty(db: any, partyIdentifier: string): Promise<InvestigationParty | null> {
+    const row = await db.investigation_party.findUnique({
       where: { investigation_party_guid: partyIdentifier },
+      include: PARTY_DETAIL_INCLUDE,
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return this.mapper.map(row, "investigation_party", "InvestigationParty");
+  }
+
+  // Prepare a shared party with random guids
+  async prepareSharedParty(db: any, partyIdentifier: string): Promise<PreparedSharedParty | null> {
+    const investigationParty = await db.investigation_party.findUnique({
+      where: { investigation_party_guid: partyIdentifier },
+      select: { party_guid_ref: true },
     });
 
     if (!investigationParty) {
@@ -716,10 +826,9 @@ export class InvestigationPartyService {
       return null;
     }
 
-    const investigation = await this.investigationService.findOne(investigationParty.investigation_guid);
-    const party = investigation.parties.find((p) => p.partyIdentifier === partyIdentifier && p.isActive);
+    const party = await this._loadInvestigationParty(db, partyIdentifier);
 
-    if (!party) {
+    if (!party?.isActive) {
       throw new Error("Party not found on this investigation.");
     }
 
@@ -876,6 +985,41 @@ export class InvestigationPartyService {
     return await this.partyService.create(prepared.input, prepared.identifiers);
   }
 
+  // Minimum information a party to be published to global.
+  private _hasMinimumInfo(party: InvestigationParty): boolean {
+    if (party.person) {
+      return !!(party.person.firstName?.trim() && party.person.lastName?.trim() && party.person.dateOfBirth);
+    }
+    return !!party.business?.name?.trim();
+  }
+
+  /**
+   * Publishes a local party to the shared registry as soon as it has minimum information.
+   * Runs entirely against the caller's own transaction client so the party save and its publish
+   * commit or roll back together, rather than the publish racing a separate connection against the
+   * caller's still-uncommitted writes.
+   * Returns the shared party guid when a publish happened, otherwise null.
+   */
+  async publishIfEligible(db: any, partyIdentifier: string): Promise<string | null> {
+    const party = await this._loadInvestigationParty(db, partyIdentifier);
+
+    if (!party?.isActive || !this._hasMinimumInfo(party)) {
+      return null;
+    }
+
+    const prepared = await this.prepareSharedParty(db, partyIdentifier);
+
+    if (!prepared) {
+      return null;
+    }
+
+    await this.linkToSharedParty(db, partyIdentifier, prepared);
+    const sharedParty = await this.createSharedParty(prepared);
+    await this.stampSharedPartyUpdate(db, partyIdentifier, sharedParty.updatedDateTime);
+
+    return sharedParty.partyIdentifier;
+  }
+
   async findManyByRef(partyRefId: string): Promise<InvestigationParty[]> {
     if (!partyRefId || partyRefId.length === 0) {
       return [];
@@ -971,6 +1115,8 @@ export class InvestigationPartyService {
         );
 
         await this.stampSharedPartyUpdate(tx, input.partyIdentifier, updatedSharedParty.updatedDateTime);
+      } else {
+        await this.publishIfEligible(tx, input.partyIdentifier);
       }
     });
 
@@ -1156,11 +1302,9 @@ export class InvestigationPartyService {
         );
       }
 
+      // These methods return early if not a person or not a business.
       await this._applyPersonUpdate(tx, investigationGuid, existingParty, input);
-
-      if (input.business && existingParty.business) {
-        await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
-      }
+      await this._applyBusinessUpdate(tx, investigationGuid, existingParty, input);
     } catch (error) {
       this.logger.error("Error updating investigation party:", error);
       throw error;
@@ -1179,7 +1323,17 @@ export class InvestigationPartyService {
 
     await this.updatePerson(tx, existingParty.person, input.person);
 
-    if (this._hasName(input.person)) {
+    await this._syncPlaceholder(tx, investigationGuid, existingParty, input, input.person);
+  }
+
+  private async _syncPlaceholder(
+    tx: any,
+    investigationGuid: string,
+    existingParty: InvestigationParty,
+    input: UpdateInvestigationPartyInput,
+    namedInput: NamedPartyInput,
+  ) {
+    if (this._hasName(namedInput)) {
       if (existingParty.placeholderName) {
         await tx.investigation_party.update({
           where: { investigation_party_guid: input.partyIdentifier },
@@ -1193,6 +1347,21 @@ export class InvestigationPartyService {
     } else if (!existingParty.placeholderName || input.partyAssociationRole !== existingParty.partyAssociationRole) {
       await this._assignPlaceholder(tx, investigationGuid, input.partyIdentifier, input.partyAssociationRole);
     }
+  }
+
+  private async _applyBusinessUpdate(
+    tx: any,
+    investigationGuid: string,
+    existingParty: InvestigationParty,
+    input: UpdateInvestigationPartyInput,
+  ) {
+    if (!input.business || !existingParty.business) {
+      return;
+    }
+
+    await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
+
+    await this._syncPlaceholder(tx, investigationGuid, existingParty, input, input.business);
   }
 
   private async updatePerson(tx: any, existingPerson: InvestigationPerson, input: UpdateInvestigationPersonInput) {
@@ -1230,7 +1399,7 @@ export class InvestigationPartyService {
     await tx.investigation_business.update({
       where: { investigation_business_guid: existingBusiness.businessGuid },
       data: {
-        name: input.name,
+        name: input.name?.trim() || null,
         safety_concern_ind: input.safetyConcernIndicator,
         safety_concern_reason: input.safetyConcernReason,
         update_user_id: this.user.getIdirUsername(),

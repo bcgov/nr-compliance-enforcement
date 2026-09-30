@@ -608,6 +608,7 @@ model legislation_source {
   parent_legislation_source_guid                          String?               @db.Uuid
   external_key                                            String?               @db.VarChar(64)
   animal_information_display_code                         String                @default("H") @db.Char(1)
+  acronym                                                 String?               @db.VarChar(16)
   agency_code_legislation_source_agency_codeToagency_code agency_code           @relation("legislation_source_agency_codeToagency_code", fields: [agency_code], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_agency")
   legislation_source                                      legislation_source?   @relation("legislation_sourceTolegislation_source", fields: [parent_legislation_source_guid], references: [legislation_source_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_parent")
   other_legislation_source                                legislation_source[]  @relation("legislation_sourceTolegislation_source")
@@ -729,6 +730,7 @@ model party {
   update_user_id           String?             @db.VarChar(32)
   update_utc_timestamp     DateTime?           @db.Timestamp(6)
   created_by_app_user_guid String?             @db.Uuid
+  active_ind               Boolean             @default(true)
   address                  address[]
   alias                    alias[]
   business                 business?

@@ -14,7 +14,7 @@ export interface PersonDto {
 
 export interface BusinessDto {
   businessGuid: string;
-  name: string;
+  name?: string;
   partyGuid: string;
 }
 

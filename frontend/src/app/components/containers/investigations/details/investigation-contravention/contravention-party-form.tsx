@@ -89,7 +89,7 @@ export const ContraventionPartyForm = ({
         .filter((party): party is NonNullable<typeof party> => party !== null)
         .map((party) => ({
           value: party.partyIdentifier,
-          label: party.business ? party.business.name : `${party.person?.lastName}, ${party.person?.firstName}`,
+          label: getPartyName(party),
         }));
       form.setFieldValue("selectedParties", options);
       form.setFieldMeta("selectedParties", (meta) => ({ ...meta, isDirty: false, isTouched: false }));

@@ -32,6 +32,7 @@ interface EditingSource {
   legislationSourceGuid?: string;
   shortDescription: string;
   longDescription: string;
+  acronym: string;
   sourceUrl: string;
   regulationsSourceUrl: string;
   agencyCode: string;
@@ -44,6 +45,7 @@ interface EditingSource {
 const emptySource: EditingSource = {
   shortDescription: "",
   longDescription: "",
+  acronym: "",
   sourceUrl: "",
   regulationsSourceUrl: "",
   agencyCode: "",
@@ -180,6 +182,7 @@ export const LegislationSourceManagement: FC = () => {
       (source) =>
         source.shortDescription.toLowerCase().includes(query) ||
         source.longDescription?.toLowerCase().includes(query) ||
+        source.acronym?.toLowerCase().includes(query) ||
         source.sourceUrl?.toLowerCase().includes(query) ||
         source.agencyCode.toLowerCase().includes(query),
     );
@@ -196,6 +199,7 @@ export const LegislationSourceManagement: FC = () => {
       legislationSourceGuid: source.legislationSourceGuid,
       shortDescription: source.shortDescription,
       longDescription: source.longDescription ?? "",
+      acronym: source.acronym ?? "",
       sourceUrl: source.sourceUrl ?? "",
       regulationsSourceUrl: source.regulationsSourceUrl ?? "",
       agencyCode: source.agencyCode,
@@ -225,6 +229,7 @@ export const LegislationSourceManagement: FC = () => {
         legislationSourceGuid: editingSource.legislationSourceGuid,
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
+        acronym: editingSource.acronym || undefined,
         sourceUrl: editingSource.sourceUrl,
         regulationsSourceUrl:
           editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
@@ -237,6 +242,7 @@ export const LegislationSourceManagement: FC = () => {
       const input: CreateLegislationSourceInput = {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
+        acronym: editingSource.acronym || undefined,
         sourceUrl: editingSource.sourceUrl,
         regulationsSourceUrl:
           editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
@@ -279,6 +285,7 @@ export const LegislationSourceManagement: FC = () => {
       renderCell: (source) => (
         <>
           {source.shortDescription}
+          {source.acronym && <span> ({source.acronym})</span>}
           {source.longDescription && <div className="text-muted">{source.longDescription}</div>}
         </>
       ),
@@ -404,6 +411,7 @@ export const LegislationSourceManagement: FC = () => {
                 legislationSourceGuid={source.legislationSourceGuid}
                 agencyCode={source.agencyCode}
                 animalInformationDisplayType={source.animalInformationDisplayType}
+                acronym={source.acronym}
               />
             )}
             isLoading={isLoading}
@@ -456,6 +464,22 @@ export const LegislationSourceManagement: FC = () => {
                   maxLength={256}
                   value={editingSource.longDescription}
                   onChange={(e: any) => setEditingSource({ ...editingSource, longDescription: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="comp-details-form-row">
+              <label htmlFor="acronym-input">Acronym</label>
+              <div className="comp-details-edit-input">
+                <CompInput
+                  id="acronym-input"
+                  divid="acronym-div"
+                  type="input"
+                  inputClass="comp-form-control"
+                  placeholder="Optional acronym"
+                  maxLength={16}
+                  value={editingSource.acronym}
+                  onChange={(e: any) => setEditingSource({ ...editingSource, acronym: e.target.value })}
                 />
               </div>
             </div>

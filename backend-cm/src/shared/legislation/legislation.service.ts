@@ -129,6 +129,8 @@ export class LegislationService {
         lv.effective_date AS version_effective_date,
         lv.source_url,
         ls.animal_information_display_code,
+        ls.acronym AS source_acronym,
+        ls.source_type,
         COALESCE(lc.enabled_ind, true) AS enabled_ind
       FROM legislation l
       INNER JOIN descendants d ON l.legislation_guid = d.legislation_guid

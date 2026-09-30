@@ -1,5 +1,5 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
-import { Logger } from "@nestjs/common";
+import { BadRequestException, Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -66,6 +66,15 @@ export class InvestigationPartyResolver {
     try {
       return await this.investigationPartyService.remove(investigationGuid, partyIdentifier);
     } catch (error) {
+      // do not log denied action due to business logic
+      if (error instanceof BadRequestException) {
+        throw new GraphQLError(error.message, {
+          extensions: {
+            code: "BAD_REQUEST",
+            originalError: error.message,
+          },
+        });
+      }
       this.logger.error("Remove investigation party error:", error);
       throw new GraphQLError("Error removing party from investigation", {
         extensions: {
