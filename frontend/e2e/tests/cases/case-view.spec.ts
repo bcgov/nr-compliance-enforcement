@@ -43,8 +43,8 @@ test.describe("Case View", () => {
     expect(agencyText).toBeTruthy();
   });
 
-  test("it displays date logged", async ({ page }) => {
-    const dateSection = page.locator("dt", { hasText: "Date logged" });
+  test("it displays date opened", async ({ page }) => {
+    const dateSection = page.locator("dt", { hasText: "Date opened" });
     await expect(dateSection).toBeVisible();
   });
 

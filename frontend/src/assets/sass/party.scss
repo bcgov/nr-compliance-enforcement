@@ -209,3 +209,10 @@
     background-color: rgba(207, 244, 252, 0.5); // alert info background at half opacity
   }
 }
+
+.party-compliance-outcomes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 1rem;
+  row-gap: 0.25rem;
+}

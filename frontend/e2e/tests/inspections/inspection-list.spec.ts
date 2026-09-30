@@ -23,7 +23,7 @@ test.describe("Inspection List View", () => {
     const tableHeaders = table.locator("thead tr th");
     await expect(tableHeaders.nth(0)).toContainText("Inspection ID");
     await expect(tableHeaders.nth(1)).toContainText("Case ID");
-    await expect(tableHeaders.nth(2)).toContainText("Date Opened");
+    await expect(tableHeaders.nth(2)).toContainText("Date opened");
     await expect(tableHeaders.nth(3)).toContainText("Status");
     await expect(tableHeaders.nth(4)).toContainText("Agency");
     await expect(tableHeaders.nth(5)).toContainText("Actions");
