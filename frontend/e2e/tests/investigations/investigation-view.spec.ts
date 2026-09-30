@@ -42,7 +42,7 @@ test.describe("Investigation Details", () => {
   });
 
   test("it displays summary information", async ({ page }) => {
-    const dateLoggedSection = page.locator("dt", { hasText: "Date logged" });
+    const dateLoggedSection = page.locator("dt", { hasText: "Date opened" });
     await expect(dateLoggedSection).toBeVisible();
 
     const lastUpdatedSection = page.locator("dt", { hasText: "Last updated" });

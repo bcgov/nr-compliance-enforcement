@@ -78,7 +78,7 @@ export const InspectionList: FC<Props> = ({
         )),
     },
     {
-      label: "Date Opened",
+      label: "Date opened",
       sortKey: "openedTimestamp",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
