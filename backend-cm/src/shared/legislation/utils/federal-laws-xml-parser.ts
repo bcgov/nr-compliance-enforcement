@@ -596,6 +596,13 @@ const getLongTitle = (id: any): string | null =>
         .join(" ") || null
     : null;
 
+const getShortTitle = (id: any): string | null =>
+  id?.ShortTitle
+    ? toArray(id.ShortTitle)
+        .map((st: any) => extractText(st).trim())
+        .join(" ") || null
+    : null;
+
 const nextOrder = (children: ParsedLegislationNode[], offset = 1): number =>
   children.length > 0 ? children.at(-1).displayOrder + offset : offset;
 
@@ -643,9 +650,10 @@ export function parseFederalRegulationXml(xmlString: string): ParsedFederalLawsD
   const id = regulation?.Identification;
   const instrumentNumber = id?.InstrumentNumber ? extractText(id.InstrumentNumber).trim() : null;
   const longTitle = getLongTitle(id);
+  const shortTitle = getShortTitle(id);
 
   const metadata: FederalLawsMetadata = {
-    title: longTitle || instrumentNumber || "Unknown Federal Regulation",
+    title: shortTitle || longTitle || instrumentNumber || "Unknown Federal Regulation",
     longTitle,
     consolidatedNumber: instrumentNumber,
     inForceStartDate: regulation?.["@_lims:inforce-start-date"] || null,

@@ -48,6 +48,9 @@ export class legislation_source {
   @ApiProperty({ type: String })
   animal_information_display_code: string = "H";
 
+  @ApiPropertyOptional({ type: String })
+  acronym?: string;
+
   @ApiProperty({ type: () => agency_code })
   agency_code_legislation_source_agency_codeToagency_code: agency_code;
 

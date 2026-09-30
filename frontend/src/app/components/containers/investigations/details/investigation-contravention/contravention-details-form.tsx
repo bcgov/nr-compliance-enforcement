@@ -4,6 +4,8 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Button } from "react-bootstrap";
 import {
+  convertActsToGroupedOptions,
+  convertActsToOption,
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
   useLegislation,
@@ -256,7 +258,8 @@ export const ContraventionDetailsForm = ({
 
   const legislationQuery = useLegislation(contravention?.legislationIdentifierRef, true);
 
-  const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
+  const actOptions = convertActsToOption(actsQuery.data?.legislations);
+  const actGroups = convertActsToGroupedOptions(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
 
@@ -612,7 +615,7 @@ export const ContraventionDetailsForm = ({
                   id="act-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
-                  options={actOptions}
+                  options={actGroups}
                   value={findOptionByValue(actOptions, act)}
                   onChange={(option) => {
                     markDirty();
@@ -748,7 +751,7 @@ export const ContraventionDetailsForm = ({
                         key={item.legislationGuid}
                         className="contravention-text-segment"
                       >
-                        <p className={`mb-2 ${indentClass}`}>
+                        <p className={`${indentClass}`}>
                           <strong>{item.sectionTitle}</strong>
                         </p>
                       </div>
@@ -761,7 +764,7 @@ export const ContraventionDetailsForm = ({
                         key={item.legislationGuid}
                         className="contravention-text-segment"
                       >
-                        <p className={`mb-2 ${indentClass}`}>
+                        <p className={`${indentClass}`}>
                           <LegislationText>{item.legislationText}</LegislationText>
                         </p>
                       </div>
@@ -804,7 +807,7 @@ export const ContraventionDetailsForm = ({
                         }}
                         className="mt-1"
                       />
-                      <span className={`mb-2 ${indentClass}`}>
+                      <span className={`${indentClass}`}>
                         {item.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
                           <>{`(${displayCitation})`} </>
                         )}

@@ -823,6 +823,7 @@ export type CreateInvestigationPersonInput = {
 };
 
 export type CreateLegislationSourceInput = {
+  acronym?: InputMaybe<Scalars['String']['input']>;
   agencyCode: Scalars['String']['input'];
   animalInformationDisplayType?: InputMaybe<AnimalInformationDisplayType>;
   effectiveDate?: InputMaybe<Scalars['String']['input']>;
@@ -1734,12 +1735,15 @@ export type Legislation = {
   legislationTypeCode?: Maybe<Scalars['String']['output']>;
   parentGuid?: Maybe<Scalars['String']['output']>;
   sectionTitle?: Maybe<Scalars['String']['output']>;
+  sourceAcronym?: Maybe<Scalars['String']['output']>;
+  sourceType?: Maybe<Scalars['String']['output']>;
   sourceUrl?: Maybe<Scalars['String']['output']>;
   versionEffectiveDate?: Maybe<Scalars['String']['output']>;
 };
 
 export type LegislationSource = {
   __typename?: 'LegislationSource';
+  acronym?: Maybe<Scalars['String']['output']>;
   activeInd: Scalars['Boolean']['output'];
   agencyCode: Scalars['String']['output'];
   animalInformationDisplayType: AnimalInformationDisplayType;
@@ -3691,6 +3695,7 @@ export type UpdateLegislationConfigurationInput = {
 };
 
 export type UpdateLegislationSourceInput = {
+  acronym?: InputMaybe<Scalars['String']['input']>;
   activeInd?: InputMaybe<Scalars['Boolean']['input']>;
   agencyCode?: InputMaybe<Scalars['String']['input']>;
   animalInformationDisplayType?: InputMaybe<AnimalInformationDisplayType>;
