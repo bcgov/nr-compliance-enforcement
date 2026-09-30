@@ -58,7 +58,7 @@
     "@nestjs/swagger": "11.4.7",
     "@nestjs/testing": "11.2.4",
     "@nestjs/typeorm": "11.0.3",
-    "axios": "1.19.0",
+    "axios": "1.20.0",
     "body-parser": "2.3.0",
     "cache-manager": "7.2.8",
     "cron": "^3.1.7",
