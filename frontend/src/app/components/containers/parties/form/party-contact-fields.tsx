@@ -30,6 +30,7 @@ type PartyContactFieldsProps = {
   showOfficeFields?: boolean;
   showContactMethods?: boolean;
   showDisplayInInvestigation?: boolean;
+  isPublished?: boolean;
 };
 
 export const PartyContactFields: FC<PartyContactFieldsProps> = ({
@@ -50,6 +51,7 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
   showOfficeFields = false,
   showContactMethods,
   showDisplayInInvestigation = false,
+  isPublished = false,
 }) => {
   return (
     <>
@@ -227,6 +229,7 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
           onSetPrimaryAddress={onSetPrimaryAddress}
           showOfficeFields={showOfficeFields}
           showDisplayInInvestigation={showDisplayInInvestigation}
+          isPublished={isPublished}
         />
       ))}
       <Button

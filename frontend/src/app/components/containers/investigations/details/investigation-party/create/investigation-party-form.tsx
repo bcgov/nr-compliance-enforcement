@@ -206,9 +206,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         updatePartyMutation.mutate({ investigationGuid, input });
       } else {
         const validationError =
-          value.partyType === PartyTypeCodes.PERSON
-            ? validatePersonForm(value)
-            : await validateBusinessForm(value, isLinkedParty);
+          value.partyType === PartyTypeCodes.PERSON ? validatePersonForm(value) : await validateBusinessForm(value);
 
         if (validationError) {
           ToggleError(validationError);
@@ -779,6 +777,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                 <BusinessFormFields
                   form={form}
                   isDisabled={isDisabled}
+                  isPublished={isLinkedParty}
                   showContactPeople={true}
                   showInvestigationFields={true}
                   showDisplayInInvestigation={true}

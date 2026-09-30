@@ -12,7 +12,6 @@ import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { isValidEmail } from "@/app/common/validate-email";
 import { v4 as uuidv4 } from "uuid";
-import { hasCompleteAddress } from "@/app/common/party-name";
 
 export type ContactMethodFormValue = {
   contactMethodGuid?: string;
@@ -449,10 +448,9 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, inc
 };
 
 // Helper to validate business form fields
-export const validateBusinessForm = async (value: any, isPublished?: boolean): Promise<string | null> => {
-  // legal name is optional until the organization is published
-  if (isPublished && !value.businessName?.trim()) {
-    return "A published organization requires a legal name.";
+export const validateBusinessForm = async (value: any): Promise<string | null> => {
+  if (!value.businessName?.trim()) {
+    return "Name is required.";
   }
 
   // rows only exist once the user adds one, so every row must be filled in or removed
@@ -462,11 +460,6 @@ export const validateBusinessForm = async (value: any, isPublished?: boolean): P
   }
   if (addresses.some((address) => !address.addressName?.trim())) {
     return "Address name is required.";
-  }
-
-  // Address is optional until organization is published
-  if (isPublished && !addresses.some(hasCompleteAddress)) {
-    return "A published organization requires an address with an address name, address line 1 and country.";
   }
 
   const externalIdError = validateExternalIdRows(value.externalIds);

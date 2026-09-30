@@ -167,9 +167,7 @@ export class InvestigationPartyService {
     }
 
     if (!(input.addresses ?? []).some((address) => this._hasCompleteAddress(address))) {
-      throw new BadRequestException(
-        "An address with an address name, address line 1 and country is required for a published organization.",
-      );
+      throw new BadRequestException("A complete address is required for a published organization.");
     }
   }
 

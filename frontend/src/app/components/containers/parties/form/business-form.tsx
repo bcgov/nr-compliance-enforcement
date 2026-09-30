@@ -25,6 +25,7 @@ type BusinessFormFieldsProps = {
   businessGuid?: string;
   showInvestigationFields?: boolean;
   showDisplayInInvestigation?: boolean;
+  isPublished?: boolean;
 };
 
 export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
@@ -34,7 +35,19 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
   businessGuid,
   showInvestigationFields = false,
   showDisplayInInvestigation = false,
+  isPublished = false,
 }) => {
+  // A published profile must still have a value for legal name / address when editing
+  const requiredForPublished = (label: string) => {
+    if (!isPublished) return undefined;
+    return {
+      onChange: ({ value }: { value: string | Date | null | undefined }) => {
+        const hasValue = typeof value === "string" ? !!value.trim() : !!value;
+        return hasValue ? undefined : { message: `${label} is required for published parties` };
+      },
+    };
+  };
+
   const externalIdOptions = useAppSelector(selectPartyExternalIdTypeDropdown);
   const {
     addresses,
@@ -124,7 +137,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         form={form}
         name="businessName"
         label="Legal name"
-        required
+        required={isPublished}
         validators={{
           onChange: z.string().min(1, "Name is required"),
         }}
@@ -219,6 +232,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         showOfficeFields={showInvestigationFields}
         showContactMethods={false}
         showDisplayInInvestigation={showDisplayInInvestigation}
+        isPublished={isPublished}
       />
       {showContactPeople && (
         <>
