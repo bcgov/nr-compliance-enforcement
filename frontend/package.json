@@ -19,7 +19,7 @@
     "@tanstack/zod-form-adapter": "0.42.1",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "14.3.1",
-    "@testing-library/user-event": "14.6.1",
+    "@testing-library/user-event": "14.6.7",
     "@tiptap/extension-placeholder": "3.31.3",
     "@tiptap/html": "3.31.3",
     "@tiptap/pm": "3.31.3",
