@@ -1,5 +1,4 @@
-import { InvestigationBusiness, InvestigationParty } from "@/generated/graphql";
-import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
+import { InvestigationAddress, InvestigationBusiness, InvestigationParty } from "@/generated/graphql";
 
 type PartyNameParts = {
   person?: { firstName?: string | null; middleNames?: string | null; lastName?: string | null } | null;
@@ -26,6 +25,10 @@ export const getPartyName = (party?: PartyNameParts | null): string => {
 export const getBusinessIdentifier = (business: InvestigationBusiness, identifierCode: string): string =>
   (business.businessIdentifiers ?? []).find((id) => id?.identifierCode === identifierCode)?.identifierValue ?? "";
 
+// An address counts toward minimum info when it has a name, address line 1 and country
+export const hasCompleteAddress = (address?: InvestigationAddress | null): boolean =>
+  !!(address?.addressName?.trim() && address?.address?.trim() && address?.country?.trim());
+
 // Fields a party must have before an enforcement action can be logged against it
 export const getPartyMissingFields = (party?: InvestigationParty | null): string[] => {
   if (!party) return [];
@@ -34,9 +37,8 @@ export const getPartyMissingFields = (party?: InvestigationParty | null): string
     if (!party.person.firstName || !party.person.lastName) missing.push("first and last name");
     if (!party.person.dateOfBirth) missing.push("date of birth");
   } else if (party.business) {
-    if (!party.business.name) missing.push("name");
-    if (!getBusinessIdentifier(party.business, BusinessIdentifiers.BUSINESS_NUMBER)) missing.push("business number");
-    if (!party.addresses?.some((addr) => addr?.isPrimary)) missing.push("address");
+    if (!party.business.name?.trim()) missing.push("legal name");
+    if (!party.addresses?.some(hasCompleteAddress)) missing.push("address");
   }
   return missing;
 };

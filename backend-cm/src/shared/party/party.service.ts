@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { InspectionPrismaService } from "../../prisma/inspection/prisma.inspection.service";
@@ -411,6 +411,21 @@ export class PartyService {
     }
     if (!person.dateOfBirth) {
       throw new Error("Date of birth is required for published parties.");
+    }
+  }
+
+  // A published organization can update its legal name and address but not remove them
+  private _validatePublishedBusinessInput(input: PartyUpdateInput): void {
+    if (!input.business?.name?.trim()) {
+      throw new BadRequestException("A legal name is required for a published organization.");
+    }
+
+    const hasCompleteAddress = (input.addresses ?? []).some(
+      (address) => !!(address.addressName?.trim() && address.address?.trim() && address.country?.trim()),
+    );
+
+    if (!hasCompleteAddress) {
+      throw new BadRequestException("A published party must have at least one completed address.");
     }
   }
 
@@ -2383,6 +2398,7 @@ export class PartyService {
 
     if (input.partyTypeCode === PARTY_TYPES.Organization && input.business) {
       this._validateBusinessInput(input.business);
+      this._validatePublishedBusinessInput(input);
     }
 
     if (input.partyTypeCode === PARTY_TYPES.Person) {
