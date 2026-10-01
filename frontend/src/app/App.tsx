@@ -244,6 +244,18 @@ const App: FC = () => {
             )}
             {investigationsFeatureOn && (
               <Route
+                path="/investigation/:investigationGuid/party/:partyIdentifier"
+                element={pilotGate(<InvestigationPartyView />)}
+              />
+            )}
+            {investigationsFeatureOn && (
+              <Route
+                path="/investigation/:investigationGuid/party/:partyIdentifier/:tabKey"
+                element={pilotGate(<InvestigationPartyView />)}
+              />
+            )}
+            {investigationsFeatureOn && (
+              <Route
                 path="/investigation/:investigationGuid/:tabKey"
                 element={pilotGate(<InvestigationDetails />)}
               />
