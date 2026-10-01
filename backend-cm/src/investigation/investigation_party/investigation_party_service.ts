@@ -652,6 +652,15 @@ export class InvestigationPartyService {
     this.partyService.publishActivityAssociationEvent(input.partyReference, "ADDED", investigation.name, roleLabel);
   }
 
+  private async _publishRemovedFromInvestigation(
+    partyReference: string,
+    partyAssociationRole: string | null | undefined,
+    investigation: Investigation,
+  ): Promise<void> {
+    const roleLabel = await this._getRoleLabel(partyAssociationRole);
+    this.partyService.publishActivityAssociationEvent(partyReference, "REMOVED", investigation.name, roleLabel);
+  }
+
   // assigns placeholder names on a per investigation basis
   private async _assignPlaceholder(
     tx: any,
@@ -708,7 +717,7 @@ export class InvestigationPartyService {
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
     await this._assertRemovalAllowed(partyIdentifier);
 
-    const partyReference = await withRlsTransaction(this.prisma, async (db) => {
+    const removedParty = await withRlsTransaction(this.prisma, async (db) => {
       try {
         const investigationParty = await db.investigation_party.findFirst({
           where: {
@@ -731,7 +740,7 @@ export class InvestigationPartyService {
             update_utc_timestamp: new Date(),
           },
         });
-        return investigationParty.party_guid_ref;
+        return investigationParty;
       } catch (error) {
         this.logger.error("Error removing investigation party:", error);
         throw error;
@@ -739,13 +748,23 @@ export class InvestigationPartyService {
     });
 
     // run after shared schema commit so counts are current
-    if (partyReference) {
-      await this.partyService.deactivateIfUnlinked(partyReference);
+    if (removedParty.party_guid_ref) {
+      await this.partyService.deactivateIfUnlinked(removedParty.party_guid_ref);
     }
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
-    return await this.investigationService.findOne(investigationGuid);
+    const investigation = await this.investigationService.findOne(investigationGuid);
+
+    if (removedParty.party_guid_ref) {
+      await this._publishRemovedFromInvestigation(
+        removedParty.party_guid_ref,
+        removedParty.party_association_role_ref,
+        investigation,
+      );
+    }
+
+    return investigation;
   }
 
   async replace(
