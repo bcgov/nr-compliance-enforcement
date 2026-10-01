@@ -255,10 +255,11 @@ export class InvestigationPartyService {
       }
     });
 
-    for (const added of addedParties) {
-      await this._publishAddedToInvestigation(added.partyReference, added.partyAssociationRole, investigation);
-    }
-
+    await Promise.all(
+      addedParties.map((added) =>
+        this._publishAddedToInvestigation(added.partyReference, added.partyAssociationRole, investigation),
+      ),
+    );
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
     const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);

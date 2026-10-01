@@ -772,7 +772,7 @@ export class PartyService {
 
       const createdParty = this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
 
-      this.eventPublisher.publishEvent(
+      void this.eventPublisher.publishEvent(
         {
           eventVerbTypeCode: "CREATED",
           sourceId: createdParty.partyIdentifier,
@@ -2547,7 +2547,7 @@ export class PartyService {
       });
 
       for (const event of changeEvents) {
-        this.eventPublisher.publishEvent(event, STREAM_TOPICS.PARTY_UPDATED);
+        void this.eventPublisher.publishEvent(event, STREAM_TOPICS.PARTY_UPDATED);
       }
 
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
