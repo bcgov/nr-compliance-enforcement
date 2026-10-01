@@ -184,6 +184,7 @@ export const AddressFields: FC<AddressFieldsProps> = ({
         name={`addresses[${addressIndex}].address` as any}
         label="Address"
         required={isPublished}
+        validators={requiredForPublished("Address", "address")}
         render={(field) => (
           <CompInput
             id={`address-${addressIndex}`}
@@ -266,6 +267,7 @@ export const AddressFields: FC<AddressFieldsProps> = ({
         name={`addresses[${addressIndex}].country` as any}
         label="Country"
         required={isPublished}
+        validators={requiredForPublished("Country", "country")}
         render={(field) => (
           <CompSelect
             id="address-country"

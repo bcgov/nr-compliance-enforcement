@@ -412,6 +412,7 @@ const PartyEdit: FC = () => {
               <BusinessFormFields
                 form={form}
                 isDisabled={isDisabled}
+                isPublished={true}
                 showContactPeople={true}
                 showInvestigationFields={true}
                 businessGuid={partyData?.party?.business?.businessGuid}

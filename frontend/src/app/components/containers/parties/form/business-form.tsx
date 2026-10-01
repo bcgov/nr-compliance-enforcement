@@ -138,9 +138,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         name="businessName"
         label="Legal name"
         required={isPublished}
-        validators={{
-          onChange: z.string().refine((value) => showInvestigationFields || value.length > 0, "Name is required"),
-        }}
+        validators={requiredForPublished("Legal name")}
         render={(field) => (
           <CompInput
             id="businessName"
