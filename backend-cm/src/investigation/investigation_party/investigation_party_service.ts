@@ -661,6 +661,19 @@ export class InvestigationPartyService {
     this.partyService.publishActivityAssociationEvent(partyReference, "REMOVED", investigation.name, roleLabel);
   }
 
+  private async _publishRoleChanged(
+    partyReference: string,
+    oldRole: string | null | undefined,
+    newRole: string,
+    investigation: Investigation,
+  ): Promise<void> {
+    if (oldRole === newRole) return;
+
+    const oldRoleLabel = await this._getRoleLabel(oldRole);
+    const newRoleLabel = await this._getRoleLabel(newRole);
+    this.partyService.publishRoleChangeEvent(partyReference, investigation.name, oldRoleLabel, newRoleLabel);
+  }
+
   // assigns placeholder names on a per investigation basis
   private async _assignPlaceholder(
     tx: any,
@@ -1092,6 +1105,10 @@ export class InvestigationPartyService {
     partyIdentifier: string,
     partyAssociationRole: string,
   ): Promise<Investigation> {
+    const existingParty = await this.prisma.investigation_party.findFirst({
+      where: { investigation_party_guid: partyIdentifier, investigation_guid: investigationGuid },
+      select: { party_guid_ref: true, party_association_role_ref: true },
+    });
     try {
       await this.prisma.investigation_party.update({
         where: {
@@ -1111,7 +1128,18 @@ export class InvestigationPartyService {
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
-    return await this.investigationService.findOne(investigationGuid);
+    const investigation = await this.investigationService.findOne(investigationGuid);
+
+    if (existingParty?.party_guid_ref) {
+      await this._publishRoleChanged(
+        existingParty.party_guid_ref,
+        existingParty.party_association_role_ref,
+        partyAssociationRole,
+        investigation,
+      );
+    }
+
+    return investigation;
   }
 
   async update(investigationGuid: string, input: UpdateInvestigationPartyInput): Promise<Investigation> {
@@ -1163,6 +1191,15 @@ export class InvestigationPartyService {
         await this.publishIfEligible(tx, input.partyIdentifier, investigation);
       }
     });
+
+    if (existingParty.partyReference) {
+      await this._publishRoleChanged(
+        existingParty.partyReference,
+        existingParty.partyAssociationRole,
+        input.partyAssociationRole,
+        investigation,
+      );
+    }
 
     return await this.investigationService.findOne(investigationGuid);
   }

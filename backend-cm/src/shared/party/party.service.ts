@@ -822,6 +822,35 @@ export class PartyService {
     );
   }
 
+  /**
+   * Records a party's role changing on an investigation in the party's history.
+   */
+  publishRoleChangeEvent(
+    partyIdentifier: string,
+    investigationName: string,
+    oldRoleLabel: string,
+    newRoleLabel: string,
+  ): void {
+    void this.eventPublisher.publishEvent(
+      {
+        eventVerbTypeCode: "EDITED",
+        sourceId: partyIdentifier,
+        sourceEntityTypeCode: "PARTY",
+        actorId: this.user.getUserGuid(),
+        actorEntityTypeCode: "USER",
+        targetId: partyIdentifier,
+        targetEntityTypeCode: "PARTY",
+        content: {
+          field: "role",
+          oldValue: oldRoleLabel,
+          newValue: newRoleLabel,
+          activityContext: `on investigation ${investigationName}`,
+        },
+      },
+      STREAM_TOPICS.PARTY_UPDATED,
+    );
+  }
+
   private async _buildCommonPartyCreateData(input: PartyCreateInput, identifiers?: PartyIdentifiers): Promise<any> {
     const createdByUser = await this.appUser.findOne(undefined, this.user.getUserGuid());
 
