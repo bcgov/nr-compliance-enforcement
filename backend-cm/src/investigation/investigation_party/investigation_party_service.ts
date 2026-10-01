@@ -235,6 +235,7 @@ export class InvestigationPartyService {
 
   async create(investigationGuid: string, inputs: CreateInvestigationPartyInput[]): Promise<InvestigationParty[]> {
     const createdPartyGuids: string[] = [];
+    const addedParties: { partyReference: string; partyAssociationRole?: string | null }[] = [];
 
     for (const input of inputs) {
       if (!input.person && !input.business) {
@@ -258,11 +259,22 @@ export class InvestigationPartyService {
         createdPartyGuids.push(investigationPartyGuid);
       }
 
-      for (const createdPartyGuid of createdPartyGuids) {
-        await this.publishIfEligible(db, createdPartyGuid);
+      for (const [index, createdPartyGuid] of createdPartyGuids.entries()) {
+        const input = inputs[index];
+        const publishedPartyReference = await this.publishIfEligible(db, createdPartyGuid, investigation); //NOSONAR - sequential loop by design: queries share a single transaction client
+        const partyReference = input.partyReference ?? publishedPartyReference;
+
+        if (partyReference) {
+          addedParties.push({ partyReference, partyAssociationRole: input.partyAssociationRole });
+        }
       }
     });
 
+    await Promise.all(
+      addedParties.map((added) =>
+        this._publishAddedToInvestigation(added.partyReference, added.partyAssociationRole, investigation),
+      ),
+    );
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
     const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
@@ -652,6 +664,39 @@ export class InvestigationPartyService {
     return roleCode?.short_description ?? partyAssociationRole;
   }
 
+  // Global parties get an added entry; newly published parties are covered by their CREATED entry
+  // Call after the transaction commits so a rollback never leaves an entry for a party that isn't on the investigation
+  private async _publishAddedToInvestigation(
+    partyReference: string,
+    partyAssociationRole: string | null | undefined,
+    investigation: Investigation,
+  ): Promise<void> {
+    const roleLabel = await this._getRoleLabel(partyAssociationRole);
+    this.partyService.publishActivityAssociationEvent(partyReference, "ADDED", investigation.name, roleLabel);
+  }
+
+  private async _publishRemovedFromInvestigation(
+    partyReference: string,
+    partyAssociationRole: string | null | undefined,
+    investigation: Investigation,
+  ): Promise<void> {
+    const roleLabel = await this._getRoleLabel(partyAssociationRole);
+    this.partyService.publishActivityAssociationEvent(partyReference, "REMOVED", investigation.name, roleLabel);
+  }
+
+  private async _publishRoleChanged(
+    partyReference: string,
+    oldRole: string | null | undefined,
+    newRole: string,
+    investigation: Investigation,
+  ): Promise<void> {
+    if (oldRole === newRole) return;
+
+    const oldRoleLabel = await this._getRoleLabel(oldRole);
+    const newRoleLabel = await this._getRoleLabel(newRole);
+    this.partyService.publishRoleChangeEvent(partyReference, investigation.name, oldRoleLabel, newRoleLabel);
+  }
+
   // assigns placeholder names on a per investigation basis
   private async _assignPlaceholder(
     tx: any,
@@ -708,7 +753,7 @@ export class InvestigationPartyService {
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
     await this._assertRemovalAllowed(partyIdentifier);
 
-    const partyReference = await withRlsTransaction(this.prisma, async (db) => {
+    const removedParty = await withRlsTransaction(this.prisma, async (db) => {
       try {
         const investigationParty = await db.investigation_party.findFirst({
           where: {
@@ -731,7 +776,7 @@ export class InvestigationPartyService {
             update_utc_timestamp: new Date(),
           },
         });
-        return investigationParty.party_guid_ref;
+        return investigationParty;
       } catch (error) {
         this.logger.error("Error removing investigation party:", error);
         throw error;
@@ -739,13 +784,23 @@ export class InvestigationPartyService {
     });
 
     // run after shared schema commit so counts are current
-    if (partyReference) {
-      await this.partyService.deactivateIfUnlinked(partyReference);
+    if (removedParty.party_guid_ref) {
+      await this.partyService.deactivateIfUnlinked(removedParty.party_guid_ref);
     }
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
-    return await this.investigationService.findOne(investigationGuid);
+    const investigation = await this.investigationService.findOne(investigationGuid);
+
+    if (removedParty.party_guid_ref) {
+      await this._publishRemovedFromInvestigation(
+        removedParty.party_guid_ref,
+        removedParty.party_association_role_ref,
+        investigation,
+      );
+    }
+
+    return investigation;
   }
 
   async replace(
@@ -801,6 +856,10 @@ export class InvestigationPartyService {
         throw error;
       }
     });
+
+    if (input.partyReference) {
+      await this._publishAddedToInvestigation(input.partyReference, input.partyAssociationRole, investigation);
+    }
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
@@ -996,8 +1055,8 @@ export class InvestigationPartyService {
   }
 
   //Writes the prepared party into the shared party table.
-  async createSharedParty(prepared: PreparedSharedParty): Promise<Party> {
-    return await this.partyService.create(prepared.input, prepared.identifiers);
+  async createSharedParty(prepared: PreparedSharedParty, activityContext: string): Promise<Party> {
+    return await this.partyService.create(prepared.input, prepared.identifiers, activityContext);
   }
 
   // An address counts toward minimum info when it has a name, address line 1 and country
@@ -1025,7 +1084,7 @@ export class InvestigationPartyService {
    * caller's still-uncommitted writes.
    * Returns the shared party guid when a publish happened, otherwise null.
    */
-  async publishIfEligible(db: any, partyIdentifier: string): Promise<string | null> {
+  async publishIfEligible(db: any, partyIdentifier: string, investigation: Investigation): Promise<string | null> {
     const party = await this._loadInvestigationParty(db, partyIdentifier);
 
     if (!party?.isActive || !this._hasMinimumInfo(party)) {
@@ -1039,7 +1098,7 @@ export class InvestigationPartyService {
     }
 
     await this.linkToSharedParty(db, partyIdentifier, prepared);
-    const sharedParty = await this.createSharedParty(prepared);
+    const sharedParty = await this.createSharedParty(prepared, `on investigation ${investigation.name}`);
     await this.stampSharedPartyUpdate(db, partyIdentifier, sharedParty.updatedDateTime);
 
     return sharedParty.partyIdentifier;
@@ -1073,6 +1132,10 @@ export class InvestigationPartyService {
     partyIdentifier: string,
     partyAssociationRole: string,
   ): Promise<Investigation> {
+    const existingParty = await this.prisma.investigation_party.findFirst({
+      where: { investigation_party_guid: partyIdentifier, investigation_guid: investigationGuid },
+      select: { party_guid_ref: true, party_association_role_ref: true },
+    });
     try {
       await this.prisma.investigation_party.update({
         where: {
@@ -1092,7 +1155,18 @@ export class InvestigationPartyService {
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
-    return await this.investigationService.findOne(investigationGuid);
+    const investigation = await this.investigationService.findOne(investigationGuid);
+
+    if (existingParty?.party_guid_ref) {
+      await this._publishRoleChanged(
+        existingParty.party_guid_ref,
+        existingParty.party_association_role_ref,
+        partyAssociationRole,
+        investigation,
+      );
+    }
+
+    return investigation;
   }
 
   async update(investigationGuid: string, input: UpdateInvestigationPartyInput): Promise<Investigation> {
@@ -1126,6 +1200,8 @@ export class InvestigationPartyService {
 
     resolveSharedReferences(existingParty, input);
 
+    let publishedPartyReference: string | null = null;
+
     await withRlsTransaction(this.prisma, async (tx) => {
       await this._applyPartyUpdate(tx, investigationGuid, existingParty, input);
 
@@ -1142,9 +1218,22 @@ export class InvestigationPartyService {
 
         await this.stampSharedPartyUpdate(tx, input.partyIdentifier, updatedSharedParty.updatedDateTime);
       } else {
-        await this.publishIfEligible(tx, input.partyIdentifier);
+        publishedPartyReference = await this.publishIfEligible(tx, input.partyIdentifier, investigation);
       }
     });
+
+    if (publishedPartyReference) {
+      await this._publishAddedToInvestigation(publishedPartyReference, input.partyAssociationRole, investigation);
+    }
+
+    if (existingParty.partyReference) {
+      await this._publishRoleChanged(
+        existingParty.partyReference,
+        existingParty.partyAssociationRole,
+        input.partyAssociationRole,
+        investigation,
+      );
+    }
 
     return await this.investigationService.findOne(investigationGuid);
   }
