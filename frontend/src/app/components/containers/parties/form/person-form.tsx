@@ -136,6 +136,15 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled, isPublished 
       form={form}
       name="driversLicenseCountrySubdivisionCode"
       label="Driver's licence province"
+      required
+      validators={{
+        onChange: ({ value }: { value: string | null | undefined }) => {
+          // Province is required if user selects Canada as country
+          const isProvinceRequired = form.getFieldValue("driversLicenseCountryCode") === "CA";
+          const isEmpty = value === null || value === undefined || value === "";
+          return isProvinceRequired && isEmpty ? { message: "Province is required" } : undefined;
+        },
+      }}
       render={(field) => (
         <CompSelect
           id="driversLicenseSubdivision-select"
