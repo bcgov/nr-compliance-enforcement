@@ -183,6 +183,14 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     // fires only when a submission attempt is blocked by validation
     onSubmitInvalid: () => scrollToFirstFieldError(),
     onSubmit: async ({ value }) => {
+      // a party must have at least one entered field
+      const validationError =
+        value.partyType === PartyTypeCodes.PERSON ? validatePersonForm(value) : await validateBusinessForm(value);
+      if (validationError) {
+        ToggleError(validationError);
+        return;
+      }
+
       if (isEditMode && editParty) {
         const input: any = {
           partyIdentifier: editParty.partyIdentifier,
@@ -205,14 +213,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
         updatePartyMutation.mutate({ investigationGuid, input });
       } else {
-        const validationError =
-          value.partyType === PartyTypeCodes.PERSON ? validatePersonForm(value) : await validateBusinessForm(value);
-
-        if (validationError) {
-          ToggleError(validationError);
-          return;
-        }
-
         const input: any = {
           partyTypeCode: value.partyType,
           partyAssociationRole: value.partyAssociationRole,

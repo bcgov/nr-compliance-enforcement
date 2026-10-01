@@ -157,11 +157,11 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
             title: "Remove Party",
             ...(isBlocked
               ? {
-                  warning: (
+                  warnings: [
                     <>
                       {partyName} <strong>cannot be removed</strong> from this investigation for the following reasons:
-                    </>
-                  ),
+                    </>,
+                  ],
                   reasons,
                   cancelText: "Close",
                 }

@@ -1,7 +1,7 @@
 {
   "name": "nr-natsuite",
   "type": "module",
-  "version": "2.0.408",
+  "version": "2.0.415",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "6.7.2",
@@ -19,7 +19,7 @@
     "@tanstack/zod-form-adapter": "0.42.1",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "14.3.1",
-    "@testing-library/user-event": "14.6.1",
+    "@testing-library/user-event": "14.6.7",
     "@tiptap/extension-placeholder": "3.31.3",
     "@tiptap/html": "3.31.3",
     "@tiptap/pm": "3.31.3",
@@ -41,7 +41,7 @@
     "@vitejs/plugin-react": "4.7.0",
     "@zip.js/zip.js": "2.8.34",
     "assert": "2.1.0",
-    "axios": "1.19.0",
+    "axios": "1.20.0",
     "bootstrap": "5.3.8",
     "bootstrap-icons": "1.13.1",
     "chart.js": "4.5.1",

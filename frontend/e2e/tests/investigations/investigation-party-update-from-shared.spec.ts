@@ -85,7 +85,8 @@ test.describe("Investigation Party Update From Shared Party", () => {
     await expect(
       confirmModal.getByText("This profile will be published and available for use in future investigations."),
     ).toBeVisible();
-    await confirmModal.getByRole("button", { name: "Save and close" }).click();
+    // depending on the status of the party / reruns the button might have different text
+    await confirmModal.getByRole("button", { name: /Save and close|Confirm/ }).click();
 
     const addPartyResponse = await addPartyPromise;
     const addPartyBody = await addPartyResponse.json();

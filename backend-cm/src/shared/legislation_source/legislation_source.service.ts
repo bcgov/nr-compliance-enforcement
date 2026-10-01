@@ -56,6 +56,7 @@ export class LegislationSourceService {
         data: {
           short_description: input.shortDescription,
           long_description: input.longDescription ?? null,
+          acronym: input.acronym ?? null,
           source_url: input.sourceUrl,
           regulations_source_url: input.regulationsSourceUrl ?? null,
           agency_code: input.agencyCode,
@@ -121,6 +122,7 @@ export class LegislationSourceService {
       data: {
         short_description: title,
         long_description: null,
+        acronym: null,
         source_url: null,
         regulations_source_url: null,
         agency_code: parent.agency_code,
@@ -144,6 +146,7 @@ export class LegislationSourceService {
         data: {
           ...(input.shortDescription !== undefined && { short_description: input.shortDescription }),
           ...(input.longDescription !== undefined && { long_description: input.longDescription }),
+          ...(input.acronym !== undefined && { acronym: input.acronym }),
           ...(input.sourceUrl !== undefined && { source_url: input.sourceUrl }),
           ...(input.regulationsSourceUrl !== undefined && { regulations_source_url: input.regulationsSourceUrl }),
           ...(input.agencyCode !== undefined && { agency_code: input.agencyCode }),
@@ -237,6 +240,7 @@ export class LegislationSourceService {
       legislationSourceGuid: source.legislation_source_guid,
       shortDescription: source.short_description,
       longDescription: source.long_description,
+      acronym: source.acronym,
       sourceUrl: source.source_url ?? "",
       regulationsSourceUrl: source.regulations_source_url ?? null,
       agencyCode: source.agency_code,

@@ -216,7 +216,7 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
         </>
       )}
       <div className="comp-details-section-header pt-5">
-        <h3>{showContactMethods ? "Address(es)" : "Contact information"}</h3>
+        <h3>{showContactMethods ? "Address(es)" : "Address information"}</h3>
       </div>
       {addresses?.map((address: AddressFormValue, index: number) => (
         <AddressFields

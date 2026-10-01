@@ -1,5 +1,5 @@
 input CreateInvestigationBusinessInput {
-  name: String!
+  name: String
   businessReference: String
   contactMethods: [CreateInvestigationContactMethodInput]
   businessIdentifiers: [CreateInvestigationBusinessIdentifierInput]
@@ -11,7 +11,7 @@ input CreateInvestigationBusinessInput {
 }
 
 input UpdateInvestigationBusinessInput {
-  name: String!
+  name: String
   contactMethods: [UpdateInvestigationContactMethodInput]
   businessIdentifiers: [UpdateInvestigationBusinessIdentifierInput]
   aliases: [UpdateInvestigationAliasInput]

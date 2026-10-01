@@ -18,6 +18,7 @@ export interface LegislationSource {
   externalKey: string | null;
   shortDescription: string;
   longDescription: string | null;
+  acronym: string | null;
   sourceUrl: string | null;
   regulationsSourceUrl: string | null;
   agencyCode: string;
@@ -31,6 +32,7 @@ export interface LegislationSource {
 export interface CreateLegislationSourceInput {
   shortDescription: string;
   longDescription?: string;
+  acronym?: string;
   sourceUrl: string;
   regulationsSourceUrl?: string;
   agencyCode: string;
@@ -43,6 +45,7 @@ export interface UpdateLegislationSourceInput {
   legislationSourceGuid: string;
   shortDescription?: string;
   longDescription?: string;
+  acronym?: string | null;
   sourceUrl?: string;
   regulationsSourceUrl?: string;
   agencyCode?: string;
@@ -58,6 +61,7 @@ const GET_LEGISLATION_SOURCES = gql`
       externalKey
       shortDescription
       longDescription
+      acronym
       sourceUrl
       regulationsSourceUrl
       agencyCode
@@ -77,6 +81,7 @@ const GET_LEGISLATION_SOURCE = gql`
       externalKey
       shortDescription
       longDescription
+      acronym
       sourceUrl
       regulationsSourceUrl
       agencyCode
@@ -93,6 +98,7 @@ const CREATE_LEGISLATION_SOURCE = gql`
       legislationSourceGuid
       shortDescription
       longDescription
+      acronym
       sourceUrl
       regulationsSourceUrl
       agencyCode
@@ -109,6 +115,7 @@ const UPDATE_LEGISLATION_SOURCE = gql`
       legislationSourceGuid
       shortDescription
       longDescription
+      acronym
       sourceUrl
       regulationsSourceUrl
       agencyCode

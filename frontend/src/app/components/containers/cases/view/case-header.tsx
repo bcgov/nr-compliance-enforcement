@@ -92,7 +92,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
                   </dd>
                 </dl>
                 <dl className="comp-details-date-logged">
-                  <dt>Date logged</dt>
+                  <dt>Date opened</dt>
                   <dd className="comp-date-time-value">
                     {dateLogged && (
                       <>

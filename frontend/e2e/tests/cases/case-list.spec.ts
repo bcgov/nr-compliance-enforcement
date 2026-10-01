@@ -21,7 +21,7 @@ test.describe("Case List View", () => {
 
     const tableHeaders = table.locator("thead tr th");
     await expect(tableHeaders.nth(0)).toContainText("Case ID");
-    await expect(tableHeaders.nth(1)).toContainText("Date Opened");
+    await expect(tableHeaders.nth(1)).toContainText("Date opened");
     // NOSONAR - awaiting decision on final list view
     //await expect(tableHeaders.nth(3)).toContainText("Agency");
     //await expect(tableHeaders.nth(4)).toContainText("Actions");

@@ -5,10 +5,13 @@ export type PartyComplianceActivity = {
   name?: string | null;
   activityType?: string | null;
   leadAgency?: string | null;
+  leadAgencyDescription?: string | null;
   role?: string | null;
   sameAgency?: boolean;
   status: string;
   primaryInvestigatorName?: string;
+  supervisorName?: string;
+  dateOpened?: Date | null;
   contraventions?: Contravention[] | null;
 };
 
@@ -18,4 +21,10 @@ export type PartyComplianceRelation = {
   activities?: PartyComplianceActivity[] | null;
   leadAgency?: string | null;
   sameAgency?: boolean;
+};
+
+export type PartyComplianceHistoryRow = {
+  rowKey: string;
+  activity: PartyComplianceActivity;
+  contravention: Contravention | null;
 };

@@ -119,6 +119,12 @@ export interface PreparedSharedParty {
   identifiers: PreparedPartyIdentifiers;
 }
 
+type NamedPartyInput = {
+  firstName?: string | null;
+  lastName?: string | null;
+  name?: string | null;
+};
+
 @Injectable()
 export class InvestigationPartyService {
   constructor(
@@ -344,6 +350,15 @@ export class InvestigationPartyService {
 
       if (input.business) {
         await this.createBusiness(db, investigationParty.investigation_party_guid, input.business, investigationGuid);
+
+        if (!this._hasName(input.business)) {
+          await this._assignPlaceholder(
+            db,
+            investigationGuid,
+            investigationParty.investigation_party_guid,
+            input.partyAssociationRole,
+          );
+        }
       }
 
       if (input.person) {
@@ -448,7 +463,7 @@ export class InvestigationPartyService {
       data: {
         business_guid_ref: input.businessReference,
         investigation_party_guid: investigationPartyGuid,
-        name: input.name,
+        name: input.name?.trim() || null,
         safety_concern_ind: input.safetyConcernIndicator,
         safety_concern_reason: input.safetyConcernReason,
         create_user_id: this.user.getIdirUsername(),
@@ -619,8 +634,8 @@ export class InvestigationPartyService {
     });
   }
 
-  private _hasName(person: { firstName?: string | null; lastName?: string | null }): boolean {
-    return !!(person.firstName?.trim() || person.lastName?.trim());
+  private _hasName(party: NamedPartyInput): boolean {
+    return !!(party.firstName?.trim() || party.lastName?.trim() || party.name?.trim());
   }
 
   private async _getRoleLabel(partyAssociationRole?: string | null): Promise<string> {
@@ -1313,11 +1328,9 @@ export class InvestigationPartyService {
         );
       }
 
+      // These methods return early if not a person or not a business.
       await this._applyPersonUpdate(tx, investigationGuid, existingParty, input);
-
-      if (input.business && existingParty.business) {
-        await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
-      }
+      await this._applyBusinessUpdate(tx, investigationGuid, existingParty, input);
     } catch (error) {
       this.logger.error("Error updating investigation party:", error);
       throw error;
@@ -1336,7 +1349,17 @@ export class InvestigationPartyService {
 
     await this.updatePerson(tx, existingParty.person, input.person);
 
-    if (this._hasName(input.person)) {
+    await this._syncPlaceholder(tx, investigationGuid, existingParty, input, input.person);
+  }
+
+  private async _syncPlaceholder(
+    tx: any,
+    investigationGuid: string,
+    existingParty: InvestigationParty,
+    input: UpdateInvestigationPartyInput,
+    namedInput: NamedPartyInput,
+  ) {
+    if (this._hasName(namedInput)) {
       if (existingParty.placeholderName) {
         await tx.investigation_party.update({
           where: { investigation_party_guid: input.partyIdentifier },
@@ -1350,6 +1373,21 @@ export class InvestigationPartyService {
     } else if (!existingParty.placeholderName || input.partyAssociationRole !== existingParty.partyAssociationRole) {
       await this._assignPlaceholder(tx, investigationGuid, input.partyIdentifier, input.partyAssociationRole);
     }
+  }
+
+  private async _applyBusinessUpdate(
+    tx: any,
+    investigationGuid: string,
+    existingParty: InvestigationParty,
+    input: UpdateInvestigationPartyInput,
+  ) {
+    if (!input.business || !existingParty.business) {
+      return;
+    }
+
+    await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
+
+    await this._syncPlaceholder(tx, investigationGuid, existingParty, input, input.business);
   }
 
   private async updatePerson(tx: any, existingPerson: InvestigationPerson, input: UpdateInvestigationPersonInput) {
@@ -1387,7 +1425,7 @@ export class InvestigationPartyService {
     await tx.investigation_business.update({
       where: { investigation_business_guid: existingBusiness.businessGuid },
       data: {
-        name: input.name,
+        name: input.name?.trim() || null,
         safety_concern_ind: input.safetyConcernIndicator,
         safety_concern_reason: input.safetyConcernReason,
         update_user_id: this.user.getIdirUsername(),
