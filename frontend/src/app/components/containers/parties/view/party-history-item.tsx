@@ -57,12 +57,9 @@ const useEventDescription = (event: Event): string => {
     country?: string;
     phoneNumber?: string;
     emailAddress?: string;
-    investigationContext?: string;
+    activityContext?: string;
+    role?: string;
   } | null;
-
-  if (verb === "CREATED") {
-    return "created the party";
-  }
 
   const field = content?.field ?? "information";
   const fieldLabel = field === "sex" ? "Sex as per ID" : field;
@@ -116,7 +113,7 @@ const useEventDescription = (event: Event): string => {
     return [phone, content?.emailAddress];
   };
 
-  // Address and organization contact events carry extra detail in the event content, so they render
+  // Address, organization contact, and activity events carry extra detail in the event content, so they render
   // as "<verb> <field> <name>: <details>" rather than the plain field/value form.
   const describeDetailedChange = (verbLabel: string, value: string | null | undefined): string | undefined => {
     if (field === "address") {
@@ -129,11 +126,18 @@ const useEventDescription = (event: Event): string => {
         ? `${verbLabel} organization contact ${value}: ${details}`
         : `${verbLabel} organization contact: ${value}`;
     }
+    if (field === "investigation") {
+      const preposition = verbLabel === "added" ? "to" : "from";
+      const roleSuffix = content?.role ? ` with role ${content.role}` : "";
+      return `${verbLabel} ${preposition} investigation ${value}${roleSuffix}`;
+    }
     return undefined;
   };
 
   const describeChange = (): string => {
     switch (verb) {
+      case "CREATED":
+        return "created the party";
       case "ADDED":
         return describeDetailedChange("added", newValue) ?? `added ${fieldLabel}: ${formatValue(newValue)}`;
       case "REMOVED":
@@ -150,7 +154,7 @@ const useEventDescription = (event: Event): string => {
   };
 
   const description = describeChange();
-  return content?.investigationContext ? `${description} ${content.investigationContext}` : description;
+  return content?.activityContext ? `${description} ${content.activityContext}` : description;
 };
 
 export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers }) => {

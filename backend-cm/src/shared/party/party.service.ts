@@ -729,7 +729,7 @@ export class PartyService {
     }
   }
 
-  async create(input: PartyCreateInput, identifiers?: PartyIdentifiers): Promise<Party> {
+  async create(input: PartyCreateInput, identifiers?: PartyIdentifiers, activityContext?: string): Promise<Party> {
     let data: any;
 
     try {
@@ -781,6 +781,7 @@ export class PartyService {
           actorEntityTypeCode: "USER",
           targetId: createdParty.partyIdentifier,
           targetEntityTypeCode: "PARTY",
+          ...(activityContext ? { content: { activityContext: activityContext } } : {}),
         },
         STREAM_TOPICS.PARTY_CREATED,
       );
@@ -790,6 +791,35 @@ export class PartyService {
       this.logger.error("Error creating party:", (error as Error)?.message);
       this._rethrowIfBusinessNumberConflict(error);
     }
+  }
+
+  /**
+   * Records a party being added to or removed from an activity in the party's history.
+   */
+  publishActivityAssociationEvent(
+    partyIdentifier: string,
+    verb: "ADDED" | "REMOVED",
+    activityName: string,
+    roleLabel: string,
+  ): void {
+    void this.eventPublisher.publishEvent(
+      {
+        eventVerbTypeCode: verb,
+        sourceId: partyIdentifier,
+        sourceEntityTypeCode: "PARTY",
+        actorId: this.user.getUserGuid(),
+        actorEntityTypeCode: "USER",
+        targetId: partyIdentifier,
+        targetEntityTypeCode: "PARTY",
+        content: {
+          field: "investigation",
+          oldValue: verb === "REMOVED" ? activityName : null,
+          newValue: verb === "ADDED" ? activityName : null,
+          role: roleLabel,
+        },
+      },
+      STREAM_TOPICS.PARTY_UPDATED,
+    );
   }
 
   private async _buildCommonPartyCreateData(input: PartyCreateInput, identifiers?: PartyIdentifiers): Promise<any> {
@@ -2144,7 +2174,7 @@ export class PartyService {
     partyIdentifier: string,
     oldParty: Party,
     input: PartyUpdateInput,
-    investigationContext?: string,
+    activityContext?: string,
   ): EventCreateInput[] {
     const events: EventCreateInput[] = [];
     const actorId = this.user.getUserGuid();
@@ -2163,7 +2193,7 @@ export class PartyService {
           oldValue: oldValue ?? null,
           newValue: newValue ?? null,
           ...extraContent,
-          ...(investigationContext ? { investigationContext } : {}),
+          ...(activityContext ? { activityContext } : {}),
         },
       });
     };
@@ -2323,7 +2353,7 @@ export class PartyService {
     }
   }
 
-  async update(partyIdentifier: string, input: PartyUpdateInput, investigationContext?: string): Promise<Party> {
+  async update(partyIdentifier: string, input: PartyUpdateInput, activityContext?: string): Promise<Party> {
     const existingParty: any = await this.prisma.party.findUnique({
       include: {
         address: {
@@ -2446,7 +2476,7 @@ export class PartyService {
     }
 
     try {
-      const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input, investigationContext);
+      const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input, activityContext);
 
       const prismaParty: any = await this.prisma.$transaction(async (tx) => {
         const updated: any = await tx.party.update({

@@ -244,9 +244,13 @@ export class InvestigationPartyService {
       }
 
       for (const createdPartyGuid of createdPartyGuids) {
-        await this.publishIfEligible(db, createdPartyGuid);
+        await this.publishIfEligible(db, createdPartyGuid, investigation);
       }
     });
+
+    for (const input of inputs) {
+      await this._publishAddedToInvestigation(input, investigation);
+    }
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
@@ -637,6 +641,17 @@ export class InvestigationPartyService {
     return roleCode?.short_description ?? partyAssociationRole;
   }
 
+  // Global parties get an added entry; newly published parties are covered by their CREATED entry
+  private async _publishAddedToInvestigation(
+    input: CreateInvestigationPartyInput,
+    investigation: Investigation,
+  ): Promise<void> {
+    if (!input.partyReference) return;
+
+    const roleLabel = await this._getRoleLabel(input.partyAssociationRole);
+    this.partyService.publishActivityAssociationEvent(input.partyReference, "ADDED", investigation.name, roleLabel);
+  }
+
   // assigns placeholder names on a per investigation basis
   private async _assignPlaceholder(
     tx: any,
@@ -786,6 +801,8 @@ export class InvestigationPartyService {
         throw error;
       }
     });
+
+    await this._publishAddedToInvestigation(input, investigation);
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
@@ -981,8 +998,8 @@ export class InvestigationPartyService {
   }
 
   //Writes the prepared party into the shared party table.
-  async createSharedParty(prepared: PreparedSharedParty): Promise<Party> {
-    return await this.partyService.create(prepared.input, prepared.identifiers);
+  async createSharedParty(prepared: PreparedSharedParty, activityContext: string): Promise<Party> {
+    return await this.partyService.create(prepared.input, prepared.identifiers, activityContext);
   }
 
   // Minimum information a party to be published to global.
@@ -1000,7 +1017,7 @@ export class InvestigationPartyService {
    * caller's still-uncommitted writes.
    * Returns the shared party guid when a publish happened, otherwise null.
    */
-  async publishIfEligible(db: any, partyIdentifier: string): Promise<string | null> {
+  async publishIfEligible(db: any, partyIdentifier: string, investigation: Investigation): Promise<string | null> {
     const party = await this._loadInvestigationParty(db, partyIdentifier);
 
     if (!party?.isActive || !this._hasMinimumInfo(party)) {
@@ -1014,8 +1031,16 @@ export class InvestigationPartyService {
     }
 
     await this.linkToSharedParty(db, partyIdentifier, prepared);
-    const sharedParty = await this.createSharedParty(prepared);
+    const sharedParty = await this.createSharedParty(prepared, `on investigation ${investigation.name}`);
     await this.stampSharedPartyUpdate(db, partyIdentifier, sharedParty.updatedDateTime);
+
+    const roleLabel = await this._getRoleLabel(party.partyAssociationRole);
+    this.partyService.publishActivityAssociationEvent(
+      sharedParty.partyIdentifier,
+      "ADDED",
+      investigation.name,
+      roleLabel,
+    );
 
     return sharedParty.partyIdentifier;
   }
@@ -1116,7 +1141,7 @@ export class InvestigationPartyService {
 
         await this.stampSharedPartyUpdate(tx, input.partyIdentifier, updatedSharedParty.updatedDateTime);
       } else {
-        await this.publishIfEligible(tx, input.partyIdentifier);
+        await this.publishIfEligible(tx, input.partyIdentifier, investigation);
       }
     });
 
