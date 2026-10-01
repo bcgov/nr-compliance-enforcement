@@ -5,7 +5,6 @@ import { useAppSelector } from "@hooks/hooks";
 import { BusinessPerson } from "@/generated/graphql";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
-import { z } from "zod";
 import { Button, Form } from "react-bootstrap";
 import {
   BUSINESS_NUMBER_FIELD,
