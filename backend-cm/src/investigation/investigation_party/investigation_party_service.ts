@@ -246,7 +246,7 @@ export class InvestigationPartyService {
 
       for (const [index, createdPartyGuid] of createdPartyGuids.entries()) {
         const input = inputs[index];
-        const publishedPartyReference = await this.publishIfEligible(db, createdPartyGuid, investigation);
+        const publishedPartyReference = await this.publishIfEligible(db, createdPartyGuid, investigation); //NOSONAR - sequential loop by design: queries share a single transaction client
         const partyReference = input.partyReference ?? publishedPartyReference;
 
         if (partyReference) {
