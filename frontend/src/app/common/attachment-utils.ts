@@ -7,7 +7,9 @@ import { AUTH_TOKEN } from "@service/user-service";
 import { getAttachmentConfig, isSecureAttachmentType } from "@apptypes/app/attachment-config";
 import { generateApiParameters, get } from "@/app/common/api";
 import { getThumbnailDataURL, isImage } from "@/app/common/methods";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 import { Dispatch } from "@reduxjs/toolkit";
+import { format } from "date-fns";
 
 export interface Attachment extends COMSObject {
   taskId: string | null;
@@ -377,6 +379,24 @@ export const getDisplayFilename = (storedName: string): string => {
   // {name}_{uuid}_{type}.{ext} or {name}_{uuid}_{type} (no extension)
   const match = new RegExp(/^(.+)_[a-f0-9-]{36}_\d+(\.[^.]+)?$/i).exec(decoded);
   return match ? `${match[1]}${match[2] || ""}` : decoded;
+};
+
+// filename pattern is <task#>_<description>_<title>_<date (YYMMDD)>_<ID>
+export const getExportFilename = (attachment: Attachment): string => {
+  const displayName = getDisplayFilename(attachment.name);
+  const extensionIndex = displayName.lastIndexOf(".");
+  const extension = extensionIndex > 0 ? displayName.slice(extensionIndex) : "";
+  const date = parseUTCDateToLocal(attachment.date);
+  const parts = [
+    attachment.taskNumber ? `Task ${attachment.taskNumber}` : "",
+    attachment.description,
+    attachment.title,
+    date ? format(date, "yyMMdd") : "",
+    attachment.sequenceNumber,
+  ];
+  // Strip characters that are invalid in filenames or would nest folders in the zip
+  const baseName = parts.filter(Boolean).join("_");
+  return `${baseName.replace(/[\\/:*?"<>|]/g, "-")}${extension}`;
 };
 
 // Convert output from File picker to COMS Object Array for display sizing info in Upload Component
