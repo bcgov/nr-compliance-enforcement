@@ -30,7 +30,7 @@ import { ValidationTextArea } from "@common/validation-textarea";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
-import { openModal } from "@store/reducers/app";
+import { isFeatureActive, openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
 import { Assessment } from "@apptypes/outcomes/assessment";
@@ -125,6 +125,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const [linkedComplaintErrorMessage, setLinkedComplaintErrorMessage] = useState<string>("");
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>("");
+  const [commentsErrorMessage, setCommentsErrorMessage] = useState<string>("");
 
   const complaintData = useAppSelector(selectComplaint);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
@@ -146,6 +147,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const assessmentApplies = useAppSelector(
     selectComplaintAssessmentApplies(getComplaintType(complaintData), ownedByAgencyCode?.agency),
   );
+  const assessmentCommentsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.ASSESSMENT_COMMENTS));
 
   const hasAssessments = Boolean(assessment);
   const showSectionErrors =
@@ -322,6 +324,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   }, [assessmentState, populateAssessmentUI]);
 
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
+  const commentsRequired = assessmentApplies && assessmentCommentsActive && selectedActionRequired?.value === "No";
   const showDuplicateOptions =
     isHwcrComplaint && selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
@@ -411,6 +414,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     setLinkedComplaintErrorMessage("");
     setAssessmentRequiredErrorMessage("");
     setLocationErrorMessage("");
+    setCommentsErrorMessage("");
   };
 
   const validateOfficer = useCallback((): boolean => {
@@ -461,7 +465,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       return true;
     }
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
-      setJustificationRequiredErrorMessage("Required when Action Required is No");
+      setJustificationRequiredErrorMessage("Required");
       return true;
     }
     return false;
@@ -469,7 +473,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
 
   const validateJustification = useCallback((): boolean => {
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
-      setJustificationRequiredErrorMessage("Required when Action Required is No");
+      setJustificationRequiredErrorMessage("Required");
       return true;
     }
 
@@ -531,6 +535,14 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     dispatch,
   ]);
 
+  const validateComments = useCallback((): boolean => {
+    if (commentsRequired && !selectedComments.trim()) {
+      setCommentsErrorMessage("Required when no action is taken.");
+      return true;
+    }
+    return false;
+  }, [commentsRequired, selectedComments]);
+
   // Validates the assessment
   const validateErrors = useCallback((): boolean => {
     resetValidationErrors();
@@ -542,6 +554,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       validateJustification(),
       validateLinkedComplaint(),
       validateLocationType(),
+      validateComments(),
     ].some(Boolean);
   }, [
     validateOfficer,
@@ -551,6 +564,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     validateJustification,
     validateLinkedComplaint,
     validateLocationType,
+    validateComments,
   ]);
 
   // Validate on selected value change
@@ -564,6 +578,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     selectedJustification,
     selectedLinkedComplaint,
     selectedAssessmentTypes,
+    selectedComments,
   ]);
 
   const determineBorder = (): string => {
@@ -914,14 +929,16 @@ export const ComplaintAssessmentForm: FC<Props> = ({
                 className="comp-details-form-row"
                 id="assessment-comments-div"
               >
-                <label htmlFor="assessment-comments">Comments</label>
+                <label htmlFor="assessment-comments">
+                  Comments{commentsRequired && <span className="required-ind">*</span>}
+                </label>
                 <div className="comp-details-input full-width">
                   <ValidationTextArea
                     className="comp-form-control"
                     id="assessment-comments"
                     value={selectedComments}
                     rows={2}
-                    errMsg={""}
+                    errMsg={commentsErrorMessage}
                     maxLength={4000}
                     onChange={(value: string) => {
                       setSelectedComments(value);
