@@ -15,6 +15,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
 import {
+  AddressFormValue,
   buildAddresses,
   buildAliases,
   buildBusinessCreateUpdate,
@@ -43,7 +44,7 @@ import { InvestigationPartyHeader } from "../investigation-party-header";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/use-party-match-trigger";
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
-import { getPartyName } from "@/app/common/party-name";
+import { getPartyName, hasCompleteAddress } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 import {
   buildSharedPartyAttachmentReferences,
@@ -55,10 +56,16 @@ import {
 // is required to be published to global.
 const hasMinimumInfo = (
   partyTypeValue: string,
-  values: { firstName?: string; lastName?: string; dateOfBirth?: unknown; businessName?: string },
+  values: {
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: unknown;
+    businessName?: string;
+    addresses?: AddressFormValue[];
+  },
 ): boolean =>
   partyTypeValue === PartyTypeCodes.ORGANIZATION
-    ? !!values.businessName?.trim()
+    ? !!values.businessName?.trim() && (values.addresses ?? []).some(hasCompleteAddress)
     : !!(values.firstName?.trim() && values.lastName?.trim() && values.dateOfBirth);
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
@@ -368,6 +375,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     lastName: state.values.lastName,
     dateOfBirth: state.values.dateOfBirth,
     businessName: state.values.businessName,
+    addresses: state.values.addresses,
   }));
   const willPublish = !isLinkedParty && hasMinimumInfo(partyTypeValue, minimumInfoValues);
 
@@ -777,6 +785,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                 <BusinessFormFields
                   form={form}
                   isDisabled={isDisabled}
+                  isPublished={isLinkedParty}
                   showContactPeople={true}
                   showInvestigationFields={true}
                   showDisplayInInvestigation={true}
