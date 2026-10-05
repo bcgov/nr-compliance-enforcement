@@ -2,7 +2,7 @@ import { FC, useState, useCallback } from "react";
 import { CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { InvestigationParty, Task } from "@/generated/graphql";
 import { escapeCsvCell } from "@common/methods";
-import { getDisplayFilename } from "@common/attachment-utils";
+import { getDisplayFilename, getExportFilename } from "@common/attachment-utils";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { DocumentationFilter } from "./documentation-filter";
 import { DocumentationFilterBar } from "./documentation-filter-bar";
@@ -99,6 +99,7 @@ export const InvestigationDocumentation: FC<Props> = ({
 
       const attachmentsWithFolder = sorted.map((a) => ({
         ...a,
+        name: getExportFilename(a),
         folder: a.fileType ? `${a.fileType}s` : undefined,
       }));
 
