@@ -11,24 +11,30 @@ type PartyTabParams = {
   id: string;
 };
 
-export const PartyTabs: FC = () => {
+interface PartyTabsProps {
+  // Defaults to the shared party route; investigation parties pass their own path
+  basePath?: string;
+}
+
+export const PartyTabs: FC<PartyTabsProps> = ({ basePath }) => {
   const navigate = useNavigate();
   const { id } = useParams<PartyTabParams>();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<string>("details");
+  const tabsBasePath = basePath ?? `/party/${id}`;
 
   useEffect(() => {
     const paths = location.pathname.split("/");
     const tabKey = paths.at(-1) ?? "";
-    setActiveTab(tabKey === id ? "details" : tabKey);
-  }, [location.pathname, id]);
+    setActiveTab(location.pathname === tabsBasePath ? "details" : tabKey);
+  }, [location.pathname, tabsBasePath]);
 
   const handleTabClick = (tabKey: string) => {
     setActiveTab(tabKey);
     if (tabKey === "details") {
-      navigate(`/party/${id}`);
+      void navigate(tabsBasePath);
     } else {
-      navigate(`/party/${id}/${tabKey}`);
+      void navigate(`${tabsBasePath}/${tabKey}`);
     }
   };
 
