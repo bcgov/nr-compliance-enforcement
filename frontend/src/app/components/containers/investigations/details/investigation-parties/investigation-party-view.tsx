@@ -14,9 +14,11 @@ import {
   DetailSection,
 } from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
+import { PartyHistoryTab, PartyTabs } from "@/app/components/containers/parties/view";
 
 interface PartyDetailProps {
   party: InvestigationParty;
+  currentTab: string;
   investigationGuid: string;
   investigationLabel?: string;
   onBack: () => void;
@@ -28,6 +30,7 @@ interface PartyDetailProps {
 
 export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   party,
+  currentTab,
   investigationGuid,
   investigationLabel,
   onBack,
@@ -107,55 +110,60 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
         }
         isEditMode={false}
       />
-      <section className="comp-details-body comp-container">
-        <div className="comp-details-view">
-          <div className="comp-details-content">
-            {party.isUpToDate === false && (
-              <Alert
-                id="party-detail-not-up-to-date-alert"
-                variant="warning"
-                className="comp-complaint-details-alert d-flex align-items-center justify-content-between"
-              >
-                <div className="d-flex align-items-center">
-                  <i className="bi bi-info-circle me-2" />
-                  <span>
-                    {onUpdateParty
-                      ? "Party information have changed as part of another investigation. Update to the latest version of information prior to making additional edits."
-                      : "This party includes the information available when the investigation was closed. See the " +
-                        "published profile list to view the most up-to-date information."}
-                  </span>
-                </div>
-                <Button
-                  id="party-detail-update-party-information-button"
-                  variant="outline-primary"
-                  className="ms-3 text-nowrap"
-                  onClick={onUpdateParty}
-                  disabled={!onUpdateParty}
+      {isPublished && <PartyTabs basePath={`/investigation/${investigationGuid}/party/${party.partyIdentifier}`} />}
+      {party.partyReference && currentTab === "history" ? (
+        <PartyHistoryTab partyIdentifier={party.partyReference} />
+      ) : (
+        <section className="comp-details-body comp-container">
+          <div className="comp-details-view">
+            <div className="comp-details-content">
+              {party.isUpToDate === false && (
+                <Alert
+                  id="party-detail-not-up-to-date-alert"
+                  variant="warning"
+                  className="comp-complaint-details-alert d-flex align-items-center justify-content-between"
                 >
-                  Update party information
-                </Button>
-              </Alert>
-            )}
-
-            {/* Investigation role — own section at top*/}
-            <DetailSection title="Party details">
-              <DetailField label="Investigation role">{roleText}</DetailField>
-              {person?.safetyConcernReason && (
-                <DetailField label="Safety concern reason">{person.safetyConcernReason}</DetailField>
+                  <div className="d-flex align-items-center">
+                    <i className="bi bi-info-circle me-2" />
+                    <span>
+                      {onUpdateParty
+                        ? "Party information have changed as part of another investigation. Update to the latest version of information prior to making additional edits."
+                        : "This party includes the information available when the investigation was closed. See the " +
+                          "published profile list to view the most up-to-date information."}
+                    </span>
+                  </div>
+                  <Button
+                    id="party-detail-update-party-information-button"
+                    variant="outline-primary"
+                    className="ms-3 text-nowrap"
+                    onClick={onUpdateParty}
+                    disabled={!onUpdateParty}
+                  >
+                    Update party information
+                  </Button>
+                </Alert>
               )}
-              {business?.safetyConcernReason && (
-                <DetailField label="Safety concern reason">{business.safetyConcernReason}</DetailField>
-              )}
-            </DetailSection>
 
-            <PartyDetail
-              party={party}
-              attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
-              investigationGuid={investigationGuid}
-            />
+              {/* Investigation role — own section at top*/}
+              <DetailSection title="Party details">
+                <DetailField label="Investigation role">{roleText}</DetailField>
+                {person?.safetyConcernReason && (
+                  <DetailField label="Safety concern reason">{person.safetyConcernReason}</DetailField>
+                )}
+                {business?.safetyConcernReason && (
+                  <DetailField label="Safety concern reason">{business.safetyConcernReason}</DetailField>
+                )}
+              </DetailSection>
+
+              <PartyDetail
+                party={party}
+                attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                investigationGuid={investigationGuid}
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };
