@@ -380,6 +380,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled, isPublished 
               isDisabled={isDisabled}
               showYearDropdown={true}
               yearDropdownItemNumber={100}
+              maxDate={new Date()}
             />
             {field.state.value instanceof Date && (
               <span className="text-muted mt-1">{calculateAgeYears(field.state.value)} years old</span>
