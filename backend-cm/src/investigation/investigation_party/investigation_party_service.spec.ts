@@ -4,6 +4,7 @@ import { InvestigationPartyService } from "./investigation_party_service";
 const INVESTIGATION_GUID = "11111111-1111-1111-1111-111111111111";
 const PARTY_GUID = "22222222-2222-2222-2222-222222222222";
 const SHARED_PARTY_GUID = "33333333-3333-3333-3333-333333333333";
+const INVESTIGATION_NAME = "INV26-000001";
 
 const makeService = () => {
   const db: any = {
@@ -12,6 +13,7 @@ const makeService = () => {
         investigation_party_guid: PARTY_GUID,
         investigation_guid: INVESTIGATION_GUID,
         party_guid_ref: SHARED_PARTY_GUID,
+        party_association_role_ref: "WITNESS",
       }),
       update: jest.fn().mockResolvedValue({}),
     },
@@ -24,13 +26,22 @@ const makeService = () => {
   };
   const investigationService: any = {
     updateInvestigationTimestamp: jest.fn().mockResolvedValue(undefined),
-    findOne: jest.fn().mockResolvedValue({ investigationGuid: INVESTIGATION_GUID }),
+    findOne: jest.fn().mockResolvedValue({ investigationGuid: INVESTIGATION_GUID, name: INVESTIGATION_NAME }),
   };
-  const partyService: any = { deactivateIfUnlinked: jest.fn().mockResolvedValue(undefined) };
+  const partyService: any = {
+    deactivateIfUnlinked: jest.fn().mockResolvedValue(undefined),
+    publishActivityAssociationEvent: jest.fn(),
+  };
+  // Resolves the role label written to the party history
+  const sharedPrisma: any = {
+    party_association_role_code: {
+      findFirst: jest.fn().mockResolvedValue({ short_description: "Suspect" }),
+    },
+  };
 
   const service = new InvestigationPartyService(
     prisma,
-    {} as any,
+    sharedPrisma,
     {} as any,
     { getIdirUsername: () => "test" } as any,
     investigationService,
@@ -79,6 +90,19 @@ describe("InvestigationPartyService.remove", () => {
     expect(partyService.deactivateIfUnlinked).toHaveBeenCalledWith(SHARED_PARTY_GUID);
   });
 
+  it("records the removal in the shared party's history with the investigation and role", async () => {
+    const { service, partyService } = makeService();
+
+    await service.remove(INVESTIGATION_GUID, PARTY_GUID);
+
+    expect(partyService.publishActivityAssociationEvent).toHaveBeenCalledWith(
+      SHARED_PARTY_GUID,
+      "REMOVED",
+      INVESTIGATION_NAME,
+      "Suspect",
+    );
+  });
+
   it("leaves the shared schema alone for a party that was never published", async () => {
     const { service, db, partyService } = makeService();
     db.investigation_party.findFirst.mockResolvedValue({
@@ -91,5 +115,6 @@ describe("InvestigationPartyService.remove", () => {
 
     expect(db.investigation_party.update).toHaveBeenCalled();
     expect(partyService.deactivateIfUnlinked).not.toHaveBeenCalled();
+    expect(partyService.publishActivityAssociationEvent).not.toHaveBeenCalled();
   });
 });

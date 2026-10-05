@@ -10,9 +10,14 @@ import { useUpdatePartyFromSharedParty } from "../../../hooks/use-update-party-f
 
 const InvestigationPartyView: FC = () => {
   const navigate = useNavigate();
-  const { investigationGuid = "", partyIdentifier = "" } = useParams<{
+  const {
+    investigationGuid = "",
+    partyIdentifier = "",
+    tabKey,
+  } = useParams<{
     investigationGuid: string;
     partyIdentifier: string;
+    tabKey?: string;
   }>();
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
 
@@ -77,6 +82,7 @@ const InvestigationPartyView: FC = () => {
   return (
     <InvestigationPartyDetail
       party={party}
+      currentTab={tabKey ?? "details"}
       investigationGuid={investigationGuid}
       investigationLabel={data?.getInvestigation?.name ?? undefined}
       onBack={backToInvestigationTab}
