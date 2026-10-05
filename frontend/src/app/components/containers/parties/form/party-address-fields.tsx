@@ -8,19 +8,26 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 import { CompSelect } from "@/app/components/common/comp-select";
 import {
+  AddressFormValue,
   CANADA_COUNTRY_CODE,
   DEFAULT_CANADA_PROVINCE,
   isDefaultAddress,
   validateEmailValue,
   validatePhoneNumberValue,
 } from "@/app/components/containers/parties/form/party-form-utils";
-import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
+import {
+  clearFieldError,
+  getFieldErrorMessage,
+  setFieldError,
+} from "@/app/components/containers/parties/form/party-form-errors";
+import { hasCompleteAddress } from "@/app/common/party-name";
 
 interface AddressFieldsProps {
   addressIndex: number;
   form: any;
   isDisabled: boolean;
   isPrimary: boolean;
+  isPublished?: boolean;
   onRemoveAddress: (index: number) => void;
   onSetPrimaryAddress: (index: number) => void;
   showOfficeFields?: boolean;
@@ -32,11 +39,56 @@ export const AddressFields: FC<AddressFieldsProps> = ({
   form,
   isDisabled,
   isPrimary,
+  isPublished = false,
   onRemoveAddress,
   onSetPrimaryAddress,
   showOfficeFields = false,
   showDisplayInInvestigation = false,
 }) => {
+  // A published party must keep at least one complete address, so block removing this row unless another one is complete
+  const hasOtherCompleteAddress = useStore(form.store, (state: any) =>
+    (state.values?.addresses ?? []).some(
+      (address: AddressFormValue, index: number) => index !== addressIndex && hasCompleteAddress(address),
+    ),
+  ) as boolean;
+
+  const addressNameField = `addresses[${addressIndex}].addressName`;
+
+  // Clear the remove-blocked message once another address is complete
+  useEffect(() => {
+    if (hasOtherCompleteAddress) clearFieldError(form, addressNameField);
+  }, [addressNameField, form, hasOtherCompleteAddress]);
+
+  const handleRemoveAddress = () => {
+    if (isPublished && !hasOtherCompleteAddress) {
+      setFieldError(
+        form,
+        addressNameField,
+        "A published party must have at least one completed address. Complete another address before removing this one.",
+      );
+      return;
+    }
+    onRemoveAddress(addressIndex);
+  };
+
+  // A published profile must still have one complete address when editing
+  const requiredForPublished = (label: string, fieldName: string) => {
+    if (!isPublished) return undefined;
+    return {
+      // re-run when the rest of this row changes
+      onChangeListenTo: ["addressName", "address", "country"]
+        .filter((name) => name !== fieldName)
+        .map((name) => `addresses[${addressIndex}].${name}`),
+      onChange: ({ value, fieldApi }: any) => {
+        if (value?.trim()) return undefined;
+        const addresses: AddressFormValue[] = fieldApi.form.getFieldValue("addresses") ?? [];
+        return addresses.some(hasCompleteAddress)
+          ? undefined
+          : { message: `${label} is required for published parties` };
+      },
+    };
+  };
+
   const selectedCountry = useStore(
     form.store,
     (state: any) => state.values?.addresses?.[addressIndex]?.country ?? "",
@@ -82,7 +134,7 @@ export const AddressFields: FC<AddressFieldsProps> = ({
         <Button
           variant="outline-primary"
           size="sm"
-          onClick={() => onRemoveAddress(addressIndex)}
+          onClick={handleRemoveAddress}
           type="button"
         >
           <i className="bi bi-trash" /> Remove Address
@@ -131,6 +183,8 @@ export const AddressFields: FC<AddressFieldsProps> = ({
         form={form}
         name={`addresses[${addressIndex}].address` as any}
         label="Address"
+        required={isPublished}
+        validators={requiredForPublished("Address", "address")}
         render={(field) => (
           <CompInput
             id={`address-${addressIndex}`}
@@ -212,6 +266,8 @@ export const AddressFields: FC<AddressFieldsProps> = ({
         form={form}
         name={`addresses[${addressIndex}].country` as any}
         label="Country"
+        required={isPublished}
+        validators={requiredForPublished("Country", "country")}
         render={(field) => (
           <CompSelect
             id="address-country"

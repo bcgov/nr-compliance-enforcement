@@ -162,6 +162,21 @@ export class InvestigationPartyService {
     }
   }
 
+  // Once an organization is published, its legal name and a complete address can be updated but not removed.
+  private _canBusinessBeUpdated(existingParty: InvestigationParty, input: UpdateInvestigationPartyInput): void {
+    if (!existingParty.partyReference || !existingParty.business || !input.business) {
+      return;
+    }
+
+    if (!input.business.name?.trim()) {
+      throw new BadRequestException("A legal name is required for a published organization.");
+    }
+
+    if (!(input.addresses ?? []).some((address) => this._hasCompleteAddress(address))) {
+      throw new BadRequestException("A complete address is required for a published organization.");
+    }
+  }
+
   private _validateBusinessInput(business: { name?: string; addresses?: CreateInvestigationAddressInput[] }): void {
     for (const address of business.addresses ?? []) {
       if (!address.addressName?.trim()) {
@@ -1044,12 +1059,22 @@ export class InvestigationPartyService {
     return await this.partyService.create(prepared.input, prepared.identifiers, activityContext);
   }
 
+  // An address counts toward minimum info when it has a name, address line 1 and country
+  private _hasCompleteAddress(address: CreateInvestigationAddressInput): boolean {
+    return !!(address.addressName?.trim() && address.address?.trim() && address.country?.trim());
+  }
+
   // Minimum information a party to be published to global.
   private _hasMinimumInfo(party: InvestigationParty): boolean {
     if (party.person) {
       return !!(party.person.firstName?.trim() && party.person.lastName?.trim() && party.person.dateOfBirth);
     }
-    return !!party.business?.name?.trim();
+    if (party.business) {
+      return (
+        !!party.business.name?.trim() && (party.addresses ?? []).some((address) => this._hasCompleteAddress(address))
+      );
+    }
+    return false;
   }
 
   /**
@@ -1166,6 +1191,7 @@ export class InvestigationPartyService {
 
     if (input.business) {
       this._validateBusinessInput(input.business);
+      this._canBusinessBeUpdated(existingParty, input);
     }
 
     this._validateExternalIdInput(input.externalIds);
