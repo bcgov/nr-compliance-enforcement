@@ -22,7 +22,7 @@ export const CallerInformation: FC<Props> = ({ complaintOwner }) => {
 
   return (
     <section className="comp-details-section">
-      <h3>Caller information</h3>
+      <h3>Complainant information</h3>
       <Card>
         <Card.Body>
           <dl>

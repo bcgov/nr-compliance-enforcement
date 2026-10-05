@@ -155,7 +155,7 @@ test.describe("Complaint Create Page spec - Create View", () => {
       await page.locator('dd[id="comp-details-reported"]').getByText(createCallerInformation.reported).first(),
     ).toBeVisible();
 
-    //-- verify caller information
+    //-- verify Complainant information
     await expect(
       await page.locator('dd[id="comp-details-name"]').getByText(createCallerInformation.name).first(),
     ).toBeVisible();

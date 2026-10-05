@@ -150,7 +150,7 @@ test.describe("Complaint Create Page spec - Enter Coordinates - Create View", ()
       page.locator('dd[id="comp-details-region"]').getByText(createCallDetails.region).first(),
     ).toBeVisible();
 
-    //-- verify caller information
+    //-- verify information
     await expect(
       await page.locator('dd[id="comp-details-name"]').getByText(createCallerInformation.name).first(),
     ).toBeVisible();

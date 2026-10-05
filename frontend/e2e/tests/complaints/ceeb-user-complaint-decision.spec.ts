@@ -90,7 +90,7 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     //-- verify call details
     await expect(page.locator('pre[id="comp-details-description"]')).toHaveText(createCallDetails.description);
 
-    //-- verify caller information
+    //-- verify Complainant information
     await expect(
       page.locator('dd[id="comp-details-name"]').getByText(createCallerInformation.name).first(),
     ).toBeVisible();

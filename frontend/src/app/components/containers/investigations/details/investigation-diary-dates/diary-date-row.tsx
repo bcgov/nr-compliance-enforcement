@@ -2,7 +2,7 @@ import { FC } from "react";
 import { DiaryDate } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
 import { EditButton } from "@components/common/comp-table-edit-column";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
