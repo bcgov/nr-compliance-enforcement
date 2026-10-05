@@ -285,7 +285,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   };
 
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_TO_INVESTIGATION, {
-    invalidateQueries: [["getInvestigation", investigationGuid]],
+    invalidateQueries: [["getInvestigation", investigationGuid], ["searchParties"]],
     onSuccess: (data: any) => {
       const created = data?.addPartyToInvestigation?.[0];
       if (created?.partyIdentifier) setPartyIdentifier(created.partyIdentifier);
@@ -334,7 +334,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   });
 
   const addPartyFromSharedPartyMutation = useGraphQLMutation(ADD_PARTY_TO_INVESTIGATION_FROM_SHARED_PARTY, {
-    invalidateQueries: [["getInvestigation", investigationGuid]],
+    invalidateQueries: [["getInvestigation", investigationGuid], ["InvestigationParty"], ["InvestigationPartyRoles"]],
     onSuccess: (data: any) => {
       const created = data?.addPartyToInvestigationFromSharedParty;
       if (created?.partyIdentifier) setPartyIdentifier(created.partyIdentifier);
@@ -349,7 +349,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   });
 
   const replacePartyFromSharedPartyMutation = useGraphQLMutation(REPLACE_PARTY_ON_INVESTIGATION_FROM_SHARED_PARTY, {
-    invalidateQueries: [["getInvestigation", investigationGuid]],
+    invalidateQueries: [["getInvestigation", investigationGuid], ["InvestigationParty"], ["InvestigationPartyRoles"]],
     onSuccess: (data: any) => {
       const replacementPartyIdentifier = data?.replacePartyOnInvestigationFromSharedParty?.partyIdentifier;
       if (replacementPartyIdentifier) setPartyIdentifier(replacementPartyIdentifier);
