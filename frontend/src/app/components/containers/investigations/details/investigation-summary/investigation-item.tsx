@@ -2,7 +2,6 @@ import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { Investigation } from "@/generated/graphql";
 import { Card } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { selectCommunityCodeDropdown, selectInvestigationSourceCodeDropdown } from "@/app/store/reducers/code-table";
 import Option from "@apptypes/app/option";
@@ -10,11 +9,9 @@ import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common
 
 interface InvestigationItemProps {
   investigationData: Investigation;
-  caseGuid: string;
-  caseName: string;
 }
 
-export const InvestigationItem = ({ investigationData, caseGuid, caseName }: InvestigationItemProps) => {
+export const InvestigationItem = ({ investigationData }: InvestigationItemProps) => {
   const createdByObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.createdByAppUserGuid));
   const createdBy = createdByObj ? `${createdByObj?.last_name}, ${createdByObj?.first_name}` : "Not Assigned";
   const communityOptions = useAppSelector(selectCommunityCodeDropdown);
@@ -35,14 +32,6 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
       >
         <Card.Body>
           <dl>
-            <div>
-              <dt>Case ID</dt>
-              <dd>
-                <pre id="investigation-summary-case-id">
-                  {caseGuid ? <Link to={`/case/${caseGuid}`}>{caseName || caseGuid}</Link> : "N/A"}
-                </pre>
-              </dd>
-            </div>
             <div>
               <dt>Created by</dt>
               <dd id="comp-details-created-by"> {createdBy}</dd>

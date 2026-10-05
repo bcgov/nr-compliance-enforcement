@@ -2,7 +2,7 @@ import { FC } from "react";
 import { DiaryDate } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
 import { EditButton } from "@components/common/comp-table-edit-column";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
@@ -25,7 +25,6 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
   showTaskBadge = true,
   isReadOnly: isReadOnlyProp,
 }) => {
-  const navigate = useNavigate();
   const { investigationGuid } = useParams<InvestigationParams>();
   const investigationReadOnly = useInvestigationReadOnly(investigationGuid ?? "");
   const isReadOnly = isReadOnlyProp ?? investigationReadOnly;
@@ -53,18 +52,15 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
                 : "N/A"}
             </strong>
           </span>
-          <span>{diaryDate.description}</span>
           {showTaskBadge && taskNumber && diaryDate.taskGuid && (
-            <button
-              className="badge comp-status-badge-conflict-history"
-              style={{ maxHeight: "20px", border: "none" }}
-              onClick={() => {
-                navigate(`/investigation/${investigationGuid}/task/${diaryDate.taskGuid}`);
-              }}
+            <Link
+              to={`/investigation/${investigationGuid}/task/${diaryDate.taskGuid}`}
+              className="comp-cell-link text-nowrap"
             >
               Task {taskNumber}
-            </button>
+            </Link>
           )}
+          <span>{diaryDate.description}</span>
         </div>
         <div className="text-muted small mt-2 mb-0">
           Added on {addedTimestamp} by {addedByName}
