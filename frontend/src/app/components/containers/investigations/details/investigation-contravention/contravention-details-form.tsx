@@ -175,8 +175,7 @@ export const ContraventionDetailsForm = ({
 
   const userAgency = getUserAgency();
   const communityCodes = useAppSelector(selectCommunityCodeDropdown);
-  const speciesCodes = useAppSelector(selectAllSpeciesCodeDropdown)
-    ?.toSorted((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+  const speciesCodes = useAppSelector(selectAllSpeciesCodeDropdown);
   const wildlifeManagementUnitCodes = useAppSelector(selectWildlifeManagementUnitCodeDropdown);
 
   const [act, setAct] = useState("");
