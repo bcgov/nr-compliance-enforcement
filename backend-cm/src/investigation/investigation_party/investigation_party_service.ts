@@ -259,7 +259,7 @@ export class InvestigationPartyService {
       }
 
       for (const createdPartyGuid of createdPartyGuids) {
-        await this.publishIfEligible(db, createdPartyGuid);
+        await this.publishIfEligible(db, createdPartyGuid); // NOSONAR this sequential loop is intentional as it includes the prisma client
       }
     });
 
