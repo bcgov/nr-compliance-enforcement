@@ -388,7 +388,7 @@ export const getExportFilename = (attachment: Attachment): string => {
   const extension = extensionIndex > 0 ? displayName.slice(extensionIndex) : "";
   const date = parseUTCDateToLocal(attachment.date);
   const parts = [
-    attachment.taskNumber ? `Task ${attachment.taskNumber}` : "",
+    attachment.taskNumber ? `${attachment.taskNumber}` : "",
     attachment.description,
     attachment.title,
     date ? format(date, "yyMMdd") : "",
