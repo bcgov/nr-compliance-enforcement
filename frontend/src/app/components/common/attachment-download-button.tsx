@@ -4,7 +4,7 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { bulkDownload, selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { Id } from "react-toastify";
 import { useSelector } from "react-redux";
-import { Attachment, fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
+import { Attachment, fetchAttachmentsWithMetadata, getExportFilename } from "@/app/common/attachment-utils";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import AttachmentEnum from "@constants/attachment-enum";
 
@@ -42,7 +42,7 @@ export const BulkDownloadButton = ({
       // Prepare attachment info for backend
       const attachmentInfo = attachments.map((a: Attachment) => ({
         id: a.id,
-        name: a.name,
+        name: getExportFilename({ ...a, taskNumber }),
         size: a.size || 0,
         folder: a.fileType ? `${a.fileType}s` : undefined,
       }));
