@@ -17,6 +17,8 @@ export class ActivityNote {
   reportedTimestamp: Date;
   actionedAppUserGuidRef: string;
   reportedAppUserGuidRef: string;
+  editedTimestamp: Date;
+  editedAppUserGuidRef: string;
 }
 
 @InputType()
@@ -56,6 +58,14 @@ export class ActivityNoteInput {
 
   @Field(() => String)
   reportedAppUserGuidRef: string;
+
+  @Field(() => Date, { nullable: true })
+  @IsOptional()
+  editedTimestamp?: Date;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  editedAppUserGuidRef?: string;
 }
 
 export const mapPrismaActivityNoteToActivityNote = (mapper: Mapper) => {
@@ -110,6 +120,14 @@ export const mapPrismaActivityNoteToActivityNote = (mapper: Mapper) => {
     forMember(
       (dest) => dest.reportedAppUserGuidRef,
       mapFrom((src) => src.reported_app_user_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.editedTimestamp,
+      mapFrom((src) => src.edited_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.editedAppUserGuidRef,
+      mapFrom((src) => src.edited_app_user_guid_ref),
     ),
   );
 };
