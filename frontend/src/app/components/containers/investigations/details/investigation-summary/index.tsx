@@ -190,13 +190,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
 
           {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
 
-          {investigationData && (
-            <InvestigationItem
-              investigationData={investigationData}
-              caseGuid={caseGuid}
-              caseName={caseName ?? ""}
-            ></InvestigationItem>
-          )}
+          {investigationData && <InvestigationItem investigationData={investigationData}></InvestigationItem>}
 
           <DiaryDates
             investigationGuid={investigationGuid}
