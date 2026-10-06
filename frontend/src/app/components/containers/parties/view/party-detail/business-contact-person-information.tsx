@@ -1,3 +1,4 @@
+import { getPartyName } from "@/app/common/party-name";
 import {
   DetailField,
   DetailSection,
@@ -48,8 +49,14 @@ export const BusinessContactPersonInformation: FC<BusinessContactPersonInformati
                       {c?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
                     </legend>
                     <dl>
-                      <DetailField label="First name">{c?.person?.firstName}</DetailField>
-                      <DetailField label="Last name">{c?.person?.lastName}</DetailField>
+                      <DetailField label="Name">
+                        {getPartyName({
+                          person: {
+                            firstName: c?.person?.firstName,
+                            lastName: c?.person?.lastName,
+                          },
+                        })}
+                      </DetailField>
                       {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
                       {renderContactRows(emails, "email address", (value) => value)}
                       {c?.associatedAddresses && c?.associatedAddresses.length > 0 && (

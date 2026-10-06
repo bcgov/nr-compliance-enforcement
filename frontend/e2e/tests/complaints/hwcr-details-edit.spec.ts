@@ -401,7 +401,7 @@ test.describe("Complaint Edit Page spec - Additional Checks", () => {
     );
     await expect(page.locator("#complaint-received-method-pair-id")).toBeVisible();
 
-    // Caller Information - Name
+    // Complainant Information - Name
     await expect(page.locator("#complaint-caller-info-name-label-id")).toContainText("Name");
     await expect(page.locator("#name-pair-id input")).toBeVisible();
   });

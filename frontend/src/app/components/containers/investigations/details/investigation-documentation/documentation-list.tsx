@@ -78,7 +78,7 @@ export const DocumentationList: FC<Props> = ({
       isSortable: true,
       getValue: (attachment) => (attachment.task ? `${attachment.task.taskNumber}` : ""),
       renderCell: (attachment) => {
-        const taskLabel = attachment.task ? `${attachment.task.taskNumber}` : "-";
+        const taskLabel = attachment.task ? `Task ${attachment.task.taskNumber}` : "-";
         return attachment.task ? (
           <Link
             to={`/investigation/${investigationGuid}/task/${attachment.task.taskIdentifier}`}

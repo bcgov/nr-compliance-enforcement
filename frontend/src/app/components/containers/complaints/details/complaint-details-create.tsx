@@ -1197,7 +1197,7 @@ export const CreateComplaint: FC = () => {
         </fieldset>
 
         <fieldset>
-          <legend>Caller information</legend>
+          <legend>Complainant information</legend>
           {enablePrivacyFeature && (
             <div
               className="comp-details-form-row"
@@ -1367,7 +1367,7 @@ export const CreateComplaint: FC = () => {
 
         {complaintType === COMPLAINT_TYPES.ERS && (
           <fieldset>
-            <legend>Subject of complaint/witness details</legend>
+            <legend>Party of interest details</legend>
             <div
               className="comp-details-form-row"
               id="subject-of-complaint-pair-id"

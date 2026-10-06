@@ -29,7 +29,7 @@ export interface ComplaintReportData {
   complaintMethodReceivedCode: string;
   parkGuid: string;
 
-  //-- caller information
+  //-- Complainant information
   privacyRequested: string;
   name: string;
   phone1: string;

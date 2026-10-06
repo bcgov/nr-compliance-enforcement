@@ -983,7 +983,7 @@ export const ComplaintDetailsEdit: FC = () => {
           )}
           {/* Suspect / Witness Details */}
           {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
-          {/* Caller Information */}
+          {/* Complainant Information */}
           {readOnly && <CallerInformation complaintOwner={ownedByAgencyCode?.agency} />}
           {/* Attachments */}
           {readOnly && (
@@ -1410,7 +1410,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Call Information */}
             <fieldset>
-              <h3>Caller information</h3>
+              <h3>Complainant information</h3>
 
               {enablePrivacyFeature && (
                 <div
@@ -1593,10 +1593,10 @@ export const ComplaintDetailsEdit: FC = () => {
               </div>
             </fieldset>
 
-            {/* ERS - Subject of Complaint */}
+            {/* ERS - Party of interest details */}
             {complaintType === COMPLAINT_TYPES.ERS && (
               <fieldset>
-                <h3>Subject of complaint/witness details</h3>
+                <h3>Party of interest details</h3>
                 <div
                   className="comp-details-form-row"
                   id="subject-of-complaint-pair-id"
