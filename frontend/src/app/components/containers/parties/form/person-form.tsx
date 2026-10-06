@@ -54,6 +54,23 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled, isPublished 
     };
   };
 
+  // A date of birth entered directly into the picker can fall after today, since
+  // ValidationDatePicker's maxDate only constrains calendar selection, not typed input.
+  const dateOfBirthValidators = {
+    onChange: ({ value }: { value: string | Date | null | undefined }) => {
+      if (value instanceof Date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDateOnly = new Date(value);
+        selectedDateOnly.setHours(0, 0, 0, 0);
+        if (selectedDateOnly.getTime() > today.getTime()) {
+          return { message: "Date of birth cannot be in the future" };
+        }
+      }
+      return requiredForPublished("Date of birth")?.onChange({ value });
+    },
+  };
+
   const sexCodeOptions = useAppSelector(selectPersonSexDropdown).map((opt: { value: string; label: string }) => ({
     value: opt.value,
     label: opt.label,
@@ -362,7 +379,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled, isPublished 
         name="dateOfBirth"
         label="Date of birth"
         required={isPublished}
-        validators={requiredForPublished("Date of birth")}
+        validators={dateOfBirthValidators}
         render={(field) => (
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <ValidationDatePicker
