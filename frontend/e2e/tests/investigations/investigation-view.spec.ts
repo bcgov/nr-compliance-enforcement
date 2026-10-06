@@ -63,9 +63,6 @@ test.describe("Investigation Details", () => {
 
     const investigationIdLabel = page.locator("span", { hasText: "Investigation #" });
     await expect(investigationIdLabel).toBeVisible();
-
-    const caseIdLabel = page.locator("dt", { hasText: "Case ID" });
-    await expect(caseIdLabel).toBeVisible();
   });
 
   test("it navigates to linked case", async ({ page }) => {

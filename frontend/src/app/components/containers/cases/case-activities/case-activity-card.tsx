@@ -96,7 +96,6 @@ export const CaseActivityCard: FC<CaseActivityCardProps> = ({ caseIdentifier, ca
   const renderInvestigationItem = (investigation: Investigation) => {
     const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
     const agencyDescription = getAgencyDescription(investigation?.leadAgency || "");
-    const partiesCount = investigation?.parties?.length ?? 0;
     const status =
       investigation?.investigationStatus?.shortDescription ||
       investigation?.investigationStatus?.investigationStatusCode ||
@@ -119,9 +118,6 @@ export const CaseActivityCard: FC<CaseActivityCardProps> = ({ caseIdentifier, ca
               {investigationId}
             </Link>
             <span className="ms-2">• {agencyDescription}</span>
-            <span className="ms-2">
-              • {partiesCount} {partiesCount === 1 ? "party" : "parties"}
-            </span>
             <span className="ms-2">• {communityLabel || "Unknown"}</span>
             <Badge className={`badge ${applyStatusClass(status || "")} ms-2`}>{status || "Unknown"}</Badge>
           </div>
@@ -133,7 +129,6 @@ export const CaseActivityCard: FC<CaseActivityCardProps> = ({ caseIdentifier, ca
   const renderInspectionItem = (inspection: Inspection) => {
     const inspectionId = inspection?.name || inspection?.inspectionGuid || "Unknown";
     const agencyDescription = getAgencyDescription(inspection?.leadAgency || "");
-    const partiesCount = inspection?.parties?.length ?? 0;
     const status =
       inspection?.inspectionStatus?.shortDescription || inspection?.inspectionStatus?.inspectionStatusCode || "Unknown";
 
@@ -151,9 +146,6 @@ export const CaseActivityCard: FC<CaseActivityCardProps> = ({ caseIdentifier, ca
               {inspectionId}
             </Link>
             <span className="ms-2">• {agencyDescription}</span>
-            <span className="ms-2">
-              • {partiesCount} {partiesCount === 1 ? "party" : "parties"}
-            </span>
             <Badge className={`badge ${applyStatusClass(status || "")} ms-2`}>{status || "Unknown"}</Badge>
           </div>
         </div>

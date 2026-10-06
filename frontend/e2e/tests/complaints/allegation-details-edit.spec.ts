@@ -438,7 +438,7 @@ test.describe("Complaint Edit Page spec - Edit Allegation View", () => {
     );
     await expect(page.locator("#complaint-received-method-pair-id")).toBeVisible();
 
-    // Check the Caller Information inputs
+    // Check the Complainant Information inputs
     // Name
     await expect(page.locator("#complaint-caller-info-name-label-id")).toContainText("Name");
     await expect(page.locator("#name-pair-id input")).toBeVisible();
