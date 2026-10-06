@@ -18,6 +18,8 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
+import Option from "@apptypes/app/option";
+import { CompSelect } from "@/app/components/common/comp-select";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -34,6 +36,10 @@ const GET_REPORTS = gql`
     }
   }
 `;
+
+const SORT_NEWEST_FIRST: Option = { value: "newest", label: "Newest to oldest" };
+const SORT_OLDEST_FIRST: Option = { value: "oldest", label: "Oldest to newest" };
+const SORT_OPTIONS: Option[] = [SORT_NEWEST_FIRST, SORT_OLDEST_FIRST];
 
 interface InvestigationContinuationProps {
   investigationData?: Investigation;
@@ -54,6 +60,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const [shouldReset, setShouldReset] = useState(false);
   const [showContinuationReportErrors, setShowContinuationReportErrors] = useState(false);
   const [continuationReport, setContinuationReport] = useState<Partial<ActivityNoteInput>>();
+  const [sortOption, setSortOption] = useState<Option>(SORT_NEWEST_FIRST);
 
   // GraphQL queries and mutations
   const { data, refetch } = useGraphQLQuery(GET_REPORTS, {
@@ -133,6 +140,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
     groups = Object.values(grouped).sort((a: any, b: any) => b.date - a.date);
   }
 
+  // Oldest to newest is the exact reverse of the default order, for both the date groups and the entries within them
+  const isOldestFirst = sortOption.value === SORT_OLDEST_FIRST.value;
+  const sortedGroups = isOldestFirst
+    ? [...groups].reverse().map((group: any) => ({ ...group, reports: [...group.reports].reverse() }))
+    : groups;
+
   return (
     <div className="comp-complaint-details">
       <div
@@ -186,6 +199,23 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
           </>
         )}
         <div className="space-y-4">
+          {reports.length > 0 && (
+            <div className="d-flex align-items-center gap-3 mt-3">
+              <div id="continuation-report-sort-label-id">Sort by</div>
+              <CompSelect
+                id="continuation-report-sort-select-id"
+                showInactive={false}
+                classNamePrefix="comp-select"
+                onChange={(value: Option | null) => setSortOption(value ?? SORT_NEWEST_FIRST)}
+                className="continuation-report-sort-select"
+                options={SORT_OPTIONS}
+                placeholder="Select"
+                enableValidation={false}
+                value={sortOption}
+                isClearable={false}
+              />
+            </div>
+          )}
           <div className="space-y-2 max-h-screen overflow-y-auto">
             {reports?.length === 0 ? (
               <p className="text-gray-500">There are no reports yet.</p>
@@ -198,8 +228,9 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                 >
                   {groups &&
                     groups.length > 0 &&
-                    groups.map((group: any, index: number) => {
-                      const eventKey = index.toString();
+                    sortedGroups.map((group: any, index: number) => {
+                      // Keep each date's accordion key tied to its position in the default order so its open/collapsed state follows the date when the sort changes
+                      const eventKey = (isOldestFirst ? sortedGroups.length - 1 - index : index).toString();
                       const isOpen = activeKey.includes(eventKey);
 
                       return (
