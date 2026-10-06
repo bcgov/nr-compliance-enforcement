@@ -203,8 +203,8 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   const reset = () => {
     editor?.commands.clearContent();
     setPlainText("");
-    setSelectedActionedDateTime(undefined);
-    setSelectedActionedTime(null);
+    setSelectedActionedDateTime(new Date());
+    setSelectedActionedTime(formatDateObjectAsString(new Date(), { format: "time" }));
     setSelectedOfficer(initialOfficer);
     setContentError("");
     setDateTimeError("");
