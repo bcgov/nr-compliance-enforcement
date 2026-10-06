@@ -39,6 +39,8 @@ export const GET_ACTIVITY_NOTES_BY_TASK = gql`
       reportedTimestamp
       actionedAppUserGuidRef
       reportedAppUserGuidRef
+      editedTimestamp
+      editedAppUserGuidRef
     }
   }
 `;
@@ -122,6 +124,9 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   });
   const [plainText, setPlainText] = useState<string>(initialData?.contentText ?? "");
 
+  // Tracked alongside plainText so formatting-only changes (bold, lists, headings) are also reported to the parent
+  const [contentJson, setContentJson] = useState<string>(initialData?.contentJson ?? "");
+
   // Validation errors
   const [contentError, setContentError] = useState<string>("");
   const [dateTimeError, setDateTimeError] = useState<string>("");
@@ -142,6 +147,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     content: initialData?.contentJson ? JSON.parse(initialData.contentJson) : undefined,
     onUpdate: ({ editor }) => {
       setPlainText(editor.getText());
+      setContentJson(JSON.stringify(editor.getJSON()));
       markDirty();
     },
   });
@@ -191,8 +197,8 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
 
     return {
       activityNoteGuid: initialData?.activityNoteGuid,
-      contentJson: editor ? JSON.stringify(editor.getJSON()) : "",
-      contentText: editor ? editor.getText() : "",
+      contentJson,
+      contentText: plainText,
       actionedDate,
       actionedTime,
       actionedAppUserGuidRef: selectedOfficer?.value || "",
@@ -203,6 +209,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   const reset = () => {
     editor?.commands.clearContent();
     setPlainText("");
+    setContentJson("");
     setSelectedActionedDateTime(new Date());
     setSelectedActionedTime(formatDateObjectAsString(new Date(), { format: "time" }));
     setSelectedOfficer(initialOfficer);
@@ -263,7 +270,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   useEffect(() => {
     const values = getInputValues();
     onValuesChange(values, index);
-  }, [plainText, selectedActionedDateTime, selectedActionedTime, selectedOfficer, index]);
+  }, [plainText, contentJson, selectedActionedDateTime, selectedActionedTime, selectedOfficer, index]);
 
   // Reset form when requested
   useEffect(() => {

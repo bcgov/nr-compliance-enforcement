@@ -60,7 +60,6 @@ export const AddEditActivityNoteModal: FC<AddEditActivityNoteModalProps> = ({ cl
   }, []);
 
   useEffect(() => {
-    setEditValues({});
     setShowErrors(false);
   }, [activityNote?.activityNoteGuid]);
 

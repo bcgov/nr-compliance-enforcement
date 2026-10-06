@@ -27,6 +27,7 @@ const TaskActionRow: FC<{
 }> = ({ taskAction, isReadOnly, onEdit }) => {
   const actionedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.actionedAppUserGuidRef ?? undefined));
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.reportedAppUserGuidRef ?? undefined));
+  const editedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.editedAppUserGuidRef ?? undefined));
 
   const localActioned = parseUTCDateToLocal(taskAction.actionedDate, taskAction.actionedTime);
   const actionedDateTimeStr = taskAction.actionedTime
@@ -41,6 +42,13 @@ const TaskActionRow: FC<{
   const reportedTimestampStr = formatDateObjectAsString(parseUTCTimestampToLocal(taskAction.reportedTimestamp), {
     format: "dateTime",
   });
+
+  const editedByStr = editedByUser
+    ? `${editedByUser.last_name}, ${editedByUser.first_name} (${editedByUser.agency_code?.shortDescription ?? editedByUser.agency_code_ref})`
+    : "Unknown";
+  const editedTimestampStr = taskAction.editedTimestamp
+    ? formatDateObjectAsString(parseUTCTimestampToLocal(taskAction.editedTimestamp), { format: "dateTime" })
+    : null;
 
   return (
     <tr>
@@ -60,6 +68,11 @@ const TaskActionRow: FC<{
         <div className="text-muted small mt-1 mb-0">
           Added on {reportedTimestampStr} by {addedOnStr}
         </div>
+        {editedTimestampStr && (
+          <div className="text-muted small mb-0">
+            Last edited on {editedTimestampStr} by {editedByStr}
+          </div>
+        )}
       </td>
       <td className="align-top text-end">
         <EditButton
