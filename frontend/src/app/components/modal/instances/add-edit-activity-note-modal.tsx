@@ -119,7 +119,7 @@ export const AddEditActivityNoteModal: FC<AddEditActivityNoteModalProps> = ({ cl
           onValidationChange={handleValidationChange}
           onDirtyChange={(_index, dirty) => (dirty ? markDirty() : markClean())}
           showErrors={showErrors}
-          defaultAssignedUserGuid={activityNote}
+          defaultAssignedUserGuid={defaultAssignedUserGuid}
         />
 
         {activityNote && showDeleteConfirm && (
