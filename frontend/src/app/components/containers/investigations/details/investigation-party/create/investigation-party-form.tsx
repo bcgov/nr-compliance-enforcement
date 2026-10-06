@@ -311,6 +311,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       ["party", editParty?.partyReference],
       ["searchPartyEvents", editParty?.partyReference],
       ["searchParties"],
+      ["InvestigationParty"],
+      ["InvestigationPartyRoles"],
     ],
     onSuccess: (data: any) => {
       const updatedParty = data?.updateInvestigationParty?.parties?.find(
