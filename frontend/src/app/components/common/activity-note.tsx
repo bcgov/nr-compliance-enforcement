@@ -297,7 +297,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
 
       {/* Date actioned */}
       <div className="mt-3 comp-details-form-row">
-        <div className="col-2">
+        <div className="col-2 activity-note-label">
           Date/time actioned<span className="required-ind">*</span>
         </div>
         <div className="comp-details-edit-input">
@@ -327,7 +327,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
         id="officer-assigned-pair-id"
       >
         <div
-          className="col-2"
+          className="col-2 activity-note-label"
           id="officer-assigned-select-label-id"
         >
           Officer<span className="required-ind">*</span>
