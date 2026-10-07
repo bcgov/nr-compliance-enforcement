@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Alert, Modal, Button } from "react-bootstrap";
+import { Alert, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { parse } from "date-fns";
@@ -190,24 +190,8 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
               <i className="bi bi-info-circle mt-2" />
               <span>
                 <strong>Delete diary date</strong>
-                <p className="mb-3">Are you sure you want to delete this diary date? This action cannot be undone.</p>
+                <p className="mb-0">Are you sure you want to delete this diary date? This action cannot be undone.</p>
               </span>
-            </div>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleConfirmDelete}
-                disabled={isSaving}
-              >
-                <i className="bi bi-trash me-1" />
-                <span>Confirm Delete</span>
-              </Button>
             </div>
           </Alert>
         )}
@@ -217,9 +201,10 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
           isEdit={isEditing}
           showDeleteConfirm={showDeleteConfirm}
           isSaving={isSaving}
-          onCancel={close}
+          onCancel={handleClose}
           onSave={handleSave}
           onDelete={() => setShowDeleteConfirm(true)}
+          onConfirmDelete={handleConfirmDelete}
         />
       </Modal.Footer>
     </>

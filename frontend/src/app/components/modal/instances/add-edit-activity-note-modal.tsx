@@ -1,5 +1,5 @@
 import { FC, useState, useCallback, useEffect } from "react";
-import { Alert, Modal, Button } from "react-bootstrap";
+import { Alert, Modal } from "react-bootstrap";
 import { ActivityNoteInput } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid, selectModalData } from "@/app/store/reducers/app";
@@ -132,26 +132,10 @@ export const AddEditActivityNoteModal: FC<AddEditActivityNoteModalProps> = ({ cl
               <i className="bi bi-info-circle mt-2" />
               <span>
                 <strong>Delete {activityNoteLabel.toLowerCase()}</strong>
-                <p className="mb-3">
+                <p className="mb-0">
                   Are you sure you want to delete this {activityNoteLabel.toLowerCase()}? This action cannot be undone.
                 </p>
               </span>
-            </div>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleConfirmDelete}
-                disabled={isSaving}
-              >
-                <i className="bi bi-trash me-1" />
-                <span>Confirm Delete</span>
-              </Button>
             </div>
           </Alert>
         )}
@@ -161,9 +145,10 @@ export const AddEditActivityNoteModal: FC<AddEditActivityNoteModalProps> = ({ cl
           isEdit={activityNote}
           showDeleteConfirm={showDeleteConfirm}
           isSaving={isSaving}
-          onCancel={close}
+          onCancel={handleClose}
           onSave={handleSave}
           onDelete={() => setShowDeleteConfirm(true)}
+          onConfirmDelete={handleConfirmDelete}
         />
       </Modal.Footer>
     </>

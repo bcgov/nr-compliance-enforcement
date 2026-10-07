@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, Button, Modal } from "react-bootstrap";
+import { Alert, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
@@ -218,6 +218,14 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   // Handle save button click
   const handleSubmit = async () => {
     await form.handleSubmit();
+  };
+
+  const handleClose = () => {
+    if (showDeleteConfirm) {
+      setShowDeleteConfirm(false);
+      return;
+    }
+    close();
   };
 
   // Controller function for adding / editing / deleting attachments
@@ -580,26 +588,11 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               <i className="bi bi-info-circle mt-2" />
               <span>
                 <strong> Delete attachment</strong>
-                <p className="mb-3">
+                <p className="mb-0">
                   Are you sure you want to delete "{attachment ? getDisplayFilename(attachment.name) : ""}"? This action
                   cannot be undone.
                 </p>
               </span>
-            </div>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleSubmit}
-              >
-                <i className="bi bi-trash me-1" />
-                <span>Confirm delete</span>
-              </Button>
             </div>
           </Alert>
         )}
@@ -608,10 +601,11 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         <ModalFooter
           isEdit={attachment}
           showDeleteConfirm={showDeleteConfirm}
-          onCancel={close}
+          onCancel={handleClose}
           onSave={handleSubmit}
           onDelete={() => setShowDeleteConfirm(true)}
           isBlocked={isBlocked}
+          onConfirmDelete={handleSubmit}
         />
       </Modal.Footer>
     </>
