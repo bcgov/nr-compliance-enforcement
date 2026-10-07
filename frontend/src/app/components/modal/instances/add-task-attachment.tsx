@@ -38,6 +38,7 @@ import { getPartyName } from "@/app/common/party-name";
 import Option from "@/app/types/app/option";
 import { selectCodeTable } from "@/app/store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
@@ -604,34 +605,14 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         )}
       </Modal.Body>
       <Modal.Footer>
-        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
-          {attachment && (
-            <Button
-              variant="outline-danger"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={showDeleteConfirm}
-            >
-              <i className="bi bi-trash me-1" />
-              <span>Delete</span>
-            </Button>
-          )}
-          <div className="d-flex gap-2 ms-auto">
-            <Button
-              variant="outline-primary"
-              onClick={close}
-              disabled={isBlocked || showDeleteConfirm}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              disabled={isBlocked || showDeleteConfirm}
-            >
-              <span>Save and close</span>
-            </Button>
-          </div>
-        </div>
+        <ModalFooter
+          isEdit={attachment}
+          showDeleteConfirm={showDeleteConfirm}
+          onCancel={close}
+          onSave={handleSubmit}
+          onDelete={() => setShowDeleteConfirm(true)}
+          isBlocked={isBlocked}
+        />
       </Modal.Footer>
     </>
   );

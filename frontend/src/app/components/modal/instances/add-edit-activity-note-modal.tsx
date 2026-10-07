@@ -8,6 +8,7 @@ import { SAVE_ACTIVITY_NOTE, DELETE_ACTIVITY_NOTE, ActivityNoteEditor } from "@/
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEnum } from "@/app/types/app/activity-note";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 type AddEditActivityNoteModalProps = {
   close: () => void;
@@ -156,34 +157,14 @@ export const AddEditActivityNoteModal: FC<AddEditActivityNoteModalProps> = ({ cl
         )}
       </Modal.Body>
       <Modal.Footer>
-        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
-          {activityNote && (
-            <Button
-              variant="outline-danger"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={isSaving || showDeleteConfirm}
-            >
-              <i className="bi bi-trash me-1" />
-              <span>Delete</span>
-            </Button>
-          )}
-          <div className="d-flex gap-2 ms-auto">
-            <Button
-              variant="outline-primary"
-              onClick={handleClose}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={isSaving || showDeleteConfirm}
-            >
-              {isSaving ? "Saving..." : "Save"}
-            </Button>
-          </div>
-        </div>
+        <ModalFooter
+          isEdit={activityNote}
+          showDeleteConfirm={showDeleteConfirm}
+          isSaving={isSaving}
+          onCancel={close}
+          onSave={handleSave}
+          onDelete={() => setShowDeleteConfirm(true)}
+        />
       </Modal.Footer>
     </>
   );

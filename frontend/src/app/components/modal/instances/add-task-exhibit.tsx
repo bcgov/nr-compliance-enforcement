@@ -22,6 +22,7 @@ import {
 import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
 
@@ -611,35 +612,13 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       </Modal.Body>
 
       <Modal.Footer>
-        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
-          {/* Delete button — only shown when editing an existing exhibit */}
-          {exhibit && (
-            <Button
-              variant="outline-danger"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={showDeleteConfirm}
-            >
-              <i className="bi bi-trash me-1" />
-              <span>Delete</span>
-            </Button>
-          )}
-          <div className="d-flex gap-2 ms-auto">
-            <Button
-              variant="outline-primary"
-              onClick={close}
-              disabled={showDeleteConfirm}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              disabled={showDeleteConfirm}
-            >
-              <span>Save and close</span>
-            </Button>
-          </div>
-        </div>
+        <ModalFooter
+          isEdit={exhibit?.exhibitNumber != null}
+          showDeleteConfirm={showDeleteConfirm}
+          onCancel={close}
+          onSave={handleSubmit}
+          onDelete={() => setShowDeleteConfirm(true)}
+        />
       </Modal.Footer>
     </>
   );

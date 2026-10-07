@@ -2,7 +2,7 @@ import { FC, useCallback, useState } from "react";
 import { Alert, Button, Modal } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
-import { StepModalFooter } from "@/app/components/modal/step-modal-footer";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 type MultiStepModalProps = {
   close: () => void;
@@ -126,7 +126,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
       </Modal.Body>
 
       <Modal.Footer>
-        <StepModalFooter
+        <ModalFooter
           currentStep={currentStep}
           totalSteps={totalSteps}
           isEdit={!!isEdit}

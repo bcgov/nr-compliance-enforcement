@@ -16,6 +16,7 @@ import {
   SAVE_DIARY_DATE,
   DELETE_DIARY_DATE,
 } from "@/app/components/containers/investigations/details/investigation-diary-dates";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 type AddEditDiaryDateModalProps = {
   close: () => void;
@@ -212,34 +213,14 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
         )}
       </Modal.Body>
       <Modal.Footer>
-        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
-          {isEditing && (
-            <Button
-              variant="outline-danger"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={isSaving || showDeleteConfirm}
-            >
-              <i className="bi bi-trash me-1" />
-              <span>Delete</span>
-            </Button>
-          )}
-          <div className="d-flex gap-2 ms-auto">
-            <Button
-              variant="outline-primary"
-              onClick={handleClose}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={isSaving || showDeleteConfirm}
-            >
-              {isSaving ? "Saving..." : "Save"}
-            </Button>
-          </div>
-        </div>
+        <ModalFooter
+          isEdit={isEditing}
+          showDeleteConfirm={showDeleteConfirm}
+          isSaving={isSaving}
+          onCancel={close}
+          onSave={handleSave}
+          onDelete={() => setShowDeleteConfirm(true)}
+        />
       </Modal.Footer>
     </>
   );

@@ -1,16 +1,16 @@
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 
-interface StepModalFooterProps {
-  currentStep: number;
-  totalSteps: number;
+interface ModalFooterProps {
+  currentStep?: number;
+  totalSteps?: number;
   isEdit: boolean;
-  isSaving: boolean;
+  isSaving?: boolean;
   deleteFromStep?: number; // When set, Delete is only shown for currentStep >= deleteFromStep
   showDeleteConfirm: boolean;
   onCancel: () => void;
-  onPrevious: () => void;
-  onNext: () => void;
+  onPrevious?: () => void;
+  onNext?: () => void;
   onSave: () => void;
   onDelete: () => void;
   nextButtonLabel?: string; // When set, replaces the default "Next" label
@@ -19,9 +19,9 @@ interface StepModalFooterProps {
   isBlocked?: boolean; // When true, Save/Next are disabled pending a decision inside the step content
 }
 
-export const StepModalFooter: FC<StepModalFooterProps> = ({
-  currentStep,
-  totalSteps,
+export const ModalFooter: FC<ModalFooterProps> = ({
+  currentStep = 0,
+  totalSteps = 1,
   isEdit,
   isSaving,
   deleteFromStep = 0,
