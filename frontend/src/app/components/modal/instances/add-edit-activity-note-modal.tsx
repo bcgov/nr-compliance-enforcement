@@ -46,7 +46,7 @@ export const AddEditActivityNoteModal: FC<AddEditActivityNoteModalProps> = ({ cl
       submit();
     },
     onError: () => {
-      ToggleError(`Failed to save ${activityNoteLabel.toLowerCase()}`);
+      ToggleError(`Failed to delete ${activityNoteLabel.toLowerCase()}`);
     },
   });
 
