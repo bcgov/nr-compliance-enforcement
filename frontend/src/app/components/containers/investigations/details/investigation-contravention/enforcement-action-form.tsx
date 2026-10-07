@@ -2,6 +2,7 @@ import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "react-bootstrap";
 import { z } from "zod";
+import { format } from "date-fns";
 import {
   Contravention,
   CreateEnforcementActionInput,
@@ -14,6 +15,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
@@ -67,7 +69,6 @@ const boolToOption = (value: boolean | null | undefined): string => {
   return value ? "true" : "false";
 };
 const optionToBool = (value: string): boolean | null => (value === "" ? null : value === "true");
-const toDateOrNull = (value?: string | Date | null): Date | null => (value ? new Date(value) : null);
 
 // ticket_amount is stored as Decimal(10, 2) so enforce max amount
 const ticketAmountValidator = z
@@ -276,10 +277,10 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 
   const form = useForm({
     defaultValues: {
-      dateIssued: enforcementAction?.dateIssued ? new Date(enforcementAction.dateIssued) : new Date(),
+      dateIssued: parseUTCDateToLocal(enforcementAction?.dateIssued) ?? new Date(),
       servingOfficer: enforcementAction?.appUserIdentifier ?? primaryInvestigatorGuid ?? "",
       issuingOfficer: enforcementAction?.issuingOfficerIdentifier ?? primaryInvestigatorGuid ?? "",
-      dateServed: enforcementAction?.dateServed ? new Date(enforcementAction.dateServed) : new Date(),
+      dateServed: parseUTCDateToLocal(enforcementAction?.dateServed) ?? new Date(),
       enforcementActionCode: enforcementAction?.enforcementActionCode?.enforcementActionCode ?? "",
       comment: enforcementAction?.comment ?? "",
       // Violation Ticket
@@ -292,21 +293,21 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       warningNumber: enforcementAction?.warningNumber ?? "",
       // Administrative Sanction
       sanctionTypeCode: enforcementAction?.sanctionTypeCode ?? "",
-      effectiveDate: enforcementAction?.effectiveDate ? new Date(enforcementAction.effectiveDate) : null,
-      endDate: enforcementAction?.endDate ? new Date(enforcementAction.endDate) : null,
+      effectiveDate: parseUTCDateToLocal(enforcementAction?.effectiveDate),
+      endDate: parseUTCDateToLocal(enforcementAction?.endDate),
       sanctionStatusCode: enforcementAction?.sanctionStatusCode ?? "ISUD",
       // Order
       orderTypeCode: enforcementAction?.orderTypeCode ?? "",
       orderStatusCode: enforcementAction?.orderStatusCode ?? "ISUD",
       // Shared: Order/Violation Ticket appeal hearing date
-      appealHearingDate: toDateOrNull(
+      appealHearingDate: parseUTCDateToLocal(
         enforcementAction?.ticket?.appealHearingDate ?? enforcementAction?.appealHearingDate,
       ),
       // Shared: Order/Restorative Justice/Court Prosecution/Administrative Penalty
       remediationRequired: boolToOption(enforcementAction?.remediationRequired),
       // Restorative Justice
-      hearingDate: enforcementAction?.hearingDate ? new Date(enforcementAction.hearingDate) : null,
-      decisionDate: enforcementAction?.decisionDate ? new Date(enforcementAction.decisionDate) : null,
+      hearingDate: parseUTCDateToLocal(enforcementAction?.hearingDate),
+      decisionDate: parseUTCDateToLocal(enforcementAction?.decisionDate),
       // Court Prosecution
       courtProsecutionStatusCode: enforcementAction?.courtProsecutionStatusCode ?? "INPR",
       // Shared: Court Prosecution/Administrative Penalty
@@ -414,7 +415,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   // Issuing officer/date served apply to every decision except Unfounded/Unsolved
   const buildMutualFields = (value: FormValues) => ({
     issuingOfficerIdentifier: isNonEADecision ? null : value.issuingOfficer,
-    dateServed: isNonEADecision || !value.dateServed ? null : new Date(value.dateServed).toISOString(),
+    dateServed: isNonEADecision || !value.dateServed ? null : format(value.dateServed, "yyyy-MM-dd"),
   });
 
   // Everything that follows a successful save
@@ -454,7 +455,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           const input: UpdateEnforcementActionInput = {
             enforcementActionIdentifier: enforcementAction!.enforcementActionIdentifier,
             enforcementActionCode: value.enforcementActionCode,
-            dateIssued: value.dateIssued,
+            dateIssued: format(value.dateIssued, "yyyy-MM-dd"),
             appUserIdentifier: value.servingOfficer,
             ...buildMutualFields(value),
             ...buildTicketFields(value),
@@ -468,7 +469,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             contraventionIdentifier: contravention?.contraventionIdentifier ?? "",
             partyIdentifier: party?.partyIdentifier,
             enforcementActionCode: value.enforcementActionCode,
-            dateIssued: value.dateIssued,
+            dateIssued: format(value.dateIssued, "yyyy-MM-dd"),
             appUserIdentifier: value.servingOfficer,
             ...buildMutualFields(value),
             ...buildTicketFields(value),
