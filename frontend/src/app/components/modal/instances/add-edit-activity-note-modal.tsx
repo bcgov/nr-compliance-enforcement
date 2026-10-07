@@ -42,7 +42,7 @@ export const AddEditActivityNoteModal: FC<AddEditActivityNoteModalProps> = ({ cl
 
   const deleteMutation = useGraphQLMutation(DELETE_ACTIVITY_NOTE, {
     onSuccess: () => {
-      ToggleSuccess(`${activityNoteLabel} saved successfully`);
+      ToggleSuccess(`${activityNoteLabel} deleted successfully`);
       submit();
     },
     onError: () => {
