@@ -1,6 +1,5 @@
 -----------------------------------------------------
 -- COS Investigations model used by the COS Investigation Export dashboard in Metabase
--- see https://github.com/bcgov/nr-compliance-enforcement/wiki/Data-Exports for more information
 -----------------------------------------------------
 select
   inv.name as "Investigation ID",
