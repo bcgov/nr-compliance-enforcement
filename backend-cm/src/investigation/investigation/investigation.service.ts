@@ -645,7 +645,9 @@ export class InvestigationService {
             },
           },
         });
-        await this.updateLocationGeometryPoint(db, investigationGuid, input.locationGeometry);
+        if (input.locationGeometry !== undefined) {
+          await this.updateLocationGeometryPoint(db, investigationGuid, input.locationGeometry);
+        }
         updatedInvestigation.location_geometry_point =
           (await this.fetchLocationGeometryPoints([investigationGuid], db)).get(investigationGuid) ?? null;
       } catch (error) {
