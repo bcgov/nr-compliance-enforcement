@@ -31,7 +31,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
   });
   const parties = (data?.getInvestigation?.parties ?? []).filter(Boolean) as InvestigationParty[];
 
-  const { attachments, isLoading } = useInvestigationAttachments({
+  const { pagedAttachments, allAttachments, isLoading } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
     taskId: task?.taskIdentifier,
     tasks: task ? [task] : [],
@@ -55,7 +55,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
           title: "Upload attachment",
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
-          existingAttachments: attachments,
+          existingAttachments: allAttachments,
           parties,
           defaultAssignee: task?.assignedUserIdentifier,
           onDirtyChange: handleChildDirtyChange,
@@ -74,7 +74,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
           title: "Edit attachment",
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
-          existingAttachments: attachments,
+          existingAttachments: allAttachments,
           parties,
           attachment,
           onDirtyChange: handleChildDirtyChange,
@@ -89,7 +89,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
       <div className="d-flex align-items-center my-3">
         <h3 className="me-3 mb-0">Attachments</h3>
         <div className="d-flex align-items-center gap-3 ms-auto">
-          {attachments.length > 0 && (
+          {pagedAttachments.length > 0 && (
             <Button
               id="add-task-attachment"
               title="Add attachment(s)"
@@ -105,7 +105,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
         </div>
       </div>
 
-      {attachments.length === 0 ? (
+      {pagedAttachments.length === 0 ? (
         <div>
           <Button
             id="add-task-attachment"
@@ -122,7 +122,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
       ) : (
         <div className="comp-data-container">
           <TaskAttachmentList
-            attachments={attachments}
+            attachments={pagedAttachments}
             isLoading={isLoading}
             isReadOnly={isReadOnly}
             onEdit={handleEditAttachment}
