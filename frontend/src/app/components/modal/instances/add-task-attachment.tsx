@@ -391,6 +391,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         setAttachmentsToDelete: () => {},
         attachmentType: AttachmentEnum.TASK_ATTACHMENT,
         isSynchronous: false,
+        isSilent: true,
       });
     }
 
