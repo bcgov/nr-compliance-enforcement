@@ -1,6 +1,5 @@
 -----------------------------------------------------
--- COS Contraventions model used by the COS Investigation Export dashboard in Metabase
--- see https://github.com/bcgov/nr-compliance-enforcement/wiki/Data-Exports for more information
+-- Contraventions model used by the Investigation Export dashboard in Metabase
 -----------------------------------------------------
 with recursive ancestors as (
   select
@@ -8,7 +7,8 @@ with recursive ancestors as (
     leg.parent_legislation_guid,
     leg.legislation_type_code,
     leg.citation,
-    leg.section_title
+    leg.section_title,
+    leg.legislation_version_guid
   from
     investigation.contravention con
     join shared.legislation leg on leg.legislation_guid = con.legislation_guid_ref
@@ -20,7 +20,8 @@ with recursive ancestors as (
     leg.parent_legislation_guid,
     leg.legislation_type_code,
     leg.citation,
-    leg.section_title
+    leg.section_title,
+    leg.legislation_version_guid
   from
     ancestors anc
     join shared.legislation leg on leg.legislation_guid = anc.parent_legislation_guid
@@ -29,7 +30,9 @@ contravention_legislation as (
   select
     contravention_guid,
     max(section_title) filter (where legislation_type_code = 'ACT') as act,
+    max(lv.effective_date) filter (where legislation_type_code = 'ACT') as act_effective_date,
     max(section_title) filter (where legislation_type_code = 'REG') as regulation,
+    max(lv.effective_date) filter (where legislation_type_code = 'REG') as regulation_effective_date,
     max(citation) filter (where legislation_type_code = 'SEC') as section,
     coalesce(
       max(section_title) filter (where legislation_type_code = 'SEC'),
@@ -37,7 +40,8 @@ contravention_legislation as (
     ) as section_title,
     max(citation) filter (where legislation_type_code = 'SUBSEC') as subsection
   from
-    ancestors
+    ancestors anc
+    join shared.legislation_version lv on lv.legislation_version_guid = anc.legislation_version_guid
   group by
     contravention_guid
 )
@@ -51,7 +55,10 @@ select
   goc.short_description as "Contravention Community",
   wmu.short_description as "Wildlife Management Unit",
   cl.act as "Act",
+  -- an unset effective date is stored as 1900-01-01
+  nullif(cl.act_effective_date, '1900-01-01') as "Act Effective Date",
   cl.regulation as "Regulation",
+  nullif(cl.regulation_effective_date, '1900-01-01') as "Regulation Effective Date",
   cl.section as "Section",
   cl.section_title as "Section Title",
   cl.subsection as "Subsection",
