@@ -141,6 +141,10 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const storedTab = useAppSelector(selectActiveTab);
   const [activeTab, setActiveTab] = useState(storedTab);
 
+  //-- used to detect a filter or search change so the list can return to the first page
+  const [activeFilters, setActiveFilters] = useState(filters);
+  const [activeSearchQuery, setActiveSearchQuery] = useState(searchQuery);
+
   // Single useEffect for if tab, filters, sort or search is changed
   useEffect(() => {
     // If tab changed, update state and return early (don't fetch yet)
@@ -152,11 +156,31 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
       return; // prevent fetch with old sort key
     }
 
+    // If filters or search changed, go back to the first page and return early (don't fetch yet)
+    if (filters !== activeFilters || searchQuery !== activeSearchQuery) {
+      setActiveFilters(filters);
+      setActiveSearchQuery(searchQuery);
+      setPage(1);
+      return; // prevent fetch with old page
+    }
+
     // Only run fetch when state is settled
     let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
     payload.query = searchQuery ?? "";
     dispatch(getComplaints(type, payload));
-  }, [storedTab, activeTab, type, filters, sortKey, sortDirection, page, pageSize, searchQuery]);
+  }, [
+    storedTab,
+    activeTab,
+    type,
+    filters,
+    activeFilters,
+    sortKey,
+    sortDirection,
+    page,
+    pageSize,
+    searchQuery,
+    activeSearchQuery,
+  ]);
 
   useEffect(() => {
     if (defaultPageSize) {
