@@ -63,7 +63,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
   // States
-  const [activeKey, setActiveKey] = useState<string>("0");
+  const [collapsedDateKeys, setCollapsedDateKeys] = useState<string[]>([]);
   const [isValid, setIsValid] = useState(false);
   const [shouldReset, setShouldReset] = useState(false);
   const [showContinuationReportErrors, setShowContinuationReportErrors] = useState(false);
@@ -164,7 +164,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
     const grouped = reports?.reduce((acc: any, report: any) => {
       const actionedDateTime = parseUTCDateToLocal(report.actionedDate, report.actionedTime) ?? new Date();
       const dateKey = startOfDay(actionedDateTime).toISOString();
-      if (!acc[dateKey]) acc[dateKey] = { date: actionedDateTime, reports: [] };
+      if (!acc[dateKey]) acc[dateKey] = { dateKey, date: actionedDateTime, reports: [] };
       acc[dateKey].reports.push({ ...report, _actionedDateTime: actionedDateTime });
       return acc;
     }, {});
@@ -177,6 +177,27 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const sortedGroups = isOldestFirst
     ? [...groups].reverse().map((group: any) => ({ ...group, reports: [...group.reports].reverse() }))
     : groups;
+
+  // Dates are expanded unless the user has collapsed them, so a newly added date starts expanded
+  const expandedDateKeys: string[] = sortedGroups
+    .map((group: any) => group.dateKey)
+    .filter((dateKey: string) => !collapsedDateKeys.includes(dateKey));
+
+  // Accordion handler - records which dates the user has collapsed
+  const handleAccordionSelect = (openDateKeys: string | string[] | null | undefined) => {
+    const openKeys = Array.isArray(openDateKeys) ? openDateKeys : [];
+    setCollapsedDateKeys(
+      sortedGroups.map((group: any) => group.dateKey).filter((dateKey: string) => !openKeys.includes(dateKey)),
+    );
+  };
+
+  // Sort handler - changing the sort order expands every date
+  const handleSortChange = (value: Option | null) => {
+    const newSortOption = value ?? SORT_NEWEST_FIRST;
+    if (newSortOption.value === sortOption.value) return;
+    setSortOption(newSortOption);
+    setCollapsedDateKeys([]);
+  };
 
   return (
     <div className="comp-complaint-details">
@@ -238,7 +259,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                 id="continuation-report-sort-select-id"
                 showInactive={false}
                 classNamePrefix="comp-select"
-                onChange={(value: Option | null) => setSortOption(value ?? SORT_NEWEST_FIRST)}
+                onChange={handleSortChange}
                 className="continuation-report-sort-select"
                 options={SORT_OPTIONS}
                 placeholder="Select"
@@ -254,16 +275,15 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
             ) : (
               <div className="mt-4">
                 <Accordion
-                  defaultActiveKey={groups.map((_: any, index: number) => index.toString())}
-                  onSelect={(k) => setActiveKey(k as string)}
+                  activeKey={expandedDateKeys}
+                  onSelect={handleAccordionSelect}
                   alwaysOpen
                 >
                   {groups &&
                     groups.length > 0 &&
-                    sortedGroups.map((group: any, index: number) => {
-                      // Keep each date's accordion key tied to its position in the default order so its open/collapsed state follows the date when the sort changes
-                      const eventKey = (isOldestFirst ? sortedGroups.length - 1 - index : index).toString();
-                      const isOpen = activeKey.includes(eventKey);
+                    sortedGroups.map((group: any) => {
+                      const eventKey = group.dateKey;
+                      const isOpen = expandedDateKeys.includes(eventKey);
 
                       return (
                         <Accordion.Item
