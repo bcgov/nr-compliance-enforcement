@@ -1,27 +1,28 @@
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 
-interface StepModalFooterProps {
-  currentStep: number;
-  totalSteps: number;
+interface ModalFooterProps {
+  currentStep?: number;
+  totalSteps?: number;
   isEdit: boolean;
-  isSaving: boolean;
+  isSaving?: boolean;
   deleteFromStep?: number; // When set, Delete is only shown for currentStep >= deleteFromStep
   showDeleteConfirm: boolean;
   onCancel: () => void;
-  onPrevious: () => void;
-  onNext: () => void;
+  onPrevious?: () => void;
+  onNext?: () => void;
   onSave: () => void;
   onDelete: () => void;
+  onConfirmDelete: () => void;
   nextButtonLabel?: string; // When set, replaces the default "Next" label
   hidePreviousButton?: boolean;
   isReadOnly?: boolean;
   isBlocked?: boolean; // When true, Save/Next are disabled pending a decision inside the step content
 }
 
-export const StepModalFooter: FC<StepModalFooterProps> = ({
-  currentStep,
-  totalSteps,
+export const ModalFooter: FC<ModalFooterProps> = ({
+  currentStep = 0,
+  totalSteps = 1,
   isEdit,
   isSaving,
   deleteFromStep = 0,
@@ -31,6 +32,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
   onNext,
   onSave,
   onDelete,
+  onConfirmDelete,
   nextButtonLabel,
   hidePreviousButton,
   isReadOnly,
@@ -69,16 +71,28 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
         <Button
           variant="outline-primary"
           onClick={onCancel}
-          disabled={showDeleteConfirm || isSaving}
+          disabled={isBlocked || isSaving}
         >
           {isReadOnly ? "Close" : "Cancel"}
         </Button>
+        {/* While the delete warning is showing, Confirm Delete replaces Next/Save */}
+        {!isReadOnly && showDeleteConfirm && (
+          <Button
+            variant="danger"
+            onClick={onConfirmDelete}
+            disabled={isSaving}
+          >
+            <i className="bi bi-trash me-1" />
+            <span>Confirm Delete</span>
+          </Button>
+        )}
         {!isReadOnly &&
+          !showDeleteConfirm &&
           (isLastStep ? (
             <Button
               variant="primary"
               onClick={onSave}
-              disabled={showDeleteConfirm || isSaving || isBlocked}
+              disabled={isSaving || isBlocked}
             >
               <i className="bi bi-check-circle" />
               <span>Save</span>
@@ -87,7 +101,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
             <Button
               variant="primary"
               onClick={onNext}
-              disabled={showDeleteConfirm || isSaving || isBlocked}
+              disabled={isSaving || isBlocked}
             >
               {nextButtonLabel ? (
                 <span>{nextButtonLabel}</span>

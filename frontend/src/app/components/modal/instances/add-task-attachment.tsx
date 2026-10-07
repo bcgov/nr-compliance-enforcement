@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, Button, Modal } from "react-bootstrap";
+import { Alert, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
@@ -38,6 +38,7 @@ import { getPartyName } from "@/app/common/party-name";
 import Option from "@/app/types/app/option";
 import { selectCodeTable } from "@/app/store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
@@ -248,6 +249,14 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   // Handle save button click
   const handleSubmit = async () => {
     await form.handleSubmit();
+  };
+
+  const handleClose = () => {
+    if (showDeleteConfirm) {
+      setShowDeleteConfirm(false);
+      return;
+    }
+    close();
   };
 
   // Controller function for adding / editing / deleting attachments
@@ -673,59 +682,25 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               <i className="bi bi-info-circle mt-2" />
               <span>
                 <strong> Delete attachment</strong>
-                <p className="mb-3">
+                <p className="mb-0">
                   Are you sure you want to delete "{attachment ? getDisplayFilename(attachment.name) : ""}"? This action
                   cannot be undone.
                 </p>
               </span>
             </div>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleSubmit}
-              >
-                <i className="bi bi-trash me-1" />
-                <span>Confirm delete</span>
-              </Button>
-            </div>
           </Alert>
         )}
       </Modal.Body>
       <Modal.Footer>
-        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
-          {attachment && (
-            <Button
-              variant="outline-danger"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={showDeleteConfirm}
-            >
-              <i className="bi bi-trash me-1" />
-              <span>Delete</span>
-            </Button>
-          )}
-          <div className="d-flex gap-2 ms-auto">
-            <Button
-              variant="outline-primary"
-              onClick={close}
-              disabled={isBlocked || showDeleteConfirm}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              disabled={isBlocked || showDeleteConfirm}
-            >
-              <span>Save and close</span>
-            </Button>
-          </div>
-        </div>
+        <ModalFooter
+          isEdit={attachment}
+          showDeleteConfirm={showDeleteConfirm}
+          onCancel={handleClose}
+          onSave={handleSubmit}
+          onDelete={() => setShowDeleteConfirm(true)}
+          isBlocked={isBlocked}
+          onConfirmDelete={handleSubmit}
+        />
       </Modal.Footer>
     </>
   );
