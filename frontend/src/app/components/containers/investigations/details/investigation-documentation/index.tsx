@@ -36,7 +36,7 @@ export const InvestigationDocumentation: FC<Props> = ({
   const { searchValues } = useDocumentationSearch();
 
   // Fetch and process attachments (with client-side filtering, sorting, pagination)
-  const { attachments, filteredAttachments, totalCount, isLoading, error } = useInvestigationAttachments({
+  const { pagedAttachments, filteredAttachments, totalCount, isLoading, error } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
     tasks,
     parties,
@@ -177,7 +177,7 @@ export const InvestigationDocumentation: FC<Props> = ({
         {renderDesktopFilterSection()}
         <div className="comp-data-list-map">
           <DocumentationList
-            attachments={attachments}
+            attachments={pagedAttachments}
             tasks={tasks}
             totalItems={totalCount}
             isLoading={isLoading}

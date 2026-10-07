@@ -157,7 +157,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       ToggleError("Errors in form");
     },
     onSubmit: async ({ value }) => {
-      persistTaskAttachments(value, taskIdentifier);
+      await persistTaskAttachments(value, taskIdentifier);
     },
   });
 
@@ -207,9 +207,40 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       form.setFieldValue("file", mergedFileList);
       form.setFieldValue("originalFileName", mergedFiles.map((f) => f.name).join("\n"));
 
-      stageFiles(files);
+      void stageFiles(files);
     },
     [form, existingAttachments, stageFiles],
+  );
+
+  // Edit mode only - stages a single replacement for the saved attachment, superseding any earlier selection
+  const onReplacementSelect = useCallback(
+    async (files: FileList) => {
+      if (files.length !== 1) {
+        ToggleError("Select a single file to replace this attachment");
+        return;
+      }
+
+      const replacement = files[0];
+      // a matching filename would overwrite that other attachment in COMS on save, so it can't be used as a replacement
+      const isUsedByAnotherAttachment = (existingAttachments ?? []).some(
+        (existing: COMSObject) =>
+          existing.id !== attachment.id && getDisplayFilename(existing.name) === replacement.name,
+      );
+      if (isUsedByAnotherAttachment) {
+        ToggleError(
+          `Another attachment already uses the file name "${replacement.name}". Rename the file and try again.`,
+        );
+        return;
+      }
+
+      form.setFieldValue("file", files);
+      form.setFieldValue("originalFileName", replacement.name);
+
+      await stageFiles(files);
+      // staging merges with earlier selections, so keep only the slide for the latest file
+      setSlides((staged) => staged.filter((slide) => decodeURIComponent(slide.name) === replacement.name));
+    },
+    [form, stageFiles, setSlides, existingAttachments, attachment],
   );
 
   // Functions
@@ -223,6 +254,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   const persistTaskAttachments = async (value: FormValues, taskIdentifier: string) => {
     if (showDeleteConfirm) {
       await handleDelete(taskIdentifier);
+    } else if (attachment && value.file) {
+      await handleReplace(value, taskIdentifier);
     } else if (attachment) {
       await handleEditMetadata(value, taskIdentifier);
     } else {
@@ -314,6 +347,57 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     });
   };
 
+  // Function to replace the file on an existing attachment. The replacement keeps the attachment's sequence number.
+  const handleReplace = async (value: FormValues, taskIdentifier: string) => {
+    const replacement = value.file?.[0];
+    if (!replacement) return;
+
+    const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+      position: TOAST_POSITION,
+      autoClose: false,
+      closeOnClick: false,
+      closeButton: false,
+      draggable: false,
+    });
+
+    submit();
+
+    const failedFiles = await uploadAttachmentsWithProgress({
+      dispatch,
+      files: [replacement],
+      identifier: investigationIdentifier,
+      subIdentifier: taskIdentifier,
+      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+      toastId,
+      buildExtendedMeta: () => ({
+        ...buildExtendedMeta(value),
+        "sequence-number": attachment?.sequenceNumber ?? "",
+      }),
+    });
+
+    DismissToast(toastId);
+
+    // A replacement with the same filename overwrites the saved object in COMS, so there is nothing left to remove.
+    // Otherwise the saved file is only removed once its replacement has uploaded, so a failed upload never loses it.
+    const isSameFilename = replacement.name === getDisplayFilename(attachment.name);
+    if (failedFiles.length === 0 && !isSameFilename) {
+      await handlePersistAttachments({
+        dispatch,
+        attachmentsToAdd: null,
+        attachmentsToDelete: [attachment],
+        identifier: investigationIdentifier,
+        subIdentifier: taskIdentifier,
+        setAttachmentsToAdd: () => {},
+        setAttachmentsToDelete: () => {},
+        attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+        isSynchronous: false,
+        isSilent: true,
+      });
+    }
+
+    attachmentUploadComplete$.next(taskIdentifier);
+  };
+
   // helper function - shared meta building logic
   const buildExtendedMeta = (value: FormValues) => {
     const isMediaType = ["Audio", "Video", "Photo"].includes(value.fileType);
@@ -348,6 +432,13 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   const handleSlideRemove = (attachment: COMSObject) => {
     onFileRemove(attachment);
     handleRemoveFile(decodeURIComponent(attachment.name));
+  };
+
+  // Edit mode only - the staged replacement was removed, so the saved attachment is shown again
+  const handleReplacementRemove = (replacement: COMSObject) => {
+    onFileRemove(replacement);
+    form.setFieldValue("file", null);
+    form.setFieldValue("originalFileName", getDisplayFilename(attachment.name));
   };
 
   return (
@@ -397,8 +488,12 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             {/* Existing attachment preview - edit mode only */}
             {attachment && (
               <AttachmentCarousel
-                slides={[attachment]}
+                slides={slides.length > 0 ? slides : [attachment]}
                 showPreview={true}
+                onFileSelect={onReplacementSelect}
+                onFileRemove={handleReplacementRemove}
+                allowUpload={true}
+                allowDelete={slides.length > 0}
                 variant="comp-carousel-modal"
               />
             )}
@@ -410,7 +505,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 onCancel={() => {
                   reset();
                   form.setFieldValue("file", null);
-                  form.setFieldValue("originalFileName", "");
+                  form.setFieldValue("originalFileName", attachment ? getDisplayFilename(attachment.name) : "");
                   setSlides([]);
                 }}
                 onConfirm={confirm}
@@ -568,7 +663,6 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             )}
           </fieldset>
         </form>
-
         {showDeleteConfirm && (
           <Alert
             variant="danger"
