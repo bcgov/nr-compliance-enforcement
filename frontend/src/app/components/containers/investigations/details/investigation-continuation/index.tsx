@@ -367,12 +367,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                         json={report.contentJson}
                                       />
                                     </div>
-                                    <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
-                                      {`• Recorded on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.reportedTimestamp), { format: "dateTime" })} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
+                                    <div className="text-muted small mb-0">
+                                      {`Recorded on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.reportedTimestamp), { format: "dateTime" })} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
                                     </div>
                                     {report.editedTimestamp && (
-                                      <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
-                                        {`• Last edited on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.editedTimestamp), { format: "dateTime" })} by ${editedOfficer?.last_name}, ${editedOfficer?.first_name} (${editedOfficer?.agency_code_ref})`}
+                                      <div className="text-muted small mb-0">
+                                        {`Last edited on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.editedTimestamp), { format: "dateTime" })} by ${editedOfficer?.last_name}, ${editedOfficer?.first_name} (${editedOfficer?.agency_code_ref})`}
                                       </div>
                                     )}
                                   </div>
