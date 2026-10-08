@@ -83,7 +83,7 @@ select
       '-'
     )
   end as "Party",
-  eac.short_description as "Decision",
+  coalesce(eac.short_description, 'No decision') as "Decision",
   -- set date issued for Unfounded/Unsolved so the Decision Date Issued filter includes them
   case
     when ea.enforcement_action_code not in ('UNFD', 'UNSL') then ea.date_issued
