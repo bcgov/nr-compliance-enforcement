@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Get GitOps repo token
         id: gitops-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
         with:
           app-id: ${{ secrets.GITOPS_APP_ID }}
           private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
@@ -31,7 +31,7 @@ jobs:
           repositories: tenant-gitops-f208ae
 
       - name: Checkout CD repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ env.GITOPS_REPO }}
           token: ${{ steps.gitops-token.outputs.token }}
@@ -62,11 +62,7 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Include new infrastructure changes on merge
-        # in addition to new infra changes, we also update the base image tag
-        # so that our next test release will use the tag from this PR
-        #
-        # why do this instead of promoting the tag out of the PR? In the event we have 10+
-        # PRs open after the last release merge, we could promote an invalid build #
+        # base image tag is set by merge-main, not here (the two raced on merge)
         #
         # We only update the base if NO developer custom changes exist on the branch
         # this way we dont accidently include partial / incomplete work into main
@@ -86,10 +82,6 @@ jobs:
           else
             echo "Developer Infrastructure changes detected! Skipping base update..."
           fi
-
-          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh tag base ${{ github.event.number }} ${{ github.event.pull_request.head.sha }}
 
       - name: Disable dev environment
         run: |

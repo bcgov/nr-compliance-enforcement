@@ -20,7 +20,7 @@ jobs:
           echo "::add-mask::$private_key"
           echo "app-private-key=$private_key" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
         id: app-token
         with:
           app-id: ${{ vars.TEAM_WOLVERINE_GITHUB_APP_ID }}
@@ -34,7 +34,7 @@ jobs:
           PR_DATA=$(gh api /repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
           echo "ref=$(echo $PR_DATA | jq -r .head.ref)" >> $GITHUB_OUTPUT
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ steps.pr-details.outputs.ref }}
           fetch-depth: 0
