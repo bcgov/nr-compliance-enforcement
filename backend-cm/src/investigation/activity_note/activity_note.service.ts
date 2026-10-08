@@ -105,8 +105,10 @@ export class ActivityNoteService {
               reported_utc_timestamp: input.reportedTimestamp,
               actioned_app_user_guid_ref: input.actionedAppUserGuidRef,
               reported_app_user_guid_ref: input.reportedAppUserGuidRef,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
+              edited_utc_timestamp: input.editedTimestamp,
+              edited_app_user_guid_ref: input.editedAppUserGuidRef,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
             },
           });
         }
