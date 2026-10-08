@@ -2,7 +2,6 @@ import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "react-bootstrap";
 import { z } from "zod";
-import { format } from "date-fns";
 import {
   Contravention,
   CreateEnforcementActionInput,
@@ -15,7 +14,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
-import { parseUTCDateToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
@@ -415,7 +414,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
   // Issuing officer/date served apply to every decision except Unfounded/Unsolved
   const buildMutualFields = (value: FormValues) => ({
     issuingOfficerIdentifier: isNonEADecision ? null : value.issuingOfficer,
-    dateServed: isNonEADecision || !value.dateServed ? null : format(value.dateServed, "yyyy-MM-dd"),
+    dateServed:
+      isNonEADecision || !value.dateServed ? null : formatDateObjectAsString(value.dateServed, { format: "date" }),
   });
 
   // Everything that follows a successful save
@@ -455,7 +455,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           const input: UpdateEnforcementActionInput = {
             enforcementActionIdentifier: enforcementAction!.enforcementActionIdentifier,
             enforcementActionCode: value.enforcementActionCode,
-            dateIssued: format(value.dateIssued, "yyyy-MM-dd"),
+            dateIssued: formatDateObjectAsString(value.dateIssued, { format: "date" }),
             appUserIdentifier: value.servingOfficer,
             ...buildMutualFields(value),
             ...buildTicketFields(value),
@@ -469,7 +469,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
             contraventionIdentifier: contravention?.contraventionIdentifier ?? "",
             partyIdentifier: party?.partyIdentifier,
             enforcementActionCode: value.enforcementActionCode,
-            dateIssued: format(value.dateIssued, "yyyy-MM-dd"),
+            dateIssued: formatDateObjectAsString(value.dateIssued, { format: "date" }),
             appUserIdentifier: value.servingOfficer,
             ...buildMutualFields(value),
             ...buildTicketFields(value),

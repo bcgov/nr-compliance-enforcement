@@ -38,7 +38,13 @@ contravention_legislation as (
       max(section_title) filter (where legislation_type_code = 'SEC'),
       max(section_title) filter (where legislation_type_code = 'SUBSEC')
     ) as section_title,
-    max(citation) filter (where legislation_type_code = 'SUBSEC') as subsection
+    -- an unnumbered subsection is shown as '1' in the frontend
+    max(coalesce(citation, '1')) filter (where legislation_type_code = 'SUBSEC') as subsection,
+    max(section_title) filter (where legislation_type_code = 'DEF') as definition,
+    max(citation) filter (where legislation_type_code = 'PAR') as paragraph,
+    max(citation) filter (where legislation_type_code = 'SUBPAR') as subparagraph,
+    max(citation) filter (where legislation_type_code = 'CL') as clause,
+    max(citation) filter (where legislation_type_code = 'SUBCL') as subclause
   from
     ancestors anc
     join shared.legislation_version lv on lv.legislation_version_guid = anc.legislation_version_guid
@@ -62,6 +68,11 @@ select
   cl.section as "Section",
   cl.section_title as "Section Title",
   cl.subsection as "Subsection",
+  cl.definition as "Definition",
+  cl.paragraph as "Paragraph",
+  cl.subparagraph as "Subparagraph",
+  cl.clause as "Clause",
+  cl.subclause as "Subclause",
   leg.full_citation as "Full Citation",
   case
     when cpx.investigation_party_guid is null then 'Unknown party'
@@ -73,10 +84,10 @@ select
     )
   end as "Party",
   eac.short_description as "Decision",
+  -- set date issued for Unfounded/Unsolved so the Decision Date Issued filter includes them
   case
     when ea.enforcement_action_code not in ('UNFD', 'UNSL') then ea.date_issued
   end as "Date Issued",
-  -- unblanked so the Decision Date Issued filter includes Unfounded/Unsolved
   ea.date_issued as "Decision Date Issued",
   iss.last_name || ', ' || iss.first_name as "Issuing Officer",
   ttc.short_description as "Ticket Type",
