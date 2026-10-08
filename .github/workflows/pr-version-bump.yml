@@ -32,6 +32,12 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           PR_DATA=$(gh api /repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
+          # fork PRs refused: head.ref is resolved against this repo, so a fork branch
+          # named main/release/* would get the bump pushed to our protected branch
+          if [ "$(echo "$PR_DATA" | jq -r .head.repo.full_name)" != "${{ github.repository }}" ]; then
+            echo "PR head is a fork, refusing to bump" >&2
+            exit 1
+          fi
           echo "ref=$(echo $PR_DATA | jq -r .head.ref)" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
