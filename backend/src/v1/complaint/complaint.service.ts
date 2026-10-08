@@ -2580,8 +2580,8 @@ export class ComplaintService {
           try {
             const appUser = await this._appUserService.findOne(item.app_user_guid_ref, token);
             if (appUser) {
-              lastName = appUser.lastName || "";
-              firstName = appUser.firstName || "";
+              lastName = appUser.last_name || "";
+              firstName = appUser.first_name || "";
             }
           } catch (error) {
             this.logger.error(`Failed to fetch app user ${item.app_user_guid_ref} for referral: ${error}`);

@@ -1522,15 +1522,13 @@ export class InvestigationPartyService {
       },
     });
 
-    if (input.businessIdentifiers) {
-      const identifierOps = this._buildInvestigationBusinessIdentifierOperations(
-        tx,
-        existingBusiness.businessGuid,
-        input.businessIdentifiers,
-        existingBusiness.businessIdentifiers ?? [],
-      );
-      await Promise.all(identifierOps);
-    }
+    const identifierOps = this._buildInvestigationBusinessIdentifierOperations(
+      tx,
+      existingBusiness.businessGuid,
+      input.businessIdentifiers ?? [],
+      existingBusiness.businessIdentifiers ?? [],
+    );
+    await Promise.all(identifierOps);
 
     if (input.contactPeople) {
       await this._mapBusinessContacts(

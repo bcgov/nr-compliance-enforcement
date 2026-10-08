@@ -36,6 +36,7 @@ interface DeleteAttachmentParams {
   subIdentifier: string | undefined;
   isComplaintAttachment: boolean;
   attachmentType: AttachmentEnum;
+  isSilent?: boolean;
 }
 
 interface BuildHeaderParams {
@@ -268,6 +269,7 @@ const deleteSingleAttachment = async ({
   subIdentifier,
   isComplaintAttachment,
   attachmentType,
+  isSilent = false,
 }: DeleteAttachmentParams) => {
   const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
@@ -287,7 +289,9 @@ const deleteSingleAttachment = async ({
       await patch<string>(dispatch, parameters);
     }
 
-    ToggleSuccess(`Attachment ${safeDecodeFilename(attachment.name)} has been removed`);
+    if (!isSilent) {
+      ToggleSuccess(`Attachment ${safeDecodeFilename(attachment.name)} has been removed`);
+    }
   }
 };
 
@@ -296,6 +300,7 @@ export const deleteAttachments =
     attachments: COMSObject[],
     identifier: string | null,
     attachmentType: AttachmentEnum,
+    isSilent: boolean = false,
     subIdentifier?: string,
   ): AppThunk =>
   async (dispatch) => {
@@ -312,6 +317,7 @@ export const deleteAttachments =
             subIdentifier,
             isComplaintAttachment,
             attachmentType,
+            isSilent,
           });
         } catch (error) {
           console.error(error);

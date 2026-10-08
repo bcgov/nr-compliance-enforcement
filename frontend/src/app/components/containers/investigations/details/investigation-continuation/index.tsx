@@ -11,13 +11,19 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid } from "@/app/store/reducers/app";
+import { appUserGuid, openModal } from "@/app/store/reducers/app";
 import { exportContinuationReport } from "@/app/store/reducers/documents-thunks";
 import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
+import Option from "@apptypes/app/option";
+import { CompSelect } from "@/app/components/common/comp-select";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { ADD_EDIT_ACTIVITY_NOTE } from "@/app/types/modal/modal-types";
+import { EditButton } from "@/app/components/common/comp-table-edit-column";
+import { ActivityNoteEnum } from "@/app/types/app/activity-note";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -26,14 +32,21 @@ const GET_REPORTS = gql`
       activityNoteCode
       investigationGuid
       contentJson
+      contentText
       actionedDate
       actionedTime
       reportedTimestamp
       actionedAppUserGuidRef
       reportedAppUserGuidRef
+      editedTimestamp
+      editedAppUserGuidRef
     }
   }
 `;
+
+const SORT_NEWEST_FIRST: Option = { value: "newest", label: "Newest to oldest" };
+const SORT_OLDEST_FIRST: Option = { value: "oldest", label: "Oldest to newest" };
+const SORT_OPTIONS: Option[] = [SORT_NEWEST_FIRST, SORT_OLDEST_FIRST];
 
 interface InvestigationContinuationProps {
   investigationData?: Investigation;
@@ -47,13 +60,15 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
   const reportedUserGuid = useAppSelector(appUserGuid);
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
   // States
-  const [activeKey, setActiveKey] = useState<string>("0");
+  const [collapsedDateKeys, setCollapsedDateKeys] = useState<string[]>([]);
   const [isValid, setIsValid] = useState(false);
   const [shouldReset, setShouldReset] = useState(false);
   const [showContinuationReportErrors, setShowContinuationReportErrors] = useState(false);
   const [continuationReport, setContinuationReport] = useState<Partial<ActivityNoteInput>>();
+  const [sortOption, setSortOption] = useState<Option>(SORT_NEWEST_FIRST);
 
   // GraphQL queries and mutations
   const { data, refetch } = useGraphQLQuery(GET_REPORTS, {
@@ -120,18 +135,69 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
 
   const reports = data?.getActivityNotes ?? [];
 
+  // Edit handler
+  const handleEditClick = (selectedReport: ActivityNote) => {
+    // Use the entry as returned by the query, without the display-only fields added during grouping
+    const activityNote = reports.find(
+      (report: ActivityNote) => report.activityNoteGuid === selectedReport.activityNoteGuid,
+    );
+    if (!activityNote) return;
+    dispatch(
+      openModal({
+        modalType: ADD_EDIT_ACTIVITY_NOTE,
+        modalSize: "lg",
+        data: {
+          investigationGuid,
+          activityNote,
+          activityNoteCode: "CONTREP",
+          defaultAssignedUserGuid: investigationData?.primaryInvestigatorGuid,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        callback: refetch,
+        hideCallback,
+      }),
+    );
+  };
+
   let groups: any;
   if (reports) {
     const grouped = reports?.reduce((acc: any, report: any) => {
       const actionedDateTime = parseUTCDateToLocal(report.actionedDate, report.actionedTime) ?? new Date();
       const dateKey = startOfDay(actionedDateTime).toISOString();
-      if (!acc[dateKey]) acc[dateKey] = { date: actionedDateTime, reports: [] };
+      if (!acc[dateKey]) acc[dateKey] = { dateKey, date: actionedDateTime, reports: [] };
       acc[dateKey].reports.push({ ...report, _actionedDateTime: actionedDateTime });
       return acc;
     }, {});
 
     groups = Object.values(grouped).sort((a: any, b: any) => b.date - a.date);
   }
+
+  // Oldest to newest is the exact reverse of the default order, for both the date groups and the entries within them
+  const isOldestFirst = sortOption.value === SORT_OLDEST_FIRST.value;
+  const sortedGroups = isOldestFirst
+    ? [...groups].reverse().map((group: any) => ({ ...group, reports: [...group.reports].reverse() }))
+    : groups;
+
+  // Dates are expanded unless the user has collapsed them, so a newly added date starts expanded
+  const expandedDateKeys: string[] = sortedGroups
+    .map((group: any) => group.dateKey)
+    .filter((dateKey: string) => !collapsedDateKeys.includes(dateKey));
+
+  // Accordion handler - records which dates the user has collapsed
+  const handleAccordionSelect = (openDateKeys: string | string[] | null | undefined) => {
+    const openKeys = Array.isArray(openDateKeys) ? openDateKeys : [];
+    setCollapsedDateKeys(
+      sortedGroups.map((group: any) => group.dateKey).filter((dateKey: string) => !openKeys.includes(dateKey)),
+    );
+  };
+
+  // Sort handler - changing the sort order expands every date
+  const handleSortChange = (value: Option | null) => {
+    const newSortOption = value ?? SORT_NEWEST_FIRST;
+    if (newSortOption.value === sortOption.value) return;
+    setSortOption(newSortOption);
+    setCollapsedDateKeys([]);
+  };
 
   return (
     <div className="comp-complaint-details">
@@ -186,21 +252,38 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
           </>
         )}
         <div className="space-y-4">
+          {reports.length > 0 && (
+            <div className="d-flex align-items-center gap-3 mt-3">
+              <div id="continuation-report-sort-label-id">Sort by</div>
+              <CompSelect
+                id="continuation-report-sort-select-id"
+                showInactive={false}
+                classNamePrefix="comp-select"
+                onChange={handleSortChange}
+                className="continuation-report-sort-select"
+                options={SORT_OPTIONS}
+                placeholder="Select"
+                enableValidation={false}
+                value={sortOption}
+                isClearable={false}
+              />
+            </div>
+          )}
           <div className="space-y-2 max-h-screen overflow-y-auto">
             {reports?.length === 0 ? (
               <p className="text-gray-500">There are no reports yet.</p>
             ) : (
               <div className="mt-4">
                 <Accordion
-                  defaultActiveKey={groups.map((_: any, index: number) => index.toString())}
-                  onSelect={(k) => setActiveKey(k as string)}
+                  activeKey={expandedDateKeys}
+                  onSelect={handleAccordionSelect}
                   alwaysOpen
                 >
                   {groups &&
                     groups.length > 0 &&
-                    groups.map((group: any, index: number) => {
-                      const eventKey = index.toString();
-                      const isOpen = activeKey.includes(eventKey);
+                    sortedGroups.map((group: any) => {
+                      const eventKey = group.dateKey;
+                      const isOpen = expandedDateKeys.includes(eventKey);
 
                       return (
                         <Accordion.Item
@@ -233,39 +316,50 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                 const reportedOfficer = officersInAgencyList.find(
                                   (officer) => officer.app_user_guid === report.reportedAppUserGuidRef,
                                 );
+                                const editedOfficer = officersInAgencyList.find(
+                                  (officer) => officer.app_user_guid === report.editedAppUserGuidRef,
+                                );
 
                                 return (
                                   <div
                                     key={report.activityNoteGuid}
                                     className={`mt-3 pl-0 ${idx === group.reports.length - 1 ? "mb-4" : "mb-2"}`}
                                   >
-                                    <div className="comp-profile-card-info">
-                                      <div
-                                        className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                                        data-initials-modal={
-                                          actionedOfficer
-                                            ? `${actionedOfficer?.last_name?.substring(0, 1)}${actionedOfficer?.first_name?.substring(0, 1)}`
-                                            : "U"
-                                        }
-                                      ></div>
-                                      <div>
-                                        <strong>
-                                          {actionedOfficer
-                                            ? `${actionedOfficer?.last_name}, ${actionedOfficer?.first_name}`
-                                            : "Unknown"}
-                                        </strong>
-                                      </div>
-                                      {report.actionedTime && (
+                                    <div className="d-flex justify-content-between align-items-center">
+                                      <div className="comp-profile-card-info">
+                                        <div
+                                          className="comp-avatar comp-avatar-sm comp-avatar-orange"
+                                          data-initials-modal={
+                                            actionedOfficer
+                                              ? `${actionedOfficer?.last_name?.substring(0, 1)}${actionedOfficer?.first_name?.substring(0, 1)}`
+                                              : "U"
+                                          }
+                                        ></div>
                                         <div>
-                                          <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                                          {formatDateObjectAsString(
-                                            parseUTCDateToLocal(report.actionedDate, report.actionedTime),
-                                            {
-                                              format: "time",
-                                            },
-                                          )}
+                                          <strong>
+                                            {actionedOfficer
+                                              ? `${actionedOfficer?.last_name}, ${actionedOfficer?.first_name}`
+                                              : "Unknown"}
+                                          </strong>
                                         </div>
-                                      )}
+                                        {report.actionedTime && (
+                                          <div>
+                                            <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
+                                            {formatDateObjectAsString(
+                                              parseUTCDateToLocal(report.actionedDate, report.actionedTime),
+                                              {
+                                                format: "time",
+                                              },
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <EditButton
+                                        title={`Edit ${ActivityNoteEnum.CONTREP.toLowerCase()}`}
+                                        ariaLabel={`Edit ${ActivityNoteEnum.CONTREP.toLowerCase()}`}
+                                        onClick={() => handleEditClick(report)}
+                                        disabled={isReadOnly}
+                                      />
                                     </div>
                                     <div className="prose prose-sm max-w-none">
                                       <RichTextRenderer
@@ -273,9 +367,14 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                         json={report.contentJson}
                                       />
                                     </div>
-                                    <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
-                                      {`• Recorded on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.reportedTimestamp), { format: "dateTime" })} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
+                                    <div className="text-muted small mb-0">
+                                      {`Recorded on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.reportedTimestamp), { format: "dateTime" })} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
                                     </div>
+                                    {report.editedTimestamp && (
+                                      <div className="text-muted small mb-0">
+                                        {`Last edited on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.editedTimestamp), { format: "dateTime" })} by ${editedOfficer?.last_name}, ${editedOfficer?.first_name} (${editedOfficer?.agency_code_ref})`}
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               })}

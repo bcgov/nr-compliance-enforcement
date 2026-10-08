@@ -24,8 +24,9 @@ interface UseInvestigationAttachmentsParams {
 }
 
 export interface InvestigationAttachmentsResult {
-  attachments: Attachment[];
+  pagedAttachments: Attachment[];
   filteredAttachments: Attachment[];
+  allAttachments: Attachment[];
   totalCount: number;
   isLoading: boolean;
   isError: boolean;
@@ -213,8 +214,9 @@ export const useInvestigationAttachments = (
   }, [query.data, tasks, officers, parties, search, taskFilter, fileTypeFilter, sortBy, sortOrder, page, pageSize]);
 
   return {
-    attachments: attachmentResults.items,
+    pagedAttachments: attachmentResults.items,
     filteredAttachments: attachmentResults.filtered,
+    allAttachments: query.data ?? [],
     totalCount: attachmentResults.totalCount,
     isLoading: query.isLoading,
     isError: query.isError,

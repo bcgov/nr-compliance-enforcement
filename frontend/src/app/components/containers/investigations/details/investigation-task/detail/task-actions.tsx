@@ -6,7 +6,7 @@ import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-note";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_EDIT_TASK_ACTION } from "@/app/types/modal/modal-types";
+import { ADD_EDIT_ACTIVITY_NOTE } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 import { EditButton } from "@components/common/comp-table-edit-column";
@@ -27,6 +27,7 @@ const TaskActionRow: FC<{
 }> = ({ taskAction, isReadOnly, onEdit }) => {
   const actionedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.actionedAppUserGuidRef ?? undefined));
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.reportedAppUserGuidRef ?? undefined));
+  const editedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.editedAppUserGuidRef ?? undefined));
 
   const localActioned = parseUTCDateToLocal(taskAction.actionedDate, taskAction.actionedTime);
   const actionedDateTimeStr = taskAction.actionedTime
@@ -41,6 +42,13 @@ const TaskActionRow: FC<{
   const reportedTimestampStr = formatDateObjectAsString(parseUTCTimestampToLocal(taskAction.reportedTimestamp), {
     format: "dateTime",
   });
+
+  const editedByStr = editedByUser
+    ? `${editedByUser.last_name}, ${editedByUser.first_name} (${editedByUser.agency_code?.shortDescription ?? editedByUser.agency_code_ref})`
+    : "Unknown";
+  const editedTimestampStr = taskAction.editedTimestamp
+    ? formatDateObjectAsString(parseUTCTimestampToLocal(taskAction.editedTimestamp), { format: "dateTime" })
+    : null;
 
   return (
     <tr>
@@ -60,6 +68,11 @@ const TaskActionRow: FC<{
         <div className="text-muted small mt-1 mb-0">
           Added on {reportedTimestampStr} by {addedOnStr}
         </div>
+        {editedTimestampStr && (
+          <div className="text-muted small mb-0">
+            Last edited on {editedTimestampStr} by {editedByStr}
+          </div>
+        )}
       </td>
       <td className="align-top text-end">
         <EditButton
@@ -97,13 +110,14 @@ export const TaskActions: FC<TaskActionsProps> = ({
     if (!taskIdentifier) return;
     dispatch(
       openModal({
-        modalType: ADD_EDIT_TASK_ACTION,
+        modalType: ADD_EDIT_ACTIVITY_NOTE,
         modalSize: "lg",
         data: {
           investigationGuid,
           taskIdentifier,
-          taskAction,
-          taskAssignedUserGuid,
+          activityNote: taskAction,
+          activityNoteCode: "TASKACT",
+          defaultAssignedUserGuid: taskAssignedUserGuid,
           onDirtyChange: handleChildDirtyChange,
         },
         callback: refetch,
@@ -116,13 +130,14 @@ export const TaskActions: FC<TaskActionsProps> = ({
     if (!taskIdentifier) return;
     dispatch(
       openModal({
-        modalType: ADD_EDIT_TASK_ACTION,
+        modalType: ADD_EDIT_ACTIVITY_NOTE,
         modalSize: "lg",
         data: {
           investigationGuid,
           taskIdentifier,
-          taskAction: null,
-          taskAssignedUserGuid,
+          activityNote: null,
+          activityNoteCode: "TASKACT",
+          defaultAssignedUserGuid: taskAssignedUserGuid,
           onDirtyChange: handleChildDirtyChange,
         },
         callback: refetch,

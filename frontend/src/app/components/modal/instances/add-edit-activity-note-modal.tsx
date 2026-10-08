@@ -1,5 +1,5 @@
 import { FC, useState, useCallback, useEffect } from "react";
-import { Alert, Modal, Button } from "react-bootstrap";
+import { Alert, Modal } from "react-bootstrap";
 import { ActivityNoteInput } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid, selectModalData } from "@/app/store/reducers/app";
@@ -7,15 +7,18 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { SAVE_ACTIVITY_NOTE, DELETE_ACTIVITY_NOTE, ActivityNoteEditor } from "@/app/components/common/activity-note";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { ActivityNoteEnum } from "@/app/types/app/activity-note";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
-type AddEditTaskActionModalProps = {
+type AddEditActivityNoteModalProps = {
   close: () => void;
   submit: () => void;
 };
 
-export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close, submit }) => {
+export const AddEditActivityNoteModal: FC<AddEditActivityNoteModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
-  const { investigationGuid, taskIdentifier, taskAction, taskAssignedUserGuid, onDirtyChange } = modalData ?? {};
+  const { investigationGuid, taskIdentifier, activityNote, activityNoteCode, defaultAssignedUserGuid, onDirtyChange } =
+    modalData ?? {};
   const currentUserGuid = useAppSelector(selectAppUserGuid);
 
   const [editValues, setEditValues] = useState<Partial<ActivityNoteInput>>({});
@@ -25,23 +28,25 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
 
   const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
+  const activityNoteLabel = ActivityNoteEnum[activityNoteCode as keyof typeof ActivityNoteEnum] ?? "";
+
   const saveMutation = useGraphQLMutation(SAVE_ACTIVITY_NOTE, {
     onSuccess: () => {
-      ToggleSuccess("Task action saved successfully");
+      ToggleSuccess(`${activityNoteLabel} saved successfully`);
       submit();
     },
     onError: () => {
-      ToggleError("Failed to save task action");
+      ToggleError(`Failed to save ${activityNoteLabel.toLowerCase()}`);
     },
   });
 
   const deleteMutation = useGraphQLMutation(DELETE_ACTIVITY_NOTE, {
     onSuccess: () => {
-      ToggleSuccess("Task action deleted successfully");
+      ToggleSuccess(`${activityNoteLabel} deleted successfully`);
       submit();
     },
     onError: () => {
-      ToggleError("Failed to delete task action");
+      ToggleError(`Failed to delete ${activityNoteLabel.toLowerCase()}`);
     },
   });
 
@@ -56,21 +61,26 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
   }, []);
 
   useEffect(() => {
-    setEditValues({});
     setShowErrors(false);
-  }, [taskAction?.activityNoteGuid]);
+  }, [activityNote?.activityNoteGuid]);
 
   const handleSave = async () => {
     setShowErrors(true);
-    if (!isValid || !taskIdentifier) return;
+
+    // A task action must belong to a task; other activity notes (e.g. continuation report entries) have no task
+    const isMissingTask = activityNoteCode === "TASKACT" && !taskIdentifier;
+    if (!isValid || isMissingTask) return;
+
     const input: ActivityNoteInput = {
       ...editValues,
       investigationGuid,
       taskGuid: taskIdentifier,
-      activityNoteCode: "TASKACT",
-      activityNoteGuid: taskAction?.activityNoteGuid ?? editValues.activityNoteGuid,
-      reportedAppUserGuidRef: currentUserGuid,
-      reportedTimestamp: taskAction?.reportedTimestamp ?? new Date(),
+      activityNoteCode,
+      activityNoteGuid: activityNote?.activityNoteGuid ?? editValues.activityNoteGuid,
+      // Keep the original reporter when editing; the editor is recorded in the edited fields below
+      reportedAppUserGuidRef: activityNote?.reportedAppUserGuidRef ?? currentUserGuid,
+      reportedTimestamp: activityNote?.reportedTimestamp ?? new Date(),
+      ...(activityNote ? { editedTimestamp: new Date(), editedAppUserGuidRef: currentUserGuid } : {}),
     };
     await saveMutation.mutateAsync({ input });
   };
@@ -86,8 +96,8 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
   };
 
   const handleConfirmDelete = async () => {
-    if (!taskAction?.activityNoteGuid) return;
-    await deleteMutation.mutateAsync({ activityNoteGuid: taskAction.activityNoteGuid });
+    if (!activityNote?.activityNoteGuid) return;
+    await deleteMutation.mutateAsync({ activityNoteGuid: activityNote.activityNoteGuid });
     setShowDeleteConfirm(false);
     setShowErrors(false);
     setEditValues({});
@@ -99,19 +109,21 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
         closeButton
         className="pb-0"
       >
-        <Modal.Title>{taskAction ? "Edit task action" : "Add task action"}</Modal.Title>
+        <Modal.Title>
+          {activityNote ? `Edit ${activityNoteLabel.toLowerCase()}` : `Add ${activityNoteLabel.toLowerCase()}`}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <ActivityNoteEditor
-          initialData={taskAction ?? undefined}
+          initialData={activityNote ?? undefined}
           onValuesChange={handleValuesChange}
           onValidationChange={handleValidationChange}
           onDirtyChange={(_index, dirty) => (dirty ? markDirty() : markClean())}
           showErrors={showErrors}
-          defaultAssignedUserGuid={taskAssignedUserGuid}
+          defaultAssignedUserGuid={defaultAssignedUserGuid}
         />
 
-        {taskAction && showDeleteConfirm && (
+        {activityNote && showDeleteConfirm && (
           <Alert
             variant="danger"
             className="comp-complaint-details-alert mt-3"
@@ -119,58 +131,25 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
             <div className="d-flex align-items-start gap-2">
               <i className="bi bi-info-circle mt-2" />
               <span>
-                <strong>Delete task action</strong>
-                <p className="mb-3">Are you sure you want to delete this task action? This action cannot be undone.</p>
+                <strong>Delete {activityNoteLabel.toLowerCase()}</strong>
+                <p className="mb-0">
+                  Are you sure you want to delete this {activityNoteLabel.toLowerCase()}? This action cannot be undone.
+                </p>
               </span>
-            </div>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleConfirmDelete}
-                disabled={isSaving}
-              >
-                <i className="bi bi-trash me-1" />
-                <span>Confirm Delete</span>
-              </Button>
             </div>
           </Alert>
         )}
       </Modal.Body>
       <Modal.Footer>
-        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
-          {taskAction && (
-            <Button
-              variant="outline-danger"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={isSaving || showDeleteConfirm}
-            >
-              <i className="bi bi-trash me-1" />
-              <span>Delete</span>
-            </Button>
-          )}
-          <div className="d-flex gap-2 ms-auto">
-            <Button
-              variant="outline-primary"
-              onClick={handleClose}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={isSaving || showDeleteConfirm}
-            >
-              {isSaving ? "Saving..." : "Save"}
-            </Button>
-          </div>
-        </div>
+        <ModalFooter
+          isEdit={activityNote}
+          showDeleteConfirm={showDeleteConfirm}
+          isSaving={isSaving}
+          onCancel={handleClose}
+          onSave={handleSave}
+          onDelete={() => setShowDeleteConfirm(true)}
+          onConfirmDelete={handleConfirmDelete}
+        />
       </Modal.Footer>
     </>
   );
