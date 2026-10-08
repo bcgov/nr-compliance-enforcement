@@ -7,7 +7,7 @@ INSERT INTO legislation_source (
 ) VALUES (
   '3ed53157-5680-4439-8a79-019f9f370393',
   'Firearm Violence Prevention Act',
-  'British Columbia Firearm Violence Prevention Act - [SBC 2021] Chapter 7',
+  'British Columbia Firearm Violence Prevention Act',
   'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/21007/xml',
   'COS',
   'BCLAWS',
@@ -29,7 +29,7 @@ INSERT INTO legislation_version (
   'https://www.bclaws.gov.bc.ca/civix/document/id/bills/billsprevious/1st42nd:gov04-3',
   '2021-03-25',
   CURRENT_TIMESTAMP,
-  'Imported 684 records from Firearm Violence Prevention Act',
+  'Imported by manual migration script',
   'system',
   CURRENT_TIMESTAMP,
   'system',
