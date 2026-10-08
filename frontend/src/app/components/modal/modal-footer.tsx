@@ -42,7 +42,7 @@ export const ModalFooter: FC<ModalFooterProps> = ({
   const showDelete = !isReadOnly && isEdit && currentStep >= deleteFromStep;
 
   return (
-    <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
+    <div className="comp-details-form-buttons w-100 d-flex justify-content-between  mt-0">
       <div className="d-flex gap-2">
         {showDelete && (
           <Button
@@ -83,7 +83,7 @@ export const ModalFooter: FC<ModalFooterProps> = ({
             disabled={isSaving}
           >
             <i className="bi bi-trash me-1" />
-            <span>Confirm Delete</span>
+            <span>Confirm delete</span>
           </Button>
         )}
         {!isReadOnly &&
