@@ -158,6 +158,8 @@
   column-gap: 1.5rem;
   margin-top: 0.5rem;
   font-size: 0.875rem;
+  background-color: #ebecec;
+  border-radius: 8px;
 }
 
 .comp-party-match-card {
@@ -167,10 +169,6 @@
 
   &.comp-party-match-card-pulse {
     animation: comp-party-match-card-pulse 1.5s ease-in-out;
-  }
-
-  &.comp-party-match-card-border-good {
-    border: 4px solid #efd056;
   }
 
   &.comp-party-match-card-border-strong {
@@ -231,11 +229,6 @@
   font-size: 20px;
   text-decoration: none;
   color: #1a1a1a !important;
-}
-
-.comp-party-match-rules {
-  background-color: #ebecec;
-  border-radius: 8px;
 }
 
 .comp-party-match-card-score-toggle {

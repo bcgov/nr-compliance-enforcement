@@ -11,7 +11,7 @@ import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
-import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
+import { isYoungPerson } from "@/app/common/methods";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 const MATCH_FIELD_LABELS: Record<string, string> = {
@@ -77,7 +77,6 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   const { person, business } = party;
   const isBusiness = party.partyTypeCode === PartyTypeCodes.ORGANIZATION;
 
-  const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [showMatchScore, setShowMatchScore] = useState(false);
 
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
@@ -162,7 +161,13 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
 
   return (
     <Card
-      className={`comp-party-match-card${scoreBorderClass ? ` ${scoreBorderClass}` : ""}${pulse ? " comp-party-match-card-pulse" : ""}`}
+      className={[
+        "comp-party-match-card",
+        scoreBorderClass,
+        pulse ? "comp-party-match-card-pulse" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <div className="d-flex justify-content-between align-items-center pt-2 px-3">
         <div className="w-100 border-bottom d-flex align-items-center gap-2 pb-2 justify-content-between">
@@ -176,13 +181,13 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
           </Link>
           {score >= STRONG_MATCH_MINIMUM ? (
             <Badge className="party-match-badge-strong">
-              <i className="bi bi-check-circle-fill"></i>
-              &nbsp; Strong match
+              <i className="bi bi-check-circle-fill" />
+              &nbsp;Strong match
             </Badge>
           ) : (
             score >= LIKELY_MATCH_MINIMUM && (
               <Badge className="party-match-badge-good">
-                <i className="bi bi-check-circle-fill"></i>
+                <i className="bi bi-check-circle-fill" />
                 &nbsp;Good match
               </Badge>
             )
