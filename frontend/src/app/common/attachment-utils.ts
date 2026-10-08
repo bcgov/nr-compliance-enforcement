@@ -139,6 +139,7 @@ interface PersistAttachmentsParams {
   extendedMeta?: Record<string, string>;
   onUploadProgress?: (progressEvent: AxiosProgressEvent) => void;
   throwOnError?: boolean;
+  isSilent?: boolean;
 }
 
 // Given a list of attachments to add/delete, call COMS to add/delete those attachments
@@ -155,10 +156,11 @@ export async function handlePersistAttachments({
   extendedMeta,
   onUploadProgress,
   throwOnError,
+  isSilent = false,
 }: PersistAttachmentsParams): Promise<void> {
   const tasks: Promise<unknown>[] = [];
   if (attachmentsToDelete) {
-    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType, subIdentifier)));
+    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType, isSilent, subIdentifier)));
   }
 
   if (attachmentsToAdd) {

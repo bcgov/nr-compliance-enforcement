@@ -1,8 +1,8 @@
 import { FC, useCallback, useState } from "react";
-import { Alert, Button, Modal } from "react-bootstrap";
+import { Alert, Modal } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
-import { StepModalFooter } from "@/app/components/modal/step-modal-footer";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 type MultiStepModalProps = {
   close: () => void;
@@ -95,38 +95,23 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
         {showDeleteConfirm && (
           <Alert
             variant="danger"
-            className="comp-complaint-details-alert mt-3"
+            className="comp-complaint-details-alert mt-3 mb-0"
           >
             <div className="d-flex align-items-start gap-2">
-              <i className="bi bi-info-circle mt-2" />
+              <i className="bi bi-info-circle" />
               <span>
                 <strong>Delete {deleteEntityLabel}</strong>
-                <p className="mb-3">
+                <p className="mb-0">
                   Are you sure you want to delete this {deleteEntityLabel}? This action cannot be undone.
                 </p>
               </span>
-            </div>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleDeleteConfirmed}
-              >
-                <i className="bi bi-trash me-1" />
-                <span>Confirm delete</span>
-              </Button>
             </div>
           </Alert>
         )}
       </Modal.Body>
 
       <Modal.Footer>
-        <StepModalFooter
+        <ModalFooter
           currentStep={currentStep}
           totalSteps={totalSteps}
           isEdit={!!isEdit}
@@ -138,6 +123,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
           onNext={handleNext}
           onSave={handleSave}
           onDelete={() => setShowDeleteConfirm(true)}
+          onConfirmDelete={handleDeleteConfirmed}
           nextButtonLabel={nextButtonLabel}
           hidePreviousButton={hidePreviousButton}
           isReadOnly={isReadOnly}

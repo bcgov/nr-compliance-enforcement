@@ -35,6 +35,8 @@ model activity_note {
   activity_note_code                                                      String             @db.VarChar(16)
   actioned_utc_date                                                       DateTime?          @db.Date
   actioned_utc_time                                                       DateTime?          @db.Time(6)
+  edited_utc_timestamp                                                    DateTime?          @db.Timestamp(6)
+  edited_app_user_guid_ref                                                String?            @db.Uuid
   activity_note_code_activity_note_activity_note_codeToactivity_note_code activity_note_code @relation("activity_note_activity_note_codeToactivity_note_code", fields: [activity_note_code], references: [activity_note_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_code")
   task                                                                    task?              @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_task")
   investigation                                                           investigation      @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")

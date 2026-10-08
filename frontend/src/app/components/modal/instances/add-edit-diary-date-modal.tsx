@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Alert, Modal, Button } from "react-bootstrap";
+import { Alert, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { parse } from "date-fns";
@@ -16,6 +16,7 @@ import {
   SAVE_DIARY_DATE,
   DELETE_DIARY_DATE,
 } from "@/app/components/containers/investigations/details/investigation-diary-dates";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 type AddEditDiaryDateModalProps = {
   close: () => void;
@@ -183,63 +184,28 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
         {isEditing && showDeleteConfirm && (
           <Alert
             variant="danger"
-            className="comp-complaint-details-alert mt-3"
+            className="comp-complaint-details-alert mt-3 mb-0"
           >
             <div className="d-flex align-items-start gap-2">
-              <i className="bi bi-info-circle mt-2" />
+              <i className="bi bi-info-circle" />
               <span>
                 <strong>Delete diary date</strong>
-                <p className="mb-3">Are you sure you want to delete this diary date? This action cannot be undone.</p>
+                <p className="mb-0">Are you sure you want to delete this diary date? This action cannot be undone.</p>
               </span>
-            </div>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleConfirmDelete}
-                disabled={isSaving}
-              >
-                <i className="bi bi-trash me-1" />
-                <span>Confirm Delete</span>
-              </Button>
             </div>
           </Alert>
         )}
       </Modal.Body>
       <Modal.Footer>
-        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
-          {isEditing && (
-            <Button
-              variant="outline-danger"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={isSaving || showDeleteConfirm}
-            >
-              <i className="bi bi-trash me-1" />
-              <span>Delete</span>
-            </Button>
-          )}
-          <div className="d-flex gap-2 ms-auto">
-            <Button
-              variant="outline-primary"
-              onClick={handleClose}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={isSaving || showDeleteConfirm}
-            >
-              {isSaving ? "Saving..." : "Save"}
-            </Button>
-          </div>
-        </div>
+        <ModalFooter
+          isEdit={isEditing}
+          showDeleteConfirm={showDeleteConfirm}
+          isSaving={isSaving}
+          onCancel={handleClose}
+          onSave={handleSave}
+          onDelete={() => setShowDeleteConfirm(true)}
+          onConfirmDelete={handleConfirmDelete}
+        />
       </Modal.Footer>
     </>
   );

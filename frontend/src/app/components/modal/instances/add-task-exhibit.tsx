@@ -1,7 +1,7 @@
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
 import { FC, useEffect, useMemo, useState } from "react";
-import { Alert, Button, Col, Modal, Row } from "react-bootstrap";
+import { Alert, Col, Modal, Row } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
@@ -22,6 +22,7 @@ import {
 import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { ModalFooter } from "@/app/components/modal/modal-footer";
 
 type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
 
@@ -258,6 +259,14 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
 
   const handleSubmit = async () => {
     await form.handleSubmit();
+  };
+
+  const handleClose = () => {
+    if (showDeleteConfirm) {
+      setShowDeleteConfirm(false);
+      return;
+    }
+    close();
   };
 
   const handleIntakeDateTimeChange = (date: Date | null, time: string | null) => {
@@ -578,68 +587,32 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
         {showDeleteConfirm && (
           <Alert
             variant="danger"
-            className="comp-complaint-details-alert mt-3"
+            className="comp-complaint-details-alert mt-3 mb-0"
             id="exhibit-delete-confirm-alert"
           >
             <div className="d-flex align-items-start gap-2">
-              <i className="bi bi-info-circle mt-2" />
+              <i className="bi bi-info-circle" />
               <span>
                 <strong>Delete exhibit</strong>
-                <p className="mb-3">
+                <p className="mb-0">
                   Are you sure you want to delete exhibit #{exhibit?.exhibitDisplayNumber}? This action cannot be
                   undone.
                 </p>
               </span>
-            </div>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                variant="outline-primary"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleSubmit}
-              >
-                <i className="bi bi-trash me-1" />
-                <span>Confirm delete</span>
-              </Button>
             </div>
           </Alert>
         )}
       </Modal.Body>
 
       <Modal.Footer>
-        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
-          {/* Delete button — only shown when editing an existing exhibit */}
-          {exhibit && (
-            <Button
-              variant="outline-danger"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={showDeleteConfirm}
-            >
-              <i className="bi bi-trash me-1" />
-              <span>Delete</span>
-            </Button>
-          )}
-          <div className="d-flex gap-2 ms-auto">
-            <Button
-              variant="outline-primary"
-              onClick={close}
-              disabled={showDeleteConfirm}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              disabled={showDeleteConfirm}
-            >
-              <span>Save and close</span>
-            </Button>
-          </div>
-        </div>
+        <ModalFooter
+          isEdit={exhibit?.exhibitNumber != null}
+          showDeleteConfirm={showDeleteConfirm}
+          onCancel={handleClose}
+          onSave={handleSubmit}
+          onDelete={() => setShowDeleteConfirm(true)}
+          onConfirmDelete={handleSubmit}
+        />
       </Modal.Footer>
     </>
   );
