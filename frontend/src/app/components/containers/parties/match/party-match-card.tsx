@@ -53,9 +53,9 @@ const MATCH_FIELD_LABELS: Record<string, string> = {
   "firstName+lastName+dateOfBirth": "Name and date of birth bonus",
 };
 
-const STRONG_MATCH_MINIMUM = 200;
+const STRONG_MATCH_MINIMUM = 850;
 // An exact name pair with its bonus is 200, so this needs at least one corroborating field
-const LIKELY_MATCH_MINIMUM = 100;
+const LIKELY_MATCH_MINIMUM = 200;
 
 type PartyMatchCardProps = {
   party: Party;
