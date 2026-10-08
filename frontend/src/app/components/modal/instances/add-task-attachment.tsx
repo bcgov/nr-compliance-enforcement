@@ -675,11 +675,11 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         {showDeleteConfirm && (
           <Alert
             variant="danger"
-            className="comp-complaint-details-alert mt-3"
+            className="comp-complaint-details-alert mt-3 mb-0"
             id={`attachment-delete-confirm-alert`}
           >
             <div className="d-flex align-items-start gap-2">
-              <i className="bi bi-info-circle mt-2" />
+              <i className="bi bi-info-circle" />
               <span>
                 <strong> Delete attachment</strong>
                 <p className="mb-0">

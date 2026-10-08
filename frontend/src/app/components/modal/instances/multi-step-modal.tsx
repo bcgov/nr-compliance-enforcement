@@ -95,10 +95,10 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
         {showDeleteConfirm && (
           <Alert
             variant="danger"
-            className="comp-complaint-details-alert mt-3"
+            className="comp-complaint-details-alert mt-3 mb-0"
           >
             <div className="d-flex align-items-start gap-2">
-              <i className="bi bi-info-circle mt-2" />
+              <i className="bi bi-info-circle" />
               <span>
                 <strong>Delete {deleteEntityLabel}</strong>
                 <p className="mb-0">
