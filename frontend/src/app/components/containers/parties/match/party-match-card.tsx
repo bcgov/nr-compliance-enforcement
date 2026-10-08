@@ -55,7 +55,7 @@ const MATCH_FIELD_LABELS: Record<string, string> = {
 
 const STRONG_MATCH_MINIMUM = 850;
 // An exact name pair with its bonus is 200, so this needs at least one corroborating field
-const LIKELY_MATCH_MINIMUM = 200;
+const LIKELY_MATCH_MINIMUM = 250;
 
 type PartyMatchCardProps = {
   party: Party;
