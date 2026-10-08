@@ -119,6 +119,7 @@ export const GET_INVESTIGATION = gql`
         business {
           __typename
           businessGuid
+          businessReference
           name
           safetyConcernIndicator
           safetyConcernReason

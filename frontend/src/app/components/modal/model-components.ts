@@ -19,7 +19,7 @@ import {
   CANCEL_CONFIRM_FILE_UPDATE,
   ADD_EDIT_TASK_ATTACHMENT,
   ADD_EDIT_DIARY_DATE,
-  ADD_EDIT_TASK_ACTION,
+  ADD_EDIT_ACTIVITY_NOTE,
   MULTI_STEP_MODAL,
   ADD_EDIT_TASK_EXHIBIT,
   RELINK_IDIR,
@@ -47,7 +47,7 @@ import { AddEditPartyModal } from "@/app/components/modal/instances/add-party";
 import { CancelConfirmFileUpdateModal } from "./instances/cancel-confirm-file-update-modal";
 import { AddEditTaskAttachmentModal } from "@/app/components/modal/instances/add-task-attachment";
 import { AddEditDiaryDateModal } from "@/app/components/modal/instances/add-edit-diary-date-modal";
-import { AddEditTaskActionModal } from "@/app/components/modal/instances/add-edit-task-action-modal";
+import { AddEditActivityNoteModal } from "@/app/components/modal/instances/add-edit-activity-note-modal";
 import { MultiStepModal } from "@/app/components/modal/instances/multi-step-modal";
 import { AddEditTaskExhibitModal } from "@/app/components/modal/instances/add-task-exhibit";
 import RelinkIdirModal from "@/app/components/modal/instances/relink-idir-modal";
@@ -73,7 +73,7 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [CANCEL_CONFIRM_FILE_UPDATE]: CancelConfirmFileUpdateModal,
   [ADD_EDIT_TASK_ATTACHMENT]: AddEditTaskAttachmentModal,
   [ADD_EDIT_DIARY_DATE]: AddEditDiaryDateModal,
-  [ADD_EDIT_TASK_ACTION]: AddEditTaskActionModal,
+  [ADD_EDIT_ACTIVITY_NOTE]: AddEditActivityNoteModal,
   [MULTI_STEP_MODAL]: MultiStepModal,
   [ADD_EDIT_TASK_EXHIBIT]: AddEditTaskExhibitModal,
   [RELINK_IDIR]: RelinkIdirModal,

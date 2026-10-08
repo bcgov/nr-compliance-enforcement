@@ -52,6 +52,12 @@ export class activity_note {
   @ApiPropertyOptional({ type: Date })
   actioned_utc_time?: Date;
 
+  @ApiPropertyOptional({ type: Date })
+  edited_utc_timestamp?: Date;
+
+  @ApiPropertyOptional({ type: String })
+  edited_app_user_guid_ref?: string;
+
   @ApiProperty({ type: () => activity_note_code })
   activity_note_code_activity_note_activity_note_codeToactivity_note_code: activity_note_code;
 

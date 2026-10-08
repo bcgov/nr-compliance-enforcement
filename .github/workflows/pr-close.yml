@@ -36,7 +36,6 @@ jobs:
           repository: ${{ env.GITOPS_REPO }}
           token: ${{ steps.gitops-token.outputs.token }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
-          fetch-depth: 0
 
       - name: Calculate Deployment Number
         id: get-deployment-number
@@ -61,45 +60,35 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Include new infrastructure changes on merge
-        # in addition to new infra changes, we also update the base image tag
-        # so that our next test release will use the tag from this PR
+      - name: Tag base with merged PR
+        # The next test release uses this PR's build. Tagging base here instead of
+        # promoting out of the PR means 10+ open PRs since the last release can't
+        # promote an invalid build number.
         #
-        # why do this instead of promoting the tag out of the PR? In the event we have 10+
-        # PRs open after the last release merge, we could promote an invalid build #
-        #
-        # We only update the base if NO developer custom changes exist on the branch
-        # this way we dont accidently include partial / incomplete work into main
-        # those changes should be manually merged via PR in the gitops repo
+        # Infra changes made on the dev branch reach base through a reviewed PR in the
+        # gitops repo, never automatically.
         #
         # Scoped to PRs targeting main: hotfix PRs against release/** must NOT shift
         # the dev/test base — they're shaping prod, not the next test release.
         if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' }}
         run: |
-          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-          PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
-
-          if ! ./.github/scripts/gitops.sh detectchanges "dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP"; then
-            VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-            OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-            ./.github/scripts/gitops.sh updatebase dev-$DEPLOYMENT_NUMBER dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
-          else
-            echo "Developer Infrastructure changes detected! Skipping base update..."
-          fi
-
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh tag base ${{ github.event.number }} ${{ github.event.pull_request.head.sha }}
 
-      - name: Disable dev environment
+      - name: Release dev environment
+        # Points the slot's argoapp back at main, which tears the env down and frees the
+        # slot. Only swaps if this PR's branch still holds it. Runs even if tagging failed,
+        # so a closed PR can never leave its slot held.
+        if: ${{ !cancelled() }}
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh disable dev-$DEPLOYMENT_NUMBER
+          PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
+          ./.github/scripts/gitops.sh unreserve dev-$DEPLOYMENT_NUMBER dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
 
       - name: Commit and push update
+        if: ${{ !cancelled() }}
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-          ./.github/scripts/gitops.sh commitall "Disabling dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
+          ./.github/scripts/gitops.sh commitall "Releasing dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
           git push origin ${{ env.GITOPS_REPO_BRANCH }}
