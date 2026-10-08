@@ -36,7 +36,6 @@ jobs:
           repository: ${{ env.GITOPS_REPO }}
           token: ${{ steps.gitops-token.outputs.token }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
-          fetch-depth: 0
 
       - name: Calculate Deployment Number
         id: get-deployment-number
@@ -61,37 +60,20 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Include new infrastructure changes on merge
-        # base image tag is set by merge-main, not here (the two raced on merge)
-        #
-        # We only update the base if NO developer custom changes exist on the branch
-        # this way we dont accidently include partial / incomplete work into main
-        # those changes should be manually merged via PR in the gitops repo
-        #
-        # Scoped to PRs targeting main: hotfix PRs against release/** must NOT shift
-        # the dev/test base — they're shaping prod, not the next test release.
-        if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' }}
+      # base image tag is set by merge-main, not here: both fire on merge and raced,
+      # so candidate could read the previous PR's tag and no-op
+      - name: Release dev environment
+        # Points the slot's argoapp back at main, which tears the env down and frees the
+        # slot. Only swaps if this PR's branch still holds it.
+        if: ${{ !cancelled() }}
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
           PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
-
-          if ! ./.github/scripts/gitops.sh detectchanges "dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP"; then
-            VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-            OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-            ./.github/scripts/gitops.sh updatebase dev-$DEPLOYMENT_NUMBER dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
-          else
-            echo "Developer Infrastructure changes detected! Skipping base update..."
-          fi
-
-      - name: Disable dev environment
-        run: |
-          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh disable dev-$DEPLOYMENT_NUMBER
+          ./.github/scripts/gitops.sh unreserve dev-$DEPLOYMENT_NUMBER dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
 
       - name: Commit and push update
+        if: ${{ !cancelled() }}
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-          ./.github/scripts/gitops.sh commitall "Disabling dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
+          ./.github/scripts/gitops.sh commitall "Releasing dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
           git push origin ${{ env.GITOPS_REPO_BRANCH }}

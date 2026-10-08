@@ -11,6 +11,8 @@ type ActivityNote {
   reportedTimestamp: DateTime
   actionedAppUserGuidRef: String
   reportedAppUserGuidRef: String
+  editedTimestamp: DateTime
+  editedAppUserGuidRef: String
 }
 
 input ActivityNoteInput {
@@ -25,4 +27,6 @@ input ActivityNoteInput {
   reportedTimestamp: DateTime
   actionedAppUserGuidRef: String
   reportedAppUserGuidRef: String
+  editedTimestamp: DateTime
+  editedAppUserGuidRef: String
 }

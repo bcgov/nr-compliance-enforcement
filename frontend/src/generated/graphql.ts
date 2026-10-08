@@ -30,6 +30,8 @@ export type ActivityNote = {
   activityNoteGuid?: Maybe<Scalars['String']['output']>;
   contentJson?: Maybe<Scalars['String']['output']>;
   contentText?: Maybe<Scalars['String']['output']>;
+  editedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
+  editedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   reportedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
   reportedTimestamp?: Maybe<Scalars['DateTime']['output']>;
@@ -43,6 +45,8 @@ export type ActivityNoteInput = {
   activityNoteGuid?: InputMaybe<Scalars['String']['input']>;
   contentJson?: InputMaybe<Scalars['String']['input']>;
   contentText?: InputMaybe<Scalars['String']['input']>;
+  editedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
+  editedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
   reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
   reportedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1110,7 +1114,6 @@ export type EnforcementAction = {
   issuingOfficerIdentifier?: Maybe<Scalars['String']['output']>;
   orderStatusCode?: Maybe<Scalars['String']['output']>;
   orderTypeCode?: Maybe<Scalars['String']['output']>;
-  publishedPartyReference?: Maybe<Scalars['String']['output']>;
   remediationRequired?: Maybe<Scalars['Boolean']['output']>;
   sanctionStatusCode?: Maybe<Scalars['String']['output']>;
   sanctionTypeCode?: Maybe<Scalars['String']['output']>;
