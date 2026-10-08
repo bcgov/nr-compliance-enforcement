@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GITOPS_REPO_BRANCH: CE-2645 # TESTING ONLY: revert to main before merge
+  GITOPS_REPO_BRANCH: main
   GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
   GITOPS_REPO_VALUES_PATH: ./charts/apps/natsuite/values
   GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
