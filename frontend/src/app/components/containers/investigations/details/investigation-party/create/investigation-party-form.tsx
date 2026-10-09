@@ -855,77 +855,42 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                     onScroll={updateMatchScroll}
                     style={matchPaneStyle && { maxHeight: matchPaneStyle.maxHeight }}
                   >
-                    <div>
-                      <Alert
-                        className="comp-complaint-details-alert"
-                        variant="info"
-                      >
-                        <div className="d-flex align-items-center">
-                          {matchFetching ? (
-                            <>
-                              <Spinner
-                                animation="border"
-                                size="sm"
-                                className="me-3"
-                              />
-                              <span>Looking for matching published profiles...</span>
-                            </>
-                          ) : (
-                            <>
-                              <i className="bi bi-info-circle-fill me-3"></i>
-                              <span>
-                                {matches.length
-                                  ? "Potentially matching published profiles found."
-                                  : "No matching published profiles found."}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                        <Button
-                          variant="link"
-                          className="d-block p-0"
-                          aria-expanded={showMatchRules}
-                          onClick={() => setShowMatchRules((show) => !show)}
-                        >
-                          <i className={`bi bi-chevron-${showMatchRules ? "down" : "right"} me-1`} />
-                          <span>See matching rules</span>
-                        </Button>
-                        {showMatchRules && (
-                          <div className="comp-party-match-rules">
-                            <span>Identifier (licence, business number, WorkSafeBC, contact phone/email)</span>
-                            <span>1000</span>
-                            <span>Name, date of birth, phone, email, address, city</span>
-                            <span>50</span>
-                            <span>Descriptor (sex, age range, height, hair...)</span>
-                            <span>10</span>
-                            <span>Similar (typo, sound-alike, short form, close birthdate)</span>
-                            <span>&times; 0.5</span>
-                            <span>Cross-field (alias, first as middle, similar legal name)</span>
-                            <span>&times; 0.25</span>
-                            <span>First + last name bonus</span>
-                            <span>+100</span>
-                            <span>Name + date of birth bonus</span>
-                            <span>+850</span>
-                            <span>Shown / likely match / strong match</span>
-                            <span>&ge; 50 / 250 / 850</span>
-                          </div>
-                        )}
-                      </Alert>
-                      <div
-                        className={`comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""}`}
-                      >
-                        {matches.map((match) => (
-                          <PartyMatchCard
-                            key={match.party.partyIdentifier}
-                            party={match.party}
-                            score={match.score}
-                            matchedFields={match.matchedFields}
-                            onAdd={handleAddMatch}
-                            isDisabled={isDisabled}
-                            pulse={pulseGuids.has(match.party.partyIdentifier ?? "")}
-                          />
-                        ))}
+                    <h3 className="mb-1">Search results</h3>
+
+                    {matchFetching && (
+                      <div className="d-flex align-items-center">
+                        <Spinner
+                          animation="border"
+                          size="sm"
+                          className="me-3"
+                        />
+                        <span>Looking for matching published profiles...</span>
                       </div>
+                    )}
+
+                    {!matchFetching && (
+                      <p>
+                        {matches.length === 0
+                          ? "No matching published profiles found."
+                          : "Potentially matching published profiles found."}
+                      </p>
+                    )}
+
+                    {/* Matching profile cards */}
+                    <div
+                      className={`comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""} mb-3`}
+                    >
+                      {matches.map((match) => (
+                        <PartyMatchCard
+                          key={match.party.partyIdentifier}
+                          party={match.party}
+                          score={match.score}
+                          matchedFields={match.matchedFields}
+                          onAdd={handleAddMatch}
+                          isDisabled={isDisabled}
+                          pulse={pulseGuids.has(match.party.partyIdentifier ?? "")}
+                        />
+                      ))}
                     </div>
                   </div>
                   {matchScroll.up && (
@@ -953,6 +918,56 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                       <span>More profiles</span>
                     </Button>
                   )}
+
+                  <div>
+                    <div className="comp-party-match-rules p-2 d-flex flex-column flex-start align-items-start">
+                      <Button
+                        variant="link"
+                        className="d-block p-0 comp-party-match-rules-title"
+                        aria-expanded={showMatchRules}
+                        onClick={() => setShowMatchRules((show) => !show)}
+                      >
+                        <span>How scoring works</span>&nbsp;&nbsp;
+                        <i className={`bi bi-chevron-${showMatchRules ? "up" : "down"} me-1`} />
+                      </Button>
+                      {showMatchRules && (
+                        <div className="d-flex flex-column gap-3">
+                          <div
+                            className="mt-2"
+                            style={{ borderTop: "1px solid #c7c7c7" }}
+                          >
+                            <div className="mt-2">
+                              <span>
+                                Identifier (licence, business number, WorkSafeBC, contact phone/email){" "}
+                                <strong> = 1000</strong>
+                              </span>
+                            </div>
+                          </div>
+                          <span>
+                            Name, date of birth, phone, email, address, city <strong> = 50 </strong>
+                          </span>
+                          <span>
+                            Descriptor (sex, age range, height, hair...) <strong> = 10</strong>
+                          </span>
+                          <span>
+                            Similar (typo, sound-alike, short form, close birthdate) <strong> x 0.5</strong>
+                          </span>
+                          <span>
+                            Cross-field (alias, first as middle, similar legal name)<strong> x 0.25</strong>
+                          </span>
+                          <span>
+                            First + last name bonus <strong> + 100</strong>
+                          </span>
+                          <span>
+                            Name + date of birth bonus <strong> + 850</strong>
+                          </span>
+                          <span>
+                            Shown / likely match / strong match <strong> &ge; 50 / 250 / 850</strong>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </>
               )}
             </div>

@@ -11,8 +11,9 @@ import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
-import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
+import { isYoungPerson } from "@/app/common/methods";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { CompBadge } from "@/app/common/comp-badge";
 
 const MATCH_FIELD_LABELS: Record<string, string> = {
   driversLicenseNumber: "Driver's licence",
@@ -77,7 +78,6 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   const { person, business } = party;
   const isBusiness = party.partyTypeCode === PartyTypeCodes.ORGANIZATION;
 
-  const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [showMatchScore, setShowMatchScore] = useState(false);
 
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
@@ -125,7 +125,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   const dob = parseUTCDateToLocal(person?.dateOfBirth);
   const getAge = (): string => {
     if (dob) {
-      return `${calculateAgeYears(dob)} (${formatDateObjectAsString(dob, { format: "date" })})`;
+      return `${formatDateObjectAsString(dob, { format: "date" })}`;
     }
     if (person?.approximateAgeCode) {
       return (
@@ -148,6 +148,8 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   const matchedFieldNames = new Set(matchedFields.map((matchedField) => matchedField.field));
   const anyMatched = (...fields: string[]) => fields.some((field) => matchedFieldNames.has(field));
 
+  const scoreBorderClass = score >= STRONG_MATCH_MINIMUM ? "comp-party-match-card-border-strong" : "";
+
   const detailRow = (label: string, value: ReactNode, matched = false) => (
     <div className="row mb-1">
       <div className="col-5 text-muted">{label}</div>
@@ -159,10 +161,13 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   );
 
   return (
-    <Card className={`comp-party-match-card${pulse ? " comp-party-match-card-pulse" : ""}`}>
+    <Card
+      className={["comp-party-match-card", scoreBorderClass, pulse ? "comp-party-match-card-pulse" : ""]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <div className="d-flex justify-content-between align-items-center pt-2 px-3">
-        <div className="w-100 border-bottom d-flex align-items-center gap-2 pb-2">
-          <i className={`bi ${isBusiness ? "bi-building" : "bi-person"} text-muted fs-6`} />
+        <div className="w-100 border-bottom d-flex align-items-center gap-2 pb-2 justify-content-between">
           <Link
             to={`/party/${party.partyIdentifier}`}
             target="_blank"
@@ -171,54 +176,66 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
           >
             {name}
           </Link>
-          {(isBusiness ? anyMatched("businessName") : anyMatched("firstName", "lastName", "middleNames")) && (
-            <i className="bi bi-circle-fill text-success comp-party-match-card-matched-dot" />
-          )}
           {score >= STRONG_MATCH_MINIMUM ? (
-            <Badge bg="success">Strong match</Badge>
+            <CompBadge
+              id="strong-match"
+              label="Strong match"
+              variantClassName="comp-badge-green"
+              iconClassName="bi bi-check-circle-fill"
+            />
           ) : (
-            score >= LIKELY_MATCH_MINIMUM && <Badge bg="info text-dark">Likely match</Badge>
+            score >= LIKELY_MATCH_MINIMUM && (
+              <CompBadge
+                id="good-match"
+                label="Good match"
+                variantClassName="comp-badge-yellow"
+                iconClassName="bi bi-check-circle-fill"
+              />
+            )
           )}
         </div>
       </div>
       <Card.Body className="py-2 px-3">
-        {isBusiness ? (
-          <>
-            {detailRow("Doing business as", aliases, anyMatched("alias"))}
-            {detailRow("Business number", businessNumber, anyMatched("businessNumber"))}
-            {detailRow("Primary phone", phone, anyMatched("phone"))}
-            {detailRow("Primary address", address, anyMatched("addressLine", "city", "province", "country"))}
-            {showMoreInfo && detailRow("Email", email, anyMatched("email"))}
-          </>
-        ) : (
-          <>
-            {detailRow("Sex as per ID", person?.sexCode ?? "-", anyMatched("sexCode"))}
-            {detailRow("Age", ageDisplay, anyMatched("dateOfBirth", "approximateAgeCode"))}
-            {detailRow("Phone number", phone, anyMatched("phone"))}
-            {detailRow("Address", address, anyMatched("addressLine", "city", "postalCode", "province", "country"))}
-            {showMoreInfo && (
-              <>
-                {detailRow(
-                  "Driver's licence",
-                  person?.driversLicenseNumber?.trim() || "-",
-                  anyMatched("driversLicenseNumber"),
-                )}
-                {detailRow("Aliases", aliases, anyMatched("alias"))}
-                {detailRow("Email", email, anyMatched("email"))}
-              </>
-            )}
-          </>
-        )}
-        <div className="comp-party-match-card-actions">
+        <div className="border-bottom">
+          {isBusiness ? (
+            <div>
+              {detailRow("Doing business as", aliases, anyMatched("alias"))}
+              {detailRow("Business number", businessNumber, anyMatched("businessNumber"))}
+              {detailRow("Primary phone", phone, anyMatched("phone"))}
+              {detailRow("Primary address", address, anyMatched("addressLine", "city", "province", "country"))}
+              {detailRow("Email", email, anyMatched("email"))}
+            </div>
+          ) : (
+            <div>
+              {detailRow("Aliases", aliases, anyMatched("alias"))}
+              {detailRow("Sex as per ID", person?.sexCode ?? "-", anyMatched("sexCode"))}
+              {detailRow(
+                person?.approximateAgeCode ? "Age" : "Date of birth",
+                ageDisplay,
+                anyMatched("dateOfBirth", "approximateAgeCode"),
+              )}
+              {detailRow(
+                "Driver's licence",
+                person?.driversLicenseNumber?.trim() || "-",
+                anyMatched("driversLicenseNumber"),
+              )}
+              {detailRow("Primary", phone, anyMatched("phone"))}
+              {detailRow("Email", email, anyMatched("email"))}
+              {detailRow("Address", address, anyMatched("addressLine", "city", "postalCode", "province", "country"))}
+            </div>
+          )}
           <Button
-            variant="link"
-            className="comp-party-match-card-score-toggle p-0"
-            aria-expanded={showMoreInfo}
-            onClick={() => setShowMoreInfo((show) => !show)}
+            variant="primary"
+            size="sm"
+            className="ms-auto my-3"
+            onClick={() => onAdd(party)}
+            disabled={isDisabled}
           >
-            <i className={`bi bi-chevron-${showMoreInfo ? "down" : "right"} me-1`} />
-            <span>{showMoreInfo ? "Show less info" : "Show more info"}</span>
+            <i className="bi bi-plus-circle" />
+            <span>Select profile</span>
           </Button>
+        </div>
+        <div className="comp-party-match-card-actions">
           {matchedFields.length > 0 && (
             <Button
               variant="link"
@@ -226,20 +243,10 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
               aria-expanded={showMatchScore}
               onClick={() => setShowMatchScore((show) => !show)}
             >
-              <i className={`bi bi-chevron-${showMatchScore ? "down" : "right"} me-1`} />
-              <span>Why did this match?</span>
+              <span>Why did this match?</span>&nbsp;
+              <i className={`bi bi-chevron-${showMatchScore ? "up" : "down"} me-1`} />
             </Button>
           )}
-          <Button
-            variant="primary"
-            size="sm"
-            className="ms-auto mt-3"
-            onClick={() => onAdd(party)}
-            disabled={isDisabled}
-          >
-            <i className="bi bi-plus-circle" />
-            <span>Select profile</span>
-          </Button>
         </div>
         {matchedFields.length > 0 && showMatchScore && (
           <div className="comp-party-match-card-score-table comp-party-match-card-body-line">
