@@ -405,8 +405,6 @@ export const LegislationSourceManagement: FC = () => {
               <LegislationVersionHistory
                 legislationSourceGuid={source.legislationSourceGuid}
                 agencyCode={source.agencyCode}
-                animalInformationDisplayType={source.animalInformationDisplayType}
-                acronym={source.acronym}
               />
             )}
             isLoading={isLoading}
@@ -583,7 +581,6 @@ export const LegislationSourceManagement: FC = () => {
                   showInactive={false}
                   enableValidation={false}
                   isClearable={false}
-                  isDisabled={hasImportedVersion}
                 />
               </div>
             </div>
