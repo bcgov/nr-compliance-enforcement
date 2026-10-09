@@ -62,7 +62,7 @@ const sourceTypeOptions: Option[] = [
 
 type SourceActionsProps = {
   source: LegislationSource;
-  onEdit: (source: LegislationSource) => void;
+  onEdit: (source: LegislationSource, hasImportedVersion: boolean) => void;
   onDelete: (legislationSourceGuid: string) => void;
 };
 
@@ -88,15 +88,7 @@ const LegislationSourceActions: FC<SourceActionsProps> = ({ source, onEdit, onDe
           modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
         }}
       >
-        <Dropdown.Item
-          onClick={() => {
-            if (hasImportedVersion) {
-              ToggleError("Sources with imported legislation cannot be edited.");
-              return;
-            }
-            onEdit(source);
-          }}
-        >
+        <Dropdown.Item onClick={() => onEdit(source, hasImportedVersion)}>
           <i className="bi bi-pencil" /> Edit
         </Dropdown.Item>
         <Dropdown.Item
@@ -117,6 +109,7 @@ export const LegislationSourceManagement: FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingSource, setEditingSource] = useState<EditingSource>(emptySource);
   const [isEditing, setIsEditing] = useState(false);
+  const [hasImportedVersion, setHasImportedVersion] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteConfirmGuid, setDeleteConfirmGuid] = useState<string | null>(null);
 
@@ -194,7 +187,7 @@ export const LegislationSourceManagement: FC = () => {
     setShowModal(true);
   };
 
-  const handleOpenEdit = (source: LegislationSource) => {
+  const handleOpenEdit = (source: LegislationSource, hasImportedVersion: boolean) => {
     setEditingSource({
       legislationSourceGuid: source.legislationSourceGuid,
       shortDescription: source.shortDescription,
@@ -209,6 +202,7 @@ export const LegislationSourceManagement: FC = () => {
       animalInformationDisplayType: source.animalInformationDisplayType,
     });
     setIsEditing(true);
+    setHasImportedVersion(hasImportedVersion);
     setShowModal(true);
   };
 
@@ -216,6 +210,7 @@ export const LegislationSourceManagement: FC = () => {
     setShowModal(false);
     setEditingSource(emptySource);
     setIsEditing(false);
+    setHasImportedVersion(false);
   };
 
   const handleSave = () => {
@@ -495,6 +490,7 @@ export const LegislationSourceManagement: FC = () => {
                   type="input"
                   inputClass="comp-form-control"
                   placeholder="URL for the act XML document"
+                  disabled={hasImportedVersion}
                   value={editingSource.sourceUrl}
                   onChange={(e: any) => setEditingSource({ ...editingSource, sourceUrl: e.target.value })}
                 />
@@ -511,6 +507,7 @@ export const LegislationSourceManagement: FC = () => {
                     type="input"
                     inputClass="comp-form-control"
                     placeholder="Optional URL for the regulations folder XML document"
+                    disabled={hasImportedVersion}
                     value={editingSource.regulationsSourceUrl}
                     onChange={(e: any) => setEditingSource({ ...editingSource, regulationsSourceUrl: e.target.value })}
                   />
@@ -536,6 +533,7 @@ export const LegislationSourceManagement: FC = () => {
                   showInactive={false}
                   enableValidation={false}
                   isClearable={false}
+                  isDisabled={hasImportedVersion}
                 />
               </div>
             </div>
@@ -558,6 +556,7 @@ export const LegislationSourceManagement: FC = () => {
                   showInactive={false}
                   enableValidation={false}
                   isClearable={true}
+                  isDisabled={hasImportedVersion}
                 />
               </div>
             </div>
@@ -584,6 +583,7 @@ export const LegislationSourceManagement: FC = () => {
                   showInactive={false}
                   enableValidation={false}
                   isClearable={false}
+                  isDisabled={hasImportedVersion}
                 />
               </div>
             </div>
