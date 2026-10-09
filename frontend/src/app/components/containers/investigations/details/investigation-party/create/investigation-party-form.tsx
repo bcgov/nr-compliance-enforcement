@@ -857,11 +857,24 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   >
                     <h3 className="mb-1">Search results</h3>
 
-                    <p>
-                      {matches.length === 0 && !matchFetching
-                        ? "No matching published profiles found."
-                        : "Potentially matching published profiles found."}
-                    </p>
+                    {matchFetching && (
+                      <div className="d-flex align-items-center">
+                        <Spinner
+                          animation="border"
+                          size="sm"
+                          className="me-3"
+                        />
+                        <span>Looking for matching published profiles...</span>
+                      </div>
+                    )}
+
+                    {!matchFetching && (
+                      <p>
+                        {matches.length === 0
+                          ? "No matching published profiles found."
+                          : "Potentially matching published profiles found."}
+                      </p>
+                    )}
 
                     {/* Matching profile cards */}
                     <div
@@ -908,16 +921,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
                   <div>
                     <div className="comp-party-match-rules p-2 d-flex flex-column flex-start align-items-start">
-                      {matchFetching && (
-                        <div className="d-flex align-items-center">
-                          <Spinner
-                            animation="border"
-                            size="sm"
-                            className="me-3"
-                          />
-                          <span>Looking for matching published profiles...</span>
-                        </div>
-                      )}
                       <Button
                         variant="link"
                         className="d-block p-0 comp-party-match-rules-title"
