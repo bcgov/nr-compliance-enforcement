@@ -221,7 +221,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
               )}
               {detailRow("Primary", phone, anyMatched("phone"))}
               {detailRow("Email", email, anyMatched("email"))}
-              {detailRow("Home", address, anyMatched("addressLine", "city", "postalCode", "province", "country"))}
+              {detailRow("Address", address, anyMatched("addressLine", "city", "postalCode", "province", "country"))}
             </div>
           )}
           <Button
