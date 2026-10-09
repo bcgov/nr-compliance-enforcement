@@ -183,7 +183,7 @@
                                     <td><p>Foreign Key: Human readable code representing a case activity.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="activity_identifier_ref">activity_identifier_ref</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="activity_identifier_ref">activity_identifier_ref</span></td>
                                     <td>varchar</td>
                                     <td>50</td>
                                     <td title=''></td>
@@ -337,6 +337,12 @@
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>case_activity_guid</td>
                                 </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_case_activity_activity_identifier_ref</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>activity_identifier_ref</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
@@ -360,21 +366,20 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="case_activity.html" target="_top" title="case_activity" alt="" coords="317,85,697,448">
-<area shape="rect" id="node2" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="5,257,273,375">
-<area shape="rect" id="node3" href="case_file.html" target="_top" title="case_file" alt="" coords="12,5,267,240">
+<area shape="rect" id="node1" href="case_activity.html" target="_top" title="case_activity" alt="" coords="317,71,697,433">
+<area shape="rect" id="node2" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="5,228,273,345">
+<area shape="rect" id="node3" href="case_file.html" target="_top" title="case_file" alt="" coords="12,5,267,211">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/case_activity.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="262,204,413,292">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,115,185,203">
-<area shape="rect" id="node3" href="case_activity.html" target="_top" title="case_activity" alt="" coords="801,5,1181,368">
-<area shape="rect" id="node4" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="489,336,757,453">
-<area shape="rect" id="node5" href="case_file.html" target="_top" title="case_file" alt="" coords="496,37,751,272">
-<area shape="rect" id="node6" href="case_status_code.html" target="_top" title="case_status_code" alt="" coords="229,99,445,187">
-<area shape="rect" id="node7" href="party_association_role_code.html" target="_top" title="party_association_role_code" alt="" coords="841,385,1142,473">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="229,136,380,224">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,100,185,188">
+<area shape="rect" id="node3" href="case_activity.html" target="_top" title="case_activity" alt="" coords="736,5,1116,368">
+<area shape="rect" id="node4" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="424,321,692,439">
+<area shape="rect" id="node5" href="case_file.html" target="_top" title="case_file" alt="" coords="431,37,685,243">
+<area shape="rect" id="node6" href="party_association_role_code.html" target="_top" title="party_association_role_code" alt="" coords="775,385,1077,473">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/case_activity.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

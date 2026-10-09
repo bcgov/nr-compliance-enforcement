@@ -1,14 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?><database name="default" schema="shared" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+2)">
    <sequences>
       <sequence increment="1" name="TEMP_POC_SEQ" startValue="1"/>
+      <sequence increment="1" name="case_sequence" startValue="1"/>
    </sequences>
    <tables>
+      <table name="address" remarks="Stores physical or mailing addresses associated with a party (person or business)." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="address_guid" nullable="false" remarks="The system-generated unique identifier for the address record." size="2147483647" type="uuid" typeCode="1111">
+            <child column="h_address_guid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="shared" table="address_h"/>
+            <child column="address_guid" foreignKey="business_person_address_xref_address_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_person_address_xref"/>
+            <child column="address_guid" foreignKey="contact_method_address_fk" implied="false" onDeleteCascade="false" schema="shared" table="contact_method"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="party_guid" nullable="false" remarks="The unique identifier of the party (person or business) associated with the address." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="party_guid" foreignKey="address_party_fk" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="address_name" nullable="false" remarks="A label for the address (e.g. Head office, Mailing address)." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="address" nullable="true" remarks="The street address." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="city" nullable="true" remarks="The city of the address." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="country_subdivision_code" nullable="true" remarks="The province or state of the address." size="16" type="varchar" typeCode="12">
+            <parent column="country_subdivision_code" foreignKey="address_country_subdivision_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="country_subdivision_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="postal_code" nullable="true" remarks="The postal or ZIP code of the address." size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="country_code" nullable="true" remarks="The country of the address." size="4" type="varchar" typeCode="12">
+            <parent column="country_code" foreignKey="address_country_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="country_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="8" name="is_primary" nullable="false" remarks="A boolean indicator of whether this is the primary address for the party." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="9" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the address is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="create_user_id" nullable="false" remarks="The id of the user that created the address." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="11" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the address was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="update_user_id" nullable="true" remarks="The id of the user that updated the address." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the address was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="14" name="display_in_investigation_ind" nullable="false" remarks="A boolean indicator of whether the office should be displayed in the investigation." size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="address_guid" sequenceNumberInPK="1"/>
+         <index name="address_pk" unique="true">
+            <column ascending="true" name="address_guid"/>
+         </index>
+         <index name="address_primary_unique" unique="true">
+            <column ascending="true" name="party_guid"/>
+         </index>
+         <index name="idx_address_address_norm" unique="false"/>
+         <index name="idx_address_address_search" unique="false">
+            <column ascending="true" name="address"/>
+         </index>
+         <index name="idx_address_city_search" unique="false">
+            <column ascending="true" name="city"/>
+         </index>
+         <index name="idx_address_party" unique="false">
+            <column ascending="true" name="party_guid"/>
+         </index>
+         <index name="idx_address_postal_code_norm" unique="false"/>
+      </table>
+      <table name="address_h" remarks="Stores the audit history for address records." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_address_guid" nullable="false" remarks="The system-generated unique identifier for the address history record." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="address_guid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="shared" table="address"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique identifier of the address record affected by the operation." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The type of database operation executed on the address record. For example I = Insert, U = Update, D = Delete." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that executed the operation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the address record after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
+      </table>
       <table name="agency_code" numRows="9" remarks="An agency is an organized and named grouping of people that interacts in some way with the NatSuite application." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="Primary key: Human readable code representing an agency." size="10" type="varchar" typeCode="12">
             <child column="agency_code_ref" foreignKey="app_user_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
             <child column="lead_agency" foreignKey="fk_case_file__agency_code" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
             <child column="agency_code_ref" foreignKey="geo_org_structure_agency_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_org_unit_structure"/>
-            <child column="agency_code" foreignKey="legislation_agency_xref_agency_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="legislation_agency_xref"/>
+            <child column="agency_code" foreignKey="fk_legislation_configuration_agency" implied="false" onDeleteCascade="false" schema="shared" table="legislation_configuration"/>
+            <child column="agency_code" foreignKey="fk_legislation_source_agency" implied="false" onDeleteCascade="false" schema="shared" table="legislation_source"/>
             <child column="agency_code_ref" foreignKey="office_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="office"/>
             <child column="agency_code_ref" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="team"/>
          </column>
@@ -26,10 +83,44 @@
             <column ascending="true" name="agency_code"/>
          </index>
       </table>
+      <table name="alias" remarks="Contains alternative names or aliases associated with a party (person or business)." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="alias_guid" nullable="false" remarks="The system-generated unique identifier for the alias record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="party_guid" nullable="false" remarks="The unique identifier of the party (person or business) associated with the alias." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="party_guid" foreignKey="alias_party_fk" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="name" nullable="false" remarks="The alias name used to identify or reference the party." size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the alias is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the alias." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the alias was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the alias." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the alias was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="alias_guid" sequenceNumberInPK="1"/>
+         <index name="alias_pk" unique="true">
+            <column ascending="true" name="alias_guid"/>
+         </index>
+         <index name="idx_alias_name_norm" unique="false"/>
+         <index name="idx_alias_name_trgm" unique="false"/>
+         <index name="idx_alias_party" unique="false">
+            <column ascending="true" name="party_guid"/>
+         </index>
+      </table>
+      <table name="alias_h" remarks="Stores the audit history for alias records." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_alias_guid" nullable="false" remarks="The system-generated unique identifier for the alias history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique identifier of the alias record affected by the operation." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The type of database operation executed on the alias record. For example I = Insert, U = Update, D = Delete." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that executed the operation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the alias record after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_alias_guid" sequenceNumberInPK="1"/>
+         <index name="pk_h_alias" unique="true">
+            <column ascending="true" name="h_alias_guid"/>
+         </index>
+      </table>
       <table name="app_user" remarks="A user table for the NatSuite system with user details and other meta" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="app_user_guid" nullable="false" remarks="System generated unique key for a user. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="app_user_guid" foreignKey="app_user_team_xref_user_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_team_xref"/>
             <child column="created_by_app_user_guid" foreignKey="case_file_created_by_app_user_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
+            <child column="created_by_app_user_guid" foreignKey="fk_party__created_by_app_user_guid" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="auth_user_guid" nullable="true" remarks="The SiteMinder guid returned to the application from KeyCloak. Used to uniquely identify a user over the course of their lifecycle." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="true" remarks="The IDIR ID issued to the user by the Government of British Columbia as part of their employment. Null for non-officers." size="32" type="varchar" typeCode="12"/>
@@ -57,6 +148,7 @@
          <index name="app_user_auth_user_guid_key" unique="true">
             <column ascending="true" name="auth_user_guid"/>
          </index>
+         <index name="idx_app_user_auth_user_guid_normalized" unique="false"/>
       </table>
       <table name="app_user_h" remarks="History table for app_user table" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_app_user_guid" nullable="false" remarks="System generated unique key for user history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
@@ -100,8 +192,45 @@
             <column ascending="true" name="h_app_user_team_xref_guid"/>
          </index>
       </table>
+      <table name="approximate_age_code" remarks="Contains the approximate age category options for a person when no date of birth is known. For example 18UNDER = 18 and under, 19TO39 = 19 to 39 years." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="approximate_age_code" nullable="false" remarks="A human readable code used to identify an approximate age category." size="16" type="varchar" typeCode="12">
+            <child column="approximate_age_code" foreignKey="fk_person__approximate_age_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the approximate age category." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the approximate age category." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the approximate age categories should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if an approximate age category is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the approximate age category." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the approximate age category was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the approximate age category." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the approximate age category was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="approximate_age_code" sequenceNumberInPK="1"/>
+         <index name="approximate_age_pk" unique="true">
+            <column ascending="true" name="approximate_age_code"/>
+         </index>
+      </table>
+      <table name="build_code" remarks="Contains the build options for a person. For example SLENDER = Slender, MEDIUM = Medium, LARGE = Large." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="build_code" nullable="false" remarks="A human readable code used to identify a build." size="16" type="varchar" typeCode="12">
+            <child column="build_code" foreignKey="fk_person__build_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the build." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the build." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the builds should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a build is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the build." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the build was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the build." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the build was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="build_code" sequenceNumberInPK="1"/>
+         <index name="build_pk" unique="true">
+            <column ascending="true" name="build_code"/>
+         </index>
+      </table>
       <table name="business" remarks="" schema="shared" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="business_guid" nullable="false" remarks="Primary key: System generated unique identifier for a business." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="business_guid" nullable="false" remarks="Primary key: System generated unique identifier for a business." size="2147483647" type="uuid" typeCode="1111">
+            <child column="business_guid" foreignKey="business_identifier_business_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_identifier"/>
+            <child column="business_guid" foreignKey="business_person_xref_business_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_person_xref"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Name of the business." size="128" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="The id of the user that created the business." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the business was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
@@ -110,10 +239,17 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="party_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="party_guid" foreignKey="FK_business_party" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="safety_concern_ind" nullable="true" remarks="Indicates the reason why the business has a safety concern flag." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="safety_concern_reason" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
          <primaryKey column="business_guid" sequenceNumberInPK="1"/>
          <index name="business_pkey" unique="true">
             <column ascending="true" name="business_guid"/>
          </index>
+         <index name="idx_business_name_norm" unique="false"/>
+         <index name="idx_business_name_search" unique="false">
+            <column ascending="true" name="name"/>
+         </index>
+         <index name="idx_business_name_trgm" unique="false"/>
          <index name="UQ_business_party_guid" unique="true">
             <column ascending="true" name="party_guid"/>
          </index>
@@ -128,6 +264,159 @@
          <primaryKey column="h_business_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_business" unique="true">
             <column ascending="true" name="h_business_guid"/>
+         </index>
+      </table>
+      <table name="business_identifier" remarks="Stores identifiers used to uniquely identify a business according to a specific identifier type." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="business_identifier_guid" nullable="false" remarks="The system-generated unique identifier for the business identifier record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="business_guid" nullable="false" remarks="The unique identifier of the business associated with the identifier." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="business_guid" foreignKey="business_identifier_business_fk" implied="false" onDeleteCascade="false" schema="shared" table="business"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="business_identifier_code" nullable="false" remarks="The code identifying the type of business identifier." size="16" type="varchar" typeCode="12">
+            <parent column="business_identifier_code" foreignKey="business_identifier_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_identifier_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="identifier_value" nullable="false" remarks="The value of the identifier as issued by the originating authority." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the business identifier is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the business identifier." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the business identifier was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the business identifier." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the business identifier was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="business_identifier_guid" sequenceNumberInPK="1"/>
+         <index name="business_identifier_pk" unique="true">
+            <column ascending="true" name="business_identifier_guid"/>
+         </index>
+         <index name="business_identifier_bnum_active_unique" unique="true">
+            <column ascending="true" name="identifier_value"/>
+         </index>
+         <index name="idx_business_identifier_business" unique="false">
+            <column ascending="true" name="business_guid"/>
+         </index>
+         <index name="idx_business_identifier_value_norm" unique="false"/>
+         <index name="idx_business_identifier_value_search" unique="false">
+            <column ascending="true" name="identifier_value"/>
+         </index>
+      </table>
+      <table name="business_identifier_code" remarks="Contains the list of business identifier types supported by the system. For example BNUM = Business Number, WSBC = WorkSafe BC" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="business_identifier_code" nullable="false" remarks="A human readable code used to identify a business identifier type." size="16" type="varchar" typeCode="12">
+            <child column="business_identifier_code" foreignKey="business_identifier_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_identifier"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the business identifier type." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the business identifier type." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the business identifier type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a business identifier type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the business identifier type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the business identifier type was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the business identifier type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the business identifier type was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="business_identifier_code" sequenceNumberInPK="1"/>
+         <index name="business_identifier_code_pk" unique="true">
+            <column ascending="true" name="business_identifier_code"/>
+         </index>
+      </table>
+      <table name="business_identifier_h" remarks="Stores the audit history for business identifier records." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_business_identifier_guid" nullable="false" remarks="The system-generated unique identifier for the business identifier history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique identifier of the business identifier record affected by the operation." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The type of database operation executed on the business identifier record. For example I = Insert, U = Update, D = Delete." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that executed the operation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the business identifier record after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_business_identifier_guid" sequenceNumberInPK="1"/>
+         <index name="pk_h_business_identifier" unique="true">
+            <column ascending="true" name="h_business_identifier_guid"/>
+         </index>
+      </table>
+      <table name="business_person_address_xref" remarks="Associates a business contact with their office (address)." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="business_person_address_xref_guid" nullable="false" remarks="The system-generated unique identifier for the contact to office association record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="business_person_xref_guid" nullable="false" remarks="The unique identifier of the business contact." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="business_person_xref_guid" foreignKey="business_person_address_xref_business_person_xref_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_person_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="address_guid" nullable="false" remarks="The unique identifier of the office (address)." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="address_guid" foreignKey="business_person_address_xref_address_fk" implied="false" onDeleteCascade="false" schema="shared" table="address"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the association is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the association." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the association was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the association." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the association was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="business_person_address_xref_guid" sequenceNumberInPK="1"/>
+         <index name="business_person_address_xref_pk" unique="true">
+            <column ascending="true" name="business_person_address_xref_guid"/>
+         </index>
+         <index name="business_person_address_xref_active_unique" unique="true">
+            <column ascending="true" name="business_person_xref_guid"/>
+            <column ascending="true" name="address_guid"/>
+         </index>
+      </table>
+      <table name="business_person_address_xref_h" remarks="Stores the audit history for contact to office association records." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_business_person_address_xref_guid" nullable="false" remarks="The system-generated unique identifier for the association history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique identifier of the association record affected by the operation." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The type of database operation executed on the association record. For example I = Insert, U = Update, D = Delete." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that executed the operation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the association record after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_business_person_address_xref_guid" sequenceNumberInPK="1"/>
+         <index name="pk_h_business_person_address_xref" unique="true">
+            <column ascending="true" name="h_business_person_address_xref_guid"/>
+         </index>
+      </table>
+      <table name="business_person_xref" remarks="Associates a person to a business and defines the nature of the relationship between them." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="business_person_xref_guid" nullable="false" remarks="The system-generated unique identifier for the business to person relationship record." size="2147483647" type="uuid" typeCode="1111">
+            <child column="business_person_xref_guid" foreignKey="business_person_address_xref_business_person_xref_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_person_address_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="business_guid" nullable="false" remarks="The unique identifier of the business participating in the relationship." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="business_guid" foreignKey="business_person_xref_business_fk" implied="false" onDeleteCascade="false" schema="shared" table="business"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="person_guid" nullable="false" remarks="The unique identifier of the person participating in the relationship." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="person_guid" foreignKey="business_person_xref_person_fk" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="business_person_xref_code" nullable="false" remarks="A human readable code that identifies the type of relationship between the business and the person." size="16" type="varchar" typeCode="12">
+            <parent column="business_person_xref_code" foreignKey="business_person_xref_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_person_xref_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the business to person relationship is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the business to person relationship." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the business to person relationship was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the business to person relationship." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the business to person relationship was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="9" name="display_in_investigation_ind" nullable="false" remarks="A boolean indicator of whether the business contact should be displayed in the investigation." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="title_role" nullable="true" remarks="The free-text title or role of the contact person within the business (e.g. Site Manager, Owner)." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="11" name="is_primary" nullable="false" remarks="A boolean indicator of whether this contact is the primary contact for the business." size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="business_person_xref_guid" sequenceNumberInPK="1"/>
+         <index name="business_person_xref_pk" unique="true">
+            <column ascending="true" name="business_person_xref_guid"/>
+         </index>
+         <index name="idx_business_person_xref_business" unique="false">
+            <column ascending="true" name="business_guid"/>
+         </index>
+         <index name="idx_business_person_xref_person" unique="false">
+            <column ascending="true" name="person_guid"/>
+         </index>
+      </table>
+      <table name="business_person_xref_code" remarks="Contains the list of business to person associations. For example CONTACT = Business contact" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="business_person_xref_code" nullable="false" remarks="A human readable code used to identify a business to person association type." size="16" type="varchar" typeCode="12">
+            <child column="business_person_xref_code" foreignKey="business_person_xref_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_person_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the business to person association type." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the business to person association type." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the business to person association type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a business to person association type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the business to person association type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the business to person association type was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the business to person association type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the business to person association type was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="business_person_xref_code" sequenceNumberInPK="1"/>
+         <index name="business_person_xref_code_pk" unique="true">
+            <column ascending="true" name="business_person_xref_code"/>
+         </index>
+      </table>
+      <table name="business_person_xref_h" remarks="Stores the audit history for business to person relationship records." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_business_person_xref_guid" nullable="false" remarks="The system-generated unique identifier for the business to person relationship history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique identifier of the business to person relationship record affected by the operation." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The type of database operation executed on the business to person relationship record. For example I = Insert, U = Update, D = Delete." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that executed the operation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the business to person relationship record after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_business_person_xref_guid" sequenceNumberInPK="1"/>
+         <index name="pk_h_business_person_xref" unique="true">
+            <column ascending="true" name="h_business_person_xref_guid"/>
          </index>
       </table>
       <table name="case_activity" remarks="A case activity is a distinct business process within the compliance and enforcement domain such as a complaint, inspection or an investigation." schema="shared" type="TABLE">
@@ -148,6 +437,9 @@
          <primaryKey column="case_activity_guid" sequenceNumberInPK="1"/>
          <index name="case_activity_pkey" unique="true">
             <column ascending="true" name="case_activity_guid"/>
+         </index>
+         <index name="idx_case_activity_activity_identifier_ref" unique="false">
+            <column ascending="true" name="activity_identifier_ref"/>
          </index>
       </table>
       <table name="case_activity_h" remarks="History table for case activity table" schema="shared" type="TABLE">
@@ -187,17 +479,14 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="lead_agency" nullable="false" remarks="Foreign key: Human readable code representing an agency." size="10" type="varchar" typeCode="12">
             <parent column="agency_code" foreignKey="fk_case_file__agency_code" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="case_status" nullable="false" remarks="Foreign key: Human readable code representing a case status." size="10" type="varchar" typeCode="12">
-            <parent column="case_status_code" foreignKey="fk_case_file__case_status_code" implied="false" onDeleteCascade="false" schema="shared" table="case_status_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="opened_utc_timestamp" nullable="false" remarks="The time the case file was created.  The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the case file." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case file was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the case file." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case file was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="description" nullable="true" remarks="Optional text description for the case file providing additional context or notes" size="2147483647" type="text" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="''::character varying" digits="0" id="9" name="name" nullable="false" remarks="Business-friendly identifier for the case file." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="created_by_app_user_guid" nullable="true" remarks="Foreign key to app_user. The user who created this case file. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="2" name="opened_utc_timestamp" nullable="false" remarks="The time the case file was created.  The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the case file." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case file was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="true" remarks="The id of the user that updated the case file." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case file was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="description" nullable="true" remarks="Optional text description for the case file providing additional context or notes" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="''::character varying" digits="0" id="8" name="name" nullable="false" remarks="Business-friendly identifier for the case file." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="created_by_app_user_guid" nullable="true" remarks="Foreign key to app_user. The user who created this case file. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111">
             <parent column="app_user_guid" foreignKey="case_file_created_by_app_user_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
          </column>
          <primaryKey column="case_file_guid" sequenceNumberInPK="1"/>
@@ -221,40 +510,58 @@
             <column ascending="true" name="h_case_file_guid"/>
          </index>
       </table>
-      <table name="case_status_code" numRows="2" remarks="Represents the status of case (e.g. OPEN=Open; CLOSED=Closed)." schema="shared" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="case_status_code" nullable="false" remarks="Primary key: Human readable code representing a case status." size="10" type="varchar" typeCode="12">
-            <child column="case_status" foreignKey="fk_case_file__case_status_code" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
+      <table name="complexion_code" remarks="Contains the complexion options for a person. For example FAIR = Fair, OLIVE = Olive." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complexion_code" nullable="false" remarks="A human readable code used to identify a complexion." size="16" type="varchar" typeCode="12">
+            <child column="complexion_code" foreignKey="fk_person__complexion_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the case status code.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the case status code.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the case status code should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the case status code is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the case status code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case status code was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the case status code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case status code was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="case_status_code" sequenceNumberInPK="1"/>
-         <index name="case_status_code_pkey" unique="true">
-            <column ascending="true" name="case_status_code"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the complexion." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the complexion." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the complexions should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a complexion is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the complexion." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the complexion was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the complexion." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the complexion was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="complexion_code" sequenceNumberInPK="1"/>
+         <index name="complexion_pk" unique="true">
+            <column ascending="true" name="complexion_code"/>
          </index>
       </table>
-      <table name="contact_method" remarks="Stores contact details for individuals, linking each contact method to a person and a type (e.g., email, phone)." schema="shared" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="contact_method_guid" nullable="false" remarks="Primary key: System generated unique identifier for a contact method." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="person_guid" nullable="false" remarks="Foreign key: References person.person_guid." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="person_guid" foreignKey="fk_contact_method_person" implied="false" onDeleteCascade="true" schema="shared" table="person"/>
+      <table name="contact_method" remarks="Stores phone, email, and other contact methods associated with a party (person or business)." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="contact_method_guid" nullable="false" remarks="The system-generated unique identifier for the contact method record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="party_guid" nullable="true" remarks="The unique identifier of the party associated with the contact method. Only one of party_guid or address_guid is allowed." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="party_guid" foreignKey="contact_method_party_fk" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="contact_method_type" nullable="false" remarks="Foreign key: References contact_method_type_code.contact_method_type_code." size="10" type="varchar" typeCode="12">
-            <parent column="contact_method_type_code" foreignKey="fk_contact_method_type" implied="false" onDeleteCascade="false" schema="shared" table="contact_method_type_code"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="contact_method_type" nullable="false" remarks="The type of contact method. References contact_method_type_code (e.g. PHONE, EMAIL)." size="10" type="varchar" typeCode="12">
+            <parent column="contact_method_type_code" foreignKey="contact_method_type_fk" implied="false" onDeleteCascade="false" schema="shared" table="contact_method_type_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact_value" nullable="true" remarks="A contact method (e.g., phone number, email address) for a person." size="512" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the contact method." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the contact method was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the contact method." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the contact method was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact_value" nullable="false" remarks="The contact value itself (phone number, email address, etc.)." size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="4" name="is_primary" nullable="false" remarks="A boolean indicator of whether this is the primary contact method of its type for the party." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="5" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the contact method is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the contact method." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the contact method was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the contact method." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the contact method was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="address_guid" nullable="true" remarks="The unique identifier of the office (address) associated with the contact method. Only one of party_guid or address_guid is allowed." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="address_guid" foreignKey="contact_method_address_fk" implied="false" onDeleteCascade="false" schema="shared" table="address"/>
+         </column>
          <primaryKey column="contact_method_guid" sequenceNumberInPK="1"/>
-         <index name="contact_method_pkey" unique="true">
+         <index name="contact_method_pk" unique="true">
             <column ascending="true" name="contact_method_guid"/>
          </index>
+         <index name="contact_method_primary_unique" unique="true">
+            <column ascending="true" name="party_guid"/>
+            <column ascending="true" name="contact_method_type"/>
+         </index>
+         <index name="idx_contact_method_emailaddr_lower" unique="false"/>
+         <index name="idx_contact_method_party" unique="false">
+            <column ascending="true" name="party_guid"/>
+         </index>
+         <index name="idx_contact_method_phone_norm" unique="false"/>
+         <index name="idx_contact_method_value_search" unique="false">
+            <column ascending="true" name="contact_value"/>
+         </index>
+         <checkConstraint constraint="((num_nonnulls(party_guid, address_guid) = 1))" name="contact_method_parent_chk"/>
       </table>
       <table name="contact_method_h" remarks="History table for contact method table" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_contact_method_guid" nullable="false" remarks="Primary key: System generated unique identifier for a contact method history record." size="2147483647" type="uuid" typeCode="1111"/>
@@ -270,7 +577,7 @@
       </table>
       <table name="contact_method_type_code" numRows="4" remarks="Defines types of contact methods (e.g., email, primary phone, alternate phone) with descriptions and display ordering." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_method_type_code" nullable="false" remarks="Primary key: Human readable code representing a contact method type." size="16" type="varchar" typeCode="12">
-            <child column="contact_method_type" foreignKey="fk_contact_method_type" implied="false" onDeleteCascade="false" schema="shared" table="contact_method"/>
+            <child column="contact_method_type" foreignKey="contact_method_type_fk" implied="false" onDeleteCascade="false" schema="shared" table="contact_method"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the contact method type code.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the contact method type code.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
@@ -295,6 +602,46 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="area_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="administrative_office_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
+      </table>
+      <table name="country_code" remarks="Contains the list of countries supported by the system. For example CA = Canada, US = United States." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="country_code" nullable="false" remarks="A human readable code used to identify a country. ISO 3166-1 codes are recommended." size="4" type="varchar" typeCode="12">
+            <child column="country_code" foreignKey="address_country_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="address"/>
+            <child column="country_code" foreignKey="country_subdivision_country_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="country_subdivision_code"/>
+            <child column="drivers_license_country_code" foreignKey="fk_person__drivers_license_country_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the country." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the country." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the countries should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a country is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the country." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the country was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the country." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the country was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="country_code" sequenceNumberInPK="1"/>
+         <index name="country_pk" unique="true">
+            <column ascending="true" name="country_code"/>
+         </index>
+      </table>
+      <table name="country_subdivision_code" remarks="Contains the list of country subdivisions (provinces, states, territories, etc.) supported by the system. For example CA-BC = British Columbia, US-WA = Washington." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="country_subdivision_code" nullable="false" remarks="A human readable code used to identify a country subdivision. ISO 3166-2 codes are recommended." size="16" type="varchar" typeCode="12">
+            <child column="country_subdivision_code" foreignKey="address_country_subdivision_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="address"/>
+            <child column="drivers_license_country_subdivision_code" foreignKey="fk_person__drivers_license_country_subdivision_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="country_code" nullable="false" remarks="The code of the country to which the subdivision belongs." size="4" type="varchar" typeCode="12">
+            <parent column="country_code" foreignKey="country_subdivision_country_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="country_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="short_description" nullable="false" remarks="The short description of the country subdivision." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="long_description" nullable="true" remarks="The long description of the country subdivision." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="display_order" nullable="false" remarks="The order in which the country subdivisions should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="5" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a country subdivision is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the country subdivision." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the country subdivision was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the country subdivision." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the country subdivision was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="country_subdivision_code" sequenceNumberInPK="1"/>
+         <index name="country_subdivision_pk" unique="true">
+            <column ascending="true" name="country_subdivision_code"/>
+         </index>
       </table>
       <table name="event" remarks="Stores activity events in the system, recording what action was performed, who performed it, and what entity was affected, with support for optional source and additional content data." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="event_guid" nullable="false" remarks="Primary key: System generated unique identifier for an event." size="2147483647" type="uuid" typeCode="1111"/>
@@ -358,6 +705,40 @@
             <column ascending="true" name="event_verb_type_code"/>
          </index>
       </table>
+      <table name="eye_colour_code" remarks="Contains the eye colour options for a person. Codes follow the NCIC eye colour (EYE) standard, except AMBER and OTH (Other) which are local codes. For example BLU = Blue, BRO = Brown." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="eye_colour_code" nullable="false" remarks="A human readable code used to identify an eye colour. Follows the NCIC eye colour (EYE) standard where applicable." size="16" type="varchar" typeCode="12">
+            <child column="eye_colour_code" foreignKey="fk_person__eye_colour_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the eye colour." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the eye colour." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the eye colours should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if an eye colour is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the eye colour." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the eye colour was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the eye colour." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the eye colour was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="eye_colour_code" sequenceNumberInPK="1"/>
+         <index name="eye_colour_pk" unique="true">
+            <column ascending="true" name="eye_colour_code"/>
+         </index>
+      </table>
+      <table name="facial_hair_style_code" remarks="Contains the facial hair style options for a person. Local code set. For example GOATEE = Goatee, MUSTACHE = Mustache." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="facial_hair_style_code" nullable="false" remarks="A human readable code used to identify a facial hair style." size="16" type="varchar" typeCode="12">
+            <child column="facial_hair_style_code" foreignKey="person_facial_hair_style_code_facial_hair_style_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="person_facial_hair_style_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the facial hair style." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the facial hair style." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the facial hair styles should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a facial hair style is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the facial hair style." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the facial hair style was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the facial hair style." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the facial hair style was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="facial_hair_style_code" sequenceNumberInPK="1"/>
+         <index name="facial_hair_style_pk" unique="true">
+            <column ascending="true" name="facial_hair_style_code"/>
+         </index>
+      </table>
       <table name="flyway_schema_history" remarks="" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
@@ -375,6 +756,23 @@
          </index>
          <index name="flyway_schema_history_s_idx" unique="false">
             <column ascending="true" name="success"/>
+         </index>
+      </table>
+      <table name="gender_code" remarks="Contains the gender category options for a person. For example MN = Man/boy, NB = Non-binary, WM = Woman/girl." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="gender_code" nullable="false" remarks="A human readable code used to identify a gender category." size="16" type="varchar" typeCode="12">
+            <child column="gender_code" foreignKey="fk_person__gender_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the gender category." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the gender category." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the gender categories should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a gender category is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the gender category." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the gender category was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the gender category." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the gender category was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="gender_code" sequenceNumberInPK="1"/>
+         <index name="gender_pk" unique="true">
+            <column ascending="true" name="gender_code"/>
          </index>
       </table>
       <table name="geo_org_unit_structure" remarks="Defines the hierarchical relationships between various geographical organizational unit codes." schema="shared" type="TABLE">
@@ -451,10 +849,44 @@
             <column ascending="true" name="geo_organization_unit_code"/>
          </index>
       </table>
+      <table name="hair_colour_code" remarks="Contains the hair colour options for a person. Codes follow the NCIC hair colour (HAI) standard, except OTH (Other) which is a local code. For example BLK = Black, BRO = Brown." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hair_colour_code" nullable="false" remarks="A human readable code used to identify a hair colour. Follows the NCIC hair colour (HAI) standard where applicable." size="16" type="varchar" typeCode="12">
+            <child column="hair_colour_code" foreignKey="fk_person__hair_colour_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the hair colour." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the hair colour." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the hair colours should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a hair colour is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the hair colour." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the hair colour was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the hair colour." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the hair colour was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="hair_colour_code" sequenceNumberInPK="1"/>
+         <index name="hair_colour_pk" unique="true">
+            <column ascending="true" name="hair_colour_code"/>
+         </index>
+      </table>
+      <table name="hair_length_code" remarks="Contains the hair length options for a person. For example SHORT = Short, LONG = Long." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hair_length_code" nullable="false" remarks="A human readable code used to identify a hair length." size="16" type="varchar" typeCode="12">
+            <child column="hair_length_code" foreignKey="fk_person__hair_length_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the hair length." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the hair length." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the hair lengths should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a hair length is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the hair length." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the hair length was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the hair length." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the hair length was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="hair_length_code" sequenceNumberInPK="1"/>
+         <index name="hair_length_pk" unique="true">
+            <column ascending="true" name="hair_length_code"/>
+         </index>
+      </table>
       <table name="legislation" remarks="Stores hierarchical legislation. Each row may represent an Act, Regulation, Section, Subsection, Paragraph, or Subparagraph. Self-referencing parent_legislation_guid creates the hierarchy." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="legislation_guid" nullable="false" remarks="Primary key. Unique identifier for the legislation element." size="2147483647" type="uuid" typeCode="1111">
             <child column="parent_legislation_guid" foreignKey="legislation_parent_legislation_guid_fkey" implied="false" onDeleteCascade="true" schema="shared" table="legislation"/>
-            <child column="legislation_guid" foreignKey="legislation_agency_xref_legislation_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="legislation_agency_xref"/>
+            <child column="legislation_guid" foreignKey="fk_legislation_configuration_legislation" implied="false" onDeleteCascade="false" schema="shared" table="legislation_configuration"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="legislation_type_code" nullable="false" remarks="Foreign key to legislation_type_code. Defines the type of this legislative element." size="16" type="varchar" typeCode="12">
             <parent column="legislation_type_code" foreignKey="legislation_legislation_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="legislation_type_code"/>
@@ -462,24 +894,22 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="parent_legislation_guid" nullable="true" remarks="Self-referencing FK to represent hierarchy (e.g., Act -&gt; Regulation -&gt; Section -&gt; Subsection). Null for top-level items." size="2147483647" type="uuid" typeCode="1111">
             <parent column="legislation_guid" foreignKey="legislation_parent_legislation_guid_fkey" implied="false" onDeleteCascade="true" schema="shared" table="legislation"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="citation" nullable="true" remarks="Short citation for the legislative provision (e.g., &quot;10(3)(a)&quot;)." size="64" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="full_citation" nullable="true" remarks="Full citation string including Act/Reg and all hierarchy if needed." size="512" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="section_title" nullable="true" remarks="Title of the section, if applicable. Sections may have titles; subsections often do not." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="citation" nullable="true" remarks="Short citation for the legislative provision (e.g., &quot;10(3)(a)&quot;)." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="full_citation" nullable="true" remarks="Full citation string including Act/Reg and all hierarchy if needed." size="1024" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="section_title" nullable="true" remarks="Title of the section, if applicable. Sections may have titles; subsections often do not." size="256" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="legislation_text" nullable="true" remarks="The actual legislative text." size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="alternate_text" nullable="true" remarks="Analyst-provided summary text for usability (e.g., &quot;Accept delivery without manifest&quot;).   This value might come from a document such as the COS Field Operations Guide." size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="display_order" nullable="false" remarks="The order in which the legislation should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added.  May contain duplicates to allow for hierarchical ordering." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="effective_date" nullable="true" remarks="Date when this legislation becomes effective." size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="expiry_date" nullable="true" remarks="Date when this legislation expires, if applicable." size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="create_user_id" nullable="false" remarks="The id of the user that created the legislation." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="12" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the legislation was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="update_user_id" nullable="true" remarks="The id of the user that last updated the legislation." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="14" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the legislation was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="create_user_id" nullable="false" remarks="The id of the user that created the legislation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the legislation was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="update_user_id" nullable="true" remarks="The id of the user that last updated the legislation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the legislation was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="legislation_version_guid" nullable="false" remarks="Foreign key to legislation_version. The version this node was imported into; act nodes carry the act version, regulation subtrees their own regulation version." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="legislation_version_guid" foreignKey="fk_legislation_version" implied="false" onDeleteCascade="false" schema="shared" table="legislation_version"/>
+         </column>
          <primaryKey column="legislation_guid" sequenceNumberInPK="1"/>
          <index name="legislation_pkey" unique="true">
             <column ascending="true" name="legislation_guid"/>
-         </index>
-         <index name="idx_legislation_effective" unique="false">
-            <column ascending="true" name="effective_date"/>
          </index>
          <index name="idx_legislation_parent" unique="false">
             <column ascending="true" name="parent_legislation_guid"/>
@@ -487,34 +917,43 @@
          <index name="idx_legislation_type" unique="false">
             <column ascending="true" name="legislation_type_code"/>
          </index>
-      </table>
-      <table name="legislation_agency_xref" remarks="Stores a mapping of which agencies are responsible for enforcing which legislative provisions." schema="shared" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="legislation_agency_xref_guid" nullable="false" remarks="Primary key. Unique identifier for the agency/legislation mapping." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="legislation_guid" nullable="false" remarks="Foreign key to legislation.   Defines a specific piece of legislation." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="legislation_guid" foreignKey="legislation_agency_xref_legislation_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="legislation"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="Foreign key to agency_code.   Defines a specific agency that uses the app." size="10" type="varchar" typeCode="12">
-            <parent column="agency_code" foreignKey="legislation_agency_xref_agency_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the legislation/agency mapping." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the legislation/agency mapping was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="true" remarks="The id of the user that last updated the legislation/agency mapping." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the legislation/agency mapping was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="legislation_agency_xref_guid" sequenceNumberInPK="1"/>
-         <index name="legislation_agency_xref_pkey" unique="true">
-            <column ascending="true" name="legislation_agency_xref_guid"/>
+         <index name="idx_legislation_version" unique="false">
+            <column ascending="true" name="legislation_version_guid"/>
          </index>
       </table>
-      <table name="legislation_agency_xref_h" remarks="History table for legislation agency xref table" schema="shared" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_legislation_agency_xref_guid" nullable="false" remarks="System generated unique key for legislation history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the legislation that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+      <table name="legislation_configuration" remarks="Stores configuration settings that control legislation-related behavior at the agency level." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="legislation_configuration_guid" nullable="false" remarks="Primary key. Unique identifier for this legislation configuration record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="legislation_guid" nullable="false" remarks="Foreign key to legislations. Identifies the legislation this configuration applies to." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="legislation_guid" foreignKey="fk_legislation_configuration_legislation" implied="false" onDeleteCascade="false" schema="shared" table="legislation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="Foreign key to agency_code. Identifies the agency this configuration applies to." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="fk_legislation_configuration_agency" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="enabled_ind" nullable="false" remarks="Whether this configuration is enabled. Disabled configurations will be ignored by the application." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="override_text" nullable="true" remarks="Optional override text used to replace or supplement default legislation content." size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created this record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when this record was created. Stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that last updated this record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when this record was last updated. Stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="legislation_configuration_guid" sequenceNumberInPK="1"/>
+         <index name="legislation_configuration_pkey" unique="true">
+            <column ascending="true" name="legislation_configuration_guid"/>
+         </index>
+         <index name="uq_legislation_configuration_leg_agency" unique="true">
+            <column ascending="true" name="legislation_guid"/>
+            <column ascending="true" name="agency_code"/>
+         </index>
+      </table>
+      <table name="legislation_configuration_h" remarks="History table for legislation configuration table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_legislation_configuration_guid" nullable="false" remarks="System generated unique key for legislation configuration history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the legislation configuration that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
-         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the legislation table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the legislation table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the legislation configuration table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the legislation configuration table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
-         <primaryKey column="h_legislation_agency_xref_guid" sequenceNumberInPK="1"/>
-         <index name="PK_h_legislation_agency_xref" unique="true">
-            <column ascending="true" name="h_legislation_agency_xref_guid"/>
+         <primaryKey column="h_legislation_configuration_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_legislation_configuration" unique="true">
+            <column ascending="true" name="h_legislation_configuration_guid"/>
          </index>
       </table>
       <table name="legislation_h" remarks="History table for legislation table" schema="shared" type="TABLE">
@@ -527,6 +966,55 @@
          <primaryKey column="h_legislation_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_legislation" unique="true">
             <column ascending="true" name="h_legislation_guid"/>
+         </index>
+      </table>
+      <table name="legislation_source" numRows="20" remarks="Defines BC Laws XML documents to be imported into the legislation table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="legislation_source_guid" nullable="false" remarks="Primary key. Unique identifier for this legislation source record." size="2147483647" type="uuid" typeCode="1111">
+            <child column="parent_legislation_source_guid" foreignKey="fk_legislation_source_parent" implied="false" onDeleteCascade="false" schema="shared" table="legislation_source"/>
+            <child column="legislation_source_guid" foreignKey="fk_legislation_version_source" implied="false" onDeleteCascade="false" schema="shared" table="legislation_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="Short name or title for this legislation source (e.g., Environmental Management Act)." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="Optional longer description with additional context about this legislation source." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="source_url" nullable="true" remarks="Full URL to the BC Laws XML document (e.g., https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03053_00_multi/xml)." size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="agency_code" nullable="false" remarks="Foreign key to agency_code. Defines which agency this legislation source belongs to." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="fk_legislation_source_agency" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="5" name="active_ind" nullable="false" remarks="Whether this source is active. Inactive sources will not be imported." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created this record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when this record was created. Stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that last updated this record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when this record was last updated. Stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="regulations_source_url" nullable="true" remarks="URL to the BC Laws Content API directory listing regulation documents for this Act" size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'BCLAWS'::character varying" digits="0" id="11" name="source_type" nullable="false" remarks="" size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="parent_legislation_source_guid" nullable="true" remarks="Self-referencing FK to the act source. Null for admin-created act sources; set on system-created regulation sources." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="legislation_source_guid" foreignKey="fk_legislation_source_parent" implied="false" onDeleteCascade="false" schema="shared" table="legislation_source"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="external_key" nullable="true" remarks="The upstream document identity: the CIVIX document id for BC Laws, the AlphaNumber for federal legislation. The key the importer matches regulations on." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'H'::bpchar" digits="0" id="14" name="animal_information_display_code" nullable="false" remarks="Determines how animal information (species, quantity, wildlife management unit) behaves when recording a contravention against this legislation source. M = Mandatory, always visible and required. O = Optional, visible but not required. H = Hidden, not visible." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="acronym" nullable="true" remarks="Optional acronym for the act (e.g. EMA), displayed alongside the short description when selecting a contravention." size="16" type="varchar" typeCode="12"/>
+         <primaryKey column="legislation_source_guid" sequenceNumberInPK="1"/>
+         <index name="legislation_source_pkey" unique="true">
+            <column ascending="true" name="legislation_source_guid"/>
+         </index>
+         <index name="idx_legislation_source_parent" unique="false">
+            <column ascending="true" name="parent_legislation_source_guid"/>
+         </index>
+         <index name="legislation_source_external_key_unique" unique="true">
+            <column ascending="true" name="parent_legislation_source_guid"/>
+            <column ascending="true" name="external_key"/>
+         </index>
+         <checkConstraint constraint="((animal_information_display_code = ANY (ARRAY['M'::bpchar, 'O'::bpchar, 'H'::bpchar])))" name="legislation_source_animal_information_display_code_ck"/>
+      </table>
+      <table name="legislation_source_h" remarks="History table for legislation source table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_legislation_source_guid" nullable="false" remarks="System generated unique key for legislation source history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the legislation source that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the legislation source table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the legislation source table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_legislation_source_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_legislation_source" unique="true">
+            <column ascending="true" name="h_legislation_source_guid"/>
          </index>
       </table>
       <table name="legislation_type_code" remarks="Reference table defining types of legislation (Act, Regulation, Section, Subsection, etc.)." schema="shared" type="TABLE">
@@ -544,6 +1032,67 @@
          <primaryKey column="legislation_type_code" sequenceNumberInPK="1"/>
          <index name="legislation_type_code_pkey" unique="true">
             <column ascending="true" name="legislation_type_code"/>
+         </index>
+      </table>
+      <table name="legislation_version" remarks="Stores one imported version of a legislation source. A successful version is in force from its effective date until the effective date of the next successful version for the same source." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="legislation_version_guid" nullable="false" remarks="Primary key. Unique identifier for the legislation version." size="2147483647" type="uuid" typeCode="1111">
+            <child column="legislation_version_guid" foreignKey="fk_legislation_version" implied="false" onDeleteCascade="false" schema="shared" table="legislation"/>
+            <child column="parent_legislation_version_guid" foreignKey="fk_legislation_version_parent" implied="false" onDeleteCascade="false" schema="shared" table="legislation_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="legislation_source_guid" nullable="false" remarks="Foreign key to legislation_source. The act or regulation source this version snapshots." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="legislation_source_guid" foreignKey="fk_legislation_version_source" implied="false" onDeleteCascade="false" schema="shared" table="legislation_source"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="parent_legislation_version_guid" nullable="true" remarks="Self-referencing FK to represent hierarchy. Null for act versions; regulation versions point at the act version they were imported with." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="legislation_version_guid" foreignKey="fk_legislation_version_parent" implied="false" onDeleteCascade="false" schema="shared" table="legislation_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="effective_date" nullable="false" remarks="Date this version comes into force. Admin set on act versions, mirrored from the act version on regulation versions." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="import_status" nullable="false" remarks="Status of the import for this version: PENDING, SUCCESS, or FAILED. Only successful versions are visible to the application." size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="source_url" nullable="true" remarks="The URL that was fetched when this version was imported." size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="source_effective_date" nullable="true" remarks="The date the source document reports for itself (BC Laws assented to / deposited, federal in force start date). Informational only." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="last_import_timestamp" nullable="true" remarks="Timestamp of the last import attempt for this version. NULL if never attempted." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="last_import_log" nullable="true" remarks="Log message or error details from the last import attempt, including the added / removed / skipped regulation diff." size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="create_user_id" nullable="false" remarks="The id of the user that created the legislation version." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the legislation version was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="update_user_id" nullable="true" remarks="The id of the user that last updated the legislation version." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the legislation version was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="legislation_version_guid" sequenceNumberInPK="1"/>
+         <index name="legislation_version_pkey" unique="true">
+            <column ascending="true" name="legislation_version_guid"/>
+         </index>
+         <index name="idx_legislation_version_parent" unique="false">
+            <column ascending="true" name="parent_legislation_version_guid"/>
+         </index>
+         <index name="idx_legislation_version_source" unique="false">
+            <column ascending="true" name="legislation_source_guid"/>
+         </index>
+         <index name="legislation_version_effective_date_unique" unique="true">
+            <column ascending="true" name="legislation_source_guid"/>
+            <column ascending="true" name="effective_date"/>
+         </index>
+         <checkConstraint constraint="(((import_status)::text = ANY ((ARRAY['PENDING'::character varying, 'SUCCESS'::character varying, 'FAILED'::character varying])::text[])))" name="chk_legislation_version_import_status"/>
+      </table>
+      <table name="legislation_version_h" remarks="History table for legislation version table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_legislation_version_guid" nullable="false" remarks="System generated unique key for legislation version history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the legislation version that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the legislation version table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the legislation version table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_legislation_version_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_legislation_version" unique="true">
+            <column ascending="true" name="h_legislation_version_guid"/>
+         </index>
+      </table>
+      <table name="nickname" remarks="English first name nickname pairs sourced from github.com/carltonnorthern/nicknames" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="name" nullable="false" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="nickname" nullable="false" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="create_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="name" sequenceNumberInPK="1"/>
+         <primaryKey column="nickname" sequenceNumberInPK="2"/>
+         <index name="nickname_pk" unique="true">
+            <column ascending="true" name="name"/>
+            <column ascending="true" name="nickname"/>
          </index>
       </table>
       <table name="office" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="shared" type="TABLE">
@@ -658,7 +1207,11 @@
       </table>
       <table name="party" remarks="A table that holds parties of interest" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="party_guid" nullable="false" remarks="Primary key: System generated unique identifier for a party." size="2147483647" type="uuid" typeCode="1111">
+            <child column="party_guid" foreignKey="address_party_fk" implied="false" onDeleteCascade="false" schema="shared" table="address"/>
+            <child column="party_guid" foreignKey="alias_party_fk" implied="false" onDeleteCascade="false" schema="shared" table="alias"/>
             <child column="party_guid" foreignKey="FK_business_party" implied="false" onDeleteCascade="false" schema="shared" table="business"/>
+            <child column="party_guid" foreignKey="contact_method_party_fk" implied="false" onDeleteCascade="false" schema="shared" table="contact_method"/>
+            <child column="party_guid" foreignKey="party_external_id_party_fk" implied="false" onDeleteCascade="false" schema="shared" table="party_external_id"/>
             <child column="party_guid" foreignKey="FK_person_party" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="party_type" nullable="true" remarks="Human readable code representing a party type." size="16" type="varchar" typeCode="12">
@@ -668,6 +1221,10 @@
          <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the party was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user_id" nullable="true" remarks="The id of the user that updated the party." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the party was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="created_by_app_user_guid" nullable="true" remarks="The app user that created the party. References app_user." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="app_user_guid" foreignKey="fk_party__created_by_app_user_guid" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="7" name="active_ind" nullable="false" remarks="Indicates whether the global party profile is active. Set false when the party is removed from its last investigation or inspection." size="1" type="bool" typeCode="-7"/>
          <primaryKey column="party_guid" sequenceNumberInPK="1"/>
          <index name="party_pkey" unique="true">
             <column ascending="true" name="party_guid"/>
@@ -691,6 +1248,65 @@
          <index name="party_association_role_code_pkey" unique="true">
             <column ascending="true" name="party_association_role_code"/>
             <column ascending="true" name="case_activity_type_code"/>
+         </index>
+      </table>
+      <table name="party_external_id" remarks="Stores identifiers issued by systems external to this one that uniquely identify a party, such as a fish and wildlife ID." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="party_external_id_guid" nullable="false" remarks="The system-generated unique identifier for the party external identifier record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="party_guid" nullable="false" remarks="The unique identifier of the party associated with the external identifier." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="party_guid" foreignKey="party_external_id_party_fk" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="party_external_id_code" nullable="false" remarks="The code identifying the type of external identifier." size="16" type="varchar" typeCode="12">
+            <parent column="party_external_id_code" foreignKey="party_external_id_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="party_external_id_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="external_id_value" nullable="false" remarks="The value of the identifier as issued by the external system." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the party external identifier is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the party external identifier." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the party external identifier was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the party external identifier." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the party external identifier was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="party_external_id_guid" sequenceNumberInPK="1"/>
+         <index name="party_external_id_pk" unique="true">
+            <column ascending="true" name="party_external_id_guid"/>
+         </index>
+         <index name="idx_party_external_id_party" unique="false">
+            <column ascending="true" name="party_guid"/>
+         </index>
+         <index name="idx_party_external_id_value_norm" unique="false"/>
+         <index name="idx_party_external_id_value_search" unique="false">
+            <column ascending="true" name="external_id_value"/>
+         </index>
+         <index name="party_external_id_active_unique" unique="true">
+            <column ascending="true" name="party_guid"/>
+            <column ascending="true" name="party_external_id_code"/>
+         </index>
+      </table>
+      <table name="party_external_id_code" remarks="Contains the list of external identifier types supported by the system. For example FWID = Fish and wildlife ID, WIN = Winchester ID." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="party_external_id_code" nullable="false" remarks="A human readable code used to identify an external identifier type." size="16" type="varchar" typeCode="12">
+            <child column="party_external_id_code" foreignKey="party_external_id_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="party_external_id"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the external identifier type." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the external identifier type." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the external identifier type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if an external identifier type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the external identifier type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the external identifier type was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the external identifier type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the external identifier type was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="party_external_id_code" sequenceNumberInPK="1"/>
+         <index name="party_external_id_code_pk" unique="true">
+            <column ascending="true" name="party_external_id_code"/>
+         </index>
+      </table>
+      <table name="party_external_id_h" remarks="Stores the audit history for party external identifier records." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_party_external_id_guid" nullable="false" remarks="The system-generated unique identifier for the party external identifier history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique identifier of the party external identifier affected by the operation." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The type of database operation executed on the party external identifier. For example I = Insert, U = Update, D = Delete." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that executed the operation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the party external identifier after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_party_external_id_guid" sequenceNumberInPK="1"/>
+         <index name="pk_h_party_external_id" unique="true">
+            <column ascending="true" name="h_party_external_id_guid"/>
          </index>
       </table>
       <table name="party_h" remarks="" schema="shared" type="TABLE">
@@ -724,25 +1340,116 @@
       </table>
       <table name="person" remarks="Stores personal information for individuals, including names and in the future other attributes." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="person_guid" nullable="false" remarks="Primary key: System generated unique identifier for a person." size="2147483647" type="uuid" typeCode="1111">
-            <child column="person_guid" foreignKey="fk_contact_method_person" implied="false" onDeleteCascade="true" schema="shared" table="contact_method"/>
+            <child column="person_guid" foreignKey="business_person_xref_person_fk" implied="false" onDeleteCascade="false" schema="shared" table="business_person_xref"/>
+            <child column="person_guid" foreignKey="person_facial_hair_style_code_person_fk" implied="false" onDeleteCascade="false" schema="shared" table="person_facial_hair_style_code"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="first_name" nullable="false" remarks="First or given name of the person." size="128" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="middle_name" nullable="true" remarks="Second or middle name of the person." size="128" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="middle_name_2" nullable="true" remarks="Additional Second or middle name of the person." size="128" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="last_name" nullable="false" remarks="Last name or surname of the person." size="128" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the person." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the person was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the person." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the person was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="party_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="middle_names" nullable="true" remarks="The middle name(s) of the person." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="last_name" nullable="false" remarks="Last name or surname of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the person was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the person was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="party_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="party_guid" foreignKey="FK_person_party" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="date_of_birth" nullable="true" remarks="The date of birth of the pereson." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="drivers_license_number" nullable="true" remarks="The drivers license number of the pereson." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="approximate_age_code" nullable="true" remarks="The approximate age category of the person, used when no date of birth is known. References approximate_age_code." size="16" type="varchar" typeCode="12">
+            <parent column="approximate_age_code" foreignKey="fk_person__approximate_age_code" implied="false" onDeleteCascade="false" schema="shared" table="approximate_age_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="gender_code" nullable="true" remarks="The gender category of the person. References gender_code." size="16" type="varchar" typeCode="12">
+            <parent column="gender_code" foreignKey="fk_person__gender_code" implied="false" onDeleteCascade="false" schema="shared" table="gender_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="drivers_license_class" nullable="true" remarks="The class of the person's driver's licence." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="drivers_license_country_code" nullable="true" remarks="The country that issued the person's driver's licence. References country_code." size="4" type="varchar" typeCode="12">
+            <parent column="country_code" foreignKey="fk_person__drivers_license_country_code" implied="false" onDeleteCascade="false" schema="shared" table="country_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="drivers_license_country_subdivision_code" nullable="true" remarks="The country subdivision (province, state, etc.) that issued the person's driver's licence. References country_subdivision_code." size="16" type="varchar" typeCode="12">
+            <parent column="country_subdivision_code" foreignKey="fk_person__drivers_license_country_subdivision_code" implied="false" onDeleteCascade="false" schema="shared" table="country_subdivision_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="1" id="16" name="height_cm" nullable="true" remarks="The person's height in centimetres. Stored as the canonical metric value; the UI provides a ft/in display toggle that converts for entry and display only." size="5" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="1" id="17" name="weight_kg" nullable="true" remarks="The person's weight in kilograms. Stored as the canonical metric value; the UI provides a lb display toggle that converts for entry and display only." size="5" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="complexion_code" nullable="true" remarks="The complexion of the person. References complexion_code." size="16" type="varchar" typeCode="12">
+            <parent column="complexion_code" foreignKey="fk_person__complexion_code" implied="false" onDeleteCascade="false" schema="shared" table="complexion_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="build_code" nullable="true" remarks="The build of the person. References build_code." size="16" type="varchar" typeCode="12">
+            <parent column="build_code" foreignKey="fk_person__build_code" implied="false" onDeleteCascade="false" schema="shared" table="build_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="hair_colour_code" nullable="true" remarks="The hair colour of the person. References hair_colour_code." size="16" type="varchar" typeCode="12">
+            <parent column="hair_colour_code" foreignKey="fk_person__hair_colour_code" implied="false" onDeleteCascade="false" schema="shared" table="hair_colour_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="hair_colour_other" nullable="true" remarks="A free-text hair colour description, used when hair_colour_code is OTH (Other)." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="hair_length_code" nullable="true" remarks="The hair length of the person. References hair_length_code." size="16" type="varchar" typeCode="12">
+            <parent column="hair_length_code" foreignKey="fk_person__hair_length_code" implied="false" onDeleteCascade="false" schema="shared" table="hair_length_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="eye_colour_code" nullable="true" remarks="The eye colour of the person. References eye_colour_code." size="16" type="varchar" typeCode="12">
+            <parent column="eye_colour_code" foreignKey="fk_person__eye_colour_code" implied="false" onDeleteCascade="false" schema="shared" table="eye_colour_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="eye_colour_other" nullable="true" remarks="A free-text eye colour description, used when eye_colour_code is OTH (Other)." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="facial_hair_ind" nullable="true" remarks="Indicates whether the person has facial hair. true = has facial hair, false = does not have facial hair, null = unknown / not assessed." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="26" name="additional_hair_descriptors" nullable="true" remarks="Free-text additional hair descriptors for the person." size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="tattoo_ind" nullable="true" remarks="Indicates whether the person has tattoos. true = has tattoos, false = does not have tattoos, null = unknown / not assessed." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="28" name="tattoo_description" nullable="true" remarks="A free-text description of the person's tattoos, used when tattoo_ind is true." size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="29" name="additional_descriptors" nullable="true" remarks="Free-text additional descriptors for the person." size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="30" name="comments" nullable="true" remarks="Free-text comments about the person." size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="31" name="safety_concern_ind" nullable="true" remarks="Indicates whether the person has a caution flag or advises officers to be on the lookout (BOLO) for the invdividual." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="32" name="sex_code" nullable="true" remarks="The sex of the person as recorded on their ID. References sex_code." size="16" type="varchar" typeCode="12">
+            <parent column="sex_code" foreignKey="fk_person__sex_code" implied="false" onDeleteCascade="false" schema="shared" table="sex_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="33" name="safety_concern_reason" nullable="true" remarks="Indicates the reason why the person has a safety concern flag." size="2147483647" type="text" typeCode="12"/>
          <primaryKey column="person_guid" sequenceNumberInPK="1"/>
          <index name="person_pkey" unique="true">
             <column ascending="true" name="person_guid"/>
          </index>
+         <index name="idx_person_date_of_birth" unique="false">
+            <column ascending="true" name="date_of_birth"/>
+         </index>
+         <index name="idx_person_drivers_license_number_norm" unique="false"/>
+         <index name="idx_person_first_last_name_norm" unique="false"/>
+         <index name="idx_person_first_name_dmetaphone" unique="false"/>
+         <index name="idx_person_first_name_norm" unique="false"/>
+         <index name="idx_person_first_name_search" unique="false">
+            <column ascending="true" name="first_name"/>
+         </index>
+         <index name="idx_person_full_name_trgm" unique="false"/>
+         <index name="idx_person_last_name_dmetaphone" unique="false"/>
+         <index name="idx_person_last_name_norm" unique="false"/>
+         <index name="idx_person_last_name_search" unique="false">
+            <column ascending="true" name="last_name"/>
+         </index>
          <index name="UQ_person_party_guid" unique="true">
             <column ascending="true" name="party_guid"/>
+         </index>
+      </table>
+      <table name="person_facial_hair_style_code" remarks="A junction table associating a person with their facial hair styles. A person may have multiple facial hair styles." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="person_facial_hair_style_code_guid" nullable="false" remarks="A system generated unique identifier for the person facial hair style association." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="person_guid" nullable="false" remarks="The person the facial hair style is associated with. References person." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="person_guid" foreignKey="person_facial_hair_style_code_person_fk" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="facial_hair_style_code" nullable="false" remarks="The facial hair style associated with the person. References facial_hair_style_code." size="16" type="varchar" typeCode="12">
+            <parent column="facial_hair_style_code" foreignKey="person_facial_hair_style_code_facial_hair_style_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="facial_hair_style_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the person facial hair style association is active. Used to support soft deletes." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the person facial hair style association." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the person facial hair style association was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the person facial hair style association." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the person facial hair style association was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="person_facial_hair_style_code_guid" sequenceNumberInPK="1"/>
+         <index name="person_facial_hair_style_code_pk" unique="true">
+            <column ascending="true" name="person_facial_hair_style_code_guid"/>
+         </index>
+      </table>
+      <table name="person_facial_hair_style_code_h" remarks="Stores the audit history for person to facial hair style relationship records." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_person_facial_hair_style_code_guid" nullable="false" remarks="The system-generated unique identifier for the person to facial hair style relationship history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique identifier of the person to facial hair style relationship record affected by the operation." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The type of database operation executed on the person to facial hair style relationship record. For example I = Insert, U = Update, D = Delete." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that executed the operation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the person to facial hair style relationship record after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_person_facial_hair_style_code_guid" sequenceNumberInPK="1"/>
+         <index name="pk_h_person_facial_hair_style_code" unique="true">
+            <column ascending="true" name="h_person_facial_hair_style_code_guid"/>
          </index>
       </table>
       <table name="person_h" remarks="History table for person table" schema="shared" type="TABLE">
@@ -755,6 +1462,41 @@
          <primaryKey column="h_person_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_person" unique="true">
             <column ascending="true" name="h_person_guid"/>
+         </index>
+      </table>
+      <table name="sex_code" remarks="Contains the sex options used by both people (as recorded on their government-issued ID) and wildlife. For example M = Male, F = Female, U = Unknown, X = Unspecified or another gender." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="sex_code" nullable="false" remarks="A human readable code used to identify a sex." size="16" type="varchar" typeCode="12">
+            <child column="sex_code" foreignKey="fk_person__sex_code" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the sex." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the sex." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the sexes should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a sex is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the sex." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the sex was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the sex." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the sex was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="sex_code" sequenceNumberInPK="1"/>
+         <index name="sex_pk" unique="true">
+            <column ascending="true" name="sex_code"/>
+         </index>
+      </table>
+      <table name="species_code" remarks="Contains the list of animal species supported by the system. For example BLKBEAR = Black Bear, MOOSE = Moose." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="species_code" nullable="false" remarks="A human readable code used to identify a species." size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the species." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the species." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the species should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a species is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="5" name="complaint_ind" nullable="false" remarks="A boolean indicator to determine if a species is available for selection on a complaint." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="6" name="large_carnivore_ind" nullable="false" remarks="A boolean indicator to determine if a species is a large carnivore." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="display_on_complaint_ind" nullable="false" remarks="A boolean indicator to determine if a species is available for selection on a complaint." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="create_user_id" nullable="false" remarks="The id of the user that created the species." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="9" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the species was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="update_user_id" nullable="true" remarks="The id of the user that updated the species." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the species was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="species_code" sequenceNumberInPK="1"/>
+         <index name="species_code_pk" unique="true">
+            <column ascending="true" name="species_code"/>
          </index>
       </table>
       <table name="team" remarks="Contains information about teams within the system." schema="shared" type="TABLE">
@@ -808,6 +1550,21 @@
          <primaryKey column="h_team_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_team" unique="true">
             <column ascending="true" name="h_team_guid"/>
+         </index>
+      </table>
+      <table name="wildlife_management_unit_code" remarks="Contains the list of wildlife management units in British Columbia. For example 1-1 = Wildlife Management Unit 1-1 in Region 1." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="wildlife_management_unit_code" nullable="false" remarks="A human readable code used to identify a wildlife management unit." size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the wildlife management unit." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the wildlife management unit." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the wildlife management unit should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a wildlife management unit is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the wildlife management unit." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the wildlife management unit was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the wildlife management unit." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the wildlife management unit was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="wildlife_management_unit_code" sequenceNumberInPK="1"/>
+         <index name="wildlife_management_unit_code_pk" unique="true">
+            <column ascending="true" name="wildlife_management_unit_code"/>
          </index>
       </table>
    </tables>
@@ -874,6 +1631,29 @@
 END;]]></definition>
          <parameters>
             <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="f_match_norm(text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"><![CDATA[SELECT regexp_replace(shared.f_unaccent(lower($1)), '[^a-z0-9]', '', 'g')]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="f_person_full_name(first_name text, middle_names text, last_name text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"><![CDATA[SELECT shared.f_unaccent(lower(first_name || ' ' || coalesce(middle_names, '') || ' ' || last_name))]]></definition>
+         <parameters>
+            <parameter mode="IN" name="first_name" type="text"/>
+            <parameter mode="IN" name="middle_names" type="text"/>
+            <parameter mode="IN" name="last_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="f_unaccent(text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"><![CDATA[SELECT public.unaccent('public.unaccent', $1)]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="update_audit_columns()" returnType="trigger" securityType="INVOKER" type="FUNCTION">

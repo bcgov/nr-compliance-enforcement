@@ -166,7 +166,7 @@
                                     <td><p>Foreign key to investigation. Unique identifier for the investigation.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="legislation_guid_ref">legislation_guid_ref</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="legislation_guid_ref">legislation_guid_ref</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -267,6 +267,108 @@
                                     </td>
                                     <td><p>The timestamp when the cross reference was last updated. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
+                                <tr>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="contravention_date">contravention_date</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date the contravention was suspected to have occurred.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="geo_organization_unit_code_ref">geo_organization_unit_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced foreign key to shared.geo_organization_unit_code.  The community where the contravention was suspected to have taken place.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="wildlife_management_unit_code_ref">wildlife_management_unit_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced foreign key to shared.wildlife_managinment_unit_code.wildlife_management_unit_code.  A reference to the wildlife management unit in which the contravention involving an animal occurred.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="species_code_ref">species_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced foreign key to shared.species.species_code. A reference to the species of animal involved in the contravention.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="species_other_text">species_other_text</span></td>
+                                    <td>varchar</td>
+                                    <td>256</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The user entered description of the species of animal involved in the contravention. This value is only populated when the species is recorded as other.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="quantity">quantity</span></td>
+                                    <td>int4</td>
+                                    <td>10</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The number of animals of the recorded species involved in the contravention.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -303,6 +405,18 @@
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>contravention_guid</td>
                                 </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_contravention_contravention_date</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>contravention_date</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_contravention_legislation_guid_ref</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>legislation_guid_ref</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
@@ -326,21 +440,26 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="contravention.html" target="_top" title="contravention" alt="" coords="395,32,761,336">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="5,64,351,299">
-<area shape="rect" id="node3" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="805,5,1097,181">
+<area shape="rect" id="node1" href="contravention.html" target="_top" title="contravention" alt="" coords="395,32,864,512">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="5,64,351,357">
+<area shape="rect" id="node3" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="908,5,1200,181">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/contravention.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="787,5,1027,93">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,287,680,521">
-<area shape="rect" id="node6" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,348,291,436">
-<area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="724,111,1091,415">
-<area shape="rect" id="node4" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1135,228,1427,404">
-<area shape="rect" id="node5" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="791,432,1024,520">
-<area shape="rect" id="node7" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="767,537,1048,625">
+<area shape="rect" id="node1" href="activity_note.html" target="_top" title="activity_note" alt="" coords="1295,5,1477,93">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="337,204,683,497">
+<area shape="rect" id="node3" href="task.html" target="_top" title="task" alt="" coords="905,139,1018,227">
+<area shape="rect" id="node10" href="investigation_source_code.html" target="_top" title="investigation_source_code" alt="" coords="5,383,293,471">
+<area shape="rect" id="node11" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="7,265,292,353">
+<area shape="rect" id="node4" href="contravention.html" target="_top" title="contravention" alt="" coords="727,280,1196,760">
+<area shape="rect" id="node5" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1240,515,1532,691">
+<area shape="rect" id="node6" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="845,777,1078,865">
+<area shape="rect" id="node7" href="diary_date.html" target="_top" title="diary_date" alt="" coords="1305,111,1467,199">
+<area shape="rect" id="node8" href="enforcement_action.html" target="_top" title="enforcement_action" alt="" coords="1576,517,1816,605">
+<area shape="rect" id="node9" href="exhibit.html" target="_top" title="exhibit" alt="" coords="1318,216,1454,304">
+<area shape="rect" id="node12" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="821,883,1102,971">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/contravention.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

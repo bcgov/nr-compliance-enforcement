@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>Stores contact details for individuals, linking each contact method to a person and a type (e.g., email, phone).</p>
+                            <p>Stores phone, email, and other contact methods associated with a party (person or business).</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -136,13 +136,13 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Primary key: System generated unique identifier for a contact method.</p></td>
+                                    <td><p>The system-generated unique identifier for the contact method record.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="person_guid">person_guid</span></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="party_guid">party_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -152,13 +152,13 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="contact_method.person_guid references person.person_guid via fk_contact_method_person"><a href='person.html'>person</a><span class='relatedKey'>.person_guid</span></td>
-                                                <td class="constraint detail">fk_contact_method_person</td>
-                                                <td class="constraint detail"><span title='Cascade on delete:&#10;Deletion of parent deletes child'>C</span></td>
+                                                <td title="contact_method.party_guid references party.party_guid via contact_method_party_fk"><a href='party.html'>party</a><span class='relatedKey'>.party_guid</span></td>
+                                                <td class="constraint detail">contact_method_party_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>Foreign key: References person.person_guid.</p></td>
+                                    <td><p>The unique identifier of the party associated with the contact method. Only one of party_guid or address_guid is allowed.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="contact_method_type">contact_method_type</span></td>
@@ -174,19 +174,19 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="contact_method.contact_method_type references contact_method_type_code.contact_method_type_code via fk_contact_method_type"><a href='contact_method_type_code.html'>contact_method_type_code</a><span class='relatedKey'>.contact_method_type_code</span></td>
-                                                <td class="constraint detail">fk_contact_method_type</td>
+                                                <td title="contact_method.contact_method_type references contact_method_type_code.contact_method_type_code via contact_method_type_fk"><a href='contact_method_type_code.html'>contact_method_type_code</a><span class='relatedKey'>.contact_method_type_code</span></td>
+                                                <td class="constraint detail">contact_method_type_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>Foreign key: References contact_method_type_code.contact_method_type_code.</p></td>
+                                    <td><p>The type of contact method. References contact_method_type_code (e.g. PHONE, EMAIL).</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="contact_value">contact_value</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="contact_value">contact_value</span></td>
                                     <td>varchar</td>
                                     <td>512</td>
-                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -197,7 +197,41 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A contact method (e.g., phone number, email address) for a person.</p></td>
+                                    <td><p>The contact value itself (phone number, email address, etc.).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="is_primary">is_primary</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>false</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A boolean indicator of whether this is the primary contact method of its type for the party.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="active_ind">active_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>true</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A boolean indicator to determine if the contact method is active.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -231,7 +265,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the contact method was created. The timestamp is stored in UTC with no offset.</p></td>
+                                    <td><p>The timestamp when the contact method was created. The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -265,7 +299,29 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the contact method was updated. The timestamp is stored in UTC with no offset.</p></td>
+                                    <td><p>The timestamp when the contact method was updated. The timestamp is stored in UTC with no Offset.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="address_guid">address_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="contact_method.address_guid references address.address_guid via contact_method_address_fk"><a href='address.html'>address</a><span class='relatedKey'>.address_guid</span></td>
+                                                <td class="constraint detail">contact_method_address_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The unique identifier of the office (address) associated with the contact method. Only one of party_guid or address_guid is allowed.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -298,14 +354,76 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> contact_method_pkey</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> contact_method_pk</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>contact_method_guid</td>
                                 </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> contact_method_primary_unique</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>party_guid + contact_method_type</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_contact_method_emailaddr_lower</td>
+                                    <td>Performance</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_contact_method_party</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>party_guid</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_contact_method_phone_norm</td>
+                                    <td>Performance</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_contact_method_value_search</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>contact_value</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 class="box-title">Check Constraints</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="check_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Constraint</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>contact_method_parent_chk</td>
+                                    <td>((num_nonnulls(party_guid, address_guid) &#61; 1))</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="box box-primary">
                         <div class="box-header with-border">
@@ -322,24 +440,64 @@
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
                                     <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="contact_method.html" target="_top" title="contact_method" alt="" coords="345,41,712,345">
-<area shape="rect" id="node2" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="5,169,301,287">
-<area shape="rect" id="node3" href="person.html" target="_top" title="person" alt="" coords="37,5,269,152">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="317,275,587,539">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="5,184,260,360">
+<area shape="rect" id="node3" href="contact_method.html" target="_top" title="contact_method" alt="" coords="644,5,1011,397">
+<area shape="rect" id="node4" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="304,113,600,231">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/contact_method.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="contact_method.html" target="_top" title="contact_method" alt="" coords="512,41,879,345">
-<area shape="rect" id="node2" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="172,169,468,287">
-<area shape="rect" id="node3" href="person.html" target="_top" title="person" alt="" coords="204,5,436,152">
-<area shape="rect" id="node4" href="party.html" target="_top" title="party" alt="" coords="5,37,128,125">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="664,111,805,199">
+<area shape="rect" id="node2" href="country_code.html" target="_top" title="country_code" alt="" coords="17,60,203,148">
+<area shape="rect" id="node3" href="country_subdivision_code.html" target="_top" title="country_subdivision_code" alt="" coords="259,60,543,148">
+<area shape="rect" id="node4" href="party.html" target="_top" title="party" alt="" coords="339,283,462,371">
+<area shape="rect" id="node10" href="app_user.html" target="_top" title="app_user" alt="" coords="35,332,185,420">
+<area shape="rect" id="node11" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="5,227,215,315">
+<area shape="rect" id="node5" href="alias.html" target="_top" title="alias" alt="" coords="677,321,793,409">
+<area shape="rect" id="node6" href="business.html" target="_top" title="business" alt="" coords="660,427,809,515">
+<area shape="rect" id="node7" href="business_person_address_xref.html" target="_top" title="business_person_address_xref" alt="" coords="951,108,1269,196">
+<area shape="rect" id="node8" href="contact_method.html" target="_top" title="contact_method" alt="" coords="927,460,1293,852">
+<area shape="rect" id="node9" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="587,568,883,685">
+<area shape="rect" id="node12" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="625,216,844,304">
+<area shape="rect" id="node13" href="person.html" target="_top" title="person" alt="" coords="667,5,802,93">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/contact_method.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="317,275,587,539">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="5,184,260,360">
+<area shape="rect" id="node3" href="contact_method.html" target="_top" title="contact_method" alt="" coords="644,5,1011,397">
+<area shape="rect" id="node4" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="304,113,600,231">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/contact_method.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="664,111,805,199">
+<area shape="rect" id="node2" href="country_code.html" target="_top" title="country_code" alt="" coords="17,60,203,148">
+<area shape="rect" id="node3" href="country_subdivision_code.html" target="_top" title="country_subdivision_code" alt="" coords="259,60,543,148">
+<area shape="rect" id="node4" href="party.html" target="_top" title="party" alt="" coords="339,283,462,371">
+<area shape="rect" id="node11" href="app_user.html" target="_top" title="app_user" alt="" coords="35,332,185,420">
+<area shape="rect" id="node12" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="5,227,215,315">
+<area shape="rect" id="node5" href="address_h.html" target="_top" title="address_h" alt="" coords="1031,161,1189,249">
+<area shape="rect" id="node6" href="alias.html" target="_top" title="alias" alt="" coords="677,321,793,409">
+<area shape="rect" id="node7" href="business.html" target="_top" title="business" alt="" coords="660,427,809,515">
+<area shape="rect" id="node8" href="business_person_address_xref.html" target="_top" title="business_person_address_xref" alt="" coords="951,56,1269,144">
+<area shape="rect" id="node9" href="contact_method.html" target="_top" title="contact_method" alt="" coords="927,460,1293,852">
+<area shape="rect" id="node10" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="587,568,883,685">
+<area shape="rect" id="node13" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="625,216,844,304">
+<area shape="rect" id="node14" href="person.html" target="_top" title="person" alt="" coords="667,5,802,93">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/contact_method.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

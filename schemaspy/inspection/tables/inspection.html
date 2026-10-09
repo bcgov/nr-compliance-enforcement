@@ -205,7 +205,7 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="inspection_opened_utc_timestamp">inspection_opened_utc_timestamp</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="inspection_opened_utc_timestamp">inspection_opened_utc_timestamp</span></td>
                                     <td>timestamp</td>
                                     <td>29,6</td>
                                     <td title=''></td>
@@ -374,6 +374,23 @@
                                     </td>
                                     <td><p>ID of the user who created this inspection. This is a business field separate from the audit create_user_id column.</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="geo_organization_unit_code_ref">geo_organization_unit_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>10</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.geo_organization_unit_code. A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -411,6 +428,12 @@
                                     <td>inspection_guid</td>
                                 </tr>
                                 <tr>
+                                    <td title='Indexed'>idx_inspection_agency_status_opened</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Descending'>Desc</span></td>
+                                    <td>owned_by_agency_ref + inspection_status + inspection_opened_utc_timestamp</td>
+                                </tr>
+                                <tr>
                                     <td title='Indexed'>idx_inspection_location_geometry_point</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
@@ -445,7 +468,7 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,143,807,623">
+<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,143,807,652">
 <area shape="rect" id="node2" href="inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,233,269,351">
 <area shape="rect" id="node3" href="inspection_party.html" target="_top" title="inspection_party" alt="" coords="859,5,1115,181">
 <area shape="rect" id="node4" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="851,199,1124,375">
@@ -454,13 +477,13 @@
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,111,807,591">
+<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,111,807,620">
 <area shape="rect" id="node2" href="inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,201,269,319">
 <area shape="rect" id="node3" href="inspection_business.html" target="_top" title="inspection_business" alt="" coords="1168,5,1407,93">
 <area shape="rect" id="node4" href="inspection_party.html" target="_top" title="inspection_party" alt="" coords="859,55,1115,231">
 <area shape="rect" id="node5" href="inspection_person.html" target="_top" title="inspection_person" alt="" coords="1175,111,1399,199">
-<area shape="rect" id="node6" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="851,397,1124,573">
-<area shape="rect" id="node7" href="officer_inspection_xref_code.html" target="_top" title="officer_inspection_xref_code" alt="" coords="408,608,712,696">
+<area shape="rect" id="node6" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="851,412,1124,588">
+<area shape="rect" id="node7" href="officer_inspection_xref_code.html" target="_top" title="officer_inspection_xref_code" alt="" coords="408,637,712,725">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/inspection.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

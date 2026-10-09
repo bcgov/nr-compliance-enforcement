@@ -10,7 +10,6 @@ feature_code
 gir_type_code
 hwcr_complaint_nature_code
 linked_complaint_xref_type_code
-species_code
 staging_activity_code
 staging_status_code
 comp_mthd_recv_cd_agcy_cd_xref

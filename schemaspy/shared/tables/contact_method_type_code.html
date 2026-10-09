@@ -131,8 +131,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="contact_method.contact_method_type references contact_method_type_code.contact_method_type_code via fk_contact_method_type"><a href='contact_method.html'>contact_method</a><span class='relatedKey'>.contact_method_type</span></td>
-                                                <td class="constraint detail">fk_contact_method_type</td>
+                                                <td title="contact_method.contact_method_type references contact_method_type_code.contact_method_type_code via contact_method_type_fk"><a href='contact_method.html'>contact_method</a><span class='relatedKey'>.contact_method_type</span></td>
+                                                <td class="constraint detail">contact_method_type_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -338,16 +338,17 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="contact_method.html" target="_top" title="contact_method" alt="" coords="441,5,673,181">
+<area shape="rect" id="node1" href="contact_method.html" target="_top" title="contact_method" alt="" coords="441,5,673,240">
 <area shape="rect" id="node2" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="5,61,397,395">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/contact_method_type_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="contact_method.html" target="_top" title="contact_method" alt="" coords="441,15,673,191">
-<area shape="rect" id="node2" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="5,111,397,444">
-<area shape="rect" id="node3" href="person.html" target="_top" title="person" alt="" coords="134,5,269,93">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="297,423,439,511">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="5,211,128,299">
+<area shape="rect" id="node3" href="contact_method.html" target="_top" title="contact_method" alt="" coords="608,16,840,251">
+<area shape="rect" id="node4" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="172,72,564,406">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/contact_method_type_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

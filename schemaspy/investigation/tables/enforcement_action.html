@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>enforcement_action - default.investigation</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.investigation</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>enforcement_action</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Records the enforcement action taken against a party for a specific contravention within an investigation.</p>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="enforcement_action_guid">enforcement_action_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>uuid_generate_v4()</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="administrative_penalty.enforcement_action_guid references enforcement_action.enforcement_action_guid via administrative_penalty_enforcement_action_guid_fkey"><a href='administrative_penalty.html'>administrative_penalty</a><span class='relatedKey'>.enforcement_action_guid</span></td>
+                                                <td class="constraint detail">administrative_penalty_enforcement_action_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="administrative_sanction.enforcement_action_guid references enforcement_action.enforcement_action_guid via administrative_sanction_enforcement_action_guid_fkey"><a href='administrative_sanction.html'>administrative_sanction</a><span class='relatedKey'>.enforcement_action_guid</span></td>
+                                                <td class="constraint detail">administrative_sanction_enforcement_action_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="court_prosecution.enforcement_action_guid references enforcement_action.enforcement_action_guid via court_prosecution_enforcement_action_guid_fkey"><a href='court_prosecution.html'>court_prosecution</a><span class='relatedKey'>.enforcement_action_guid</span></td>
+                                                <td class="constraint detail">court_prosecution_enforcement_action_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="enforcement_order.enforcement_action_guid references enforcement_action.enforcement_action_guid via enforcement_order_enforcement_action_guid_fkey"><a href='enforcement_order.html'>enforcement_order</a><span class='relatedKey'>.enforcement_action_guid</span></td>
+                                                <td class="constraint detail">enforcement_order_enforcement_action_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="restorative_justice.enforcement_action_guid references enforcement_action.enforcement_action_guid via restorative_justice_enforcement_action_guid_fkey"><a href='restorative_justice.html'>restorative_justice</a><span class='relatedKey'>.enforcement_action_guid</span></td>
+                                                <td class="constraint detail">restorative_justice_enforcement_action_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="ticket.enforcement_action_guid references enforcement_action.enforcement_action_guid via ticket_enforcement_action_guid_fkey"><a href='ticket.html'>ticket</a><span class='relatedKey'>.enforcement_action_guid</span></td>
+                                                <td class="constraint detail">ticket_enforcement_action_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="warning.enforcement_action_guid references enforcement_action.enforcement_action_guid via warning_enforcement_action_guid_fkey"><a href='warning.html'>warning</a><span class='relatedKey'>.enforcement_action_guid</span></td>
+                                                <td class="constraint detail">warning_enforcement_action_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Primary key. System generated unique identifier for the enforcement action.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="contravention_party_xref_guid">contravention_party_xref_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="enforcement_action.contravention_party_xref_guid references contravention_party_xref.contravention_party_xref_guid via enforcement_action_contravention_party_xref_guid_fkey"><a href='contravention_party_xref.html'>contravention_party_xref</a><span class='relatedKey'>.contravention_party_xref_guid</span></td>
+                                                <td class="constraint detail">enforcement_action_contravention_party_xref_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Foreign key to contravention_party_xref. Links the enforcement action to the specific party and contravention pairing it was issued against.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="enforcement_action_code">enforcement_action_code</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="enforcement_action.enforcement_action_code references enforcement_action_code.enforcement_action_code via enforcement_action_enforcement_action_code_fkey"><a href='enforcement_action_code.html'>enforcement_action_code</a><span class='relatedKey'>.enforcement_action_code</span></td>
+                                                <td class="constraint detail">enforcement_action_enforcement_action_code_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Foreign key to enforcement_action_code. Code representing the type of enforcement action taken.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="date_issued">date_issued</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date the enforcement action was issued. Defaults to the current date.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="app_user_guid_ref">app_user_guid_ref</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Cross schema foreign key (unenforced) to shared.app_user. Unique identifier for the application user that served the enforcement action. Defaults to the primary investigator of the investigation.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="active_ind">active_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>true</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A boolean indicator to determine if the enforcement action is active. Inactive values are retained for legacy data integrity and history.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="create_user_id">create_user_id</span></td>
+                                    <td>varchar</td>
+                                    <td>32</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The id of the user that created the enforcement action.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>now()</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The timestamp when the enforcement action was created. The timestamp is stored in UTC with no offset.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="update_user_id">update_user_id</span></td>
+                                    <td>varchar</td>
+                                    <td>32</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The id of the user that last updated the enforcement action.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The timestamp when the enforcement action was last updated. The timestamp is stored in UTC with no offset.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="comment">comment</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Comment for enforcement decision with &ldquo;Unfounded&rdquo; or &ldquo;Unsolved&rdquo; action codes.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="issuing_officer_guid_ref">issuing_officer_guid_ref</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Cross schema foreign key (unenforced) to shared.app_user. Unique identifier for the application user that issued the enforcement action. Defaults to the primary investigator of the investigation. Not applicable to Unfounded/Unsolved decisions.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="date_served">date_served</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date the enforcement action was served. Defaults to the current date. Not applicable to Unfounded/Unsolved decisions.</p></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> enforcement_action_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>enforcement_action_guid</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="administrative_penalty.html" target="_top" title="administrative_penalty" alt="" coords="812,5,1147,181">
+<area shape="rect" id="node2" href="enforcement_action.html" target="_top" title="enforcement_action" alt="" coords="341,641,768,1092">
+<area shape="rect" id="node5" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="5,592,297,768">
+<area shape="rect" id="node6" href="enforcement_action_code.html" target="_top" title="enforcement_action_code" alt="" coords="9,785,293,903">
+<area shape="rect" id="node3" href="administrative_sanction.html" target="_top" title="administrative_sanction" alt="" coords="838,199,1121,404">
+<area shape="rect" id="node4" href="court_prosecution.html" target="_top" title="court_prosecution" alt="" coords="832,421,1127,597">
+<area shape="rect" id="node7" href="enforcement_order.html" target="_top" title="enforcement_order" alt="" coords="852,615,1107,820">
+<area shape="rect" id="node8" href="restorative_justice.html" target="_top" title="restorative_justice" alt="" coords="852,837,1107,984">
+<area shape="rect" id="node9" href="ticket.html" target="_top" title="ticket" alt="" coords="831,1001,1127,1207">
+<area shape="rect" id="node10" href="warning.html" target="_top" title="warning" alt="" coords="854,1224,1105,1371">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/enforcement_action.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="administrative_penalty.html" target="_top" title="administrative_penalty" alt="" coords="1089,5,1424,181">
+<area shape="rect" id="node2" href="administrative_penalty_status_code.html" target="_top" title="administrative_penalty_status_code" alt="" coords="649,67,1015,155">
+<area shape="rect" id="node3" href="enforcement_action.html" target="_top" title="enforcement_action" alt="" coords="619,225,1045,676">
+<area shape="rect" id="node7" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="283,257,575,433">
+<area shape="rect" id="node12" href="enforcement_action_code.html" target="_top" title="enforcement_action_code" alt="" coords="287,571,571,688">
+<area shape="rect" id="node4" href="administrative_sanction.html" target="_top" title="administrative_sanction" alt="" coords="1115,637,1398,843">
+<area shape="rect" id="node5" href="sanction_status_code.html" target="_top" title="sanction_status_code" alt="" coords="707,904,957,992">
+<area shape="rect" id="node6" href="sanction_type_code.html" target="_top" title="sanction_type_code" alt="" coords="715,799,949,887">
+<area shape="rect" id="node8" href="contravention.html" target="_top" title="contravention" alt="" coords="25,252,219,340">
+<area shape="rect" id="node9" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="5,357,239,445">
+<area shape="rect" id="node10" href="court_prosecution.html" target="_top" title="court_prosecution" alt="" coords="1109,860,1404,1036">
+<area shape="rect" id="node11" href="court_prosecution_status_code.html" target="_top" title="court_prosecution_status_code" alt="" coords="669,1009,995,1097">
+<area shape="rect" id="node13" href="enforcement_action_code_agency_xref.html" target="_top" title="enforcement_action_code_agency_xref" alt="" coords="639,693,1025,781">
+<area shape="rect" id="node14" href="enforcement_order.html" target="_top" title="enforcement_order" alt="" coords="1129,1053,1384,1259">
+<area shape="rect" id="node15" href="order_status_code.html" target="_top" title="order_status_code" alt="" coords="720,1220,944,1308">
+<area shape="rect" id="node16" href="order_type_code.html" target="_top" title="order_type_code" alt="" coords="727,1115,937,1203">
+<area shape="rect" id="node17" href="restorative_justice.html" target="_top" title="restorative_justice" alt="" coords="1129,363,1384,509">
+<area shape="rect" id="node18" href="ticket.html" target="_top" title="ticket" alt="" coords="1109,1276,1405,1481">
+<area shape="rect" id="node19" href="ticket_outcome_code.html" target="_top" title="ticket_outcome_code" alt="" coords="709,1331,955,1419">
+<area shape="rect" id="node20" href="ticket_type_code.html" target="_top" title="ticket_type_code" alt="" coords="726,1436,938,1524">
+<area shape="rect" id="node21" href="warning.html" target="_top" title="warning" alt="" coords="1131,199,1382,345">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/enforcement_action.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.2.4</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

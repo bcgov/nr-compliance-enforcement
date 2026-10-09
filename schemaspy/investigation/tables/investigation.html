@@ -131,13 +131,23 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="continuation_report.investigation_guid references investigation.investigation_guid via fk_investigation_guid"><a href='continuation_report.html'>continuation_report</a><span class='relatedKey'>.investigation_guid</span></td>
+                                                <td title="activity_note.investigation_guid references investigation.investigation_guid via fk_investigation_guid"><a href='activity_note.html'>activity_note</a><span class='relatedKey'>.investigation_guid</span></td>
                                                 <td class="constraint detail">fk_investigation_guid</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
                                                 <td title="contravention.investigation_guid references investigation.investigation_guid via contravention_investigation_guid_fkey"><a href='contravention.html'>contravention</a><span class='relatedKey'>.investigation_guid</span></td>
                                                 <td class="constraint detail">contravention_investigation_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="diary_date.investigation_guid references investigation.investigation_guid via fk_diary_date_investigation"><a href='diary_date.html'>diary_date</a><span class='relatedKey'>.investigation_guid</span></td>
+                                                <td class="constraint detail">fk_diary_date_investigation</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="exhibit.investigation_guid references investigation.investigation_guid via fk_exhibit__investigation"><a href='exhibit.html'>exhibit</a><span class='relatedKey'>.investigation_guid</span></td>
+                                                <td class="constraint detail">fk_exhibit__investigation</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
@@ -148,6 +158,11 @@
                                             <tr>
                                                 <td title="officer_investigation_xref.investigation_guid references investigation.investigation_guid via FK_officer_investigation_xref__investigation_guid"><a href='officer_investigation_xref.html'>officer_investigation_xref</a><span class='relatedKey'>.investigation_guid</span></td>
                                                 <td class="constraint detail">FK_officer_investigation_xref__investigation_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="task.investigation_guid references investigation.investigation_guid via task_investigation_guid_fkey"><a href='task.html'>task</a><span class='relatedKey'>.investigation_guid</span></td>
+                                                <td class="constraint detail">task_investigation_guid_fkey</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -215,7 +230,7 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="investigation_opened_utc_timestamp">investigation_opened_utc_timestamp</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="investigation_opened_utc_timestamp">investigation_opened_utc_timestamp</span></td>
                                     <td>timestamp</td>
                                     <td>29,6</td>
                                     <td title=''></td>
@@ -436,12 +451,12 @@
                                     <td><p>ID of the user who is a file coordinator with this investigation. This is a business field separate from the audit create_user_id column.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="discovery_date">discovery_date</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
+                                    <td><span id="discovery_date_utc_date">discovery_date_utc_date</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
-                                    <td title=''></td>
-                                    <td>now()</td>
+                                    <td>null</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
@@ -450,7 +465,63 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the investigation was discovered.</p></td>
+                                    <td><p>The date when the investigation was discovered.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="discovery_date_utc_time">discovery_date_utc_time</span></td>
+                                    <td>time</td>
+                                    <td>15,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The time when the investigation was discovered.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="geo_organization_unit_code_ref">geo_organization_unit_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>10</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="investigation_source">investigation_source</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="investigation.investigation_source references investigation_source_code.investigation_source_code via fk_investigation_source_code"><a href='investigation_source_code.html'>investigation_source_code</a><span class='relatedKey'>.investigation_source_code</span></td>
+                                                <td class="constraint detail">fk_investigation_source_code</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The source code for the investigation</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -489,6 +560,12 @@
                                     <td>investigation_guid</td>
                                 </tr>
                                 <tr>
+                                    <td title='Indexed'>idx_investigation_agency_status_opened</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Descending'>Desc</span></td>
+                                    <td>owned_by_agency_ref + investigation_status + investigation_opened_utc_timestamp</td>
+                                </tr>
+                                <tr>
                                     <td title='Indexed'>idx_investigation_location_geometry_point</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
@@ -519,33 +596,94 @@
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
                                     <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="907,5,1175,152">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,293,849,891">
-<area shape="rect" id="node4" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,384,291,501">
-<area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="925,169,1157,316">
-<area shape="rect" id="node5" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="913,333,1169,509">
-<area shape="rect" id="node6" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="893,527,1188,703">
+<area shape="rect" id="node1" href="activity_note.html" target="_top" title="activity_note" alt="" coords="1289,5,1557,211">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="337,375,852,1060">
+<area shape="rect" id="node3" href="task.html" target="_top" title="task" alt="" coords="929,348,1197,583">
+<area shape="rect" id="node7" href="investigation_source_code.html" target="_top" title="investigation_source_code" alt="" coords="5,964,293,1081">
+<area shape="rect" id="node8" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="7,465,292,583">
+<area shape="rect" id="node4" href="contravention.html" target="_top" title="contravention" alt="" coords="896,125,1231,331">
+<area shape="rect" id="node5" href="diary_date.html" target="_top" title="diary_date" alt="" coords="1289,269,1557,445">
+<area shape="rect" id="node6" href="exhibit.html" target="_top" title="exhibit" alt="" coords="1275,483,1571,688">
+<area shape="rect" id="node9" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="908,636,1219,812">
+<area shape="rect" id="node10" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="916,829,1211,1005">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/investigation.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="907,5,1175,152">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,196,849,793">
-<area shape="rect" id="node6" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,287,291,404">
-<area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="925,169,1157,316">
-<area shape="rect" id="node4" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1232,187,1513,275">
-<area shape="rect" id="node5" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="913,333,1169,509">
-<area shape="rect" id="node7" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1243,307,1503,395">
-<area shape="rect" id="node8" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1250,412,1495,500">
-<area shape="rect" id="node9" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="893,637,1188,813">
-<area shape="rect" id="node10" href="officer_investigation_xref_code.html" target="_top" title="officer_investigation_xref_code" alt="" coords="429,811,755,899">
+<area shape="rect" id="node1" href="activity_note.html" target="_top" title="activity_note" alt="" coords="1368,41,1551,129">
+<area shape="rect" id="node2" href="activity_note_code.html" target="_top" title="activity_note_code" alt="" coords="950,5,1177,93">
+<area shape="rect" id="node3" href="investigation.html" target="_top" title="investigation" alt="" coords="337,249,852,935">
+<area shape="rect" id="node4" href="task.html" target="_top" title="task" alt="" coords="1007,147,1120,235">
+<area shape="rect" id="node10" href="investigation_source_code.html" target="_top" title="investigation_source_code" alt="" coords="5,839,293,956">
+<area shape="rect" id="node11" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="7,340,292,457">
+<area shape="rect" id="node21" href="task_category_type_code.html" target="_top" title="task_category_type_code" alt="" coords="457,39,733,127">
+<area shape="rect" id="node22" href="task_status_code.html" target="_top" title="task_status_code" alt="" coords="487,144,702,232">
+<area shape="rect" id="node5" href="contravention.html" target="_top" title="contravention" alt="" coords="896,340,1231,545">
+<area shape="rect" id="node6" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1319,357,1600,445">
+<area shape="rect" id="node7" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="908,671,1219,847">
+<area shape="rect" id="node8" href="diary_date.html" target="_top" title="diary_date" alt="" coords="1378,252,1541,340">
+<area shape="rect" id="node9" href="exhibit.html" target="_top" title="exhibit" alt="" coords="1391,147,1527,235">
+<area shape="rect" id="node12" href="investigation_address.html" target="_top" title="investigation_address" alt="" coords="1333,673,1586,761">
+<area shape="rect" id="node13" href="investigation_alias.html" target="_top" title="investigation_alias" alt="" coords="1345,1025,1573,1113">
+<area shape="rect" id="node14" href="investigation_attachment_reference.html" target="_top" title="investigation_attachment_reference" alt="" coords="1275,463,1644,551">
+<area shape="rect" id="node15" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1329,568,1589,656">
+<area shape="rect" id="node16" href="investigation_contact_method.html" target="_top" title="investigation_contact_method" alt="" coords="1688,813,2008,901">
+<area shape="rect" id="node17" href="investigation_party_external_id.html" target="_top" title="investigation_party_external_id" alt="" coords="1295,779,1624,867">
+<area shape="rect" id="node18" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1337,884,1582,972">
+<area shape="rect" id="node19" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="916,877,1211,1053">
+<area shape="rect" id="node20" href="officer_investigation_xref_code.html" target="_top" title="officer_investigation_xref_code" alt="" coords="432,952,757,1040">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/investigation.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity_note.html" target="_top" title="activity_note" alt="" coords="1289,5,1557,211">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="337,375,852,1060">
+<area shape="rect" id="node3" href="task.html" target="_top" title="task" alt="" coords="929,348,1197,583">
+<area shape="rect" id="node7" href="investigation_source_code.html" target="_top" title="investigation_source_code" alt="" coords="5,964,293,1081">
+<area shape="rect" id="node8" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="7,465,292,583">
+<area shape="rect" id="node4" href="contravention.html" target="_top" title="contravention" alt="" coords="896,125,1231,331">
+<area shape="rect" id="node5" href="diary_date.html" target="_top" title="diary_date" alt="" coords="1289,269,1557,445">
+<area shape="rect" id="node6" href="exhibit.html" target="_top" title="exhibit" alt="" coords="1275,483,1571,688">
+<area shape="rect" id="node9" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="908,636,1219,812">
+<area shape="rect" id="node10" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="916,829,1211,1005">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/investigation.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity_note.html" target="_top" title="activity_note" alt="" coords="1368,41,1551,129">
+<area shape="rect" id="node2" href="activity_note_code.html" target="_top" title="activity_note_code" alt="" coords="950,5,1177,93">
+<area shape="rect" id="node3" href="investigation.html" target="_top" title="investigation" alt="" coords="337,249,852,935">
+<area shape="rect" id="node4" href="task.html" target="_top" title="task" alt="" coords="1007,147,1120,235">
+<area shape="rect" id="node11" href="investigation_source_code.html" target="_top" title="investigation_source_code" alt="" coords="5,839,293,956">
+<area shape="rect" id="node12" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="7,340,292,457">
+<area shape="rect" id="node22" href="task_category_type_code.html" target="_top" title="task_category_type_code" alt="" coords="457,39,733,127">
+<area shape="rect" id="node23" href="task_status_code.html" target="_top" title="task_status_code" alt="" coords="487,144,702,232">
+<area shape="rect" id="node5" href="contravention.html" target="_top" title="contravention" alt="" coords="896,340,1231,545">
+<area shape="rect" id="node6" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1319,357,1600,445">
+<area shape="rect" id="node7" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="908,671,1219,847">
+<area shape="rect" id="node8" href="diary_date.html" target="_top" title="diary_date" alt="" coords="1378,252,1541,340">
+<area shape="rect" id="node9" href="exhibit.html" target="_top" title="exhibit" alt="" coords="1391,147,1527,235">
+<area shape="rect" id="node10" href="exhibit_h.html" target="_top" title="exhibit_h" alt="" coords="1772,144,1924,232">
+<area shape="rect" id="node13" href="investigation_address.html" target="_top" title="investigation_address" alt="" coords="1333,673,1586,761">
+<area shape="rect" id="node14" href="investigation_alias.html" target="_top" title="investigation_alias" alt="" coords="1345,1025,1573,1113">
+<area shape="rect" id="node15" href="investigation_attachment_reference.html" target="_top" title="investigation_attachment_reference" alt="" coords="1275,463,1644,551">
+<area shape="rect" id="node16" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1329,568,1589,656">
+<area shape="rect" id="node17" href="investigation_contact_method.html" target="_top" title="investigation_contact_method" alt="" coords="1688,812,2008,900">
+<area shape="rect" id="node18" href="investigation_party_external_id.html" target="_top" title="investigation_party_external_id" alt="" coords="1295,779,1624,867">
+<area shape="rect" id="node19" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1337,884,1582,972">
+<area shape="rect" id="node20" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="916,877,1211,1053">
+<area shape="rect" id="node21" href="officer_investigation_xref_code.html" target="_top" title="officer_investigation_xref_code" alt="" coords="432,952,757,1040">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/investigation.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

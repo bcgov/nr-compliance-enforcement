@@ -28,7 +28,6 @@ schedule_sector_xref
 inaction_reason_code
 hwcr_outcome_actioned_by_code
 complaint_outcome
-sex_code
 sector_code
 schedule_code
 non_compliance_decision_matrix_code

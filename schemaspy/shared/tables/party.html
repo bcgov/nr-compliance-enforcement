@@ -131,8 +131,28 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
+                                                <td title="address.party_guid references party.party_guid via address_party_fk"><a href='address.html'>address</a><span class='relatedKey'>.party_guid</span></td>
+                                                <td class="constraint detail">address_party_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="alias.party_guid references party.party_guid via alias_party_fk"><a href='alias.html'>alias</a><span class='relatedKey'>.party_guid</span></td>
+                                                <td class="constraint detail">alias_party_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="business.party_guid references party.party_guid via FK_business_party"><a href='business.html'>business</a><span class='relatedKey'>.party_guid</span></td>
                                                 <td class="constraint detail">FK_business_party</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="contact_method.party_guid references party.party_guid via contact_method_party_fk"><a href='contact_method.html'>contact_method</a><span class='relatedKey'>.party_guid</span></td>
+                                                <td class="constraint detail">contact_method_party_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="party_external_id.party_guid references party.party_guid via party_external_id_party_fk"><a href='party_external_id.html'>party_external_id</a><span class='relatedKey'>.party_guid</span></td>
+                                                <td class="constraint detail">party_external_id_party_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
@@ -238,6 +258,45 @@
                                     </td>
                                     <td><p>The timestamp when the party was updated. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="created_by_app_user_guid">created_by_app_user_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="party.created_by_app_user_guid references app_user.app_user_guid via fk_party__created_by_app_user_guid"><a href='app_user.html'>app_user</a><span class='relatedKey'>.app_user_guid</span></td>
+                                                <td class="constraint detail">fk_party__created_by_app_user_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The app user that created the party. References app_user.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="active_ind">active_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>true</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates whether the global party profile is active. Set false when the party is removed from its last investigation or inspection.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -293,26 +352,107 @@
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
                                     <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="business.html" target="_top" title="business" alt="" coords="692,5,924,152">
-<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="281,115,648,360">
-<area shape="rect" id="node3" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="5,147,237,264">
-<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="692,169,924,316">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="768,399,1039,663">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="281,373,671,677">
+<area shape="rect" id="node6" href="app_user.html" target="_top" title="app_user" alt="" coords="5,552,237,787">
+<area shape="rect" id="node7" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="5,405,237,523">
+<area shape="rect" id="node3" href="alias.html" target="_top" title="alias" alt="" coords="787,5,1019,152">
+<area shape="rect" id="node4" href="business.html" target="_top" title="business" alt="" coords="787,169,1019,345">
+<area shape="rect" id="node5" href="contact_method.html" target="_top" title="contact_method" alt="" coords="1136,288,1368,523">
+<area shape="rect" id="node8" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="787,680,1019,885">
+<area shape="rect" id="node9" href="person.html" target="_top" title="person" alt="" coords="715,903,1092,1431">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/party.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="business.html" target="_top" title="business" alt="" coords="692,5,924,152">
-<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="281,115,648,360">
-<area shape="rect" id="node5" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="5,147,237,264">
-<area shape="rect" id="node3" href="contact_method.html" target="_top" title="contact_method" alt="" coords="968,172,1177,260">
-<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="692,169,924,316">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="1225,728,1366,816">
+<area shape="rect" id="node2" href="country_code.html" target="_top" title="country_code" alt="" coords="420,800,607,888">
+<area shape="rect" id="node3" href="country_subdivision_code.html" target="_top" title="country_subdivision_code" alt="" coords="726,800,1010,888">
+<area shape="rect" id="node4" href="party.html" target="_top" title="party" alt="" coords="673,127,1063,431">
+<area shape="rect" id="node6" href="app_user.html" target="_top" title="app_user" alt="" coords="397,477,629,712">
+<area shape="rect" id="node18" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="397,159,629,276">
+<area shape="rect" id="node5" href="alias.html" target="_top" title="alias" alt="" coords="1179,5,1411,152">
+<area shape="rect" id="node7" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,612,185,700">
+<area shape="rect" id="node8" href="office.html" target="_top" title="office" alt="" coords="229,612,353,700">
+<area shape="rect" id="node9" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="749,553,987,641">
+<area shape="rect" id="node10" href="business.html" target="_top" title="business" alt="" coords="1179,311,1411,487">
+<area shape="rect" id="node11" href="business_identifier.html" target="_top" title="business_identifier" alt="" coords="1570,313,1799,401">
+<area shape="rect" id="node12" href="business_person_address_xref.html" target="_top" title="business_person_address_xref" alt="" coords="1885,692,2204,780">
+<area shape="rect" id="node13" href="business_person_xref.html" target="_top" title="business_person_xref" alt="" coords="1560,657,1809,745">
+<area shape="rect" id="node14" href="person.html" target="_top" title="person" alt="" coords="1107,879,1484,1407">
+<area shape="rect" id="node21" href="approximate_age_code.html" target="_top" title="approximate_age_code" alt="" coords="737,905,999,993">
+<area shape="rect" id="node22" href="build_code.html" target="_top" title="build_code" alt="" coords="786,1257,950,1345">
+<area shape="rect" id="node23" href="complexion_code.html" target="_top" title="complexion_code" alt="" coords="760,1152,976,1240">
+<area shape="rect" id="node24" href="eye_colour_code.html" target="_top" title="eye_colour_code" alt="" coords="763,1573,973,1661">
+<area shape="rect" id="node25" href="gender_code.html" target="_top" title="gender_code" alt="" coords="778,1011,958,1099">
+<area shape="rect" id="node26" href="hair_colour_code.html" target="_top" title="hair_colour_code" alt="" coords="761,1363,975,1451">
+<area shape="rect" id="node27" href="hair_length_code.html" target="_top" title="hair_length_code" alt="" coords="761,1468,975,1556">
+<area shape="rect" id="node28" href="sex_code.html" target="_top" title="sex_code" alt="" coords="793,1679,943,1767">
+<area shape="rect" id="node15" href="case_file.html" target="_top" title="case_file" alt="" coords="795,659,941,747">
+<area shape="rect" id="node16" href="contact_method.html" target="_top" title="contact_method" alt="" coords="1580,208,1789,296">
+<area shape="rect" id="node17" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="1147,205,1443,293">
+<area shape="rect" id="node19" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="1179,504,1411,709">
+<area shape="rect" id="node20" href="party_external_id_code.html" target="_top" title="party_external_id_code" alt="" coords="737,448,999,536">
+<area shape="rect" id="node29" href="person_facial_hair_style_code.html" target="_top" title="person_facial_hair_style_code" alt="" coords="1528,881,1841,969">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/party.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="768,399,1039,663">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="281,373,671,677">
+<area shape="rect" id="node6" href="app_user.html" target="_top" title="app_user" alt="" coords="5,552,237,787">
+<area shape="rect" id="node7" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="5,405,237,523">
+<area shape="rect" id="node3" href="alias.html" target="_top" title="alias" alt="" coords="787,5,1019,152">
+<area shape="rect" id="node4" href="business.html" target="_top" title="business" alt="" coords="787,169,1019,345">
+<area shape="rect" id="node5" href="contact_method.html" target="_top" title="contact_method" alt="" coords="1136,288,1368,523">
+<area shape="rect" id="node8" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="787,680,1019,885">
+<area shape="rect" id="node9" href="person.html" target="_top" title="person" alt="" coords="715,903,1092,1431">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/party.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="1259,760,1401,848">
+<area shape="rect" id="node2" href="country_code.html" target="_top" title="country_code" alt="" coords="455,783,641,871">
+<area shape="rect" id="node3" href="country_subdivision_code.html" target="_top" title="country_subdivision_code" alt="" coords="761,783,1045,871">
+<area shape="rect" id="node4" href="party.html" target="_top" title="party" alt="" coords="708,425,1097,729">
+<area shape="rect" id="node7" href="app_user.html" target="_top" title="app_user" alt="" coords="432,100,664,335">
+<area shape="rect" id="node20" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="432,457,664,575">
+<area shape="rect" id="node5" href="address_h.html" target="_top" title="address_h" alt="" coords="1640,791,1799,879">
+<area shape="rect" id="node6" href="alias.html" target="_top" title="alias" alt="" coords="1214,403,1446,549">
+<area shape="rect" id="node8" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,53,185,141">
+<area shape="rect" id="node9" href="office.html" target="_top" title="office" alt="" coords="247,127,371,215">
+<area shape="rect" id="node10" href="park_area.html" target="_top" title="park_area" alt="" coords="229,232,388,320">
+<area shape="rect" id="node11" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="783,111,1022,199">
+<area shape="rect" id="node12" href="business.html" target="_top" title="business" alt="" coords="1214,567,1446,743">
+<area shape="rect" id="node13" href="business_identifier.html" target="_top" title="business_identifier" alt="" coords="1605,544,1834,632">
+<area shape="rect" id="node14" href="business_person_address_xref.html" target="_top" title="business_person_address_xref" alt="" coords="1920,649,2239,737">
+<area shape="rect" id="node15" href="business_person_xref.html" target="_top" title="business_person_xref" alt="" coords="1595,685,1844,773">
+<area shape="rect" id="node16" href="person.html" target="_top" title="person" alt="" coords="1141,868,1519,1396">
+<area shape="rect" id="node23" href="approximate_age_code.html" target="_top" title="approximate_age_code" alt="" coords="772,888,1033,976">
+<area shape="rect" id="node24" href="build_code.html" target="_top" title="build_code" alt="" coords="821,1240,985,1328">
+<area shape="rect" id="node25" href="complexion_code.html" target="_top" title="complexion_code" alt="" coords="795,1135,1011,1223">
+<area shape="rect" id="node26" href="eye_colour_code.html" target="_top" title="eye_colour_code" alt="" coords="798,1556,1007,1644">
+<area shape="rect" id="node27" href="gender_code.html" target="_top" title="gender_code" alt="" coords="813,993,993,1081">
+<area shape="rect" id="node28" href="hair_colour_code.html" target="_top" title="hair_colour_code" alt="" coords="796,1345,1009,1433">
+<area shape="rect" id="node29" href="hair_length_code.html" target="_top" title="hair_length_code" alt="" coords="796,1451,1009,1539">
+<area shape="rect" id="node30" href="sex_code.html" target="_top" title="sex_code" alt="" coords="827,1661,978,1749">
+<area shape="rect" id="node17" href="case_file.html" target="_top" title="case_file" alt="" coords="829,5,976,93">
+<area shape="rect" id="node18" href="contact_method.html" target="_top" title="contact_method" alt="" coords="1615,300,1824,388">
+<area shape="rect" id="node19" href="contact_method_type_code.html" target="_top" title="contact_method_type_code" alt="" coords="1182,297,1478,385">
+<area shape="rect" id="node21" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="1214,39,1446,244">
+<area shape="rect" id="node22" href="party_external_id_code.html" target="_top" title="party_external_id_code" alt="" coords="771,216,1034,304">
+<area shape="rect" id="node31" href="person_facial_hair_style_code.html" target="_top" title="person_facial_hair_style_code" alt="" coords="1563,896,1876,984">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/party.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

@@ -16,7 +16,6 @@ ipm_auth_category_code
 non_compliance_decision_matrix_code
 schedule_code
 sector_code
-sex_code
 complaint_outcome
 hwcr_outcome_actioned_by_code
 inaction_reason_code

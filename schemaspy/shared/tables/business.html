@@ -117,6 +117,16 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="business_identifier.business_guid references business.business_guid via business_identifier_business_fk"><a href='business_identifier.html'>business_identifier</a><span class='relatedKey'>.business_guid</span></td>
+                                                <td class="constraint detail">business_identifier_business_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="business_person_xref.business_guid references business.business_guid via business_person_xref_business_fk"><a href='business_person_xref.html'>business_person_xref</a><span class='relatedKey'>.business_guid</span></td>
+                                                <td class="constraint detail">business_person_xref_business_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -126,7 +136,7 @@
                                     <td><p>Primary key: System generated unique identifier for a business.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="name">name</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="name">name</span></td>
                                     <td>varchar</td>
                                     <td>128</td>
                                     <td title=''></td>
@@ -232,6 +242,40 @@
                                     </td>
                                     <td></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="safety_concern_ind">safety_concern_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates the reason why the business has a safety concern flag.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="safety_concern_reason">safety_concern_reason</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -269,6 +313,24 @@
                                     <td>business_guid</td>
                                 </tr>
                                 <tr>
+                                    <td title='Indexed'>idx_business_name_norm</td>
+                                    <td>Performance</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_business_name_search</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>name</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_business_name_trgm</td>
+                                    <td>Performance</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
                                     <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> UQ_business_party_guid</td>
                                     <td>Must be unique</td>
                                     <td><span title='Ascending'>Asc</span></td>
@@ -297,17 +359,29 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="business.html" target="_top" title="business" alt="" coords="281,5,648,280">
-<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="5,184,237,331">
+<area shape="rect" id="node1" href="business.html" target="_top" title="business" alt="" coords="304,144,671,477">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="5,323,260,499">
+<area shape="rect" id="node3" href="business_identifier.html" target="_top" title="business_identifier" alt="" coords="728,5,972,211">
+<area shape="rect" id="node4" href="business_person_xref.html" target="_top" title="business_person_xref" alt="" coords="715,228,985,433">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/business.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="business.html" target="_top" title="business" alt="" coords="535,5,901,280">
-<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="259,240,491,387">
-<area shape="rect" id="node3" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="5,272,215,360">
-<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="651,297,785,385">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="670,919,811,1007">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="259,669,513,845">
+<area shape="rect" id="node12" href="app_user.html" target="_top" title="app_user" alt="" coords="35,768,185,856">
+<area shape="rect" id="node13" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="5,663,215,751">
+<area shape="rect" id="node3" href="alias.html" target="_top" title="alias" alt="" coords="683,111,799,199">
+<area shape="rect" id="node4" href="business.html" target="_top" title="business" alt="" coords="557,216,924,549">
+<area shape="rect" id="node5" href="business_identifier.html" target="_top" title="business_identifier" alt="" coords="981,67,1225,272">
+<area shape="rect" id="node6" href="business_identifier_code.html" target="_top" title="business_identifier_code" alt="" coords="603,5,878,93">
+<area shape="rect" id="node7" href="business_person_address_xref.html" target="_top" title="business_person_address_xref" alt="" coords="1283,731,1601,819">
+<area shape="rect" id="node8" href="business_person_xref.html" target="_top" title="business_person_xref" alt="" coords="968,543,1239,748">
+<area shape="rect" id="node9" href="business_person_xref_code.html" target="_top" title="business_person_xref_code" alt="" coords="594,672,887,760">
+<area shape="rect" id="node10" href="person.html" target="_top" title="person" alt="" coords="673,567,808,655">
+<area shape="rect" id="node11" href="contact_method.html" target="_top" title="contact_method" alt="" coords="999,848,1208,936">
+<area shape="rect" id="node14" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="631,777,850,865">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/business.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

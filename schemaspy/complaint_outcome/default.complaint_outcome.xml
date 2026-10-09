@@ -40,6 +40,9 @@
          <index name="PK_action_guid" unique="true">
             <column ascending="true" name="action_guid"/>
          </index>
+         <index name="idx_action_complaint_outcome_guid" unique="false">
+            <column ascending="true" name="complaint_outcome_guid"/>
+         </index>
       </table>
       <table name="action_code" numRows="40" remarks="Contains a list of all possible actions that can be performed on a case." schema="complaint_outcome" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="action_code" nullable="false" remarks="A human readable code used to identify a case management action." size="10" type="varchar" typeCode="12">
@@ -156,9 +159,13 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="create_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="update_user_id" nullable="true" remarks="" size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="update_utc_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="comments" nullable="true" remarks="Free-text comments recorded against an assessment." size="4000" type="varchar" typeCode="12"/>
          <primaryKey column="assessment_guid" sequenceNumberInPK="1"/>
          <index name="PK_assessment_guid" unique="true">
             <column ascending="true" name="assessment_guid"/>
+         </index>
+         <index name="idx_assessment_complaint_outcome_guid" unique="false">
+            <column ascending="true" name="complaint_outcome_guid"/>
          </index>
       </table>
       <table name="assessment_h" remarks="" schema="complaint_outcome" type="TABLE">
@@ -187,6 +194,9 @@
          <primaryKey column="authorization_permit_guid" sequenceNumberInPK="1"/>
          <index name="PK_authorization_permit_guid" unique="true">
             <column ascending="true" name="authorization_permit_guid"/>
+         </index>
+         <index name="idx_authorization_permit_complaint_outcome_guid" unique="false">
+            <column ascending="true" name="complaint_outcome_guid"/>
          </index>
       </table>
       <table name="authorization_permit_h" remarks="History table for authorization_permit table" schema="complaint_outcome" type="TABLE">
@@ -237,6 +247,9 @@
          <primaryKey column="case_note_guid" sequenceNumberInPK="1"/>
          <index name="PK_case_note_guid" unique="true">
             <column ascending="true" name="case_note_guid"/>
+         </index>
+         <index name="idx_case_note_complaint_outcome_guid" unique="false">
+            <column ascending="true" name="complaint_outcome_guid"/>
          </index>
       </table>
       <table name="complaint_outcome" remarks="The central entity of the case management system." schema="complaint_outcome" type="TABLE">
@@ -354,6 +367,9 @@
          <primaryKey column="decision_guid" sequenceNumberInPK="1"/>
          <index name="PK_decision_guid" unique="true">
             <column ascending="true" name="decision_guid"/>
+         </index>
+         <index name="idx_decision_complaint_outcome_guid" unique="false">
+            <column ascending="true" name="complaint_outcome_guid"/>
          </index>
       </table>
       <table name="decision_h" remarks="" schema="complaint_outcome" type="TABLE">
@@ -738,9 +754,13 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The date and time (UTC) when the entry was created." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The identifier (e.g., username) of the user who last updated the entry." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The date and time (UTC) when the entry was last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="wacn_amount" nullable="true" remarks="The amount of Wildlife Attractant Compliance Notices are issued." size="5" type="int2" typeCode="5"/>
          <primaryKey column="prevention_education_guid" sequenceNumberInPK="1"/>
          <index name="PK_prevention_education_guid" unique="true">
             <column ascending="true" name="prevention_education_guid"/>
+         </index>
+         <index name="idx_prevention_education_complaint_outcome_guid" unique="false">
+            <column ascending="true" name="complaint_outcome_guid"/>
          </index>
       </table>
       <table name="schedule_code" numRows="5" remarks="Contains the list of values for indicating the waste schedule or pesticide sector an incident falls under." schema="complaint_outcome" type="TABLE">
@@ -801,23 +821,6 @@
             <column ascending="true" name="sector_code"/>
          </index>
       </table>
-      <table name="sex_code" numRows="3" remarks="Contains the list of biological sexes supported by the system.  For example M = &quot;Male&quot;" schema="complaint_outcome" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="sex_code" nullable="false" remarks="A human readable code used to identify a sex type." size="10" type="varchar" typeCode="12">
-            <child column="sex_code" foreignKey="fk_wildlife__sex_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a sex type." size="50" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a sex type." size="250" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the sex type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a sex type is active." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the sex type." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the sex type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the sex type." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the sex type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="sex_code" sequenceNumberInPK="1"/>
-         <index name="PK_sexcode" unique="true">
-            <column ascending="true" name="sex_code"/>
-         </index>
-      </table>
       <table name="site" remarks="Contains the unauthorized site id for the Authroization Outcome" schema="complaint_outcome" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="site_guid" nullable="false" remarks="System generated unique key for a site record" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
@@ -832,6 +835,9 @@
          <primaryKey column="site_guid" sequenceNumberInPK="1"/>
          <index name="PK_site_guid" unique="true">
             <column ascending="true" name="site_guid"/>
+         </index>
+         <index name="idx_site_complaint_outcome_guid" unique="false">
+            <column ascending="true" name="complaint_outcome_guid"/>
          </index>
       </table>
       <table name="site_h" remarks="History table for site table" schema="complaint_outcome" type="TABLE">
@@ -876,16 +882,14 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="threat_level_code" nullable="true" remarks="A human readable code used to identify a threat level type." size="10" type="varchar" typeCode="12">
             <parent column="threat_level_code" foreignKey="fk_wildlife__threat_level_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="threat_level_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="sex_code" nullable="true" remarks="A human readable code used to identify a sex type." size="10" type="varchar" typeCode="12">
-            <parent column="sex_code" foreignKey="fk_wildlife__sex_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="sex_code"/>
-         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="sex_code_ref" nullable="true" remarks="Unenforced FK to shared.sex_code.  A human readable code used to identify a sex type." size="16" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="age_code" nullable="true" remarks="A human readable code used to identify an age type." size="10" type="varchar" typeCode="12">
             <parent column="age_code" foreignKey="fk_wildlife__age_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="age_code"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="hwcr_outcome_code" nullable="true" remarks="A human readable code used to identify an HWCR outcome type." size="10" type="varchar" typeCode="12">
             <parent column="hwcr_outcome_code" foreignKey="fk_wildlife__hwcr_outcome_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="hwcr_outcome_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="species_code" nullable="false" remarks="A human readable code used to identify a species.   The COS Complaint Management is the authorative source for the screen labels and descriptions of the codes." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="species_code_ref" nullable="false" remarks="Unenforced foreign key to shared.species_code.species_code. A reference to the species of animal involved in the outcome of the human wildlife conflict complaint." size="16" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="create_user_id" nullable="false" remarks="The id of the user that created the wildlife record." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the wildlife record was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_id" nullable="false" remarks="The id of the user that updated the wildlife record." size="32" type="varchar" typeCode="12"/>
@@ -898,6 +902,9 @@
          <primaryKey column="wildlife_guid" sequenceNumberInPK="1"/>
          <index name="PK_wildlife_guid" unique="true">
             <column ascending="true" name="wildlife_guid"/>
+         </index>
+         <index name="idx_wildlife_complaint_outcome_guid" unique="false">
+            <column ascending="true" name="complaint_outcome_guid"/>
          </index>
       </table>
       <table name="wildlife_h" remarks="History table for case_file table" schema="complaint_outcome" type="TABLE">

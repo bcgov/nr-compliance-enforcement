@@ -130,6 +130,16 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="investigation_business_identifier.investigation_business_guid references investigation_business.investigation_business_guid via fk_investigation_business_identifier_business"><a href='investigation_business_identifier.html'>investigation_business_identifier</a><span class='relatedKey'>.investigation_business_guid</span></td>
+                                                <td class="constraint detail">fk_investigation_business_identifier_business</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="investigation_business_person_xref.investigation_business_guid references investigation_business.investigation_business_guid via investigation_business_person_xref_business_fk"><a href='investigation_business_person_xref.html'>investigation_business_person_xref</a><span class='relatedKey'>.investigation_business_guid</span></td>
+                                                <td class="constraint detail">investigation_business_person_xref_business_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -181,7 +191,7 @@
                                     <td><span id="name">name</span></td>
                                     <td>varchar</td>
                                     <td>128</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -279,6 +289,40 @@
                                     </td>
                                     <td><p>The timestamp when the business was updated. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="safety_concern_ind">safety_concern_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates whether the business has a safety concern flag.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="safety_concern_reason">safety_concern_reason</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates the reason why the business has a safety concern flag.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -344,18 +388,28 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="305,5,711,339">
-<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="5,67,261,243">
+<area shape="rect" id="node1" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="360,113,765,505">
+<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="5,175,316,351">
+<area shape="rect" id="node3" href="investigation_business_identifier.html" target="_top" title="investigation_business_identifier" alt="" coords="819,5,1171,152">
+<area shape="rect" id="node4" href="investigation_business_person_xref.html" target="_top" title="investigation_business_person_xref" alt="" coords="809,169,1180,345">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/investigation_business.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="595,5,877,93">
-<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="233,172,489,348">
-<area shape="rect" id="node4" href="investigation.html" target="_top" title="investigation" alt="" coords="5,233,189,321">
-<area shape="rect" id="node3" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="533,111,939,444">
-<area shape="rect" id="node5" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="613,461,859,549">
+<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="650,5,931,93">
+<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="233,657,544,833">
+<area shape="rect" id="node12" href="investigation.html" target="_top" title="investigation" alt="" coords="5,719,189,807">
+<area shape="rect" id="node3" href="investigation_address.html" target="_top" title="investigation_address" alt="" coords="664,625,917,713">
+<area shape="rect" id="node4" href="investigation_alias.html" target="_top" title="investigation_alias" alt="" coords="677,767,905,855">
+<area shape="rect" id="node5" href="investigation_attachment_reference.html" target="_top" title="investigation_attachment_reference" alt="" coords="606,872,975,960">
+<area shape="rect" id="node6" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="588,111,993,503">
+<area shape="rect" id="node7" href="investigation_business_identifier.html" target="_top" title="investigation_business_identifier" alt="" coords="1047,84,1399,231">
+<area shape="rect" id="node8" href="investigation_business_person_a_bad6a84e.html" target="_top" title="investigation_business_person_address_xref" alt="" coords="1452,539,1881,627">
+<area shape="rect" id="node9" href="investigation_business_person_xref.html" target="_top" title="investigation_business_person_xref" alt="" coords="1037,459,1408,635">
+<area shape="rect" id="node10" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="668,520,913,608">
+<area shape="rect" id="node11" href="investigation_contact_method.html" target="_top" title="investigation_contact_method" alt="" coords="1063,692,1383,780">
+<area shape="rect" id="node13" href="investigation_party_external_id.html" target="_top" title="investigation_party_external_id" alt="" coords="626,977,955,1065">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/investigation_business.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

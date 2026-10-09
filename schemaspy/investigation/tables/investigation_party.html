@@ -136,8 +136,33 @@
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
+                                                <td title="investigation_address.investigation_party_guid references investigation_party.investigation_party_guid via investigation_address_party_fk"><a href='investigation_address.html'>investigation_address</a><span class='relatedKey'>.investigation_party_guid</span></td>
+                                                <td class="constraint detail">investigation_address_party_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="investigation_alias.investigation_party_guid references investigation_party.investigation_party_guid via investigation_alias_investigation_party_fk"><a href='investigation_alias.html'>investigation_alias</a><span class='relatedKey'>.investigation_party_guid</span></td>
+                                                <td class="constraint detail">investigation_alias_investigation_party_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="investigation_attachment_reference.investigation_party_guid references investigation_party.investigation_party_guid via investigation_attachment_reference_investigation_party_fk"><a href='investigation_attachment_reference.html'>investigation_attachment_reference</a><span class='relatedKey'>.investigation_party_guid</span></td>
+                                                <td class="constraint detail">investigation_attachment_reference_investigation_party_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="investigation_business.investigation_party_guid references investigation_party.investigation_party_guid via fk_investigation_party_guid"><a href='investigation_business.html'>investigation_business</a><span class='relatedKey'>.investigation_party_guid</span></td>
                                                 <td class="constraint detail">fk_investigation_party_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="investigation_contact_method.investigation_party_guid references investigation_party.investigation_party_guid via investigation_contact_method_investigation_party_fk"><a href='investigation_contact_method.html'>investigation_contact_method</a><span class='relatedKey'>.investigation_party_guid</span></td>
+                                                <td class="constraint detail">investigation_contact_method_investigation_party_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="investigation_party_external_id.investigation_party_guid references investigation_party.investigation_party_guid via investigation_party_external_id_party_fk"><a href='investigation_party_external_id.html'>investigation_party_external_id</a><span class='relatedKey'>.investigation_party_guid</span></td>
+                                                <td class="constraint detail">investigation_party_external_id_party_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
@@ -311,6 +336,74 @@
                                     </td>
                                     <td><p>Unenforced Foreign Key to shared.party_association_role. The party role in this investigation.</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="created_by_app_user_guid_ref">created_by_app_user_guid_ref</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The app user that created the party. References app_user.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="placeholder_name">placeholder_name</span></td>
+                                    <td>varchar</td>
+                                    <td>128</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A persisted display name for a party that has no real name yet, generated from the role and ordinal (e.g. Witness 3).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="placeholder_number">placeholder_number</span></td>
+                                    <td>int4</td>
+                                    <td>10</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The monotonic ordinal assigned to a nameless party within its investigation and role. Null for named parties. Never reused (party removal is a soft delete).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="party_update_utc_timestamp_ref">party_update_utc_timestamp_ref</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>References shared.party.update_utc_timestamp as it stood when this local copy was last taken from, or pushed to, the shared party. Null indicates the party has no shared counterpart.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -372,31 +465,97 @@
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
                                     <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="829,5,1121,181">
-<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="395,255,785,617">
-<area shape="rect" id="node4" href="investigation.html" target="_top" title="investigation" alt="" coords="5,345,351,580">
-<area shape="rect" id="node3" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="840,199,1111,375">
-<area shape="rect" id="node5" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="847,392,1103,568">
+<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="941,5,1233,181">
+<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="395,508,840,988">
+<area shape="rect" id="node8" href="investigation.html" target="_top" title="investigation" alt="" coords="5,599,351,892">
+<area shape="rect" id="node3" href="investigation_address.html" target="_top" title="investigation_address" alt="" coords="946,235,1229,381">
+<area shape="rect" id="node4" href="investigation_alias.html" target="_top" title="investigation_alias" alt="" coords="965,399,1209,545">
+<area shape="rect" id="node5" href="investigation_attachment_reference.html" target="_top" title="investigation_attachment_reference" alt="" coords="897,563,1277,709">
+<area shape="rect" id="node6" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="952,727,1223,903">
+<area shape="rect" id="node7" href="investigation_contact_method.html" target="_top" title="investigation_contact_method" alt="" coords="1335,139,1665,344">
+<area shape="rect" id="node9" href="investigation_party_external_id.html" target="_top" title="investigation_party_external_id" alt="" coords="917,920,1257,1096">
+<area shape="rect" id="node10" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="884,1113,1291,1289">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/investigation_party.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="799,5,1039,93">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,208,680,443">
-<area shape="rect" id="node6" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,269,291,357">
-<area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="823,111,1016,199">
-<area shape="rect" id="node4" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1159,23,1451,199">
-<area shape="rect" id="node5" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="724,216,1115,579">
-<area shape="rect" id="node7" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1169,216,1440,392">
-<area shape="rect" id="node8" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1177,409,1433,585">
-<area shape="rect" id="node9" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="779,596,1060,684">
+<area shape="rect" id="node1" href="activity_note.html" target="_top" title="activity_note" alt="" coords="1328,5,1511,93">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="337,213,683,507">
+<area shape="rect" id="node3" href="task.html" target="_top" title="task" alt="" coords="893,112,1006,200">
+<area shape="rect" id="node10" href="investigation_source_code.html" target="_top" title="investigation_source_code" alt="" coords="5,392,293,480">
+<area shape="rect" id="node11" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="7,275,292,363">
+<area shape="rect" id="node4" href="contravention.html" target="_top" title="contravention" alt="" coords="853,321,1046,409">
+<area shape="rect" id="node5" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1273,321,1565,497">
+<area shape="rect" id="node6" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="727,831,1172,1311">
+<area shape="rect" id="node7" href="diary_date.html" target="_top" title="diary_date" alt="" coords="1338,111,1501,199">
+<area shape="rect" id="node8" href="enforcement_action.html" target="_top" title="enforcement_action" alt="" coords="1773,324,2013,412">
+<area shape="rect" id="node9" href="exhibit.html" target="_top" title="exhibit" alt="" coords="1351,216,1487,304">
+<area shape="rect" id="node12" href="investigation_address.html" target="_top" title="investigation_address" alt="" coords="1293,1295,1546,1383">
+<area shape="rect" id="node13" href="investigation_alias.html" target="_top" title="investigation_alias" alt="" coords="1297,1400,1541,1547">
+<area shape="rect" id="node14" href="investigation_attachment_reference.html" target="_top" title="investigation_attachment_reference" alt="" coords="1229,515,1609,661">
+<area shape="rect" id="node15" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1284,679,1555,855">
+<area shape="rect" id="node16" href="investigation_business_identifier.html" target="_top" title="investigation_business_identifier" alt="" coords="1723,681,2064,769">
+<area shape="rect" id="node17" href="investigation_business_person_a_bad6a84e.html" target="_top" title="investigation_business_person_address_xref" alt="" coords="2164,1044,2593,1132">
+<area shape="rect" id="node18" href="investigation_business_person_xref.html" target="_top" title="investigation_business_person_xref" alt="" coords="1713,831,2073,919">
+<area shape="rect" id="node19" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1216,872,1623,1048">
+<area shape="rect" id="node20" href="investigation_contact_method.html" target="_top" title="investigation_contact_method" alt="" coords="1733,1120,2053,1208">
+<area shape="rect" id="node21" href="investigation_party_external_id.html" target="_top" title="investigation_party_external_id" alt="" coords="1249,1101,1589,1277">
+<area shape="rect" id="node22" href="investigation_person_facial_hai_d5bd06c6.html" target="_top" title="investigation_person_facial_hair_style_code_ref" alt="" coords="1667,936,2120,1024">
+<area shape="rect" id="node23" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="809,1328,1090,1416">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/investigation_party.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="941,5,1233,181">
+<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="395,508,840,988">
+<area shape="rect" id="node8" href="investigation.html" target="_top" title="investigation" alt="" coords="5,599,351,892">
+<area shape="rect" id="node3" href="investigation_address.html" target="_top" title="investigation_address" alt="" coords="946,235,1229,381">
+<area shape="rect" id="node4" href="investigation_alias.html" target="_top" title="investigation_alias" alt="" coords="965,399,1209,545">
+<area shape="rect" id="node5" href="investigation_attachment_reference.html" target="_top" title="investigation_attachment_reference" alt="" coords="897,563,1277,709">
+<area shape="rect" id="node6" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="952,727,1223,903">
+<area shape="rect" id="node7" href="investigation_contact_method.html" target="_top" title="investigation_contact_method" alt="" coords="1335,139,1665,344">
+<area shape="rect" id="node9" href="investigation_party_external_id.html" target="_top" title="investigation_party_external_id" alt="" coords="917,920,1257,1096">
+<area shape="rect" id="node10" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="884,1113,1291,1289">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/investigation_party.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="activity_note.html" target="_top" title="activity_note" alt="" coords="1328,5,1511,93">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="337,249,683,543">
+<area shape="rect" id="node3" href="task.html" target="_top" title="task" alt="" coords="893,184,1006,272">
+<area shape="rect" id="node10" href="investigation_source_code.html" target="_top" title="investigation_source_code" alt="" coords="5,428,293,516">
+<area shape="rect" id="node11" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="7,311,292,399">
+<area shape="rect" id="node4" href="contravention.html" target="_top" title="contravention" alt="" coords="853,339,1046,427">
+<area shape="rect" id="node5" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1273,321,1565,497">
+<area shape="rect" id="node6" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="727,831,1172,1311">
+<area shape="rect" id="node7" href="diary_date.html" target="_top" title="diary_date" alt="" coords="1338,111,1501,199">
+<area shape="rect" id="node8" href="enforcement_action.html" target="_top" title="enforcement_action" alt="" coords="1773,324,2013,412">
+<area shape="rect" id="node9" href="exhibit.html" target="_top" title="exhibit" alt="" coords="1351,216,1487,304">
+<area shape="rect" id="node12" href="investigation_address.html" target="_top" title="investigation_address" alt="" coords="1293,1295,1546,1383">
+<area shape="rect" id="node13" href="investigation_address_h.html" target="_top" title="investigation_address_h" alt="" coords="1758,1292,2029,1380">
+<area shape="rect" id="node14" href="investigation_alias.html" target="_top" title="investigation_alias" alt="" coords="1297,1400,1541,1547">
+<area shape="rect" id="node15" href="investigation_attachment_reference.html" target="_top" title="investigation_attachment_reference" alt="" coords="1229,515,1609,661">
+<area shape="rect" id="node16" href="investigation_attachment_reference_h.html" target="_top" title="investigation_attachment_reference_h" alt="" coords="1700,517,2087,605">
+<area shape="rect" id="node17" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1284,679,1555,855">
+<area shape="rect" id="node18" href="investigation_business_identifier.html" target="_top" title="investigation_business_identifier" alt="" coords="1723,681,2064,769">
+<area shape="rect" id="node19" href="investigation_business_person_a_bad6a84e.html" target="_top" title="investigation_business_person_address_xref" alt="" coords="2164,1017,2593,1105">
+<area shape="rect" id="node20" href="investigation_business_person_xref.html" target="_top" title="investigation_business_person_xref" alt="" coords="1713,831,2073,919">
+<area shape="rect" id="node21" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1216,872,1623,1048">
+<area shape="rect" id="node22" href="investigation_contact_method.html" target="_top" title="investigation_contact_method" alt="" coords="1733,1103,2053,1191">
+<area shape="rect" id="node23" href="investigation_party_external_id.html" target="_top" title="investigation_party_external_id" alt="" coords="1249,1101,1589,1277">
+<area shape="rect" id="node24" href="investigation_person_facial_hai_d5bd06c6.html" target="_top" title="investigation_person_facial_hair_style_code_ref" alt="" coords="1667,936,2120,1024">
+<area shape="rect" id="node25" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="809,1328,1090,1416">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/investigation_party.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

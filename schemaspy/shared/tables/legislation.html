@@ -136,8 +136,8 @@
                                                 <td class="constraint detail"><span title='Cascade on delete:&#10;Deletion of parent deletes child'>C</span></td>
                                             </tr>
                                             <tr>
-                                                <td title="legislation_agency_xref.legislation_guid references legislation.legislation_guid via legislation_agency_xref_legislation_guid_fkey"><a href='legislation_agency_xref.html'>legislation_agency_xref</a><span class='relatedKey'>.legislation_guid</span></td>
-                                                <td class="constraint detail">legislation_agency_xref_legislation_guid_fkey</td>
+                                                <td title="legislation_configuration.legislation_guid references legislation.legislation_guid via fk_legislation_configuration_legislation"><a href='legislation_configuration.html'>legislation_configuration</a><span class='relatedKey'>.legislation_guid</span></td>
+                                                <td class="constraint detail">fk_legislation_configuration_legislation</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -195,7 +195,7 @@
                                 <tr>
                                     <td><span id="citation">citation</span></td>
                                     <td>varchar</td>
-                                    <td>64</td>
+                                    <td>128</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -212,7 +212,7 @@
                                 <tr>
                                     <td><span id="full_citation">full_citation</span></td>
                                     <td>varchar</td>
-                                    <td>512</td>
+                                    <td>1024</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -229,7 +229,7 @@
                                 <tr>
                                     <td><span id="section_title">section_title</span></td>
                                     <td>varchar</td>
-                                    <td>64</td>
+                                    <td>256</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -293,40 +293,6 @@
                                         </table>
                                     </td>
                                     <td><p>The order in which the legislation should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added.  May contain duplicates to allow for hierarchical ordering.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="effective_date">effective_date</span></td>
-                                    <td>date</td>
-                                    <td>13</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Date when this legislation becomes effective.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="expiry_date">expiry_date</span></td>
-                                    <td>date</td>
-                                    <td>13</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Date when this legislation expires, if applicable.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -396,6 +362,28 @@
                                     </td>
                                     <td><p>The timestamp when the legislation was last updated. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="legislation_version_guid">legislation_version_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="legislation.legislation_version_guid references legislation_version.legislation_version_guid via fk_legislation_version"><a href='legislation_version.html'>legislation_version</a><span class='relatedKey'>.legislation_version_guid</span></td>
+                                                <td class="constraint detail">fk_legislation_version</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Foreign key to legislation_version. The version this node was imported into; act nodes carry the act version, regulation subtrees their own regulation version.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -433,12 +421,6 @@
                                     <td>legislation_guid</td>
                                 </tr>
                                 <tr>
-                                    <td title='Indexed'>idx_legislation_effective</td>
-                                    <td>Performance</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>effective_date</td>
-                                </tr>
-                                <tr>
                                     <td title='Indexed'>idx_legislation_parent</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
@@ -449,6 +431,12 @@
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>legislation_type_code</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_legislation_version</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>legislation_version_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -473,18 +461,21 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="legislation.html" target="_top" title="legislation" alt="" coords="299,32,667,541">
-<area shape="rect" id="node2" href="legislation_type_code.html" target="_top" title="legislation_type_code" alt="" coords="5,64,255,181">
-<area shape="rect" id="node3" href="legislation_agency_xref.html" target="_top" title="legislation_agency_xref" alt="" coords="711,5,985,181">
+<area shape="rect" id="node1" href="legislation.html" target="_top" title="legislation" alt="" coords="348,32,721,512">
+<area shape="rect" id="node2" href="legislation_type_code.html" target="_top" title="legislation_type_code" alt="" coords="30,64,279,181">
+<area shape="rect" id="node3" href="legislation_version.html" target="_top" title="legislation_version" alt="" coords="5,416,304,621">
+<area shape="rect" id="node4" href="legislation_configuration.html" target="_top" title="legislation_configuration" alt="" coords="765,5,1053,181">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/legislation.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="legislation.html" target="_top" title="legislation" alt="" coords="299,29,667,539">
-<area shape="rect" id="node2" href="legislation_type_code.html" target="_top" title="legislation_type_code" alt="" coords="5,61,255,179">
-<area shape="rect" id="node3" href="legislation_agency_xref.html" target="_top" title="legislation_agency_xref" alt="" coords="711,249,985,425">
-<area shape="rect" id="node4" href="agency_code.html" target="_top" title="agency_code" alt="" coords="393,556,573,644">
+<area shape="rect" id="node1" href="legislation.html" target="_top" title="legislation" alt="" coords="839,29,1212,509">
+<area shape="rect" id="node2" href="legislation_type_code.html" target="_top" title="legislation_type_code" alt="" coords="521,61,770,179">
+<area shape="rect" id="node3" href="legislation_version.html" target="_top" title="legislation_version" alt="" coords="496,359,795,564">
+<area shape="rect" id="node6" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="229,433,452,521">
+<area shape="rect" id="node4" href="legislation_configuration.html" target="_top" title="legislation_configuration" alt="" coords="1256,271,1544,447">
+<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,489,185,577">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/legislation.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

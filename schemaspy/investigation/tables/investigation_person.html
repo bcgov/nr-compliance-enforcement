@@ -130,6 +130,16 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="investigation_business_person_xref.investigation_person_guid references investigation_person.investigation_person_guid via investigation_business_person_xref_person_fk"><a href='investigation_business_person_xref.html'>investigation_business_person_xref</a><span class='relatedKey'>.investigation_person_guid</span></td>
+                                                <td class="constraint detail">investigation_business_person_xref_person_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="investigation_person_facial_hair_style_code_ref.investigation_person_guid references investigation_person.investigation_person_guid via investigation_person_facial_hair_style_code_ref_investigation_p"><a href='investigation_person_facial_hai_d5bd06c6.html'>investigation_person_facial_hair_style_code_ref</a><span class='relatedKey'>.investigation_person_guid</span></td>
+                                                <td class="constraint detail">investigation_person_facial_hair_style_code_ref_investigation_p</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -181,7 +191,7 @@
                                     <td><span id="first_name">first_name</span></td>
                                     <td>varchar</td>
                                     <td>128</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -195,9 +205,9 @@
                                     <td><p>First or given name of the person.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="middle_name">middle_name</span></td>
+                                    <td><span id="middle_names">middle_names</span></td>
                                     <td>varchar</td>
-                                    <td>128</td>
+                                    <td>256</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -209,30 +219,13 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Second or middle name of the person.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="middle_name_2">middle_name_2</span></td>
-                                    <td>varchar</td>
-                                    <td>128</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Additional Second or middle name of the person.</p></td>
+                                    <td><p>The middle name(s) of the person.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="last_name">last_name</span></td>
                                     <td>varchar</td>
                                     <td>128</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -330,6 +323,431 @@
                                     </td>
                                     <td><p>The timestamp when the person was updated. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="date_of_birth">date_of_birth</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date of birth of the person.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="drivers_license_number">drivers_license_number</span></td>
+                                    <td>varchar</td>
+                                    <td>64</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The drivers license number of the person.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="approximate_age_code_ref">approximate_age_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.approximate_age_code.  The approximate age category of the person, used when no date of birth is known.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="gender_code_ref">gender_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.gender_code.  The gender category of the person.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="drivers_license_class">drivers_license_class</span></td>
+                                    <td>varchar</td>
+                                    <td>128</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The class of the person&rsquo;s driver&rsquo;s licence.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="drivers_license_country_code_ref">drivers_license_country_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>4</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.country_code The country that issued the person&rsquo;s driver&rsquo;s licence.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="drivers_license_country_subdivision_code_ref">drivers_license_country_subdivision_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.country_code_ref.  The country subdivision (province, state, etc.) that issued the person&rsquo;s driver&rsquo;s licence.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="height_cm">height_cm</span></td>
+                                    <td>numeric</td>
+                                    <td>5,1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The person&rsquo;s height in centimetres. Stored as the canonical metric value; the UI provides a ft/in display toggle that converts for entry and display only.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="weight_kg">weight_kg</span></td>
+                                    <td>numeric</td>
+                                    <td>5,1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The person&rsquo;s weight in kilograms. Stored as the canonical metric value; the UI provides a lb display toggle that converts for entry and display only.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="complexion_code_ref">complexion_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.complexion_code.  The complexion of the person. References complexion_code.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="build_code_ref">build_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.build_code.  The build of the person. References build_code.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="hair_colour_code_ref">hair_colour_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.hair_colour_code.  The hair colour of the person. References hair_colour_code.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="hair_colour_other">hair_colour_other</span></td>
+                                    <td>varchar</td>
+                                    <td>128</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A free-text hair colour description, used when hair_colour_code is OTH (Other).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="hair_length_code_ref">hair_length_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.hair_length_code. The hair length of the person. References hair_length_code.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="eye_colour_code_ref">eye_colour_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.eye_colour_code The eye colour of the person. References eye_colour_code.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="eye_colour_other">eye_colour_other</span></td>
+                                    <td>varchar</td>
+                                    <td>128</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A free-text eye colour description, used when eye_colour_code is OTH (Other).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="facial_hair_ind">facial_hair_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates whether the person has facial hair. true = has facial hair, false = does not have facial hair, null = unknown / not assessed.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="additional_hair_descriptors">additional_hair_descriptors</span></td>
+                                    <td>varchar</td>
+                                    <td>512</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Free-text additional hair descriptors for the person.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="tattoo_ind">tattoo_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates whether the person has tattoos. true = has tattoos, false = does not have tattoos, null = unknown / not assessed.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="tattoo_description">tattoo_description</span></td>
+                                    <td>varchar</td>
+                                    <td>512</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A free-text description of the person&rsquo;s tattoos, used when tattoo_ind is true.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="additional_descriptors">additional_descriptors</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Free-text additional descriptors for the person.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="comments">comments</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Free-text comments about the person.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="safety_concern_ind">safety_concern_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates whether the person has a caution flag or advises officers to be on the lookout (BOLO) for the invdividual.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="sex_code_ref">sex_code_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Unenforced FK to shared.sex_code.  The sex of the person as recorded on their ID.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="safety_concern_reason">safety_concern_reason</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates the reason why the person has a safety concern flag.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -395,18 +813,28 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="305,5,696,427">
-<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="5,67,261,243">
+<area shape="rect" id="node1" href="investigation_business_person_xref.html" target="_top" title="investigation_business_person_xref" alt="" coords="992,5,1363,181">
+<area shape="rect" id="node2" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="360,143,901,1268">
+<area shape="rect" id="node3" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="5,204,316,380">
+<area shape="rect" id="node4" href="investigation_person_facial_hai_d5bd06c6.html" target="_top" title="investigation_person_facial_hair_style_code_ref" alt="" coords="945,199,1409,345">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/investigation_person.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="588,5,869,93">
-<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="233,108,489,284">
-<area shape="rect" id="node4" href="investigation.html" target="_top" title="investigation" alt="" coords="5,169,189,257">
-<area shape="rect" id="node3" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="599,111,859,199">
-<area shape="rect" id="node5" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="533,216,924,637">
+<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="718,5,999,93">
+<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="233,1391,544,1567">
+<area shape="rect" id="node11" href="investigation.html" target="_top" title="investigation" alt="" coords="5,1452,189,1540">
+<area shape="rect" id="node3" href="investigation_address.html" target="_top" title="investigation_address" alt="" coords="732,1359,985,1447">
+<area shape="rect" id="node4" href="investigation_alias.html" target="_top" title="investigation_alias" alt="" coords="745,1500,973,1588">
+<area shape="rect" id="node5" href="investigation_attachment_reference.html" target="_top" title="investigation_attachment_reference" alt="" coords="674,1605,1043,1693">
+<area shape="rect" id="node6" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="729,111,989,199">
+<area shape="rect" id="node7" href="investigation_business_person_a_bad6a84e.html" target="_top" title="investigation_business_person_address_xref" alt="" coords="1681,491,2111,579">
+<area shape="rect" id="node8" href="investigation_business_person_xref.html" target="_top" title="investigation_business_person_xref" alt="" coords="1220,120,1591,296">
+<area shape="rect" id="node9" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="588,216,1129,1341">
+<area shape="rect" id="node10" href="investigation_contact_method.html" target="_top" title="investigation_contact_method" alt="" coords="1245,1392,1565,1480">
+<area shape="rect" id="node12" href="investigation_party_external_id.html" target="_top" title="investigation_party_external_id" alt="" coords="694,1711,1023,1799">
+<area shape="rect" id="node13" href="investigation_person_facial_hai_d5bd06c6.html" target="_top" title="investigation_person_facial_hair_style_code_ref" alt="" coords="1173,313,1637,460">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/investigation_person.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

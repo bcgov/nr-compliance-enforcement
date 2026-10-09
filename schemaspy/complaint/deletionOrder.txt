@@ -28,7 +28,6 @@ complaint
 comp_mthd_recv_cd_agcy_cd_xref
 staging_status_code
 staging_activity_code
-species_code
 linked_complaint_xref_type_code
 hwcr_complaint_nature_code
 gir_type_code
