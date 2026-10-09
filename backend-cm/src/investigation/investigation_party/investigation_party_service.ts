@@ -1179,7 +1179,7 @@ export class InvestigationPartyService {
 
     if (existingParty.isUpToDate === false) {
       throw new Error(
-        "Party information have changed as part of another investigation. Update to the latest version of information prior to making additional edits.",
+        "Party information has changed as part of another investigation. Update to the latest version of information prior to making additional edits.",
       );
     }
 
