@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
@@ -74,7 +74,7 @@ jobs:
           ]
     timeout-minutes: 2
     steps:
-      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
@@ -87,9 +87,9 @@ jobs:
     runs-on: ubuntu-22.04
     if: needs.vars.outputs.tag != ''
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         with:
           tag_name: ${{ needs.vars.outputs.tag }}
           name: Release ${{ needs.vars.outputs.tag }}
@@ -114,7 +114,7 @@ jobs:
     steps:
       - name: Get GitOps repo token
         id: gitops-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
         with:
           app-id: ${{ secrets.GITOPS_APP_ID }}
           private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
@@ -122,7 +122,7 @@ jobs:
           repositories: tenant-gitops-f208ae
 
       - name: Checkout CD repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ env.GITOPS_REPO }}
           token: ${{ steps.gitops-token.outputs.token }}
