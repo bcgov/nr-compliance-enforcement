@@ -8,7 +8,7 @@ export function renderLabelElement(collaborator: Collaborator): JSX.Element {
         {collaborator.lastName}, {collaborator.firstName}{" "}
       </span>
       <Badge
-        className="comp-status-badge-closed"
+        className="comp-badge-gray"
         key={collaborator.collaboratorAgency}
       >
         {collaborator.collaboratorAgency}

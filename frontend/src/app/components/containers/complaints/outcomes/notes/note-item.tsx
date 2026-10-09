@@ -108,7 +108,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
                       delay={{ show: 250, hide: 400 }}
                       overlay={updateUserTooltip}
                     >
-                      <Badge className="badge comp-status-badge-closed">
+                      <Badge className="badge comp-badge-gray">
                         Updated {actions.length - 1} times <i className="bi bi-info-circle-fill" />
                       </Badge>
                     </OverlayTrigger>

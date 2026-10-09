@@ -13,6 +13,7 @@ import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
 import { isYoungPerson } from "@/app/common/methods";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { CompBadge } from "@/app/common/comp-badge";
 
 const MATCH_FIELD_LABELS: Record<string, string> = {
   driversLicenseNumber: "Driver's licence",
@@ -161,11 +162,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
 
   return (
     <Card
-      className={[
-        "comp-party-match-card",
-        scoreBorderClass,
-        pulse ? "comp-party-match-card-pulse" : "",
-      ]
+      className={["comp-party-match-card", scoreBorderClass, pulse ? "comp-party-match-card-pulse" : ""]
         .filter(Boolean)
         .join(" ")}
     >
@@ -180,16 +177,20 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
             {name}
           </Link>
           {score >= STRONG_MATCH_MINIMUM ? (
-            <Badge className="party-match-badge-strong">
-              <i className="bi bi-check-circle-fill" />
-              &nbsp;Strong match
-            </Badge>
+            <CompBadge
+              id="strong-match"
+              label="Strong match"
+              variantClassName="comp-badge-green"
+              iconClassName="bi bi-check-circle-fill"
+            />
           ) : (
             score >= LIKELY_MATCH_MINIMUM && (
-              <Badge className="party-match-badge-good">
-                <i className="bi bi-check-circle-fill" />
-                &nbsp;Good match
-              </Badge>
+              <CompBadge
+                id="good-match"
+                label="Good match"
+                variantClassName="comp-badge-yellow"
+                iconClassName="bi bi-check-circle-fill"
+              />
             )
           )}
         </div>

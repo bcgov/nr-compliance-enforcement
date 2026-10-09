@@ -935,7 +935,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                           >
                             <div className="mt-2">
                               <span>
-                                Identifier (licence, business number, WorkSafeBC, contact phone/email)
+                                Identifier (licence, business number, WorkSafeBC, contact phone/email){" "}
                                 <strong> = 1000</strong>
                               </span>
                             </div>

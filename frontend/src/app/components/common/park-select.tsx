@@ -94,7 +94,7 @@ export const ParkSelect: FC<Props> = ({
                   <>
                     <span> </span>
                     <Badge
-                      className="comp-status-badge-closed"
+                      className="comp-badge-gray"
                       key={area.name}
                     >
                       {area.name}
