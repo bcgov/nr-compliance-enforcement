@@ -224,7 +224,7 @@ export const LegislationSourceManagement: FC = () => {
         legislationSourceGuid: editingSource.legislationSourceGuid,
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
-        acronym: editingSource.acronym || undefined,
+        acronym: editingSource.acronym || null,
         sourceUrl: editingSource.sourceUrl,
         regulationsSourceUrl:
           editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
