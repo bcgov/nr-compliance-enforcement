@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { format } from "date-fns";
 import { Contravention, EnforcementAction, InvestigationParty } from "@/generated/graphql";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { Attachment, MAX_ATTACHMENT_PREVIEWS } from "@/app/common/attachment-utils";
 import {
   NON_EA_DECISION_CODES,
@@ -16,7 +16,8 @@ import {
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
 import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
 
-const formatDate = (value?: string | Date | null): string => (value ? format(new Date(value), "yyyy-MM-dd") : "—");
+const formatDate = (value?: string | Date | null): string =>
+  formatDateObjectAsString(parseUTCDateToLocal(value), { format: "date", whenAbsent: "—" });
 const formatYesNo = (value?: boolean | null): string => {
   if (value == null) return "—";
   return value ? "Yes" : "No";
