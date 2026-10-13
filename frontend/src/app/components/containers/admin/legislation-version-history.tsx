@@ -21,9 +21,9 @@ import {
 const EMPTY = "—";
 
 const getImportStatusBadge = (importStatus: ImportStatus) => {
-  if (importStatus === "SUCCESS") return <span className="badge comp-status-badge-open">Imported</span>;
+  if (importStatus === "SUCCESS") return <span className="badge comp-badge-green">Imported</span>;
   if (importStatus === "FAILED") return <span className="badge bg-danger">Failed</span>;
-  return <span className="badge comp-status-badge-pending-review">Pending</span>;
+  return <span className="badge comp-badge-red">Pending</span>;
 };
 
 const displayDate = (date: string | null | undefined) =>
@@ -154,7 +154,7 @@ const LegislationVersionRow: FC<RowProps> = ({
       <tr>
         <td>
           {displayDate(version.effectiveDate)}
-          {isInEffect && <span className="badge comp-status-badge-open ms-2">Current</span>}
+          {isInEffect && <span className="badge comp-badge-green ms-2">Current</span>}
         </td>
         <td>{displayDate(effectiveUntil)}</td>
         <td>{getImportStatusBadge(version.importStatus)}</td>
