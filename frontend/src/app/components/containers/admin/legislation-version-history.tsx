@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useState } from "react";
+import { FC, useState } from "react";
 import { Button, Dropdown, Modal, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useAppDispatch } from "@hooks/hooks";
@@ -17,14 +17,6 @@ import {
   useResetLegislationVersion,
   useUpdateLegislationVersion,
 } from "@/app/graphql/hooks/useLegislationVersionQuery";
-import {
-  AnimalInformationDisplayType,
-  animalInformationDisplayTypeOptions,
-  useUpdateLegislationSource,
-} from "@/app/graphql/hooks/useLegislationSourceQuery";
-import { CompSelect } from "@/app/components/common/comp-select";
-import Option from "@apptypes/app/option";
-import { CompInput } from "@/app/components/common/comp-input";
 
 const EMPTY = "—";
 
@@ -59,28 +51,21 @@ type RowProps = {
   effectiveUntil: string | null;
   isInEffect: boolean;
   isNewestImported: boolean;
-  animalInformationDisplayType: AnimalInformationDisplayType;
-  acronym?: string | null;
 };
 
 const LegislationVersionRow: FC<RowProps> = ({
   version,
   agencyCode,
-  animalInformationDisplayType,
   precedingVersion,
   nextVersion,
   effectiveUntil,
   isInEffect,
   isNewestImported,
-  acronym,
 }) => {
   const dispatch = useAppDispatch();
   const [showLog, setShowLog] = useState(false);
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [editedDate, setEditedDate] = useState<Date | undefined>();
-  const [editedDisplayType, setEditedDisplayType] =
-    useState<AnimalInformationDisplayType>(animalInformationDisplayType);
-  const [editedAcronym, setEditedAcronym] = useState(acronym ?? "");
 
   const { data: stats } = useLegislationVersionContraventionStats(version.legislationVersionGuid);
   const { data: precedingStats } = useLegislationVersionContraventionStats(precedingVersion?.legislationVersionGuid);
@@ -91,11 +76,6 @@ const LegislationVersionRow: FC<RowProps> = ({
       setIsEditingDate(false);
     },
     onError: (error: any) => ToggleError(unwrapError(error, "Failed to update the effective date")),
-  });
-
-  const updateSourceMutation = useUpdateLegislationSource({
-    onSuccess: () => ToggleSuccess("Legislation details updated"),
-    onError: (error: any) => ToggleError(unwrapError(error, "Failed to update the legislation details")),
   });
 
   const resetMutation = useResetLegislationVersion({
@@ -163,18 +143,6 @@ const LegislationVersionRow: FC<RowProps> = ({
 
   const saveEffectiveDate = () => {
     if (!editedDate) return;
-    const trimmedAcronym = editedAcronym.trim() || null;
-    const isDisplayTypeChanged = editedDisplayType !== animalInformationDisplayType;
-    const isAcronymChanged = trimmedAcronym !== (acronym ?? null);
-    if (isDisplayTypeChanged || isAcronymChanged) {
-      updateSourceMutation.mutate({
-        input: {
-          legislationSourceGuid: version.legislationSourceGuid,
-          animalInformationDisplayType: editedDisplayType,
-          acronym: trimmedAcronym,
-        },
-      });
-    }
     updateMutation.mutate({
       legislationVersionGuid: version.legislationVersionGuid,
       effectiveDate: formatDateObjectAsString(editedDate, { format: "date" }),
@@ -238,8 +206,6 @@ const LegislationVersionRow: FC<RowProps> = ({
                     return;
                   }
                   setEditedDate(toPickerDate(version.effectiveDate));
-                  setEditedDisplayType(animalInformationDisplayType);
-                  setEditedAcronym(acronym ?? "");
                   setIsEditingDate(true);
                 }}
               >
@@ -296,39 +262,6 @@ const LegislationVersionRow: FC<RowProps> = ({
                   maxDate={toPickerDate(maxEffectiveDate)}
                   showYearDropdown={true}
                   onChange={(date: Date | undefined) => setEditedDate(date)}
-                />
-              </div>
-            </div>
-            <div className="comp-details-form-row">
-              <label htmlFor={`version-animal-information-${version.legislationVersionGuid}`}>Animal information</label>
-              <div className="comp-details-edit-input">
-                <CompSelect
-                  id={`version-animal-information-${version.legislationVersionGuid}`}
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={animalInformationDisplayTypeOptions}
-                  value={animalInformationDisplayTypeOptions.find((option) => option.value === editedDisplayType)}
-                  onChange={(option: Option | null) =>
-                    setEditedDisplayType((option?.value as AnimalInformationDisplayType) ?? "H")
-                  }
-                  showInactive={false}
-                  enableValidation={false}
-                  isClearable={false}
-                />
-              </div>
-            </div>
-            <div className="comp-details-form-row">
-              <label htmlFor={`version-acronym-${version.legislationVersionGuid}`}>Acronym</label>
-              <div className="comp-details-edit-input">
-                <CompInput
-                  id={`version-acronym-${version.legislationVersionGuid}`}
-                  divid={`version-acronym-${version.legislationVersionGuid}-div`}
-                  type="input"
-                  inputClass="comp-form-control"
-                  placeholder="Optional acronym"
-                  maxLength={16}
-                  value={editedAcronym ?? ""}
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => setEditedAcronym(event.target.value)}
                 />
               </div>
             </div>
@@ -394,16 +327,9 @@ const LegislationVersionRow: FC<RowProps> = ({
 type Props = {
   legislationSourceGuid: string;
   agencyCode: string;
-  animalInformationDisplayType: AnimalInformationDisplayType;
-  acronym?: string | null;
 };
 
-export const LegislationVersionHistory: FC<Props> = ({
-  legislationSourceGuid,
-  agencyCode,
-  animalInformationDisplayType,
-  acronym,
-}) => {
+export const LegislationVersionHistory: FC<Props> = ({ legislationSourceGuid, agencyCode }) => {
   const { data: versions, isLoading } = useLegislationVersions(legislationSourceGuid);
   const [newEffectiveDate, setNewEffectiveDate] = useState<Date | undefined>();
   const [isAddingVersion, setIsAddingVersion] = useState(false);
@@ -489,8 +415,6 @@ export const LegislationVersionHistory: FC<Props> = ({
                       key={version.legislationVersionGuid}
                       version={version}
                       agencyCode={agencyCode}
-                      animalInformationDisplayType={animalInformationDisplayType}
-                      acronym={acronym}
                       precedingVersion={precedingVersion ?? null}
                       nextVersion={nextVersion ?? null}
                       effectiveUntil={isImported && nextVersion ? addDays(nextVersion.effectiveDate, -1) : null}
