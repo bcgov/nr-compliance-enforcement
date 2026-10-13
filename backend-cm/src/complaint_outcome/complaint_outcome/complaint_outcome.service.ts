@@ -1379,6 +1379,7 @@ export class ComplaintOutcomeService {
             action_guid: true,
             actor_guid: true,
             action_date: true,
+            action_time: true,
             active_ind: true,
             action_type_action_xref: {
               select: {
@@ -1392,9 +1393,7 @@ export class ComplaintOutcomeService {
               },
             },
           },
-          orderBy: {
-            action_date: "asc",
-          },
+          orderBy: [{ action_date: "asc" }, { action_time: "asc" }],
         },
       },
       orderBy: {
@@ -1412,6 +1411,7 @@ export class ComplaintOutcomeService {
             actionId: action.action_guid,
             actor: action.actor_guid,
             date: action.action_date,
+            ...(action.action_time ? { actionTime: action.action_time } : {}),
             activeIndicator: action.active_ind,
             actionCode:
               action.action_type_action_xref.action_code_action_type_action_xref_action_codeToaction_code.action_code,
@@ -1543,6 +1543,7 @@ export class ComplaintOutcomeService {
           actor_guid: actor,
           active_ind: true,
           action_date: current,
+          action_time: current,
           create_user_id: userId,
           create_utc_timestamp: current,
           update_user_id: userId,
@@ -1600,6 +1601,7 @@ export class ComplaintOutcomeService {
             actor_guid: actor,
             active_ind: true,
             action_date: current,
+            action_time: current,
             create_user_id: userId,
             create_utc_timestamp: current,
             update_user_id: userId,
