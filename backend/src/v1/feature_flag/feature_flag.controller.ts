@@ -4,7 +4,7 @@ import { UpdateFeatureAgencyXrefDto } from "./dto/update-feature_agency_xref.dto
 import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "node:crypto";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { adminRoles, coreRoles } from "../../enum/role.enum";
+import { Role, adminRoles, coreRoles } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 
 @UseGuards(JwtRoleGuard)
@@ -17,7 +17,7 @@ export class FeatureFlagController {
   constructor(private readonly featureFlagService: FeatureFlagService) {}
 
   @Get("/all")
-  @Roles(adminRoles)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   findAll() {
     return this.featureFlagService.findAll();
   }
@@ -29,7 +29,7 @@ export class FeatureFlagController {
   }
 
   @Patch(":id")
-  @Roles(adminRoles)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   update(@Param("id") id: UUID, @Body() updateAttractantHwcrXrefDto: UpdateFeatureAgencyXrefDto) {
     return this.featureFlagService.update(id, updateAttractantHwcrXrefDto);
   }

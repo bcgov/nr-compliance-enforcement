@@ -303,7 +303,7 @@ const App: FC = () => {
               element={<UserManagement />}
             />
           </Route>
-          <Route element={<ProtectedRoutes roles={adminRoles} />}>
+          <Route element={<ProtectedRoutes roles={[Roles.GLOBAL_ADMINISTRATOR]} />}>
             <Route
               path="/admin/feature"
               element={<FeatureManagement />}
