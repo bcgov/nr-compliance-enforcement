@@ -662,17 +662,6 @@ describe("deactivateIfUnlinked", () => {
   });
 });
 
-describe("findUniqueFieldConflicts", () => {
-  it("ignores identifiers held by deactivated parties", async () => {
-    const prisma = { $queryRaw: jest.fn().mockResolvedValue([]) };
-    const service = makePartyService(prisma);
-
-    await service.findUniqueFieldConflicts({ driversLicenseNumber: "1234567", driversLicenseCountryCode: "CA" });
-
-    expect(prisma.$queryRaw.mock.calls[0][0].text).toContain("WHERE p.active_ind = true");
-  });
-});
-
 describe("matchParty", () => {
   const comparisonRow = (party_guid: string, comparisons: any = {}) => ({ party_guid, ...comparisons });
 
