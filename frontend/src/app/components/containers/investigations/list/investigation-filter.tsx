@@ -7,7 +7,7 @@ import {
   selectCascadedCommunity,
   selectCascadedRegion,
   selectCascadedZone,
-  selectComplaintStatusWithPendingCodeDropdown,
+  selectComplaintStatusCodeDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgency } from "@store/reducers/officer";
 import { AppUser } from "@apptypes/app/app_user/app_user";
@@ -18,7 +18,7 @@ import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 export const InvestigationFilter: FC = () => {
   const { searchValues, setValues } = useInvestigationSearch();
-  const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
+  const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const userAgency = getUserAgency();
   const agencyOfficers = useAppSelector((state) => selectOfficersByAgency(state, userAgency));
   const officerOptions: Option[] = useMemo(
