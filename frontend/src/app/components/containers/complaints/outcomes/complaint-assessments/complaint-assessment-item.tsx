@@ -15,7 +15,7 @@ import UserService from "@/app/service/user-service";
 import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
 import { getComplaintType } from "@/app/common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
@@ -209,7 +209,7 @@ export const ComplaintAssessmentItem: FC<Props> = ({ assessment, handleEdit }) =
               <div id="assessment-date-div">
                 <dt>Date</dt>
                 <dd>
-                  {formatDateObjectAsString(assessment?.date ? new Date(assessment.date) : new Date(), {
+                  {formatDateObjectAsString(parseUTCDateToLocal(assessment?.date, null) ?? new Date(), {
                     format: "date",
                   })}
                 </dd>

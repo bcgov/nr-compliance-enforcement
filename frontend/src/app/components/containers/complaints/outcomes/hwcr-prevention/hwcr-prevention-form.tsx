@@ -28,6 +28,7 @@ import { upsertPrevention } from "@/app/store/reducers/complaint-outcome-thunks"
 import { ToggleError } from "@common/toast";
 import UserService from "@/app/service/user-service";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type Props = {
   id: string;
@@ -227,7 +228,7 @@ export const HWCRPreventionForm: FC<Props> = ({
     } else {
       const updatedPreventionData: Prevention = {
         id: prevention?.id ?? preventionState.id,
-        date: selectedDate,
+        date: selectedDate ? formatDateObjectAsString(selectedDate, { format: "date" }) : null,
         officer: {
           key: selectedOfficer?.label,
           value: selectedOfficer?.value,

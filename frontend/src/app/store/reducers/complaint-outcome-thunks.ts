@@ -65,6 +65,7 @@ import { Note } from "@/app/types/outcomes/note";
 import { AssessmentDto } from "@/app/types/app/complaint-outcomes/assessment/assessment";
 import { PreventionDto } from "@/app/types/app/complaint-outcomes/prevention/prevention";
 import { DeletePreventionInput } from "@/app/types/app/complaint-outcomes/prevention/delete-prevention-input";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 //-- general thunks
 export const findCase =
@@ -451,7 +452,7 @@ export const closeComplaintWithAssessment =
         action_required: "Yes",
         close_complaint: false,
         officer: { key: `${officer.last_name}, ${officer.first_name}`, value: officer.auth_user_guid },
-        date: new Date(),
+        date: formatDateObjectAsString(new Date(), { format: "date" }),
         assessment_type: [],
         assessment_cat1_type: [],
         agency: UserService.getUserAgency(),
@@ -1036,13 +1037,27 @@ export const createAnimalOutcome =
 
     //-- add an action if there is an outcome with officer
     if (outcome && date) {
-      actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer ?? "", date }];
+      actions = [
+        ...actions,
+        {
+          action: CASE_ACTION_CODE.RECOUTCOME,
+          actor: officer ?? "",
+          date: formatDateObjectAsString(date, { format: "date" }),
+        },
+      ];
     }
 
     //-- add an action if there are any drugs used
     if (from(drugs).any() && drugAuthorization) {
       const { officer, date } = drugAuthorization;
-      actions = [...actions, { action: CASE_ACTION_CODE.ADMNSTRDRG, actor: officer, date }];
+      actions = [
+        ...actions,
+        {
+          action: CASE_ACTION_CODE.ADMNSTRDRG,
+          actor: officer,
+          date: formatDateObjectAsString(date, { format: "date" }),
+        },
+      ];
     }
 
     //-- convert eartags and drugs to input types
@@ -1129,13 +1144,27 @@ export const updateAnimalOutcome =
 
     //-- add an action if there is an outcome with officer
     if (outcome && date) {
-      actions = [...actions, { action: CASE_ACTION_CODE.RECOUTCOME, actor: officer ?? "", date }];
+      actions = [
+        ...actions,
+        {
+          action: CASE_ACTION_CODE.RECOUTCOME,
+          actor: officer ?? "",
+          date: formatDateObjectAsString(date, { format: "date" }),
+        },
+      ];
     }
 
     //-- add an action if there are any drugs used
     if (from(drugs).any() && drugAuthorization) {
       const { officer, date } = drugAuthorization;
-      actions = [...actions, { action: CASE_ACTION_CODE.ADMNSTRDRG, actor: officer, date }];
+      actions = [
+        ...actions,
+        {
+          action: CASE_ACTION_CODE.ADMNSTRDRG,
+          actor: officer,
+          date: formatDateObjectAsString(date, { format: "date" }),
+        },
+      ];
     }
 
     //-- convert eartags and drugs to input types

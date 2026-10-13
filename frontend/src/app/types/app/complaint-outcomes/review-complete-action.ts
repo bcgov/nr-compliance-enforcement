@@ -1,6 +1,6 @@
 export interface ReviewCompleteAction {
   actor: string;
-  date: Date;
+  date: string;
   actionCode: string;
   activeIndicator?: boolean;
   actionId?: string;
