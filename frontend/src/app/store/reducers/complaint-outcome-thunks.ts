@@ -1002,6 +1002,40 @@ export const upsertEquipment =
     }
   };
 
+//-- builds the record outcome and drug administered actions
+//-- for an animal outcome that is being created or updated
+const buildAnimalOutcomeActions = (animalOutcome: AnimalOutcome): Array<AnimalOutcomeActionInput> => {
+  const { outcome, officer, date, drugs, drugAuthorization } = animalOutcome;
+  let actions: Array<AnimalOutcomeActionInput> = [];
+
+  //-- add an action if there is an outcome with officer
+  if (outcome && date) {
+    actions = [
+      ...actions,
+      {
+        action: CASE_ACTION_CODE.RECOUTCOME,
+        actor: officer ?? "",
+        date: formatDateObjectAsString(date, { format: "date" }),
+      },
+    ];
+  }
+
+  //-- add an action if there are any drugs used
+  if (from(drugs).any() && drugAuthorization) {
+    const { officer, date } = drugAuthorization;
+    actions = [
+      ...actions,
+      {
+        action: CASE_ACTION_CODE.ADMNSTRDRG,
+        actor: officer,
+        date: formatDateObjectAsString(date, { format: "date" }),
+      },
+    ];
+  }
+
+  return actions;
+};
+
 //-- animal outcome thunks
 export const createAnimalOutcome =
   (
@@ -1018,47 +1052,10 @@ export const createAnimalOutcome =
     } = getState();
     const ownedBy = complaint?.ownedBy;
 
-    const {
-      species,
-      sex,
-      age,
-      identifyingFeatures,
-      outcome,
-      outcomeActionedBy,
-      threatLevel,
-      officer,
-      date,
-      tags,
-      drugs,
-      drugAuthorization,
-    } = animalOutcome;
+    const { species, sex, age, identifyingFeatures, outcome, outcomeActionedBy, threatLevel, tags, drugs } =
+      animalOutcome;
 
-    let actions: Array<AnimalOutcomeActionInput> = [];
-
-    //-- add an action if there is an outcome with officer
-    if (outcome && date) {
-      actions = [
-        ...actions,
-        {
-          action: CASE_ACTION_CODE.RECOUTCOME,
-          actor: officer ?? "",
-          date: formatDateObjectAsString(date, { format: "date" }),
-        },
-      ];
-    }
-
-    //-- add an action if there are any drugs used
-    if (from(drugs).any() && drugAuthorization) {
-      const { officer, date } = drugAuthorization;
-      actions = [
-        ...actions,
-        {
-          action: CASE_ACTION_CODE.ADMNSTRDRG,
-          actor: officer,
-          date: formatDateObjectAsString(date, { format: "date" }),
-        },
-      ];
-    }
+    const actions = buildAnimalOutcomeActions(animalOutcome);
 
     //-- convert eartags and drugs to input types
     const earTags = tags.map(({ ear, identifier }) => {
@@ -1134,38 +1131,11 @@ export const updateAnimalOutcome =
       outcome,
       outcomeActionedBy,
       threatLevel,
-      officer,
-      date,
       tags,
       drugs,
-      drugAuthorization,
     } = animalOutcome;
-    let actions: Array<AnimalOutcomeActionInput> = [];
 
-    //-- add an action if there is an outcome with officer
-    if (outcome && date) {
-      actions = [
-        ...actions,
-        {
-          action: CASE_ACTION_CODE.RECOUTCOME,
-          actor: officer ?? "",
-          date: formatDateObjectAsString(date, { format: "date" }),
-        },
-      ];
-    }
-
-    //-- add an action if there are any drugs used
-    if (from(drugs).any() && drugAuthorization) {
-      const { officer, date } = drugAuthorization;
-      actions = [
-        ...actions,
-        {
-          action: CASE_ACTION_CODE.ADMNSTRDRG,
-          actor: officer,
-          date: formatDateObjectAsString(date, { format: "date" }),
-        },
-      ];
-    }
+    const actions = buildAnimalOutcomeActions(animalOutcome);
 
     //-- convert eartags and drugs to input types
     const drugsUsed = drugs.map((item) => {
