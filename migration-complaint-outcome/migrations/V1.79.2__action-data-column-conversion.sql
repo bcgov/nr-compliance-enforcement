@@ -27,7 +27,7 @@ UPDATE complaint_outcome.action
 SET action_time = action_date::time
 WHERE case_note_guid IS NOT NULL;
 
-ALTER TABLE complaint_outcome.action ENABLE TRIGGER action_history_trigger
+ALTER TABLE complaint_outcome.action ENABLE TRIGGER action_history_trigger;
 
 ALTER TABLE complaint_outcome.action
   ALTER COLUMN action_date TYPE date
