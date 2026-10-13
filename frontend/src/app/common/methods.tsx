@@ -312,15 +312,15 @@ export const applyStatusClass = (state: string): string => {
   switch (state.toLowerCase()) {
     case "open":
     case "active":
-      return "comp-status-badge-open";
+      return "comp-badge-green";
     case "closed":
-      return "comp-status-badge-closed";
+      return "comp-badge-gray";
     case "referred":
-      return "comp-status-badge-closed";
+      return "comp-badge-gray";
     case "pending":
     case "pendrev":
     case "pending review":
-      return "comp-status-badge-pending-review";
+      return "comp-badge-red";
     default:
       return "";
   }

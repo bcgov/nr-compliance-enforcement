@@ -268,8 +268,8 @@ export const LegislationSourceManagement: FC = () => {
     animalInformationDisplayTypeOptions.find((option) => option.value === code)?.label ?? code;
 
   const getStatusBadge = (source: LegislationSource) => {
-    if (!source.activeInd) return <span className="badge comp-status-badge-closed">Inactive</span>;
-    return <span className="badge comp-status-badge-open">Active</span>;
+    if (!source.activeInd) return <span className="badge comp-badge-gray">Inactive</span>;
+    return <span className="badge comp-badge-green">Active</span>;
   };
 
   const getSaveButtonText = () => {
