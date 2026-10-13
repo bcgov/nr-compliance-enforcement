@@ -11,10 +11,7 @@ select
 	END AS "Original Outcome Species",
 	ac.short_description as "Age",
 	hoc.short_description as "Outcome",
-	to_char (
-		oat.action_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Vancouver',
-		'YYYY-MM-DD'
-	) as "Outcome Date",
+	to_char (oat.action_date, 'YYYY-MM-DD') as "Outcome Date",
 	case
 		when wlh.data_after_executed_operation - > > 'hwcr_outcome_code' != wl.hwcr_outcome_code THEN prv_hoc.short_description
 		else ''
