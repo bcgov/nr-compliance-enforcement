@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Get GitOps repo token
         id: gitops-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
         with:
           app-id: ${{ secrets.GITOPS_APP_ID }}
           private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
@@ -31,7 +31,7 @@ jobs:
           repositories: tenant-gitops-f208ae
 
       - name: Checkout CD repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ env.GITOPS_REPO }}
           token: ${{ steps.gitops-token.outputs.token }}
@@ -60,26 +60,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Tag base with merged PR
-        # The next test release uses this PR's build. Tagging base here instead of
-        # promoting out of the PR means 10+ open PRs since the last release can't
-        # promote an invalid build number.
-        #
-        # Infra changes made on the dev branch reach base through a reviewed PR in the
-        # gitops repo, never automatically.
-        #
-        # Scoped to PRs targeting main: hotfix PRs against release/** must NOT shift
-        # the dev/test base — they're shaping prod, not the next test release.
-        if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' }}
-        run: |
-          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh tag base ${{ github.event.number }} ${{ github.event.pull_request.head.sha }}
-
+      # base image tag is set by merge-main, not here: both fire on merge and raced,
+      # so candidate could read the previous PR's tag and no-op
       - name: Release dev environment
         # Points the slot's argoapp back at main, which tears the env down and frees the
-        # slot. Only swaps if this PR's branch still holds it. Runs even if tagging failed,
-        # so a closed PR can never leave its slot held.
+        # slot. Only swaps if this PR's branch still holds it.
         if: ${{ !cancelled() }}
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}

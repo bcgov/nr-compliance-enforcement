@@ -48,7 +48,7 @@ jobs:
           - 5432:5432
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Run Flyway migrations
         uses: docker://flyway/flyway:10
         env:
@@ -84,13 +84,13 @@ jobs:
           ]
     timeout-minutes: 10
     steps:
-      - uses: bcgov/action-builder-ghcr@v2.3.0
+      - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
           tag_fallback: latest
           # triggers: ('${{ matrix.package }}/')
-      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
@@ -108,14 +108,14 @@ jobs:
       sha: ${{ github.sha }}
     timeout-minutes: 15
     steps:
-      - uses: bcgov/action-builder-ghcr@v2.3.0
+      - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
         with:
           package: frontend-playwright
           build_file: frontend/Dockerfile.playwright
           build_context: frontend/
           tag: ${{ github.event.number }}
           tag_fallback: latest
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/frontend-playwright
@@ -134,7 +134,7 @@ jobs:
       sha: ${{ github.sha }}
     timeout-minutes: 15
     steps:
-      - uses: bcgov/action-builder-ghcr@v2.3.0
+      - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
         with:
           package: n8n
           build_file: tools/n8n/Dockerfile
@@ -142,7 +142,7 @@ jobs:
           tag: ${{ github.event.number }}
           tag_fallback: latest
           triggers: ('tools/n8n/')
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/n8n
@@ -161,7 +161,7 @@ jobs:
       sha: ${{ github.sha }}
     timeout-minutes: 15
     steps:
-      - uses: bcgov/action-builder-ghcr@v2.3.0
+      - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
         with:
           package: s3-backups
           build_file: tools/s3-backups/Dockerfile
@@ -169,7 +169,7 @@ jobs:
           tag: ${{ github.event.number }}
           tag_fallback: latest
           triggers: ('tools/s3-backups/')
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/s3-backups
@@ -202,7 +202,7 @@ jobs:
     steps:
       - name: Get GitOps repo token
         id: gitops-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
         with:
           app-id: ${{ secrets.GITOPS_APP_ID }}
           private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
@@ -210,7 +210,7 @@ jobs:
           repositories: tenant-gitops-f208ae
 
       - name: Checkout CD repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ env.GITOPS_REPO }}
           token: ${{ steps.gitops-token.outputs.token }}
