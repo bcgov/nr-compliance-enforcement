@@ -116,7 +116,7 @@
             <column ascending="true" name="h_alias_guid"/>
          </index>
       </table>
-      <table name="app_user" numRows="81" remarks="A user table for the NatSuite system with user details and other meta" schema="shared" type="TABLE">
+      <table name="app_user" remarks="A user table for the NatSuite system with user details and other meta" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="app_user_guid" nullable="false" remarks="System generated unique key for a user. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="app_user_guid" foreignKey="app_user_team_xref_user_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_team_xref"/>
             <child column="created_by_app_user_guid" foreignKey="case_file_created_by_app_user_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
@@ -150,7 +150,7 @@
          </index>
          <index name="idx_app_user_auth_user_guid_normalized" unique="false"/>
       </table>
-      <table name="app_user_h" numRows="81" remarks="History table for app_user table" schema="shared" type="TABLE">
+      <table name="app_user_h" remarks="History table for app_user table" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_app_user_guid" nullable="false" remarks="System generated unique key for user history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the user that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
@@ -603,7 +603,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="area_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="administrative_office_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
       </table>
-      <table name="country_code" numRows="249" remarks="Contains the list of countries supported by the system. For example CA = Canada, US = United States." schema="shared" type="TABLE">
+      <table name="country_code" remarks="Contains the list of countries supported by the system. For example CA = Canada, US = United States." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="country_code" nullable="false" remarks="A human readable code used to identify a country. ISO 3166-1 codes are recommended." size="4" type="varchar" typeCode="12">
             <child column="country_code" foreignKey="address_country_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="address"/>
             <child column="country_code" foreignKey="country_subdivision_country_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="country_subdivision_code"/>
@@ -739,7 +739,7 @@
             <column ascending="true" name="facial_hair_style_code"/>
          </index>
       </table>
-      <table name="flyway_schema_history" numRows="71" remarks="" schema="shared" type="TABLE">
+      <table name="flyway_schema_history" remarks="" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
@@ -775,7 +775,7 @@
             <column ascending="true" name="gender_code"/>
          </index>
       </table>
-      <table name="geo_org_unit_structure" numRows="1041" remarks="Defines the hierarchical relationships between various geographical organizational unit codes." schema="shared" type="TABLE">
+      <table name="geo_org_unit_structure" remarks="Defines the hierarchical relationships between various geographical organizational unit codes." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="geo_org_unit_structure_guid" nullable="false" remarks="System generated unique key for the geographical organizational unit structure. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="effective_date" nullable="false" remarks="The date and time the geographical organizational unit structure became valid. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="expiry_date" nullable="true" remarks="The date and time the geographical organizational unit structure is no longer valid. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
@@ -826,7 +826,7 @@
             <column ascending="true" name="geo_org_unit_type_code"/>
          </index>
       </table>
-      <table name="geo_organization_unit_code" numRows="1051" remarks="Contains the code values for the various geographical organizational units." schema="shared" type="TABLE">
+      <table name="geo_organization_unit_code" remarks="Contains the code values for the various geographical organizational units." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_organization_unit_code" nullable="false" remarks="A human readable unique key that represents a geo organization unit." size="10" type="varchar" typeCode="12">
             <child column="child_geo_org_unit_code" foreignKey="geo_org_structure_child_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_org_unit_structure"/>
             <child column="parent_geo_org_unit_code" foreignKey="geo_org_structure_parent_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_org_unit_structure"/>
@@ -1083,7 +1083,7 @@
             <column ascending="true" name="h_legislation_version_guid"/>
          </index>
       </table>
-      <table name="nickname" numRows="10274" remarks="English first name nickname pairs sourced from github.com/carltonnorthern/nicknames" schema="shared" type="TABLE">
+      <table name="nickname" remarks="English first name nickname pairs sourced from github.com/carltonnorthern/nicknames" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="name" nullable="false" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="nickname" nullable="false" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
@@ -1095,7 +1095,7 @@
             <column ascending="true" name="nickname"/>
          </index>
       </table>
-      <table name="office" numRows="98" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="shared" type="TABLE">
+      <table name="office" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="office_guid" nullable="false" remarks="System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="office_guid" foreignKey="app_user_office_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
          </column>
@@ -1481,7 +1481,7 @@
             <column ascending="true" name="sex_code"/>
          </index>
       </table>
-      <table name="species_code" numRows="67" remarks="Contains the list of animal species supported by the system. For example BLKBEAR = Black Bear, MOOSE = Moose." schema="shared" type="TABLE">
+      <table name="species_code" remarks="Contains the list of animal species supported by the system. For example BLKBEAR = Black Bear, MOOSE = Moose." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="species_code" nullable="false" remarks="A human readable code used to identify a species." size="16" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the species." size="64" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the species." size="256" type="varchar" typeCode="12"/>
@@ -1552,7 +1552,7 @@
             <column ascending="true" name="h_team_guid"/>
          </index>
       </table>
-      <table name="wildlife_management_unit_code" numRows="225" remarks="Contains the list of wildlife management units in British Columbia. For example 1-1 = Wildlife Management Unit 1-1 in Region 1." schema="shared" type="TABLE">
+      <table name="wildlife_management_unit_code" remarks="Contains the list of wildlife management units in British Columbia. For example 1-1 = Wildlife Management Unit 1-1 in Region 1." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="wildlife_management_unit_code" nullable="false" remarks="A human readable code used to identify a wildlife management unit." size="16" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the wildlife management unit." size="64" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the wildlife management unit." size="256" type="varchar" typeCode="12"/>
