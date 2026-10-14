@@ -82,6 +82,7 @@
     "path-to-regexp": "8.4.2",
     "pg": "8.20.0",
     "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-phone-number-input": "3.4.16",
     "reflect-metadata": "0.2.2",
     "rimraf": "4.4.1",
