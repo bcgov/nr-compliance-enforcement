@@ -28,7 +28,7 @@ import { upsertPrevention } from "@/app/store/reducers/complaint-outcome-thunks"
 import { ToggleError } from "@common/toast";
 import UserService from "@/app/service/user-service";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type Props = {
   id: string;
@@ -107,7 +107,7 @@ export const HWCRPreventionForm: FC<Props> = ({
         })),
       );
 
-      setSelectedDate(preventionState.date ? new Date(preventionState.date) : new Date());
+      setSelectedDate(parseUTCDateToLocal(preventionState.date, null) ?? new Date());
 
       setWacnAmount(
         preventionState.wacnAmount !== undefined && preventionState.wacnAmount !== null

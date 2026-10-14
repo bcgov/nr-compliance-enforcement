@@ -22,24 +22,24 @@ select
 		else 'No'
 	end as "Advice Provided"
 from
-	case_management.lead le
-	left join case_management.case_file cf on cf.complaint_outcome_guid = le.case_identifier
-	left join case_management.wildlife wl on wl.complaint_outcome_guid = cf.complaint_outcome_guid
+	complaint_outcome.lead le
+	left join complaint_outcome.case_file cf on cf.complaint_outcome_guid = le.case_identifier
+	left join complaint_outcome.wildlife wl on wl.complaint_outcome_guid = cf.complaint_outcome_guid
 	and wl.active_ind = true
-	left join case_management.wildlife_h wlh ON wlh.target_row_id = wl.wildlife_guid
+	left join complaint_outcome.wildlife_h wlh ON wlh.target_row_id = wl.wildlife_guid
 	AND wlh.operation_type = 'I'
-	left join case_management.age_code ac on ac.age_code = wl.age_code
-	left join case_management.hwcr_outcome_code hoc on hoc.hwcr_outcome_code = wl.hwcr_outcome_code
-	left join case_management.hwcr_outcome_code prv_hoc on prv_hoc.hwcr_outcome_code = wlh.data_after_executed_operation - > > 'hwcr_outcome_code'
-	left join case_management.hwcr_outcome_actioned_by_code abc on abc.hwcr_outcome_actioned_by_code = wl.hwcr_outcome_actioned_by_code
+	left join complaint_outcome.age_code ac on ac.age_code = wl.age_code
+	left join complaint_outcome.hwcr_outcome_code hoc on hoc.hwcr_outcome_code = wl.hwcr_outcome_code
+	left join complaint_outcome.hwcr_outcome_code prv_hoc on prv_hoc.hwcr_outcome_code = wlh.data_after_executed_operation - > > 'hwcr_outcome_code'
+	left join complaint_outcome.hwcr_outcome_actioned_by_code abc on abc.hwcr_outcome_actioned_by_code = wl.hwcr_outcome_actioned_by_code
 	left join ( -- wildlife actions
 		select
 			action_date,
 			wildlife_guid
 		from
-			case_management.action axn
-			join case_management.action_type_action_xref atax on atax.action_type_action_xref_guid = axn.action_type_action_xref_guid
-			join case_management.action_code ac2 on ac2.action_code = atax.action_code
+			complaint_outcome.action axn
+			join complaint_outcome.action_type_action_xref atax on atax.action_type_action_xref_guid = axn.action_type_action_xref_guid
+			join complaint_outcome.action_code ac2 on ac2.action_code = atax.action_code
 		where
 			ac2.action_code = 'RECOUTCOME' -- has to be the outcome date
 	) oat on oat.wildlife_guid = wl.wildlife_guid
@@ -48,9 +48,9 @@ from
 			count(axn.complaint_outcome_guid) as prev_count,
 			complaint_outcome_guid
 		from
-			case_management.action axn
-			join case_management.action_type_action_xref atax on atax.action_type_action_xref_guid = axn.action_type_action_xref_guid
-			join case_management.action_type_code atc on atax.action_type_code = atc.action_type_code
+			complaint_outcome.action axn
+			join complaint_outcome.action_type_action_xref atax on atax.action_type_action_xref_guid = axn.action_type_action_xref_guid
+			join complaint_outcome.action_type_code atc on atax.action_type_code = atc.action_type_code
 		where
 			atc.action_type_code = 'COSPRV&EDU'
 			and axn.active_ind = true

@@ -1,4 +1,4 @@
------------------------------------------------------
+is-----------------------------------------------------
 -- Monthly HWCR Case Export query to be run for COS statistics
 -- see https://github.com/bcgov/nr-compliance-enforcement-cm/wiki/Data-Exports for more information
 -----------------------------------------------------
@@ -16,17 +16,17 @@ select
 		else 'Unknown'
 	end as "Action Required"
 from
-	case_management.lead le
-	left join case_management.case_file cf on cf.complaint_outcome_guid = le.case_identifier
-	left join case_management.assessment asm on asm.complaint_outcome_guid = cf.complaint_outcome_guid
+	complaint_outcome.lead le
+	left join complaint_outcome.case_file cf on cf.complaint_outcome_guid = le.case_identifier
+	left join complaint_outcome.assessment asm on asm.complaint_outcome_guid = cf.complaint_outcome_guid
 	right join ( -- assessment actions
 		select distinct
 			action_date,
 			assessment_guid
 		from
-			case_management.action axn
-			join case_management.action_type_action_xref atax on atax.action_type_action_xref_guid = axn.action_type_action_xref_guid
-			join case_management.action_code ac2 on ac2.action_code = atax.action_code
+			complaint_outcome.action axn
+			join complaint_outcome.action_type_action_xref atax on atax.action_type_action_xref_guid = axn.action_type_action_xref_guid
+			join complaint_outcome.action_code ac2 on ac2.action_code = atax.action_code
 		where
 			axn.assessment_guid is not null -- Can be anything here since we are just using it as a hook in to get the assessment date
 	) asd on asd.assessment_guid = asm.assessment_guid

@@ -16,6 +16,7 @@ import {
   setMappedComplaintsCount,
 } from "@/app/store/reducers/complaints";
 import { selectDefaultPageSize } from "@/app/store/reducers/app";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type Props = {
   type: string;
@@ -204,8 +205,12 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         actionTaken: payload.actionTakenFilter?.value,
         outcomeAnimal: payload.outcomeAnimalFilter?.value,
         outcomeActionedBy: payload.outcomeActionedByFilter?.value,
-        outcomeAnimalStartDate: payload.outcomeAnimalStartDateFilter,
-        outcomeAnimalEndDate: payload.outcomeAnimalEndDateFilter,
+        outcomeAnimalStartDate: payload.outcomeAnimalStartDateFilter
+          ? formatDateObjectAsString(new Date(payload.outcomeAnimalStartDateFilter), { format: "date" })
+          : undefined,
+        outcomeAnimalEndDate: payload.outcomeAnimalEndDateFilter
+          ? formatDateObjectAsString(new Date(payload.outcomeAnimalEndDateFilter), { format: "date" })
+          : undefined,
         equipmentStatus: payload.equipmentStatusFilter?.value,
         equipmentTypes: payload.equipmentTypesFilter?.map((type) => type.value),
         showReferrals: payload.showReferrals,
