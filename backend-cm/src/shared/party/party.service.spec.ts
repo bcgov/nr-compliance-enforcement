@@ -609,7 +609,11 @@ describe("_buildMatchComparisons", () => {
 
 describe("deactivateIfUnlinked", () => {
   const makeService = (investigationLinks: number, inspectionLinks: number) => {
-    const prisma = { party: { update: jest.fn().mockResolvedValue({}) } };
+    const tx = {
+      party: { update: jest.fn().mockResolvedValue({}) },
+      business_identifier: { updateMany: jest.fn().mockResolvedValue({ count: 0 }) },
+    };
+    const prisma = { $transaction: jest.fn((run: (tx: any) => Promise<unknown>) => run(tx)) };
     const service = new PartyService(
       { getIdirUsername: () => "test" } as any,
       {} as any,
@@ -620,25 +624,41 @@ describe("deactivateIfUnlinked", () => {
       { investigation_party: { count: jest.fn().mockResolvedValue(investigationLinks) } } as any,
       { inspection_party: { count: jest.fn().mockResolvedValue(inspectionLinks) } } as any,
     );
-    return { service, prisma };
+    return { service, tx };
   };
 
   it("retires the profile once no activity of any type links to it", async () => {
-    const { service, prisma } = makeService(0, 0);
+    const { service, tx } = makeService(0, 0);
 
     await service.deactivateIfUnlinked("party-1");
 
-    expect(prisma.party.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { party_guid: "party-1" }, data: expect.objectContaining({ active_ind: false }) }),
+    expect(tx.party.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { party_guid: "party-1" },
+        data: expect.objectContaining({ active_ind: false }),
+      }),
+    );
+  });
+
+  it("frees the retired profile's business number for reuse", async () => {
+    const { service, tx } = makeService(0, 0);
+
+    await service.deactivateIfUnlinked("party-1");
+
+    expect(tx.business_identifier.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { business: { party_guid: "party-1" }, active_ind: true },
+        data: expect.objectContaining({ active_ind: false }),
+      }),
     );
   });
 
   it("keeps the profile while an activity of another type still links to it", async () => {
-    const { service, prisma } = makeService(0, 1);
+    const { service, tx } = makeService(0, 1);
 
     await service.deactivateIfUnlinked("party-1");
 
-    expect(prisma.party.update).not.toHaveBeenCalled();
+    expect(tx.party.update).not.toHaveBeenCalled();
   });
 });
 

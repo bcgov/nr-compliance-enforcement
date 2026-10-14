@@ -127,7 +127,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
                     <i className="bi bi-info-circle me-2" />
                     <span>
                       {onUpdateParty
-                        ? "Party information have changed as part of another investigation. Update to the latest version of information prior to making additional edits."
+                        ? "Party information has changed as part of another investigation. Update to the latest version of information prior to making additional edits."
                         : "This party includes the information available when the investigation was closed. See the " +
                           "published profile list to view the most up-to-date information."}
                     </span>

@@ -1,5 +1,6 @@
 import { Dispatch, FC, SetStateAction, useEffect, useMemo, useCallback, useState } from "react";
 import { Button, Nav } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficers } from "@store/reducers/officer";
 import { fetchOfficeAssignments, selectOffices } from "@store/reducers/office";
@@ -198,6 +199,7 @@ export const SelectUser: FC<SelectUserProps> = ({
   onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const officers = useAppSelector(selectOfficers);
   const { markDirty } = useFormDirtyState(onDirtyChange);
 
@@ -348,12 +350,28 @@ export const SelectUser: FC<SelectUserProps> = ({
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h3>User administration</h3>
-          <Button
-            variant="primary"
-            onClick={handleAddNewUser}
-          >
-            <i className="comp-sidenav-item-icon bi bi-plus-circle"></i>Add new user
-          </Button>
+          <div className="admin-header-buttons">
+            <Button
+              variant="outline-primary"
+              onClick={() => navigate("/admin/laws")}
+            >
+              <i className="comp-sidenav-item-icon bi bi-book"></i>Manage legislation
+            </Button>
+            {isGlobalAdmin && (
+              <Button
+                variant="outline-primary"
+                onClick={() => navigate("/admin/feature")}
+              >
+                <i className="comp-sidenav-item-icon bi bi-toggles"></i>Manage features
+              </Button>
+            )}
+            <Button
+              variant="primary"
+              onClick={handleAddNewUser}
+            >
+              <i className="comp-sidenav-item-icon bi bi-plus-circle"></i>Add new user
+            </Button>
+          </div>
         </div>
         <p className="admin-subtitle">
           After selecting a user, click <strong>Edit</strong> for more options, such as: choosing an agency,

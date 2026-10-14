@@ -8,7 +8,7 @@ import {
   selectCascadedRegion,
   selectCascadedZone,
   selectCascadedCommunity,
-  selectComplaintStatusWithPendingCodeDropdown,
+  selectComplaintStatusCodeDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgency } from "@store/reducers/officer";
 import { AppUser } from "@apptypes/app/app_user/app_user";
@@ -24,7 +24,7 @@ type Props = {
 
 export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
   const { searchValues, setValues, clearValues } = useInvestigationSearch();
-  const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
+  const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const regionOptions = useAppSelector(selectCascadedRegion(searchValues.region ?? undefined));
   const zoneOptions = useAppSelector(selectCascadedZone(undefined, searchValues.zone ?? undefined));
   const communityOptions = useAppSelector(

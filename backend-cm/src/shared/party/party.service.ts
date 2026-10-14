@@ -469,13 +469,16 @@ export class PartyService {
     }
 
     const exclusion = excludePartyIdentifier
-      ? Prisma.sql`WHERE m.party_guid::text <> ${excludePartyIdentifier}`
+      ? Prisma.sql`AND m.party_guid::text <> ${excludePartyIdentifier}`
       : Prisma.empty;
 
+    // only match active parties
     const matches = await this.prisma.$queryRaw<{ field_code: string; field_label: string; field_value: string }[]>(
       Prisma.sql`WITH matched AS (${Prisma.join(lookups, " UNION ALL ")})
         SELECT DISTINCT m.field_code, m.field_label, m.field_value
         FROM matched m
+        JOIN shared.party p ON p.party_guid = m.party_guid
+        WHERE p.active_ind = true 
         ${exclusion}`,
     );
 
@@ -2375,13 +2378,24 @@ export class PartyService {
   }
 
   async deactivate(partyIdentifier: string): Promise<void> {
-    await this.prisma.party.update({
-      where: { party_guid: partyIdentifier },
-      data: {
-        active_ind: false,
-        update_user_id: this.user.getIdirUsername(),
-        update_utc_timestamp: new Date(),
-      },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.party.update({
+        where: { party_guid: partyIdentifier },
+        data: {
+          active_ind: false,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+      // Inactive business number so it can be reused / doesn't collide with unique constraint
+      await tx.business_identifier.updateMany({
+        where: { business: { party_guid: partyIdentifier }, active_ind: true },
+        data: {
+          active_ind: false,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
     });
   }
 
