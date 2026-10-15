@@ -40,7 +40,7 @@ jobs:
           - dir: frontend
             token: SONAR_TOKEN_FRONTEND
     steps:
-      - uses: bcgov/action-test-and-analyse@v1.6.0
+      - uses: bcgov/action-test-and-analyse@87f88c90526b8b05cea760492ff33db4ba6e271b # v1.6.0
         with:
           commands: |
             npm ci
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
@@ -80,7 +80,7 @@ jobs:
           severity: "CRITICAL,HIGH"
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
         with:
           sarif_file: "trivy-results.sarif"
 
