@@ -130,10 +130,10 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
       ''
     END;
     _location_detailed_text := complaint_data ->> 'cos_location_description';
-    _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
+    _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Vancouver';
     _incident_utc_date := _incident_utc_datetime::DATE;
     _incident_utc_time := _incident_utc_datetime::TIME;
-    _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
+    _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Vancouver';
 	_address_coordinates_lat := complaint.validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
     _address_coordinates_long := complaint.validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    

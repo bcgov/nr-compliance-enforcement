@@ -2,7 +2,7 @@ select
 	cmp.complaint_identifier as "Record ID",
 	-- agt.short_description as "Referred to agency",
 	-- agb.short_description as "Referred by agency",
-	-- to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
+	-- to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Vancouver', 'YYYY-MM-DD HH24:MI') as "Referral date",
 	-- Try and use the Incident Date if it doesn't exist use the Date Received
 	TO_CHAR(((cmp.incident_reported_utc_timestmp at time zone 'UTC') at time zone 'PDT'), 'YYYY-MM-DD') as "Date Received",
 	CASE 
