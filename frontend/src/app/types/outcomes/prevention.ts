@@ -4,7 +4,7 @@ export interface Prevention {
   id?: string;
   prevention_type: KeyValuePair[];
   officer?: KeyValuePair;
-  date?: Date | null;
+  date?: string | null;
   outcomeAgencyCode?: string;
   createdBy?: string;
   createdAt?: Date;

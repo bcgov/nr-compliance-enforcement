@@ -10,6 +10,7 @@ import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { Decision } from "@/app/types/app/complaint-outcomes/ceeb/decision/decision";
 import { PermitSite } from "@/app/types/app/complaint-outcomes/ceeb/authorization-outcome/permit-site";
 import { createSelector } from "@reduxjs/toolkit";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -92,7 +93,7 @@ export const selectAnimalOutcomes = createSelector([selectSubjects], (subjects) 
           const actionItem = actions.find(({ actionCode }) => actionCode === CASE_ACTION_CODE.ADMNSTRDRG);
           const drugAuthorization = {
             officer: actionItem?.actor ?? "",
-            date: new Date(actionItem?.date ?? ""),
+            date: parseUTCDateToLocal(actionItem?.date, null) ?? undefined,
           };
 
           record = { ...record, drugAuthorization };
@@ -106,7 +107,7 @@ export const selectAnimalOutcomes = createSelector([selectSubjects], (subjects) 
             record = { ...record, officer: actionItem.actor };
           }
           if (actionItem?.date) {
-            record = { ...record, date: new Date(actionItem.date ?? "") };
+            record = { ...record, date: parseUTCDateToLocal(actionItem.date, null) ?? undefined };
           }
         }
       }

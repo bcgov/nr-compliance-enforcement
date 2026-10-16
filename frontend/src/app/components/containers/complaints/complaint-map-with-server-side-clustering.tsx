@@ -16,6 +16,7 @@ import {
   setMappedComplaintsCount,
 } from "@/app/store/reducers/complaints";
 import { selectDefaultPageSize } from "@/app/store/reducers/app";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type Props = {
   type: string;
@@ -204,8 +205,8 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         actionTaken: payload.actionTakenFilter?.value,
         outcomeAnimal: payload.outcomeAnimalFilter?.value,
         outcomeActionedBy: payload.outcomeActionedByFilter?.value,
-        outcomeAnimalStartDate: payload.outcomeAnimalStartDateFilter,
-        outcomeAnimalEndDate: payload.outcomeAnimalEndDateFilter,
+        outcomeAnimalStartDate: formatFilterDate(payload.outcomeAnimalStartDateFilter),
+        outcomeAnimalEndDate: formatFilterDate(payload.outcomeAnimalEndDateFilter),
         equipmentStatus: payload.equipmentStatusFilter?.value,
         equipmentTypes: payload.equipmentTypesFilter?.map((type) => type.value),
         showReferrals: payload.showReferrals,
@@ -257,6 +258,9 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
     setDefaultClusterView(undefined); // Clear the default cluster view when the map is moved
     fetchMapData(filters, searchQuery, false, true, zoom, { west, south, east, north });
   };
+
+  const formatFilterDate = (value: Date | string | null | undefined): string | undefined =>
+    value ? formatDateObjectAsString(new Date(value), { format: "date" }) : undefined;
 
   return (
     <LeafletMapWithServerSideClustering
