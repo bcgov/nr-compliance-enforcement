@@ -1,7 +1,6 @@
 SELECT
   "source"."Record ID" AS "Record ID",
-  "source"."Date Received" AS "Date Received",
-  "source"."Date Received (YYYY-MM-DD)" AS "Date Received (YYYY-MM-DD)",
+  "source"."Date Received (Pacific)" AS "Date Received (Pacific)",
   "source"."Complaint Status" AS "Complaint Status",
   "source"."Method Received" AS "Method Received",
   "source"."Officer Assigned" AS "Officer Assigned",
@@ -13,8 +12,7 @@ FROM
   (
     SELECT
       "source"."Record ID" AS "Record ID",
-      "source"."Date Received" AS "Date Received",
-      "source"."Date Received (YYYY-MM-DD)" AS "Date Received (YYYY-MM-DD)",
+      "source"."Date Received (Pacific)" AS "Date Received (Pacific)",
       "source"."Complaint Status" AS "Complaint Status",
       "source"."Method Received" AS "Method Received",
       "source"."Officer Assigned" AS "Officer Assigned",
@@ -30,17 +28,7 @@ FROM
           -- agb.short_description as "Referred by agency",
           -- to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
           -- Try and use the Incident Date if it doesn't exist use the Date Received
-          TO_CHAR(
-            (
-              (
-                cmp.incident_reported_utc_timestmp at time zone 'UTC'
-              ) at time zone 'PDT'
-            ),
-            'YYYY-MM-DD'
-          ) as "Date Received (YYYY-MM-DD)",
-          (
-            cmp.incident_reported_utc_timestmp at time zone 'UTC'
-          ) at time zone 'PDT' as "Date Received",
+          cmp.incident_reported_utc_timestmp at time zone 'UTC' at time zone 'America/Vancouver' as "Date Received (Pacific)",
           CASE
             WHEN cst.short_description = 'Open' THEN 'Incomplete'
             WHEN cst.short_description = 'Pending Review' THEN 'Incomplete'
@@ -89,7 +77,7 @@ left join
 right join 
 	complaint.allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
 where
-	cmp.owned_by_agency_code_ref = ' EPO '
+	cmp.owned_by_agency_code_ref = 'EPO'
 	-- or crf.referred_by_agency_code = ' EPO '
 order by
 	cmp.complaint_identifier asc) AS "source"

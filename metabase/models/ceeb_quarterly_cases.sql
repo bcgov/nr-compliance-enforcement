@@ -5,7 +5,6 @@ SELECT
   "source"."Discharge Type" AS "Discharge Type",
   "source"."Action Taken" AS "Action Taken",
   "source"."Date Action Taken" AS "Date Action Taken",
-  "source"."Date Action Taken (YYYY-MM-DD)" AS "Date Action Taken (YYYY-MM-DD)",
   "source"."Authorization Number" AS "Authorization Number"
 FROM
   (
@@ -16,7 +15,6 @@ FROM
       "source"."Discharge Type" AS "Discharge Type",
       "source"."Action Taken" AS "Action Taken",
       "source"."Date Action Taken" AS "Date Action Taken",
-      "source"."Date Action Taken (YYYY-MM-DD)" AS "Date Action Taken (YYYY-MM-DD)",
       "source"."Authorization Number" AS "Authorization Number"
     FROM
       (
@@ -31,11 +29,7 @@ FROM
           icc.long_description as "IPM Auth. Category Code",
           dc.long_description as "Discharge Type",
           ac.long_description as "Action Taken",
-          TO_CHAR (
-            ((act.action_date at time zone 'UTC') at time zone 'PDT'),
-            'YYYY-MM-DD'
-          ) as "Date Action Taken (YYYY-MM-DD)",
-          ((act.action_date at time zone 'UTC') at time zone 'PDT') as "Date Action Taken",
+          to_char(act.action_date, 'YYYY-MM-DD') as "Date Action Taken",
           CASE
             WHEN s.site_id is not null THEN 'U' || s.site_id
             when ap.authorization_permit_id is not null then ap.authorization_permit_id

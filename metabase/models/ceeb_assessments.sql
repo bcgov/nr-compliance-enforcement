@@ -1,6 +1,5 @@
 SELECT
   "source"."Complaint Identifer" AS "Complaint Identifer",
-  "source"."Assessment Date (YYYY-MM-DD)" AS "Assessment Date (YYYY-MM-DD)",
   "source"."Assessment Date" AS "Assessment Date",
   "source"."Attended" AS "Attended",
   "source"."Action Required" AS "Action Required"
@@ -8,7 +7,6 @@ FROM
   (
     SELECT
       "source"."Complaint Identifer" AS "Complaint Identifer",
-      "source"."Assessment Date (YYYY-MM-DD)" AS "Assessment Date (YYYY-MM-DD)",
       "source"."Assessment Date" AS "Assessment Date",
       "source"."Attended" AS "Attended",
       "source"."Action Required" AS "Action Required"
@@ -20,11 +18,7 @@ FROM
         -----------------------------------------------------
         select
           co.complaint_identifier as "Complaint Identifer",
-          to_char (
-            asd.action_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Vancouver',
-            'YYYY-MM-DD HH24:MI'
-          ) as "Assessment Date (YYYY-MM-DD)",
-          asd.action_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Vancouver' as "Assessment Date",
+          to_char(asd.action_date, 'YYYY-MM-DD') as "Assessment Date",
           case
             when asm.attended_ind is true then 'Yes'
             when asm.attended_ind is false then 'No'
