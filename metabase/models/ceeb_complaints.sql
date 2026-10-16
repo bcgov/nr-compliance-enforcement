@@ -1,0 +1,96 @@
+SELECT
+  "source"."Record ID" AS "Record ID",
+  "source"."Date Received" AS "Date Received",
+  "source"."Date Received (YYYY-MM-DD)" AS "Date Received (YYYY-MM-DD)",
+  "source"."Complaint Status" AS "Complaint Status",
+  "source"."Method Received" AS "Method Received",
+  "source"."Officer Assigned" AS "Officer Assigned",
+  "source"."Region" AS "Region",
+  "source"."City/Town" AS "City/Town",
+  "source"."Alleged Contravener" AS "Alleged Contravener",
+  "source"."Complaint Description" AS "Complaint Description"
+FROM
+  (
+    SELECT
+      "source"."Record ID" AS "Record ID",
+      "source"."Date Received" AS "Date Received",
+      "source"."Date Received (YYYY-MM-DD)" AS "Date Received (YYYY-MM-DD)",
+      "source"."Complaint Status" AS "Complaint Status",
+      "source"."Method Received" AS "Method Received",
+      "source"."Officer Assigned" AS "Officer Assigned",
+      "source"."Region" AS "Region",
+      "source"."City/Town" AS "City/Town",
+      "source"."Alleged Contravener" AS "Alleged Contravener",
+      "source"."Complaint Description" AS "Complaint Description"
+    FROM
+      (
+        select
+          cmp.complaint_identifier as "Record ID",
+          -- agt.short_description as "Referred to agency",
+          -- agb.short_description as "Referred by agency",
+          -- to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
+          -- Try and use the Incident Date if it doesn't exist use the Date Received
+          TO_CHAR(
+            (
+              (
+                cmp.incident_reported_utc_timestmp at time zone 'UTC'
+              ) at time zone 'PDT'
+            ),
+            'YYYY-MM-DD'
+          ) as "Date Received (YYYY-MM-DD)",
+          (
+            cmp.incident_reported_utc_timestmp at time zone 'UTC'
+          ) at time zone 'PDT' as "Date Received",
+          CASE
+            WHEN cst.short_description = 'Open' THEN 'Incomplete'
+            WHEN cst.short_description = 'Pending Review' THEN 'Incomplete'
+            WHEN cst.short_description = 'Closed' THEN 'Complete'
+            ELSE cst.short_description
+          END as "Complaint Status",
+          cmrc.long_description as "Method Received",
+          'IDIR\' || per.user_id  as "Officer Assigned",
+	gfv.region_name as "Region",
+	--gfv.offloc_name as "Office",
+	goc.short_description as "City/Town",
+	--cmp.caller_name  as "Complainant Contact",
+	--CASE 
+	--    WHEN cmp.is_privacy_requested = ' Y ' THEN ' Yes '
+  --  	ELSE ' No '
+	--END as "Privacy Requested",
+	--cmp.caller_email as "Email",
+	--cmp.caller_phone_1 as "Telephone No.",
+	--cmp.location_summary_text as "Facility/Site Location",
+	--ST_Y(cmp.location_geometry_point) as "Latitude",
+	--ST_X(cmp.location_geometry_point) as "Longitude",
+	ac.suspect_witnesss_dtl_text as "Alleged Contravener",
+	cmp.detail_text as "Complaint Description"
+from 
+	complaint.complaint cmp
+join 
+	complaint.complaint_status_code cst on cst.complaint_status_code = cmp.complaint_status_code 
+join 
+	shared.geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
+join 
+	shared.cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
+left join
+	complaint.comp_mthd_recv_cd_agcy_cd_xref cmrcacx on cmrcacx.comp_mthd_recv_cd_agcy_cd_xref_guid = cmp.comp_mthd_recv_cd_agcy_cd_xref_guid
+left join 
+	complaint.complaint_method_received_code cmrc on cmrc.complaint_method_received_code = cmrcacx.complaint_method_received_code
+left join
+	complaint.complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
+--left join
+--	complaint.agency_code agt on agt.agency_code = crf.referred_to_agency_code 
+--left join
+--	complaint.agency_code agb on agb.agency_code = crf.referred_by_agency_code 
+left join 
+	complaint.app_user_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.app_user_complaint_xref_code = ' ASSIGNEE '
+left join 
+	shared.app_user per on per.app_user_guid = pcx.app_user_guid_ref 
+right join 
+	complaint.allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
+where
+	cmp.owned_by_agency_code_ref = ' EPO '
+	-- or crf.referred_by_agency_code = ' EPO '
+order by
+	cmp.complaint_identifier asc) AS "source"
+LIMIT 1048575) AS "source" LIMIT 1048575
