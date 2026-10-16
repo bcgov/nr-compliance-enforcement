@@ -11,7 +11,7 @@ import {
   selectIPMAuthCategoryDropdown,
 } from "@store/reducers/code-table-selectors";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
-import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type props = {
   schedule?: string;
@@ -96,7 +96,7 @@ export const DecisionItem: FC<props> = ({
         <dt>Date action taken</dt>
         <dd id="decision-date">
           {actionTakenDate !== null &&
-            formatDateObjectAsString(parseUTCTimestampToLocal(actionTakenDate), { format: "date" })}
+            formatDateObjectAsString(parseUTCDateToLocal(actionTakenDate, null), { format: "date" })}
         </dd>
       </div>
     </dl>

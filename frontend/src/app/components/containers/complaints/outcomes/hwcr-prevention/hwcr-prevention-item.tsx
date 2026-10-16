@@ -5,7 +5,7 @@ import { selectComplaintViewMode } from "@store/reducers/complaints";
 import { useAppSelector } from "@/app/hooks/hooks";
 import UserService from "@/app/service/user-service";
 import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
-import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type Props = {
@@ -58,7 +58,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               <div id="prev-educ-outcome-date-div">
                 <dt>Date</dt>
                 <dd>
-                  {formatDateObjectAsString(parseUTCTimestampToLocal(prevention.date), {
+                  {formatDateObjectAsString(parseUTCDateToLocal(prevention.date, null), {
                     format: "date",
                   })}
                 </dd>
