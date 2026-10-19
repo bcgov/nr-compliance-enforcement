@@ -203,7 +203,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
                 </Button>
                 <Button
                   id="details-screen-update-status-button"
-                  title="Update status"
+                  title="Update investigation status"
                   variant="outline-light"
                   onClick={handleOpenStatusModal}
                 >

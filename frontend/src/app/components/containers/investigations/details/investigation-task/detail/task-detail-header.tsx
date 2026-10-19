@@ -127,14 +127,14 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({
               )}
               <Button
                 id="task-details-update-status-button"
-                title="Update status"
+                title="Update task status"
                 variant="outline-light"
                 size="sm"
                 onClick={handleOpenStatusModal}
                 disabled={investigationReadOnly}
               >
                 <i className="bi bi-arrow-repeat" />
-                <span>Update status</span>
+                <span>Update task status</span>
               </Button>
               <Button
                 id="task-details-export-task-button"
