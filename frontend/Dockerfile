@@ -1,5 +1,5 @@
-# node:22-bookworm as of 2026-10-19
-FROM node@sha256:0e5f906573693feaa1e21057ebdcfdb5bd5021f050b2dc7c9deceb629c7da2a8 AS build
+# node:22-bookworm-slim as of 2026-10-19
+FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a01797839 AS build
 WORKDIR /app
 COPY . .
 RUN npm ci --omit=dev && \

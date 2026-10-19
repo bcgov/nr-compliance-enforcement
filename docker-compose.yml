@@ -202,7 +202,7 @@ services:
       VITE_ENVIRONMENT_NAME: DEVELOPMENT
       CODEGEN_GRAPHQL_URL: http://backend-cm:3000/graphql
     hostname: frontend
-    image: node@sha256:0e5f906573693feaa1e21057ebdcfdb5bd5021f050b2dc7c9deceb629c7da2a8
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 15s
