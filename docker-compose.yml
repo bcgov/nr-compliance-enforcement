@@ -44,7 +44,7 @@ services:
     volumes:
       - /pgdata
   migration-complaint:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-complaint
     command:
       - info
@@ -68,7 +68,7 @@ services:
       migration-shared:
         condition: service_completed_successfully
   migration-investigation:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-investigation
     command:
       - info
@@ -92,7 +92,7 @@ services:
       migration-shared:
         condition: service_completed_successfully
   migration-inspection:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-inspection
     command:
       - info
@@ -116,7 +116,7 @@ services:
       migration-shared:
         condition: service_completed_successfully
   migration-shared:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-shared
     command:
       - info
@@ -139,7 +139,7 @@ services:
       database:
         condition: service_healthy
   migration-complaint-outcome:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-complaint-outcome
     command:
       - info
@@ -264,7 +264,7 @@ services:
       TSC_WATCHDIRECTORY: DynamicPriorityPolling
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "1000"
-    image: node:20-bullseye
+    image: node@sha256:c9063968e5c359c7430892bd48448f8368aa0a76527b816e03bce59fe08bfd93
     ports: ["3003:3000"]
     volumes: ["./backend-cm:/app", "backend_cm_node_modules:/app/node_modules"]
     healthcheck:
