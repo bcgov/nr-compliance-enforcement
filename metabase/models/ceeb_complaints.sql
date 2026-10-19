@@ -1,6 +1,7 @@
 SELECT
   "source"."Record ID" AS "Record ID",
   "source"."Date Received (Pacific)" AS "Date Received (Pacific)",
+  "source"."Date/Time Received (Pacific)" AS "Date/Time Received (Pacific)",
   "source"."Complaint Status" AS "Complaint Status",
   "source"."Method Received" AS "Method Received",
   "source"."Officer Assigned" AS "Officer Assigned",
@@ -13,6 +14,7 @@ FROM
     SELECT
       "source"."Record ID" AS "Record ID",
       "source"."Date Received (Pacific)" AS "Date Received (Pacific)",
+      "source"."Date/Time Received (Pacific)" AS "Date/Time Received (Pacific)",
       "source"."Complaint Status" AS "Complaint Status",
       "source"."Method Received" AS "Method Received",
       "source"."Officer Assigned" AS "Officer Assigned",
@@ -28,7 +30,8 @@ FROM
           -- agb.short_description as "Referred by agency",
           -- to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
           -- Try and use the Incident Date if it doesn't exist use the Date Received
-          cmp.incident_reported_utc_timestmp at time zone 'UTC' at time zone 'America/Vancouver' as "Date Received (Pacific)",
+          (cmp.incident_reported_utc_timestmp at time zone 'UTC' at time zone 'America/Vancouver')::date as "Date Received (Pacific)",
+          cmp.incident_reported_utc_timestmp at time zone 'UTC' at time zone 'America/Vancouver' as "Date/Time Received (Pacific)",
           CASE
             WHEN cst.short_description = 'Open' THEN 'Incomplete'
             WHEN cst.short_description = 'Pending Review' THEN 'Incomplete'
