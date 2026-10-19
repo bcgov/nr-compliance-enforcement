@@ -177,7 +177,7 @@ services:
       CHOKIDAR_INTERVAL: "1000"
     hostname: backend
     # automapper v9 needs node >= 20.19 for require(esm)
-    image: node:22-bookworm-slim
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     links:
       - database
     ports:
@@ -202,7 +202,7 @@ services:
       VITE_ENVIRONMENT_NAME: DEVELOPMENT
       CODEGEN_GRAPHQL_URL: http://backend-cm:3000/graphql
     hostname: frontend
-    image: node:22-alpine
+    image: node@sha256:0e5f906573693feaa1e21057ebdcfdb5bd5021f050b2dc7c9deceb629c7da2a8
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 15s
@@ -236,7 +236,7 @@ services:
       - "-c"
       - "npm i && npm run start:dev"
     hostname: webeoc
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     links:
       - nats
     ports:
@@ -294,7 +294,7 @@ services:
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "1000"
     hostname: event-worker
-    image: node:22-bookworm-slim
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     links:
       - nats
     ports:
