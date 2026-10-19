@@ -249,7 +249,10 @@ services:
     working_dir: "/app"
   backend-cm:
     container_name: backend-cm
-    entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \
+    entrypoint: sh -c "apt-get update && \
+      apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u1 libssl3=3.0.22-1~deb12u1 && \
+      rm -rf /var/lib/apt/lists/* && \
+      npm i && npm run prisma-generate-complaint-outcome && \
       npm run prisma-generate-shared && \
       npm run prisma-generate-investigation && \
       npm run prisma-generate-inspection && \
@@ -264,7 +267,7 @@ services:
       TSC_WATCHDIRECTORY: DynamicPriorityPolling
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "1000"
-    image: node@sha256:c9063968e5c359c7430892bd48448f8368aa0a76527b816e03bce59fe08bfd93
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     ports: ["3003:3000"]
     volumes: ["./backend-cm:/app", "backend_cm_node_modules:/app/node_modules"]
     healthcheck:
