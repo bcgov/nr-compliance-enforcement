@@ -83,6 +83,8 @@ export const EditOutcome: FC<props> = ({
   const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const [showModal, setShowModal] = useState(false);
+  // only make the user accept the warning once
+  const [editWarningConfirmed, setEditWarningConfirmed] = useState(false);
   const [modalContent, setModalContent] = useState<modalProps>({
     title: "",
     description: "",
@@ -365,7 +367,7 @@ export const EditOutcome: FC<props> = ({
   };
 
   const handleOutcomeChange = (input: Option | null) => {
-    if (data?.outcome) {
+    if (data?.outcome && !editWarningConfirmed) {
       showEditWarning(() => {
         updateModel("outcome", input?.value);
       });
@@ -433,6 +435,7 @@ export const EditOutcome: FC<props> = ({
         if (onConfirm) {
           onConfirm();
         }
+        setEditWarningConfirmed(true);
         setShowModal(false);
       },
       cancel: () => {
@@ -688,7 +691,7 @@ export const EditOutcome: FC<props> = ({
                   id="equipment-day-set"
                   maxDate={new Date()}
                   onChange={(input: Date, _time: string | null) => {
-                    if (data?.date) {
+                    if (data?.date && !editWarningConfirmed) {
                       showEditWarning(() => {
                         handleOutcomeDateChange(input);
                       });
