@@ -118,7 +118,7 @@ export const InspectionHeader: FC<InspectionHeaderProps> = ({ inspection, onStat
               <div className="comp-header-actions-desktop">
                 <Button
                   id="details-screen-update-status-button"
-                  title="Update status"
+                  title="Update inspection status"
                   variant="outline-light"
                   onClick={handleOpenStatusModal}
                 >

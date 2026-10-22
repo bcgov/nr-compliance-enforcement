@@ -1,17 +1,5 @@
 import { Roles } from "./roles";
-
-export const COMPLAINT_TYPE_AGENCY_MAPPING = {
-  HWCR: ["COS", "PARKS"],
-  GIR: ["COS", "PARKS"],
-  ERS: ["COS", "PARKS", "EPO", "NROS", "MINES"],
-};
-
-export const COMPLAINT_TYPE_EXTERNAL_AGENCY_MAPPING = {
-  HWCR: false,
-  GIR: true,
-  ERS: true,
-  SECTOR: false,
-};
+import { AgencyType } from "./agency-types";
 
 export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
@@ -67,6 +55,19 @@ export const complaintTypeForRole = (roleType: string) => {
     case Roles.COS:
     case Roles.GLOBAL_ADMINISTRATOR:
     case Roles.AGENCY_ADMINISTRATOR:
+    default:
+      return COMPLAINT_TYPES;
+  }
+};
+
+export const complaintTypesForReferral = (agency: string) => {
+  switch (agency) {
+    case AgencyType.CEEB:
+      return CEEB_TYPES;
+    case AgencyType.NROS:
+      return NROS_TYPES;
+    case AgencyType.MINES:
+      return MINES_TYPES;
     default:
       return COMPLAINT_TYPES;
   }
