@@ -22,7 +22,7 @@ test.describe("Investigation Status Change", () => {
     await expect(updateStatusButton).toBeVisible({ timeout: 15000 });
     await updateStatusButton.click();
 
-    const modal = page.locator(".modal", { hasText: "Update status" }).first();
+    const modal = page.locator(".modal", { hasText: "Update investigation status" }).first();
     await expect(modal).toBeVisible();
     return modal;
   };
@@ -103,7 +103,7 @@ test.describe("Investigation Status Change", () => {
     await expect(taskStatusButton).toBeVisible({ timeout: 15000 });
     await taskStatusButton.click();
 
-    const taskStatusModal = page.locator(".modal", { hasText: "Update status" }).first();
+    const taskStatusModal = page.locator(".modal", { hasText: "Update task status" }).first();
     await expect(taskStatusModal).toBeVisible();
     await selectItemById("task-status-select", "Closed", page);
     await taskStatusModal.locator("button", { hasText: /^Update$/ }).click();
