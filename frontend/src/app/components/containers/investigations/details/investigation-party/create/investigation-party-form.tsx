@@ -703,6 +703,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     });
   }, [addMatchGuid, investigationGuid]);
 
+  const matchSummary =
+    matches.length === 0 ? "No matching published profiles found." : "Potentially matching published profiles found.";
+  const matchCardsClassName = `comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""} mb-3`;
+
   return (
     <div className="comp-investigation-edit-headerdetails">
       <InvestigationPartyHeader
@@ -744,10 +748,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       />
 
       <section className="comp-details-body comp-details-form comp-container">
-        <div
-          className={`comp-party-form-layout${isScrollLayout ? " comp-party-form-layout-scroll" : ""}`}
-          style={isScrollLayout && matchPaneStyle ? { height: matchPaneStyle.maxHeight } : undefined}
-        >
+        <div className={`comp-party-form-layout${isScrollLayout ? " comp-party-form-layout-scroll" : ""}`}>
           <form
             className="comp-party-form"
             onBlur={handleFieldBlur}
@@ -931,18 +932,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                       </div>
                     )}
 
-                    {!matchFetching && (
-                      <p>
-                        {matches.length === 0
-                          ? "No matching published profiles found."
-                          : "Potentially matching published profiles found."}
-                      </p>
-                    )}
+                    {!matchFetching && <p>{matchSummary}</p>}
 
                     {/* Matching profile cards */}
-                    <div
-                      className={`comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""} mb-3`}
-                    >
+                    <div className={matchCardsClassName}>
                       {matches.map((match) => (
                         <PartyMatchCard
                           key={match.party.partyIdentifier}
