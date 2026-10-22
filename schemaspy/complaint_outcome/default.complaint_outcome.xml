@@ -12,7 +12,7 @@
             <parent column="action_type_action_xref_guid" foreignKey="FK_action_action_type_action_xref" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action_type_action_xref"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="actor_guid" nullable="false" remarks="Represents the IDIR guid of the user who performed the action." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="action_date" nullable="false" remarks="The date the action was recorded.   This value is user entered." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="action_date" nullable="false" remarks="The date the action was recorded.   This value is user entered." size="13" type="date" typeCode="91"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the action is active and should be displayed in the application." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the case." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
@@ -36,6 +36,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="prevention_education_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="prevention_education_guid" foreignKey="action_prevention_education_guid_fkey" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="prevention_education"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="16" name="action_time" nullable="true" remarks="" size="15" type="time" typeCode="92"/>
          <primaryKey column="action_guid" sequenceNumberInPK="1"/>
          <index name="PK_action_guid" unique="true">
             <column ascending="true" name="action_guid"/>
