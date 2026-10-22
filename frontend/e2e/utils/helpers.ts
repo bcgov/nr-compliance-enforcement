@@ -374,3 +374,13 @@ export async function navigateToCaseWithActivities(page: any): Promise<boolean> 
   await waitForSpinner(page);
   return true;
 }
+
+// Closes the mobile filter offcanvas if it is open, so it doesn't cover other page controls.
+// No-op on desktop, where the filters are shown in a collapse panel instead.
+export const closeMobileFilters = async (page: Page) => {
+  const offcanvas = page.locator(".offcanvas.show");
+  if (await offcanvas.isVisible()) {
+    await offcanvas.locator(".btn-close").click();
+    await expect(offcanvas).toBeHidden();
+  }
+};

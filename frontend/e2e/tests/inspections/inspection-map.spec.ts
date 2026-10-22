@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner, waitForMapToLoad } from "../../utils/helpers";
+import { waitForSpinner, waitForMapToLoad, closeMobileFilters } from "../../utils/helpers";
 
 /**
  * Tests for Inspection Map View functionality
@@ -55,14 +55,14 @@ test.describe("Inspection Map View", () => {
     // Keep clicking clusters until individual markers appear
     let attempts = 0;
     const maxAttempts = 5;
-    
+
     while (attempts < maxAttempts) {
       const individualMarkers = leafletContainer.locator(".map-marker");
       const clusters = leafletContainer.locator(".marker-cluster");
-      
+
       const individualCount = await individualMarkers.count();
       const clusterCount = await clusters.count();
-      
+
       if (individualCount > 0) {
         // Found individual markers - click one to open popup
         await individualMarkers.first().dispatchEvent("click");
@@ -101,8 +101,8 @@ test.describe("Inspection Map View", () => {
   });
 
   test("it maintains filters when switching views", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
-    await expect(page.locator(".comp-data-filters")).toBeVisible();
+    await page.locator("#inspection-filter-btn:visible, #inspection-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     const statusSelect = page.locator("#inspection-status-filter");
     if (await statusSelect.isVisible()) {
@@ -113,6 +113,8 @@ test.describe("Inspection Map View", () => {
         await waitForSpinner(page);
       }
     }
+
+    await closeMobileFilters(page);
 
     // Switch to map view
     const mapToggleLabel = page.locator("label[for='map_toggle_id']");
