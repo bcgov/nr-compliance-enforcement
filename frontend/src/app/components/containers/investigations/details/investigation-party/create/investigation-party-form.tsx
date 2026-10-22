@@ -40,7 +40,7 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { Alert, Button, Spinner } from "react-bootstrap";
-import { InvestigationPartyHeader } from "../investigation-party-header";
+import { InvestigationPartyHeader, usePartyMatchLayout } from "../investigation-party-header";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/use-party-match-trigger";
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
@@ -552,31 +552,78 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const [showMatchRules, setShowMatchRules] = useState(false);
 
-  // The pane scrolls its own results using overlay buttons page down and back up
+  // TEMP: layout A/B
+  const partyMatchLayout = usePartyMatchLayout();
+  const isScrollLayout = partyMatchLayout !== "buttons";
+  const hasPagingButtons = partyMatchLayout !== "scroll";
+
   const matchScrollRef = useRef<HTMLDivElement>(null);
   const [matchScroll, setMatchScroll] = useState({ up: false, down: false });
+  const scrollingToTopRef = useRef(false);
+
+  // Paging ends at the rules
+  const matchScrollEnd = (el: HTMLDivElement) => {
+    const title = el.querySelector(".comp-party-match-rules-title");
+    return title
+      ? title.getBoundingClientRect().bottom - el.getBoundingClientRect().top + el.scrollTop
+      : el.scrollHeight;
+  };
 
   const updateMatchScroll = () => {
     const el = matchScrollRef.current;
     if (!el) return;
-    const up = el.scrollTop > 0;
-    const down = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+    if (el.scrollTop === 0) scrollingToTopRef.current = false;
+    const up = el.scrollTop > 0 && !scrollingToTopRef.current;
+    const down = el.scrollTop + el.clientHeight < matchScrollEnd(el) - 1;
     setMatchScroll((prev) => (prev.up === up && prev.down === down ? prev : { up, down }));
   };
 
   useEffect(() => {
     updateMatchScroll();
-    const content = matchScrollRef.current?.firstElementChild;
-    if (!content) return;
+    const el = matchScrollRef.current;
+    if (!el) return;
     const observer = new ResizeObserver(updateMatchScroll);
-    observer.observe(content);
+    Array.from(el.children).forEach((child) => observer.observe(child));
     return () => observer.disconnect();
   }, [matchGuids, matchError, matchFetching, matchPaneStyle]);
 
+  const scrollToTop = () => {
+    scrollingToTopRef.current = true;
+    setMatchScroll((prev) => (prev.up ? { ...prev, up: false } : prev));
+    matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Pages to the first card that is cut off at the bottom so cards aren't shown as cut in half
+  const scrollToNextProfile = () => {
+    const el = matchScrollRef.current;
+    if (!el) return;
+    scrollingToTopRef.current = false;
+    const paneTop = el.getBoundingClientRect().top - el.scrollTop;
+    const visibleBottom = el.scrollTop + el.clientHeight;
+    const next = Array.from(el.querySelectorAll<HTMLElement>(".comp-party-match-card"))
+      .map((card) => card.getBoundingClientRect())
+      .find((rect) => rect.top - paneTop > el.scrollTop && rect.bottom - paneTop > visibleBottom);
+    const lastPage = matchScrollEnd(el) - el.clientHeight;
+    el.scrollTo({ top: Math.min(next ? next.top - paneTop : visibleBottom, lastPage), behavior: "smooth" });
+  };
+
   // A changed result set reads from the top
   useEffect(() => {
-    matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTop();
   }, [matchGuids]);
+
+  // TEMP: layout A/B
+  useEffect(() => {
+    if (isScrollLayout && !matchFetching) scrollToTop();
+  }, [isScrollLayout, matchFetching]);
+
+  // When the rules are expanded scroll down to the bottom so they are visible
+  useEffect(() => {
+    const el = matchScrollRef.current;
+    if (!showMatchRules || !el || !hasPagingButtons) return;
+    scrollingToTopRef.current = false;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [showMatchRules]);
 
   const handleAddMatch = (party: Party) => {
     const partyAssociationRole = form.getFieldValue("partyAssociationRole");
@@ -656,6 +703,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     });
   }, [addMatchGuid, investigationGuid]);
 
+  const matchSummary =
+    matches.length === 0 ? "No matching published profiles found." : "Potentially matching published profiles found.";
+  const matchCardsClassName = `comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""} mb-3`;
+
   return (
     <div className="comp-investigation-edit-headerdetails">
       <InvestigationPartyHeader
@@ -697,7 +748,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       />
 
       <section className="comp-details-body comp-details-form comp-container">
-        <div className="comp-party-form-layout">
+        <div className={`comp-party-form-layout${isScrollLayout ? " comp-party-form-layout-scroll" : ""}`}>
           <form
             className="comp-party-form"
             onBlur={handleFieldBlur}
@@ -837,7 +888,11 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           {(matchError || matchFetching || matchSearched) && (
             <div
               className="comp-party-match-results"
-              style={matchPaneStyle && { top: matchPaneStyle.top }}
+              style={
+                !isScrollLayout && matchPaneStyle
+                  ? { top: matchPaneStyle.top, maxHeight: matchPaneStyle.maxHeight }
+                  : undefined
+              }
             >
               {matchError ? (
                 <Alert
@@ -849,11 +904,20 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                 </Alert>
               ) : (
                 <>
+                  {hasPagingButtons && matchScroll.up && (
+                    <Button
+                      variant="outline-primary"
+                      className="w-100 mb-2"
+                      onClick={scrollToTop}
+                    >
+                      <i className="bi bi-arrow-up me-1" />
+                      <span>Back to top</span>
+                    </Button>
+                  )}
                   <div
                     className="comp-party-match-results-scroll"
                     ref={matchScrollRef}
                     onScroll={updateMatchScroll}
-                    style={matchPaneStyle && { maxHeight: matchPaneStyle.maxHeight }}
                   >
                     <h3 className="mb-1">Search results</h3>
 
@@ -868,18 +932,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                       </div>
                     )}
 
-                    {!matchFetching && (
-                      <p>
-                        {matches.length === 0
-                          ? "No matching published profiles found."
-                          : "Potentially matching published profiles found."}
-                      </p>
-                    )}
+                    {!matchFetching && <p>{matchSummary}</p>}
 
                     {/* Matching profile cards */}
-                    <div
-                      className={`comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""} mb-3`}
-                    >
+                    <div className={matchCardsClassName}>
                       {matches.map((match) => (
                         <PartyMatchCard
                           key={match.party.partyIdentifier}
@@ -892,34 +948,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                         />
                       ))}
                     </div>
-                  </div>
-                  {matchScroll.up && (
-                    <Button
-                      variant="light"
-                      className="comp-party-match-scroll-button comp-party-match-scroll-button-up border shadow-sm"
-                      onClick={() => matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
-                    >
-                      <i className="bi bi-arrow-up me-1" />
-                      <span>Back to top</span>
-                    </Button>
-                  )}
-                  {matchScroll.down && (
-                    <Button
-                      variant="light"
-                      className="comp-party-match-scroll-button comp-party-match-scroll-button-down border shadow-sm"
-                      onClick={() =>
-                        matchScrollRef.current?.scrollBy({
-                          top: matchScrollRef.current.clientHeight * 0.8,
-                          behavior: "smooth",
-                        })
-                      }
-                    >
-                      <i className="bi bi-arrow-down me-1" />
-                      <span>More profiles</span>
-                    </Button>
-                  )}
 
-                  <div>
                     <div className="comp-party-match-rules p-2 d-flex flex-column flex-start align-items-start">
                       <Button
                         variant="link"
@@ -968,6 +997,16 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                       )}
                     </div>
                   </div>
+                  {hasPagingButtons && matchScroll.down && (
+                    <Button
+                      variant="outline-primary"
+                      className="w-100 mt-2"
+                      onClick={scrollToNextProfile}
+                    >
+                      <i className="bi bi-arrow-down me-1" />
+                      <span>More profiles</span>
+                    </Button>
+                  )}
                 </>
               )}
             </div>

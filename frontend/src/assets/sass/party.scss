@@ -98,25 +98,15 @@
     position: sticky;
     top: 9.5rem;
     align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 11rem);
 
-    // Hidden overflow so only the overlay buttons move the results
+    // Hidden overflow so only the buttons above and below move the results
     .comp-party-match-results-scroll {
-      max-height: calc(100vh - 11rem);
+      flex: 1 1 auto;
+      min-height: 0;
       overflow: hidden;
-    }
-
-    .comp-party-match-scroll-button {
-      position: absolute;
-      right: 1rem;
-      padding: 0.75rem 1.5rem;
-    }
-
-    .comp-party-match-scroll-button-up {
-      top: 0.5rem;
-    }
-
-    .comp-party-match-scroll-button-down {
-      bottom: 3rem;
     }
   }
 
@@ -124,12 +114,33 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
     gap: 1rem;
-    align-items: start;
     transition: opacity 0.2s ease-in-out;
 
     // The set shown during a search is about to be replaced
     &.comp-party-match-cards-fetching {
       opacity: 0.5;
+    }
+  }
+
+  // TEMP: layout A/B
+  &.comp-party-form-layout-scroll {
+    align-items: stretch;
+    height: calc(100vh - 11rem);
+
+    .comp-party-form {
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .comp-party-match-results {
+      position: static;
+      max-height: none;
+      align-self: stretch;
+      min-height: 0;
+
+      .comp-party-match-results-scroll {
+        overflow-y: auto;
+      }
     }
   }
 
@@ -141,13 +152,22 @@
       padding-right: 0;
     }
 
-    // Relative so the scroll overlay buttons still anchor to the pane
     .comp-party-match-results {
       position: relative;
       top: 0;
       align-self: stretch;
       min-width: 0;
       max-width: none;
+    }
+
+    // TEMP: layout A/B
+    &.comp-party-form-layout-scroll {
+      height: auto;
+
+      .comp-party-form,
+      .comp-party-match-results-scroll {
+        overflow: visible;
+      }
     }
   }
 }
@@ -190,23 +210,19 @@
     vertical-align: 0.125rem;
   }
 
+  .comp-party-match-card-select {
+    min-width: 41.6667%;
+  }
+
   .comp-party-match-card-score-table {
     display: grid;
-    grid-template-columns: max-content max-content;
+    grid-template-columns: 1fr max-content;
     column-gap: 1.5rem;
     font-size: 14px;
 
     .comp-party-match-card-score-points {
       text-align: right;
     }
-  }
-
-  .comp-party-match-card-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem 1rem;
-    margin-top: 0.5rem;
   }
 }
 
