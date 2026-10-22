@@ -69,6 +69,12 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
   }
   const isDirty = selectedStatus !== initialStatus;
 
+  const labels = {
+    investigation: { title: "Update investigation status", field: "Investigation status" },
+    task: { title: "Update task status", field: "Task status" },
+    inspection: { title: "Update inspection status", field: "Inspection status" },
+  }[type];
+
   // Only show guidance once the user has moved away from the current status.
   const activeAdvisory = isDirty ? statusAdvisories?.[selectedStatus] : undefined;
   const isBlocked = activeAdvisory?.variant === "blocked";
@@ -133,7 +139,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
         closeButton
         className="pb-0"
       >
-        <Modal.Title>Update status</Modal.Title>
+        <Modal.Title>{labels.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="mb-3">
@@ -141,7 +147,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
             htmlFor="task-status-select"
             className="form-label"
           >
-            Status
+            {labels.field}
           </label>
           <CompSelect
             id="task-status-select"
@@ -162,7 +168,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
               role="alert"
             >
               <i
-                className="bi bi-check-circle-fill"
+                className="bi bi-exclamation-circle"
                 aria-hidden="true"
               />
               <div>

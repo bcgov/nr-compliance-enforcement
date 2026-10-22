@@ -9,7 +9,8 @@ import { AgencyBanner } from "@components/containers/layout/agency-banner";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { getRelatedData, selectComplaint } from "@store/reducers/complaints";
-import { COMPLAINT_TYPE_AGENCY_MAPPING, COMPLAINT_TYPE_EXTERNAL_AGENCY_MAPPING } from "@apptypes/app/complaint-types";
+import { AgencyType } from "@apptypes/app/agency-types";
+import { complaintTypesForReferral } from "@apptypes/app/complaint-types";
 import Option from "@apptypes/app/option";
 import { getComplaintById, createComplaintReferral } from "@/app/store/reducers/complaints";
 import { AppUser } from "@/app/types/app/app_user/app_user";
@@ -46,15 +47,9 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   const agencyOptions = agencies
     .filter(
       (agency) =>
-        (agency.externalAgencyInd &&
-          COMPLAINT_TYPE_EXTERNAL_AGENCY_MAPPING[
-            complaint_type as keyof typeof COMPLAINT_TYPE_EXTERNAL_AGENCY_MAPPING
-          ]) ||
-        (agency.agency !== complaintData?.ownedBy &&
-          // agency's agency_code is in mapping for the complaint type
-          COMPLAINT_TYPE_AGENCY_MAPPING[complaint_type as keyof typeof COMPLAINT_TYPE_AGENCY_MAPPING].some(
-            (agency_code) => agency_code === agency.agency,
-          )),
+        agency.agency !== complaintData?.ownedBy &&
+        agency.agency !== AgencyType.SECTOR &&
+        (agency.externalAgencyInd || Object.keys(complaintTypesForReferral(agency.agency)).includes(complaint_type)),
     )
     .map((agency) => ({
       label: agency.longDescription,
