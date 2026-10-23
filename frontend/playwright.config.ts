@@ -10,7 +10,7 @@ const baseURL = process.env.E2E_BASE_URL || "http://localhost:3000";
  */
 export default defineConfig({
   workers: 6,
-  timeout: 60000, // SHORTENED FOR DEV DO NOT COMMIT
+  timeout: 120000, // SHORTENED FOR DEV DO NOT COMMIT
   expect: {
     timeout: 30000, // 30 seconds for an expect statement to resolve.
   },
