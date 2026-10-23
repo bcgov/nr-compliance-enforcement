@@ -10,7 +10,7 @@ const baseURL = process.env.E2E_BASE_URL || "http://localhost:3000";
  */
 export default defineConfig({
   workers: 6,
-  timeout: 120000, // SHORTENED FOR DEV DO NOT COMMIT
+  timeout: 300000, // 5 minutes for a test (longest ones run 2.5 minutes normally)
   expect: {
     timeout: 30000, // 30 seconds for an expect statement to resolve.
   },
@@ -92,7 +92,7 @@ export default defineConfig({
         ...devices["iPad Pro 11"],
         baseURL: baseURL,
       },
-      dependencies: ["setup"],
+      dependencies: ["setup", "safari"],
       testMatch: /.{0,5}\.(spec|test)\.ts/,
     },
     // {

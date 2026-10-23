@@ -84,7 +84,18 @@ export async function navigateToTab(complaintTab: string, removeFilters: boolean
 }
 
 export async function assignSelfToComplaint(page: Page) {
-  await page.locator("#details-screen-assign-button").click();
+  const desktopButton = page.locator("#details-screen-assign-button");
+  const mobileMenuToggle = page.locator(".comp-header-actions-mobile .dropdown-toggle");
+
+  // Wait for whichever header layout is shown for the current viewport
+  await expect(desktopButton.or(mobileMenuToggle).filter({ visible: true })).toBeVisible();
+
+  if (await desktopButton.isVisible()) {
+    await desktopButton.click();
+  } else {
+    await mobileMenuToggle.click();
+    await page.locator("#assign-button").click();
+  }
   await page.locator("#self_assign_button").click();
   await waitForSpinner(page);
 }
@@ -382,5 +393,22 @@ export const closeMobileFilters = async (page: Page) => {
   if (await offcanvas.isVisible()) {
     await offcanvas.locator(".btn-close").click();
     await expect(offcanvas).toBeHidden();
+  }
+};
+
+// Opens the Update status modal from the complaint details header. Uses the desktop button when shown,
+// otherwise opens the mobile actions menu and selects Update Status from it.
+export const openUpdateStatusModal = async (page: Page) => {
+  const desktopButton = page.locator("#details-screen-update-status-button");
+  const mobileMenuToggle = page.locator(".comp-header-actions-mobile .dropdown-toggle");
+
+  // Wait for whichever header layout is shown for the current viewport
+  await expect(desktopButton.or(mobileMenuToggle).filter({ visible: true })).toBeVisible();
+
+  if (await desktopButton.isVisible()) {
+    await desktopButton.click();
+  } else {
+    await mobileMenuToggle.click();
+    await page.locator("#update-status-button").click();
   }
 };
