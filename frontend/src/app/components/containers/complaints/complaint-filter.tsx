@@ -189,7 +189,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   ///--
   const renderComplaintFilters = (): JSX.Element => {
     return (
-      <div className="comp-filter-container">
+      <>
         {showHWCRFilters &&
           activeFilters.showNatureComplaintFilter &&
           activeFilters.showSpeciesFilter && ( // wildlife only filter
@@ -508,7 +508,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           </div>
         )}
-      </div>
+      </>
     );
   };
 
@@ -709,9 +709,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               </div>
             </>
           )}
+          {renderComplaintFilters()}
         </div>
-
-        {renderComplaintFilters()}
       </div>
     </div>
   );
