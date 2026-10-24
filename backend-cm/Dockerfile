@@ -1,7 +1,13 @@
 # Build static files
-# Node Bullseye has npm
-# node:20.19.0-bullseye-slim as of 2026-09-15
-FROM node@sha256:c9063968e5c359c7430892bd48448f8368aa0a76527b816e03bce59fe08bfd93 AS buildwithdevdeps
+# Node Bookwork has npm
+# node:22-bookworm-slim as of 2026-10-19
+FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 AS buildwithdevdeps
+
+# Prisma requires OpenSSL, which is not included in the slim image
+# Pinned for consistent builds; bump when Debian removes this version from the mirrors
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u1 libssl3=3.0.22-1~deb12u1 \
+  && rm -rf /var/lib/apt/lists/*
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
@@ -13,8 +19,8 @@ RUN npm run prisma-generate-complaint-outcome
 RUN npm run prisma-generate-shared
 RUN npm run prisma-generate-investigation
 RUN npm run prisma-generate-inspection
-# node:20.19.0-bullseye-slim as of 2026-09-15
-FROM node@sha256:c9063968e5c359c7430892bd48448f8368aa0a76527b816e03bce59fe08bfd93 AS build
+# node:22-bookworm-slim as of 2026-10-19
+FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 AS build
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
@@ -32,9 +38,15 @@ COPY --from=buildwithdevdeps /app/node_modules/prisma ./node_modules/prisma
 RUN npm run build
 
 # Deploy container
-# node:20.19.0-bullseye-slim as of 2026-09-15
-FROM node@sha256:c9063968e5c359c7430892bd48448f8368aa0a76527b816e03bce59fe08bfd93
+# node:22-bookworm-slim as of 2026-10-19
+FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
 ENV NODE_ENV=production
+
+# Prisma requires OpenSSL, which is not included in the slim image
+# Pinned for consistent builds; bump when Debian removes this version from the mirrors
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u1 libssl3=3.0.22-1~deb12u1 \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy over app
 WORKDIR /app

@@ -425,8 +425,12 @@ export const getComplaints =
         complaintMethod: complaintMethodFilter?.value,
         actionTaken: actionTakenFilter?.value,
         outcomeAnimal: outcomeAnimalFilter?.value,
-        outcomeAnimalStartDate: outcomeAnimalStartDateFilter,
-        outcomeAnimalEndDate: outcomeAnimalEndDateFilter,
+        outcomeAnimalStartDate: outcomeAnimalStartDateFilter
+          ? formatDateObjectAsString(new Date(outcomeAnimalStartDateFilter), { format: "date" })
+          : undefined,
+        outcomeAnimalEndDate: outcomeAnimalEndDateFilter
+          ? formatDateObjectAsString(new Date(outcomeAnimalEndDateFilter), { format: "date" })
+          : undefined,
         outcomeActionedBy: outcomeActionedByFilter?.value,
         equipmentStatus: equipmentStatusFilter?.value,
         equipmentTypes: equipmentTypesFilter?.map((type) => type.value) ?? [],

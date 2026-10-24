@@ -1,5 +1,5 @@
-# node:22-bookworm as of 2026-09-15
-FROM node@sha256:8a34c4ab3ea2c5cd194f07e317b2a8f09461d3c8b05c4e34c8ccd56d56024c4d
+# node:22-bookworm-slim as of 2026-10-19
+FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
 
 # Install system dependencies required by Playwright WebKit
 # plus dnsutils for network debugging

@@ -2,7 +2,7 @@ generator client {
   provider        = "prisma-client-js"
   output          = "../../node_modules/.prisma/inspection"
   previewFeatures = ["multiSchema"]
-  binaryTargets   = ["native", "debian-openssl-1.1.x"]
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
 }
 
 generator prismaClassGenerator {
