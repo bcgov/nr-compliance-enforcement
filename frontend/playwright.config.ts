@@ -86,6 +86,15 @@ export default defineConfig({
       dependencies: ["setup"],
       testMatch: /.{0,5}\.(spec|test)\.ts/,
     },
+    {
+      name: "ipad",
+      use: {
+        ...devices["iPad Pro 11"],
+        baseURL: baseURL,
+      },
+      dependencies: ["setup", "safari"],
+      testMatch: /.{0,5}\.(spec|test)\.ts/,
+    },
     // {
     //   name: 'Microsoft Edge',
     //   use: {

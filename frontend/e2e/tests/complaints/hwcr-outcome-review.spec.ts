@@ -3,8 +3,10 @@ import { test, expect } from "@playwright/test";
 import COMPLAINT_TYPES from "../../../src/app/types/app/complaint-types";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 import {
+  assignSelfToComplaint,
   fillInHWCSection,
   navigateToDetailsScreen,
+  openUpdateStatusModal,
   validateComplaint,
   validateHWCSection,
   waitForSpinner,
@@ -51,7 +53,7 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030851", true, page);
     await validateComplaint(page, "23-030851", "Bear, Black");
 
-    await page.locator("#details-screen-update-status-button").click();
+    await openUpdateStatusModal(page);
     await expect(page.locator(".status-change-subtext")).toHaveText(/Complaint is pending review\./);
     await expect(page.locator("#complaint_status_dropdown input")).toBeDisabled();
   });
@@ -158,11 +160,10 @@ test.describe("HWCR File Review - Complete Review", () => {
     await $review.locator("#file-review-save-button").click();
     await waitForSpinner(page);
 
-    await page.locator("#details-screen-assign-button").click();
-    await page.locator("#self_assign_button").click();
+    await assignSelfToComplaint(page);
     await waitForSpinner(page);
 
-    await page.locator("#details-screen-update-status-button").click();
+    await openUpdateStatusModal(page);
     await expect(page.locator("#complaint_status_dropdown input")).not.toBeDisabled();
     await page.locator("#complaint_status_dropdown").click();
     await page
@@ -173,7 +174,7 @@ test.describe("HWCR File Review - Complete Review", () => {
     await page.locator(".modal-footer .btn-primary").click();
 
     // Reopen the complaint to ensure it can be re-run
-    await page.locator("#details-screen-update-status-button").click();
+    await openUpdateStatusModal(page);
     await expect(page.locator("#complaint_status_dropdown input")).not.toBeDisabled();
     await page.locator("#complaint_status_dropdown").click();
     await page.getByRole("option", { name: "Open" }).first().click();

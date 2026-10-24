@@ -178,6 +178,7 @@ export const ComplaintFilterBar: FC<Props> = ({
           variant="outline-primary"
           size="sm"
           className="icon-start filter-btn filter-btn-mobile"
+          id="comp-filter-btn-mobile"
           onClick={toggleShowMobileFilters}
         >
           <i className="bi bi-filter"></i>

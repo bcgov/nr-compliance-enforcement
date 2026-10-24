@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { enterDateTimeInDatePicker, selectItemById, waitForSpinner } from "../../utils/helpers";
+import { enterDateTimeInDatePicker, openUpdateStatusModal, selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for the investigation close/reopen eligibility rules.
@@ -18,9 +18,7 @@ test.describe("Investigation Status Change", () => {
   let investigationUrl: string;
 
   const openStatusModal = async (page: Page) => {
-    const updateStatusButton = page.locator("#details-screen-update-status-button");
-    await expect(updateStatusButton).toBeVisible({ timeout: 15000 });
-    await updateStatusButton.click();
+    await openUpdateStatusModal(page);
 
     const modal = page.locator(".modal", { hasText: "Update investigation status" }).first();
     await expect(modal).toBeVisible();
@@ -98,10 +96,9 @@ test.describe("Investigation Status Change", () => {
     await page.locator("#tasks").click();
     await page.locator("#task-list tbody tr a.comp-cell-link").first().click();
     await expect(page).toHaveURL(/\/task\//);
+    await expect(page.locator("#task-details-export-task-button")).toBeVisible();
 
-    const taskStatusButton = page.locator("#task-details-update-status-button");
-    await expect(taskStatusButton).toBeVisible({ timeout: 15000 });
-    await taskStatusButton.click();
+    await openUpdateStatusModal(page);
 
     const taskStatusModal = page.locator(".modal", { hasText: "Update task status" }).first();
     await expect(taskStatusModal).toBeVisible();
