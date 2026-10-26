@@ -175,7 +175,10 @@ a {
   border-radius: 6px;
   outline: 2px solid transparent;
   outline-offset: -2px;
-  transition: all ease-out 0.2s;
+  transition:
+    color ease-out 0.2s,
+    background-color ease-out 0.2s,
+    outline-color ease-out 0.2s;
 
   // Don't apply the hover style to ipads or touch devices
   @media (hover: hover) {
