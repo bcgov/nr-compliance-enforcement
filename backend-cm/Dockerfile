@@ -6,7 +6,7 @@ FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a01797839
 # Prisma requires OpenSSL, which is not included in the slim image
 # Pinned for consistent builds; bump when Debian removes this version from the mirrors
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u1 libssl3=3.0.22-1~deb12u1 \
+  && apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u2 libssl3=3.0.22-1~deb12u2 \
   && rm -rf /var/lib/apt/lists/*
 
 # Install packages, build and keep only prod packages
@@ -45,7 +45,7 @@ ENV NODE_ENV=production
 # Prisma requires OpenSSL, which is not included in the slim image
 # Pinned for consistent builds; bump when Debian removes this version from the mirrors
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u1 libssl3=3.0.22-1~deb12u1 \
+  && apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u2 libssl3=3.0.22-1~deb12u2 \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy over app
