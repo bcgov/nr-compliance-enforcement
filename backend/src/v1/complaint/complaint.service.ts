@@ -2667,6 +2667,14 @@ export class ComplaintService {
       }
     };
 
+    const _formatCalendarDate = (input: Date | string): string => {
+      if (!input) {
+        return "N/A"; // No date, so just return a placeholder string for the report
+      }
+
+      return new Date(input).toISOString().split("T")[0];
+    };
+
     const _applyAssessmentData = async (assessment, assessmentActions, index) => {
       assessment.order = index + 1;
       //-- Convert booleans to Yes/No
@@ -2709,8 +2717,8 @@ export class ComplaintService {
 
         assessment.assessmentActor = `${last_name}, ${first_name} (${agency_code})`;
 
-        //Apply timezone and format date
-        assessment.assessmentDate = _applyTimezone(assessment.assessmentDate, tz, "date");
+        //format date
+        assessment.assessmentDate = _formatCalendarDate(assessment.assessmentDate);
       }
     };
 
@@ -2733,8 +2741,8 @@ export class ComplaintService {
 
           prevention.preventionActor = `${last_name}, ${first_name}`;
 
-          //Apply timezone and format date
-          prevention.preventionDate = _applyTimezone(prevention.preventionDate, tz, "date");
+          //format date
+          prevention.preventionDate = _formatCalendarDate(prevention.preventionDate);
           //give it a nice friendly number as nothing comes back from the GQL
           prevention.order = preventionCount;
           preventionCount++;
@@ -2782,11 +2790,11 @@ export class ComplaintService {
 
         //-- Apply timezone and format dates
         if (equip.setByDate) {
-          equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
+          equip.setByDate = _formatCalendarDate(equip.setByDate);
         }
 
         if (removedByAction?.date) {
-          removedByAction.date = _applyTimezone(removedByAction.date, tz, "date");
+          removedByAction.date = _formatCalendarDate(removedByAction.date);
         }
 
         //-- Removed By should only display if it exists... so it needs to go into an array until carbone is updated :(
@@ -2851,10 +2859,10 @@ export class ComplaintService {
 
         //-- Apply timezone and format dates
         if (animal.date) {
-          animal.date = _applyTimezone(animal.date, tz, "date");
+          animal.date = _formatCalendarDate(animal.date);
         }
         if (drugDate) {
-          drugDate = _applyTimezone(drugDate, tz, "date");
+          drugDate = _formatCalendarDate(drugDate);
         }
 
         //add the officer/drug onto each drug row
@@ -2885,7 +2893,12 @@ export class ComplaintService {
         const { first_name, last_name } = await this._appUserService.findByAuthUserGuid(note.actions[0].actor, token);
 
         note.actions[0].actor = last_name + ", " + first_name;
-        note.actions[0].date = _applyTimezone(note.actions[0].date, tz, "datetime");
+        // The note date (DATE) and time (TIME) are stored as separate UTC columns; recombine them
+        // into a timestamp so _applyTimezone can convert from UTC to the user's tz
+        const { date, actionTime } = note.actions[0];
+        const isoDate = new Date(date).toISOString().split("T")[0];
+        const isoTime = new Date(actionTime).toISOString().split("T")[1];
+        note.actions[0].date = _applyTimezone(new Date(`${isoDate}T${isoTime}`), tz, "datetime");
         //give it a nice friendly number as nothing comes back from the GQL
         note.order = noteCount;
         noteCount++;
@@ -2907,7 +2920,7 @@ export class ComplaintService {
         );
         caseFile.reviewComplete.actor = last_name + ", " + first_name;
         //File Review Date - No Action Array
-        caseFile.reviewComplete.date = _applyTimezone(caseFile.reviewComplete.date, tz, "date");
+        caseFile.reviewComplete.date = _formatCalendarDate(caseFile.reviewComplete.date);
       }
     };
 
@@ -3242,7 +3255,7 @@ export class ComplaintService {
 
       //CEEB Decision - No Action Array
       if (data.outcome.decision?.actionTakenDate) {
-        data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
+        data.outcome.decision.actionTakenDate = _formatCalendarDate(data.outcome.decision.actionTakenDate);
       }
 
       // incidentDate/Time may not be set, if there's no date

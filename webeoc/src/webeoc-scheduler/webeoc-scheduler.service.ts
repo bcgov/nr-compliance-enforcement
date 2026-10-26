@@ -368,7 +368,7 @@ export class WebEocScheduler {
   }
 
   private getDateFilter(operationType: string) {
-    const timeZone = "America/Los_Angeles"; // This timezone automatically handles PDT/PST
+    const timeZone = "America/Vancouver"; // This timezone uses the new Pacific Timezone (PCT)
     const lastPolledDate = this.getLastPolledDate(operationType);
     const complaintsAsOfDate = toZonedTime(lastPolledDate, timeZone);
 

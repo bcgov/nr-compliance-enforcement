@@ -44,7 +44,7 @@ services:
     volumes:
       - /pgdata
   migration-complaint:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-complaint
     command:
       - info
@@ -68,7 +68,7 @@ services:
       migration-shared:
         condition: service_completed_successfully
   migration-investigation:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-investigation
     command:
       - info
@@ -92,7 +92,7 @@ services:
       migration-shared:
         condition: service_completed_successfully
   migration-inspection:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-inspection
     command:
       - info
@@ -116,7 +116,7 @@ services:
       migration-shared:
         condition: service_completed_successfully
   migration-shared:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-shared
     command:
       - info
@@ -139,7 +139,7 @@ services:
       database:
         condition: service_healthy
   migration-complaint-outcome:
-    image: flyway/flyway:10-alpine
+    image: flyway/flyway@sha256:4118b764c2ae51e980a94d0e43fde0ed2ad273abe641ce43d03f62da7f7fb6f9
     container_name: migration-complaint-outcome
     command:
       - info
@@ -177,7 +177,7 @@ services:
       CHOKIDAR_INTERVAL: "1000"
     hostname: backend
     # automapper v9 needs node >= 20.19 for require(esm)
-    image: node:22-bookworm-slim
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     links:
       - database
     ports:
@@ -202,7 +202,7 @@ services:
       VITE_ENVIRONMENT_NAME: DEVELOPMENT
       CODEGEN_GRAPHQL_URL: http://backend-cm:3000/graphql
     hostname: frontend
-    image: node:22-alpine
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 15s
@@ -236,7 +236,7 @@ services:
       - "-c"
       - "npm i && npm run start:dev"
     hostname: webeoc
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     links:
       - nats
     ports:
@@ -249,7 +249,10 @@ services:
     working_dir: "/app"
   backend-cm:
     container_name: backend-cm
-    entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \
+    entrypoint: sh -c "apt-get update && \
+      apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u1 libssl3=3.0.22-1~deb12u1 && \
+      rm -rf /var/lib/apt/lists/* && \
+      npm i && npm run prisma-generate-complaint-outcome && \
       npm run prisma-generate-shared && \
       npm run prisma-generate-investigation && \
       npm run prisma-generate-inspection && \
@@ -264,7 +267,7 @@ services:
       TSC_WATCHDIRECTORY: DynamicPriorityPolling
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "1000"
-    image: node:20-bullseye
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     ports: ["3003:3000"]
     volumes: ["./backend-cm:/app", "backend_cm_node_modules:/app/node_modules"]
     healthcheck:
@@ -294,7 +297,7 @@ services:
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "1000"
     hostname: event-worker
-    image: node:22-bookworm-slim
+    image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     links:
       - nats
     ports:

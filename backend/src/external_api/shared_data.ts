@@ -175,8 +175,9 @@ export const caseFileQueryFields: string = `
     actions { 
       actor
       actionCode
-      date,
-      actionId,
+      date
+      actionTime
+      actionId
       activeIndicator
     }
   }

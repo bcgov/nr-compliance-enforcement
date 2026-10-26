@@ -9,7 +9,7 @@ export interface Assessment {
   justification?: KeyValuePair;
   linked_complaint?: KeyValuePair;
   officer?: KeyValuePair;
-  date?: Date | null;
+  date?: string | null;
   createdBy?: string;
   createdAt?: Date;
   updatedBy?: string;

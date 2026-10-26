@@ -134,10 +134,10 @@ BEGIN
   _edit_update_userid := substring(edit_complaint_data ->> USERNAME_TXT from 1 for 32);
   _edit_complaint_status_code := UPPER(edit_complaint_data ->> 'status');
   _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
-  _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
+  _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Vancouver';
   _edit_incident_utc_date := _edit_incident_utc_datetime::DATE;
   _edit_incident_utc_time := _edit_incident_utc_datetime::TIME;
-  _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
+  _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Vancouver';
 	_edit_address_coordinates_lat := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_lat');
   _edit_address_coordinates_long := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
    
