@@ -26,16 +26,45 @@ const deviceProjects: Record<string, Project> = {
     dependencies: ["setup"],
     testMatch: /.{0,5}\.(spec|test)\.ts/,
   },
-  chrome: {
-    name: "Google Chrome",
-    use: {
-      ...devices["Desktop Chrome"],
-      channel: "chrome",
-      baseURL: baseURL,
-    },
-    dependencies: ["setup"],
-    testMatch: /.{0,5}\.(spec|test)\.ts/,
-  },
+  // Note: Chromium based browsers not currently available via CI
+  //chrome: {
+  //  name: "Google Chrome",
+  //  use: {
+  //    ...devices["Desktop Chrome"],
+  //    channel: "chrome",
+  //    baseURL: baseURL,
+  //  },
+  //  dependencies: ["setup"],
+  //  testMatch: /.{0,5}\.(spec|test)\.ts/,
+  //},
+  //edge: {
+  //  name: "Microsoft Edge",
+  //  use: {
+  //    ...devices["Desktop Edge"],
+  //    channel: "msedge",
+  //    baseURL: baseURL,
+  //  },
+  //  dependencies: ["setup"],
+  //  testMatch: /.{0,5}\.(spec|test)\.ts/,
+  //},
+  //chromium: {
+  //   name: "chromium",
+  //   use: {
+  //     ...devices["Desktop Chrome"],
+  //     baseURL: baseURL,
+  //   },
+  //   dependencies: ["setup"],
+  //   testMatch: /.{0,5}\.(spec|test)\.ts/,
+  // },
+  // {
+  //   name: 'firefox',
+  //   use: {
+  //     ...devices['Desktop Firefox'],
+  //     baseURL: baseURL,
+  //   },
+  //   dependencies: ['setup'],
+  //   testMatch: /.{0,5}\.(spec|test)\.ts/,
+  // },
 };
 
 /*
@@ -98,34 +127,6 @@ export default defineConfig({
         }),
       },
     },
-    // {
-    //   name: "chromium",
-    //   use: {
-    //     ...devices["Desktop Chrome"],
-    //     baseURL: baseURL,
-    //   },
-    //   dependencies: ["setup"],
-    //   testMatch: /.{0,5}\.(spec|test)\.ts/,
-    // },
-    // {
-    //   name: 'firefox',
-    //   use: {
-    //     ...devices['Desktop Firefox'],
-    //     baseURL: baseURL,
-    //   },
-    //   dependencies: ['setup'],
-    //   testMatch: /.{0,5}\.(spec|test)\.ts/,
-    // },
     selectedDeviceProject,
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: {
-    //     ...devices['Desktop Edge'],
-    //     channel: 'msedge',
-    //     baseURL: baseURL,
-    //   },
-    //   dependencies: ['setup'],
-    //   testMatch: /.{0,5}\.(spec|test)\.ts/,
-    // },
   ],
 });
