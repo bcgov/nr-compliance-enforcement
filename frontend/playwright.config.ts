@@ -1,9 +1,50 @@
 /// <reference types="node" />
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices, Project } from "@playwright/test";
 import dotenv from "dotenv";
+import { randomInt } from "node:crypto";
 
 dotenv.config();
 const baseURL = process.env.E2E_BASE_URL || "http://localhost:3000";
+
+/* Device projects the tests can run against. Each run uses one of them (see below). */
+const deviceProjects: Record<string, Project> = {
+  safari: {
+    name: "safari",
+    use: {
+      ...devices["Desktop Safari"],
+      baseURL: baseURL,
+    },
+    dependencies: ["setup"],
+    testMatch: /.{0,5}\.(spec|test)\.ts/,
+  },
+  ipad: {
+    name: "ipad",
+    use: {
+      ...devices["iPad Pro 11"],
+      baseURL: baseURL,
+    },
+    dependencies: ["setup"],
+    testMatch: /.{0,5}\.(spec|test)\.ts/,
+  },
+};
+
+/*
+ * Pick the device for this run: E2E_DEVICE if set (e.g. to reproduce a failure), otherwise a random one.
+ * The choice is stored back in E2E_DEVICE so the worker processes, which reload this config,
+ * use the same device as the main process.
+ */
+if (!process.env.E2E_DEVICE) {
+  const deviceNames = Object.keys(deviceProjects);
+  process.env.E2E_DEVICE = deviceNames[randomInt(deviceNames.length)];
+  console.log(`E2E device for this run: ${process.env.E2E_DEVICE}`);
+}
+
+const selectedDeviceProject = deviceProjects[process.env.E2E_DEVICE];
+if (!selectedDeviceProject) {
+  throw new Error(
+    `Unknown E2E_DEVICE "${process.env.E2E_DEVICE}". Expected one of: ${Object.keys(deviceProjects).join(", ")}`,
+  );
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -76,25 +117,7 @@ export default defineConfig({
     //   dependencies: ['setup'],
     //   testMatch: /.{0,5}\.(spec|test)\.ts/,
     // },
-
-    {
-      name: "safari",
-      use: {
-        ...devices["Desktop Safari"],
-        baseURL: baseURL,
-      },
-      dependencies: ["setup"],
-      testMatch: /.{0,5}\.(spec|test)\.ts/,
-    },
-    {
-      name: "ipad",
-      use: {
-        ...devices["iPad Pro 11"],
-        baseURL: baseURL,
-      },
-      dependencies: ["setup", "safari"],
-      testMatch: /.{0,5}\.(spec|test)\.ts/,
-    },
+    selectedDeviceProject,
     // {
     //   name: 'Microsoft Edge',
     //   use: {
