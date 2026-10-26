@@ -26,6 +26,16 @@ const deviceProjects: Record<string, Project> = {
     dependencies: ["setup"],
     testMatch: /.{0,5}\.(spec|test)\.ts/,
   },
+  chrome: {
+    name: "Google Chrome",
+    use: {
+      ...devices["Desktop Chrome"],
+      channel: "chrome",
+      baseURL: baseURL,
+    },
+    dependencies: ["setup"],
+    testMatch: /.{0,5}\.(spec|test)\.ts/,
+  },
 };
 
 /*
@@ -97,17 +107,6 @@ export default defineConfig({
     //   dependencies: ["setup"],
     //   testMatch: /.{0,5}\.(spec|test)\.ts/,
     // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: {
-    //     ...devices['Desktop Chrome'],
-    //     channel: 'chrome',
-    //     baseURL: baseURL,
-    //   },
-    //   dependencies: ['setup'],
-    //   testMatch: /.{0,5}\.(spec|test)\.ts/,
-    // },
-
     // {
     //   name: 'firefox',
     //   use: {
