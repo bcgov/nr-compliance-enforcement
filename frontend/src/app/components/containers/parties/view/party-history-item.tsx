@@ -163,7 +163,7 @@ export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers })
   const getActorName = () => {
     const actorId = event.actorId;
     if (actorId && event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && appUsers) {
-      const officer = appUsers.find((o) => o.auth_user_guid.toUpperCase().split("-").join("") === actorId);
+      const officer = appUsers.find((o) => o.auth_user_guid?.toUpperCase().split("-").join("") === actorId);
       if (officer) {
         return `${officer.last_name}, ${officer.first_name} (${officer.agency_code?.shortDescription})`;
       }
