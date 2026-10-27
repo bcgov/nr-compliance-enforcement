@@ -525,58 +525,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     return () => clearTimeout(timer);
   }, [matchGuids]);
 
-  const [matchPaneStyle, setMatchPaneStyle] = useState<{ top: number; maxHeight: number }>();
-
-  useEffect(() => {
-    const layout = document.querySelector<HTMLElement>(".comp-party-form-layout");
-    const scroller = document.querySelector<HTMLElement>(".comp-main-content");
-    if (!layout || !scroller) return;
-
-    const measure = () => {
-      const layoutTop = layout.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-      const overflows = scroller.scrollHeight > scroller.clientHeight;
-      const below = overflows ? Math.max(0, scroller.scrollHeight - layoutTop - layout.offsetHeight) : 24;
-      const next = { top: layoutTop, maxHeight: scroller.clientHeight - layoutTop - below };
-      setMatchPaneStyle((prev) => (prev?.top === next.top && prev?.maxHeight === next.maxHeight ? prev : next));
-    };
-
-    measure();
-    window.addEventListener("resize", measure);
-    const observer = new ResizeObserver(measure);
-    observer.observe(layout);
-    return () => {
-      window.removeEventListener("resize", measure);
-      observer.disconnect();
-    };
-  }, []);
-
   const [showMatchRules, setShowMatchRules] = useState(false);
 
-  // The pane scrolls its own results using overlay buttons page down and back up
   const matchScrollRef = useRef<HTMLDivElement>(null);
-  const [matchScroll, setMatchScroll] = useState({ up: false, down: false });
-
-  const updateMatchScroll = () => {
-    const el = matchScrollRef.current;
-    if (!el) return;
-    const up = el.scrollTop > 0;
-    const down = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
-    setMatchScroll((prev) => (prev.up === up && prev.down === down ? prev : { up, down }));
-  };
-
   useEffect(() => {
-    updateMatchScroll();
-    const content = matchScrollRef.current?.firstElementChild;
-    if (!content) return;
-    const observer = new ResizeObserver(updateMatchScroll);
-    observer.observe(content);
-    return () => observer.disconnect();
-  }, [matchGuids, matchError, matchFetching, matchPaneStyle]);
-
-  // A changed result set reads from the top
-  useEffect(() => {
-    matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  }, [matchGuids]);
+    if (!matchFetching) matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [matchFetching, matchGuids]);
 
   const handleAddMatch = (party: Party) => {
     const partyAssociationRole = form.getFieldValue("partyAssociationRole");
@@ -655,6 +609,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       setCopyPending(false);
     });
   }, [addMatchGuid, investigationGuid]);
+
+  const matchSummary =
+    matches.length === 0 ? "No matching published profiles found." : "Potentially matching published profiles found.";
+  const matchCardsClassName = `comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""} mb-3`;
 
   return (
     <div className="comp-investigation-edit-headerdetails">
@@ -835,10 +793,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             )}
           </form>
           {(matchError || matchFetching || matchSearched) && (
-            <div
-              className="comp-party-match-results"
-              style={matchPaneStyle && { top: matchPaneStyle.top }}
-            >
+            <div className="comp-party-match-results">
               {matchError ? (
                 <Alert
                   className="comp-complaint-details-alert"
@@ -848,127 +803,85 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   <span>Matching profiles are unavailable right now.</span>
                 </Alert>
               ) : (
-                <>
-                  <div
-                    className="comp-party-match-results-scroll"
-                    ref={matchScrollRef}
-                    onScroll={updateMatchScroll}
-                    style={matchPaneStyle && { maxHeight: matchPaneStyle.maxHeight }}
-                  >
-                    <h3 className="mb-1">Search results</h3>
+                <div
+                  className="comp-party-match-results-scroll"
+                  ref={matchScrollRef}
+                >
+                  <h3 className="mb-1">Search results</h3>
 
-                    {matchFetching && (
-                      <div className="d-flex align-items-center">
-                        <Spinner
-                          animation="border"
-                          size="sm"
-                          className="me-3"
-                        />
-                        <span>Looking for matching published profiles...</span>
+                  {matchFetching && (
+                    <div className="d-flex align-items-center">
+                      <Spinner
+                        animation="border"
+                        size="sm"
+                        className="me-3"
+                      />
+                      <span>Looking for matching published profiles...</span>
+                    </div>
+                  )}
+
+                  {!matchFetching && <p>{matchSummary}</p>}
+
+                  {/* Matching profile cards */}
+                  <div className={matchCardsClassName}>
+                    {matches.map((match) => (
+                      <PartyMatchCard
+                        key={match.party.partyIdentifier}
+                        party={match.party}
+                        score={match.score}
+                        matchedFields={match.matchedFields}
+                        onAdd={handleAddMatch}
+                        isDisabled={isDisabled}
+                        pulse={pulseGuids.has(match.party.partyIdentifier ?? "")}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="comp-party-match-rules p-2 d-flex flex-column flex-start align-items-start">
+                    <Button
+                      variant="link"
+                      className="d-block p-0 comp-party-match-rules-title"
+                      aria-expanded={showMatchRules}
+                      onClick={() => setShowMatchRules((show) => !show)}
+                    >
+                      <span>How scoring works</span>&nbsp;&nbsp;
+                      <i className={`bi bi-chevron-${showMatchRules ? "up" : "down"} me-1`} />
+                    </Button>
+                    {showMatchRules && (
+                      <div className="d-flex flex-column gap-3">
+                        <div className="mt-2 border-top">
+                          <div className="mt-2">
+                            <span>
+                              Identifier (licence, business number, WorkSafeBC, contact phone/email){" "}
+                              <strong> = 1000</strong>
+                            </span>
+                          </div>
+                        </div>
+                        <span>
+                          Name, date of birth, phone, email, address, city <strong> = 50 </strong>
+                        </span>
+                        <span>
+                          Descriptor (sex, age range, height, hair...) <strong> = 10</strong>
+                        </span>
+                        <span>
+                          Similar (typo, sound-alike, short form, close birthdate) <strong> x 0.5</strong>
+                        </span>
+                        <span>
+                          Cross-field (alias, first as middle, similar legal name)<strong> x 0.25</strong>
+                        </span>
+                        <span>
+                          First + last name bonus <strong> + 100</strong>
+                        </span>
+                        <span>
+                          Name + date of birth bonus <strong> + 850</strong>
+                        </span>
+                        <span>
+                          Shown / likely match / strong match <strong> &ge; 50 / 250 / 850</strong>
+                        </span>
                       </div>
                     )}
-
-                    {!matchFetching && (
-                      <p>
-                        {matches.length === 0
-                          ? "No matching published profiles found."
-                          : "Potentially matching published profiles found."}
-                      </p>
-                    )}
-
-                    {/* Matching profile cards */}
-                    <div
-                      className={`comp-party-match-cards${matchFetching ? " comp-party-match-cards-fetching" : ""} mb-3`}
-                    >
-                      {matches.map((match) => (
-                        <PartyMatchCard
-                          key={match.party.partyIdentifier}
-                          party={match.party}
-                          score={match.score}
-                          matchedFields={match.matchedFields}
-                          onAdd={handleAddMatch}
-                          isDisabled={isDisabled}
-                          pulse={pulseGuids.has(match.party.partyIdentifier ?? "")}
-                        />
-                      ))}
-                    </div>
                   </div>
-                  {matchScroll.up && (
-                    <Button
-                      variant="light"
-                      className="comp-party-match-scroll-button comp-party-match-scroll-button-up border shadow-sm"
-                      onClick={() => matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
-                    >
-                      <i className="bi bi-arrow-up me-1" />
-                      <span>Back to top</span>
-                    </Button>
-                  )}
-                  {matchScroll.down && (
-                    <Button
-                      variant="light"
-                      className="comp-party-match-scroll-button comp-party-match-scroll-button-down border shadow-sm"
-                      onClick={() =>
-                        matchScrollRef.current?.scrollBy({
-                          top: matchScrollRef.current.clientHeight * 0.8,
-                          behavior: "smooth",
-                        })
-                      }
-                    >
-                      <i className="bi bi-arrow-down me-1" />
-                      <span>More profiles</span>
-                    </Button>
-                  )}
-
-                  <div>
-                    <div className="comp-party-match-rules p-2 d-flex flex-column flex-start align-items-start">
-                      <Button
-                        variant="link"
-                        className="d-block p-0 comp-party-match-rules-title"
-                        aria-expanded={showMatchRules}
-                        onClick={() => setShowMatchRules((show) => !show)}
-                      >
-                        <span>How scoring works</span>&nbsp;&nbsp;
-                        <i className={`bi bi-chevron-${showMatchRules ? "up" : "down"} me-1`} />
-                      </Button>
-                      {showMatchRules && (
-                        <div className="d-flex flex-column gap-3">
-                          <div
-                            className="mt-2"
-                            style={{ borderTop: "1px solid #c7c7c7" }}
-                          >
-                            <div className="mt-2">
-                              <span>
-                                Identifier (licence, business number, WorkSafeBC, contact phone/email){" "}
-                                <strong> = 1000</strong>
-                              </span>
-                            </div>
-                          </div>
-                          <span>
-                            Name, date of birth, phone, email, address, city <strong> = 50 </strong>
-                          </span>
-                          <span>
-                            Descriptor (sex, age range, height, hair...) <strong> = 10</strong>
-                          </span>
-                          <span>
-                            Similar (typo, sound-alike, short form, close birthdate) <strong> x 0.5</strong>
-                          </span>
-                          <span>
-                            Cross-field (alias, first as middle, similar legal name)<strong> x 0.25</strong>
-                          </span>
-                          <span>
-                            First + last name bonus <strong> + 100</strong>
-                          </span>
-                          <span>
-                            Name + date of birth bonus <strong> + 850</strong>
-                          </span>
-                          <span>
-                            Shown / likely match / strong match <strong> &ge; 50 / 250 / 850</strong>
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
             </div>
           )}

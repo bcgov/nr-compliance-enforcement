@@ -188,7 +188,7 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
     if (events.length > 0 && allOfficers) {
       const userAuthGuids = getUserGuidsFromEvents(events);
       const officers = allOfficers.filter((officer) =>
-        userAuthGuids.has(officer.auth_user_guid.toUpperCase().split("-").join("")),
+        userAuthGuids.has(officer.auth_user_guid?.toUpperCase().split("-").join("")),
       );
       setEventOfficers(officers);
     }
