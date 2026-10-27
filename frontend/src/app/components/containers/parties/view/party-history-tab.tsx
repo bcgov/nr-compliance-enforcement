@@ -82,7 +82,7 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
           userGuids.add(event.actorId);
         }
       }
-      const officers = allOfficers.filter((o) => userGuids.has(o.auth_user_guid?.toUpperCase().split("-").join("")));
+      const officers = allOfficers.filter((o) => userGuids.has(o.auth_user_guid.toUpperCase().split("-").join("")));
       setEventOfficers(officers);
     }
   }, [events, allOfficers]);
