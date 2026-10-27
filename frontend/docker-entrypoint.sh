@@ -1,6 +1,14 @@
 #!/bin/sh
 set -e
 
+# curl for the compose health check, matching the prod image
+if ! command -v curl >/dev/null; then
+  sed -i 's|http://deb.debian.org/debian-security|http://snapshot.debian.org/archive/debian-security/20261027T000000Z|; s|http://deb.debian.org/debian|http://snapshot.debian.org/archive/debian/20261027T000000Z|' /etc/apt/sources.list.d/debian.sources
+  apt-get -o Acquire::Check-Valid-Until=false update
+  apt-get install -y --no-install-recommends curl=7.88.1-10+deb12u15 libcurl4=7.88.1-10+deb12u15
+  rm -rf /var/lib/apt/lists/*
+fi
+
 SASS_DIR="src/assets/sass"
 SRC_DIR="src"
 

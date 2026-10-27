@@ -7,9 +7,10 @@ RUN npm ci --omit=dev && \
 
 # caddy:2.8.4-alpine as of 2026-09-15
 FROM caddy@sha256:af32e97399febea808609119bb21544d0265c58a02836576e32a2d082c262c17 AS deploy
-RUN apk add --no-cache curl
+# Alpine keeps only the latest build, so bump this pin when the base image digest changes
+RUN apk add --no-cache curl=8.14.1-r2 libcurl=8.14.1-r2
 COPY --from=build /app/dist /app/dist
 COPY Caddyfile /etc/caddy/Caddyfile
 EXPOSE 3000 3001
 USER 1001
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3001/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3001/health || exit 1

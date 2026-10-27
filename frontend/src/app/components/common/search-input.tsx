@@ -177,7 +177,7 @@ const SearchInput: FC<Props> = ({
     >
       <TooltipContent
         title="Investigation searchable fields:"
-        items={["Investigation ID"]}
+        items={["Investigation ID", "Violation ticket number", "Warning number"]}
       />
     </Tooltip>
   );
