@@ -28,7 +28,6 @@ spec:
       - afwilcox
       - mishraomp
       - nayr974
-      - mikevespi
 
     # Recommended for contributors who actively push to your project.
     writers:
@@ -61,8 +60,6 @@ spec:
     maintainers:
       - jon-funk@github
       - nayr974@github
-      - mikevespi@github
-      - mike.vesprini@gov.bc.ca
       - alec.2.wilcox@gov.bc.ca
       - jonathan.funk@gov.bc.ca
       - omprakash.2.mishra@gov.bc.ca
