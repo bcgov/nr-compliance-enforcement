@@ -116,8 +116,8 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
       </div>
 
       <div className="filter-pills-container">
-        {renderFilterButton("desktop", toggleShowDesktopFilters, "case-filter-btn")}
-        {renderFilterButton("mobile", toggleShowMobileFilters)}
+        {renderFilterButton("desktop", toggleShowDesktopFilters, "investigation-filter-btn")}
+        {renderFilterButton("mobile", toggleShowMobileFilters, "investigation-filter-btn-mobile")}
 
         {hasFilter("investigationStatus") && (
           <FilterButton
