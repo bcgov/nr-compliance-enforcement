@@ -77,12 +77,15 @@
 
 .comp-party-form-layout {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 1.5rem;
+  height: calc(100vh - 11rem);
 
   .comp-party-form {
     flex: 0 1 64rem;
     min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
 
     &:has(+ .comp-party-match-results) {
       border-right: 1px solid #dee2e6;
@@ -95,18 +98,14 @@
     flex: 1 1 20rem;
     min-width: 20rem;
     max-width: 80rem;
-    position: sticky;
-    top: 9.5rem;
-    align-self: flex-start;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 11rem);
 
-    // Hidden overflow so only the buttons above and below move the results
     .comp-party-match-results-scroll {
       flex: 1 1 auto;
       min-height: 0;
-      overflow: hidden;
+      overflow-y: auto;
     }
   }
 
@@ -122,30 +121,14 @@
     }
   }
 
-  // TEMP: layout A/B
-  &.comp-party-form-layout-scroll {
-    align-items: stretch;
-    height: calc(100vh - 11rem);
-
-    .comp-party-form {
-      overflow-y: auto;
-      min-height: 0;
-    }
-
-    .comp-party-match-results {
-      position: static;
-      max-height: none;
-      align-self: stretch;
-      min-height: 0;
-
-      .comp-party-match-results-scroll {
-        overflow-y: auto;
-      }
-    }
-  }
-
   @include media-breakpoint-down(lg) {
     flex-direction: column;
+    height: auto;
+
+    .comp-party-form,
+    .comp-party-match-results-scroll {
+      overflow: visible;
+    }
 
     .comp-party-form:has(+ .comp-party-match-results) {
       border-right: none;
@@ -153,21 +136,8 @@
     }
 
     .comp-party-match-results {
-      position: relative;
-      top: 0;
-      align-self: stretch;
       min-width: 0;
       max-width: none;
-    }
-
-    // TEMP: layout A/B
-    &.comp-party-form-layout-scroll {
-      height: auto;
-
-      .comp-party-form,
-      .comp-party-match-results-scroll {
-        overflow: visible;
-      }
     }
   }
 }

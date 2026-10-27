@@ -40,7 +40,7 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { Alert, Button, Spinner } from "react-bootstrap";
-import { InvestigationPartyHeader, usePartyMatchLayout } from "../investigation-party-header";
+import { InvestigationPartyHeader } from "../investigation-party-header";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/use-party-match-trigger";
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
@@ -525,105 +525,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     return () => clearTimeout(timer);
   }, [matchGuids]);
 
-  const [matchPaneStyle, setMatchPaneStyle] = useState<{ top: number; maxHeight: number }>();
-
-  useEffect(() => {
-    const layout = document.querySelector<HTMLElement>(".comp-party-form-layout");
-    const scroller = document.querySelector<HTMLElement>(".comp-main-content");
-    if (!layout || !scroller) return;
-
-    const measure = () => {
-      const layoutTop = layout.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-      const overflows = scroller.scrollHeight > scroller.clientHeight;
-      const below = overflows ? Math.max(0, scroller.scrollHeight - layoutTop - layout.offsetHeight) : 24;
-      const next = { top: layoutTop, maxHeight: scroller.clientHeight - layoutTop - below };
-      setMatchPaneStyle((prev) => (prev?.top === next.top && prev?.maxHeight === next.maxHeight ? prev : next));
-    };
-
-    measure();
-    window.addEventListener("resize", measure);
-    const observer = new ResizeObserver(measure);
-    observer.observe(layout);
-    return () => {
-      window.removeEventListener("resize", measure);
-      observer.disconnect();
-    };
-  }, []);
-
   const [showMatchRules, setShowMatchRules] = useState(false);
 
-  // TEMP: layout A/B
-  const partyMatchLayout = usePartyMatchLayout();
-  const isScrollLayout = partyMatchLayout !== "buttons";
-  const hasPagingButtons = partyMatchLayout !== "scroll";
-
   const matchScrollRef = useRef<HTMLDivElement>(null);
-  const [matchScroll, setMatchScroll] = useState({ up: false, down: false });
-  const scrollingToTopRef = useRef(false);
-
-  // Paging ends at the rules
-  const matchScrollEnd = (el: HTMLDivElement) => {
-    const title = el.querySelector(".comp-party-match-rules-title");
-    return title
-      ? title.getBoundingClientRect().bottom - el.getBoundingClientRect().top + el.scrollTop
-      : el.scrollHeight;
-  };
-
-  const updateMatchScroll = () => {
-    const el = matchScrollRef.current;
-    if (!el) return;
-    if (el.scrollTop === 0) scrollingToTopRef.current = false;
-    const up = el.scrollTop > 0 && !scrollingToTopRef.current;
-    const down = el.scrollTop + el.clientHeight < matchScrollEnd(el) - 1;
-    setMatchScroll((prev) => (prev.up === up && prev.down === down ? prev : { up, down }));
-  };
-
   useEffect(() => {
-    updateMatchScroll();
-    const el = matchScrollRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(updateMatchScroll);
-    Array.from(el.children).forEach((child) => observer.observe(child));
-    return () => observer.disconnect();
-  }, [matchGuids, matchError, matchFetching, matchPaneStyle]);
-
-  const scrollToTop = () => {
-    scrollingToTopRef.current = true;
-    setMatchScroll((prev) => (prev.up ? { ...prev, up: false } : prev));
-    matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  // Pages to the first card that is cut off at the bottom so cards aren't shown as cut in half
-  const scrollToNextProfile = () => {
-    const el = matchScrollRef.current;
-    if (!el) return;
-    scrollingToTopRef.current = false;
-    const paneTop = el.getBoundingClientRect().top - el.scrollTop;
-    const visibleBottom = el.scrollTop + el.clientHeight;
-    const next = Array.from(el.querySelectorAll<HTMLElement>(".comp-party-match-card"))
-      .map((card) => card.getBoundingClientRect())
-      .find((rect) => rect.top - paneTop > el.scrollTop && rect.bottom - paneTop > visibleBottom);
-    const lastPage = matchScrollEnd(el) - el.clientHeight;
-    el.scrollTo({ top: Math.min(next ? next.top - paneTop : visibleBottom, lastPage), behavior: "smooth" });
-  };
-
-  // A changed result set reads from the top
-  useEffect(() => {
-    scrollToTop();
-  }, [matchGuids]);
-
-  // TEMP: layout A/B
-  useEffect(() => {
-    if (isScrollLayout && !matchFetching) scrollToTop();
-  }, [isScrollLayout, matchFetching]);
-
-  // When the rules are expanded scroll down to the bottom so they are visible
-  useEffect(() => {
-    const el = matchScrollRef.current;
-    if (!showMatchRules || !el || !hasPagingButtons) return;
-    scrollingToTopRef.current = false;
-    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [showMatchRules]);
+    if (!matchFetching) matchScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [matchFetching, matchGuids]);
 
   const handleAddMatch = (party: Party) => {
     const partyAssociationRole = form.getFieldValue("partyAssociationRole");
@@ -748,7 +655,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
       />
 
       <section className="comp-details-body comp-details-form comp-container">
-        <div className={`comp-party-form-layout${isScrollLayout ? " comp-party-form-layout-scroll" : ""}`}>
+        <div className="comp-party-form-layout">
           <form
             className="comp-party-form"
             onBlur={handleFieldBlur}
@@ -886,14 +793,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             )}
           </form>
           {(matchError || matchFetching || matchSearched) && (
-            <div
-              className="comp-party-match-results"
-              style={
-                !isScrollLayout && matchPaneStyle
-                  ? { top: matchPaneStyle.top, maxHeight: matchPaneStyle.maxHeight }
-                  : undefined
-              }
-            >
+            <div className="comp-party-match-results">
               {matchError ? (
                 <Alert
                   className="comp-complaint-details-alert"
@@ -903,111 +803,88 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   <span>Matching profiles are unavailable right now.</span>
                 </Alert>
               ) : (
-                <>
-                  {hasPagingButtons && matchScroll.up && (
-                    <Button
-                      variant="outline-primary"
-                      className="w-100 mb-2"
-                      onClick={scrollToTop}
-                    >
-                      <i className="bi bi-arrow-up me-1" />
-                      <span>Back to top</span>
-                    </Button>
-                  )}
-                  <div
-                    className="comp-party-match-results-scroll"
-                    ref={matchScrollRef}
-                    onScroll={updateMatchScroll}
-                  >
-                    <h3 className="mb-1">Search results</h3>
+                <div
+                  className="comp-party-match-results-scroll"
+                  ref={matchScrollRef}
+                >
+                  <h3 className="mb-1">Search results</h3>
 
-                    {matchFetching && (
-                      <div className="d-flex align-items-center">
-                        <Spinner
-                          animation="border"
-                          size="sm"
-                          className="me-3"
-                        />
-                        <span>Looking for matching published profiles...</span>
+                  {matchFetching && (
+                    <div className="d-flex align-items-center">
+                      <Spinner
+                        animation="border"
+                        size="sm"
+                        className="me-3"
+                      />
+                      <span>Looking for matching published profiles...</span>
+                    </div>
+                  )}
+
+                  {!matchFetching && <p>{matchSummary}</p>}
+
+                  {/* Matching profile cards */}
+                  <div className={matchCardsClassName}>
+                    {matches.map((match) => (
+                      <PartyMatchCard
+                        key={match.party.partyIdentifier}
+                        party={match.party}
+                        score={match.score}
+                        matchedFields={match.matchedFields}
+                        onAdd={handleAddMatch}
+                        isDisabled={isDisabled}
+                        pulse={pulseGuids.has(match.party.partyIdentifier ?? "")}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="comp-party-match-rules p-2 d-flex flex-column flex-start align-items-start">
+                    <Button
+                      variant="link"
+                      className="d-block p-0 comp-party-match-rules-title"
+                      aria-expanded={showMatchRules}
+                      onClick={() => setShowMatchRules((show) => !show)}
+                    >
+                      <span>How scoring works</span>&nbsp;&nbsp;
+                      <i className={`bi bi-chevron-${showMatchRules ? "up" : "down"} me-1`} />
+                    </Button>
+                    {showMatchRules && (
+                      <div className="d-flex flex-column gap-3">
+                        <div
+                          className="mt-2"
+                          style={{ borderTop: "1px solid #c7c7c7" }}
+                        >
+                          <div className="mt-2">
+                            <span>
+                              Identifier (licence, business number, WorkSafeBC, contact phone/email){" "}
+                              <strong> = 1000</strong>
+                            </span>
+                          </div>
+                        </div>
+                        <span>
+                          Name, date of birth, phone, email, address, city <strong> = 50 </strong>
+                        </span>
+                        <span>
+                          Descriptor (sex, age range, height, hair...) <strong> = 10</strong>
+                        </span>
+                        <span>
+                          Similar (typo, sound-alike, short form, close birthdate) <strong> x 0.5</strong>
+                        </span>
+                        <span>
+                          Cross-field (alias, first as middle, similar legal name)<strong> x 0.25</strong>
+                        </span>
+                        <span>
+                          First + last name bonus <strong> + 100</strong>
+                        </span>
+                        <span>
+                          Name + date of birth bonus <strong> + 850</strong>
+                        </span>
+                        <span>
+                          Shown / likely match / strong match <strong> &ge; 50 / 250 / 850</strong>
+                        </span>
                       </div>
                     )}
-
-                    {!matchFetching && <p>{matchSummary}</p>}
-
-                    {/* Matching profile cards */}
-                    <div className={matchCardsClassName}>
-                      {matches.map((match) => (
-                        <PartyMatchCard
-                          key={match.party.partyIdentifier}
-                          party={match.party}
-                          score={match.score}
-                          matchedFields={match.matchedFields}
-                          onAdd={handleAddMatch}
-                          isDisabled={isDisabled}
-                          pulse={pulseGuids.has(match.party.partyIdentifier ?? "")}
-                        />
-                      ))}
-                    </div>
-
-                    <div className="comp-party-match-rules p-2 d-flex flex-column flex-start align-items-start">
-                      <Button
-                        variant="link"
-                        className="d-block p-0 comp-party-match-rules-title"
-                        aria-expanded={showMatchRules}
-                        onClick={() => setShowMatchRules((show) => !show)}
-                      >
-                        <span>How scoring works</span>&nbsp;&nbsp;
-                        <i className={`bi bi-chevron-${showMatchRules ? "up" : "down"} me-1`} />
-                      </Button>
-                      {showMatchRules && (
-                        <div className="d-flex flex-column gap-3">
-                          <div
-                            className="mt-2"
-                            style={{ borderTop: "1px solid #c7c7c7" }}
-                          >
-                            <div className="mt-2">
-                              <span>
-                                Identifier (licence, business number, WorkSafeBC, contact phone/email){" "}
-                                <strong> = 1000</strong>
-                              </span>
-                            </div>
-                          </div>
-                          <span>
-                            Name, date of birth, phone, email, address, city <strong> = 50 </strong>
-                          </span>
-                          <span>
-                            Descriptor (sex, age range, height, hair...) <strong> = 10</strong>
-                          </span>
-                          <span>
-                            Similar (typo, sound-alike, short form, close birthdate) <strong> x 0.5</strong>
-                          </span>
-                          <span>
-                            Cross-field (alias, first as middle, similar legal name)<strong> x 0.25</strong>
-                          </span>
-                          <span>
-                            First + last name bonus <strong> + 100</strong>
-                          </span>
-                          <span>
-                            Name + date of birth bonus <strong> + 850</strong>
-                          </span>
-                          <span>
-                            Shown / likely match / strong match <strong> &ge; 50 / 250 / 850</strong>
-                          </span>
-                        </div>
-                      )}
-                    </div>
                   </div>
-                  {hasPagingButtons && matchScroll.down && (
-                    <Button
-                      variant="outline-primary"
-                      className="w-100 mt-2"
-                      onClick={scrollToNextProfile}
-                    >
-                      <i className="bi bi-arrow-down me-1" />
-                      <span>More profiles</span>
-                    </Button>
-                  )}
-                </>
+                </div>
               )}
             </div>
           )}
