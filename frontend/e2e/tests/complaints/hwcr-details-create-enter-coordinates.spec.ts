@@ -89,26 +89,20 @@ test.describe("Complaint Create Page spec - Enter Coordinates - Create View", ()
     await page.locator("#complaint-description-textarea-id").click();
     await enterDateTimeInDatePicker(page, "complaint-incident-time", "01", "13", "45");
     await page.locator("#attractants-select-id").locator("div").first().click();
-    await page
-      .locator("#attractants-pair-id")
-      .locator(".comp-details-edit-input")
-      .getByText(createCallDetails.attractants[0], { exact: true })
-      .first()
-      .click();
-    await page.locator("#attractants-select-id").locator("div").first().click();
-    await page
-      .locator("#attractants-pair-id")
-      .locator(".comp-details-edit-input")
-      .getByText(createCallDetails.attractants[1], { exact: true })
-      .first()
-      .click();
-    await page.locator("#attractants-select-id").locator("div").first().click();
-    await page
-      .locator("#attractants-pair-id")
-      .locator(".comp-details-edit-input")
-      .getByText(createCallDetails.attractants[2], { exact: true })
-      .first()
-      .click();
+    for (const attractant of createCallDetails.attractants) {
+      const $attractantOption = page
+        .locator("#attractants-pair-id")
+        .locator(".comp-details-edit-input")
+        .getByText(attractant, { exact: true })
+        .first();
+
+      // The menu is meant to stay open after a selection (closeMenuOnSelect={false}), but whether it does varies
+      // by browser, and clicking the select while the menu is open closes it, so only open it when it's closed
+      if (!(await $attractantOption.isVisible())) {
+        await page.locator("#attractants-select-id").locator("div").first().click();
+      }
+      await $attractantOption.click();
+    }
     await selectItemById("community-select-id", createCallDetails.community, page);
     await selectItemById("nature-of-complaint-select-id", createCallDetails.natureOfComplaint, page);
     await selectItemById("species-select-id", createCallDetails.species, page);

@@ -2,7 +2,7 @@ generator client {
   provider        = "prisma-client-js"
   output          = "../../node_modules/.prisma/complaint_outcome"
   previewFeatures = ["multiSchema", "prismaSchemaFolder"]
-  binaryTargets   = ["native", "debian-openssl-1.1.x"]
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -17,7 +17,7 @@ model action {
   complaint_outcome_guid       String                  @db.Uuid
   action_type_action_xref_guid String                  @db.Uuid
   actor_guid                   String                  @db.Uuid
-  action_date                  DateTime                @db.Timestamp(6)
+  action_date                  DateTime                @db.Date
   active_ind                   Boolean?
   create_user_id               String                  @db.VarChar(32)
   create_utc_timestamp         DateTime                @db.Timestamp(6)
@@ -29,6 +29,7 @@ model action {
   case_note_guid               String?                 @db.Uuid
   assessment_guid              String?                 @db.Uuid
   prevention_education_guid    String?                 @db.Uuid
+  action_time                  DateTime?               @db.Time(6)
   complaint_outcome            complaint_outcome       @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_action__case_guid")
   case_note                    case_note?              @relation(fields: [case_note_guid], references: [case_note_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_action__case_note_guid")
   action_type_action_xref      action_type_action_xref @relation(fields: [action_type_action_xref_guid], references: [action_type_action_xref_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_action_action_type_action_xref")

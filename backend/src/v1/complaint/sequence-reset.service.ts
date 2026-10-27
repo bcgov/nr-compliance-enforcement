@@ -33,7 +33,7 @@ export class SequenceResetScheduler {
       },
       null, // onComplete
       false, // start
-      "UTC-8", // timezone
+      "UTC-7", // timezone
     );
 
     this.schedulerRegistry.addCronJob("sequence-reset", this.cronJob);

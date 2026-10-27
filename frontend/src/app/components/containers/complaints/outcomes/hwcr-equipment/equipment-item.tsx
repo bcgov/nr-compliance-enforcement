@@ -15,7 +15,7 @@ import { deleteEquipment } from "@/app/store/reducers/complaint-outcome-thunks";
 import { CompLocationInfo } from "@components/common/comp-location-info";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 import { useParams } from "react-router-dom";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 interface EquipmentItemProps {
   equipment: EquipmentDetailsDto;
@@ -55,11 +55,11 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
   const setEquipmentDateString = equipment.actions?.findLast(
     (action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT,
   )?.date;
-  const setEquipmentDate = setEquipmentDateString ? new Date(new Date(setEquipmentDateString)) : null;
+  const setEquipmentDate = parseUTCDateToLocal(setEquipmentDateString, null);
   const removedEquipmentDateString = equipment.actions?.findLast(
     (action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT,
   )?.date;
-  const removedEquipmentDate = removedEquipmentDateString ? new Date(new Date(removedEquipmentDateString)) : null;
+  const removedEquipmentDate = parseUTCDateToLocal(removedEquipmentDateString, null);
   const setEquipmentOfficer = useAppSelector(selectOfficerByAuthUserGuid(`${setEquipmentActor}`));
   const removedEquipmentOfficer = useAppSelector(selectOfficerByAuthUserGuid(`${removedEquipmentActor}`));
 

@@ -1,6 +1,6 @@
 # RedHat UBI 8 with nodejs 14
-# postgis/postgis:15-master as of 2026-09-15
-FROM postgis/postgis@sha256:c1288c91f8671521bb7c7d3f08a3e2b537d48cdd1725c78bdf8fa34ac81225f4
+# postgis/postgis:16-3.5-alpine as of 2026-10-16
+FROM postgis/postgis@sha256:47e961a569fd52ff31f0fe205ed91eeab17d9f5fff6722e6d7ea6b588748b293
 
 # Enable pgcrypto extension on startup
 RUN sed -i \
