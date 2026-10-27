@@ -2,7 +2,7 @@ import { UUID } from "node:crypto";
 export interface CaseActionDto {
   actionGuid: UUID;
   actor: UUID;
-  date: Date;
+  date: string;
   actionCode: string;
   shortDescription: string;
   longDescription: string;

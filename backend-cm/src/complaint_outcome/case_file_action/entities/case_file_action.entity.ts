@@ -4,6 +4,7 @@ export class CaseFileAction {
   activeIndicator: boolean;
   actionCode: string;
   date: Date;
+  actionTime?: Date;
   shortDescription: string;
   longDescription: string;
   actionTypeCode?: string;

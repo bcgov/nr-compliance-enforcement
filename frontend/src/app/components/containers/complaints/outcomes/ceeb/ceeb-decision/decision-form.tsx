@@ -26,6 +26,7 @@ import { ValidationTextArea } from "@common/validation-textarea";
 import { getDropdownOption } from "@/app/common/methods";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type props = {
   leadIdentifier: string;
@@ -139,7 +140,7 @@ export const DecisionForm: FC<props> = ({
     leadAgency,
     assignedTo,
     actionTaken,
-    actionTakenDate,
+    actionTakenDate: parseUTCDateToLocal(actionTakenDate, null),
   });
 
   const [sectorList, setSectorList] = useState<Array<Option>>();
@@ -237,7 +238,7 @@ export const DecisionForm: FC<props> = ({
               leadAgency,
               assignedTo,
               actionTaken,
-              actionTakenDate,
+              actionTakenDate: parseUTCDateToLocal(actionTakenDate, null),
             });
 
             resetErrorMessages();

@@ -126,7 +126,7 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({
                 </Button>
               )}
               <Button
-                id="task-details-update-status-button"
+                id="details-screen-update-status-button"
                 title="Update task status"
                 variant="outline-light"
                 size="sm"

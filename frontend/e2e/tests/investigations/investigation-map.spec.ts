@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner, waitForMapToLoad } from "../../utils/helpers";
+import { waitForSpinner, waitForMapToLoad, closeMobileFilters } from "../../utils/helpers";
 
 /**
  * Tests for Investigation Map View functionality
@@ -101,10 +101,10 @@ test.describe("Investigation Map View", () => {
   });
 
   test("it maintains filters when switching views", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
-    await expect(page.locator(".comp-data-filters")).toBeVisible();
+    await page.locator("#investigation-filter-btn:visible, #investigation-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
-    const statusSelect = page.locator("#investigation-status-filter");
+    const statusSelect = page.locator("#investigation-status-filter:visible");
     if (await statusSelect.isVisible()) {
       await statusSelect.click();
       const openOption = page.locator(".comp-select__option", { hasText: "Open" });
@@ -113,6 +113,8 @@ test.describe("Investigation Map View", () => {
         await waitForSpinner(page);
       }
     }
+
+    await closeMobileFilters(page);
 
     // Switch to map view
     const mapToggleLabel = page.locator("label[for='map_toggle_id']");

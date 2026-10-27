@@ -405,6 +405,7 @@ export type CaseFileAction = {
   __typename?: 'CaseFileAction';
   actionCode: Scalars['String']['output'];
   actionId: Scalars['String']['output'];
+  actionTime?: Maybe<Scalars['DateTime']['output']>;
   actionTypeCode: Scalars['String']['output'];
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
   actor: Scalars['String']['output'];

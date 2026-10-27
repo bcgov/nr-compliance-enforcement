@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 import COMPLAINT_TYPES from "../../../src/app/types/app/complaint-types";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { navigateToDetailsScreen, waitForSpinner } from "../../utils/helpers";
+import { assignSelfToComplaint, navigateToDetailsScreen, waitForSpinner } from "../../utils/helpers";
 
 /*
 Test to verify that the user is able to change the assignee both the
@@ -19,10 +19,9 @@ test.describe("Complaint Change Assignee spec - Details View", () => {
       } else {
         await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true, page);
       }
-      await page.locator("#details-screen-assign-button").click();
 
       // self assign the complaint
-      await page.locator("#self_assign_button").click();
+      await assignSelfToComplaint(page);
       await waitForSpinner(page);
       await expect(
         page

@@ -102,7 +102,7 @@ const Cases: FC = () => {
       placement="end"
     >
       <Offcanvas.Header closeButton>
-        <Offcanvas.Title>Filters</Offcanvas.Title>
+        <Offcanvas.Title>Filter by</Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
         <CaseFilter />
