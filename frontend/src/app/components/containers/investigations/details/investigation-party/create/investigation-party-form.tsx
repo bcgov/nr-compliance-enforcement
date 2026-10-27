@@ -849,10 +849,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                     </Button>
                     {showMatchRules && (
                       <div className="d-flex flex-column gap-3">
-                        <div
-                          className="mt-2"
-                          style={{ borderTop: "1px solid #c7c7c7" }}
-                        >
+                        <div className="mt-2 border-top">
                           <div className="mt-2">
                             <span>
                               Identifier (licence, business number, WorkSafeBC, contact phone/email){" "}
