@@ -7,7 +7,7 @@ import { selectActiveComplaintCollaborators, selectComplaint } from "@/app/store
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { appUserGuid } from "@/app/store/reducers/app";
 import UserService from "@/app/service/user-service";
-import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type props = {
   note: string;
@@ -56,7 +56,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
       {actions.slice(1).map((action) => (
         <div key={action.actor}>
           <span>{getActorDisplayName(action.actor, officers)}</span>
-          <span>{` (${formatDateObjectAsString(parseUTCTimestampToLocal(action.date), { format: "dateTime" })})`}</span>
+          <span>{` (${formatDateObjectAsString(parseUTCDateToLocal(action.date, action.actionTime), { format: "dateTime" })})`}</span>
         </div>
       ))}
     </Tooltip>
@@ -99,9 +99,13 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
                     className="bi bi-calendar comp-margin-right-xxs"
                     id="complaint-incident-date"
                   ></i>
-                  {formatDateObjectAsString(parseUTCTimestampToLocal(actions[0]?.date), { format: "date" })}
+                  {formatDateObjectAsString(parseUTCDateToLocal(actions[0]?.date, actions[0]?.actionTime), {
+                    format: "date",
+                  })}
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                  {formatDateObjectAsString(parseUTCTimestampToLocal(actions[0]?.date), { format: "time" })}
+                  {formatDateObjectAsString(parseUTCDateToLocal(actions[0]?.date, actions[0]?.actionTime), {
+                    format: "time",
+                  })}
                   {actions.length > 1 && (
                     <OverlayTrigger
                       placement="right"

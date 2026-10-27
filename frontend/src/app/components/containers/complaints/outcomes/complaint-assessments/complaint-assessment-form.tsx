@@ -52,6 +52,7 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { getComplaintType } from "@/app/common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 // ERS/GIR assessments use their own justification codes, separate from the HWC set
 const ERS_GIR_JUSTIFICATION_CODES = new Set([
@@ -280,7 +281,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     const selectedConflictHistory = mapOption(assessmentState.conflict_history);
     const selectedCategoryLevel = mapOption(assessmentState.category_level);
 
-    const selectedDateValue = assessmentState?.date ? new Date(assessmentState.date) : new Date();
+    const selectedDateValue = parseUTCDateToLocal(assessmentState?.date, null) ?? new Date();
     const selectedContacted = mapYesNo(assessmentState.contacted_complainant);
     const selectedAttended = mapYesNo(assessmentState.attended);
 
@@ -358,7 +359,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
 
   const getUpdatedAssessmentData = () => ({
     id: assessment?.id ?? assessmentState?.id,
-    date: selectedDate,
+    date: selectedDate ? formatDateObjectAsString(selectedDate, { format: "date" }) : null,
     officer: mapOption(selectedOfficer),
     action_required: selectedActionRequired?.label,
     close_complaint: shouldCloseComplaint(),

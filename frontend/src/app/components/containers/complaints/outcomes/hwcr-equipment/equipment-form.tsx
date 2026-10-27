@@ -33,6 +33,7 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
@@ -145,12 +146,12 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       if (action.actionCode === CASE_ACTION_CODE.SETEQUIPMT && equipment.actions && complaintData) {
         const setOfficer = getSelectedItem(action.actor, assignableOfficers);
         setOfficerSet(setOfficer);
-        setDateSet(new Date(action.date));
+        setDateSet(parseUTCDateToLocal(action.date, null) ?? new Date());
         setActionSetGuid(action.actionGuid);
       } else if (action.actionCode === CASE_ACTION_CODE.REMEQUIPMT && complaintData) {
         const removedOfficer = getSelectedItem(action.actor, assignableOfficers);
         setOfficerRemoved(removedOfficer);
-        setDateRemoved(new Date(action.date));
+        setDateRemoved(parseUTCDateToLocal(action.date, null) ?? undefined);
         setActionRemovedGuid(action.actionGuid);
       }
     });
@@ -248,7 +249,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       {
         actionGuid: actionSetGuid,
         actor: officerSet?.value,
-        date: dateSet,
+        date: formatDateObjectAsString(dateSet, { format: "date" }),
         activeIndicator: true,
         actionCode: CASE_ACTION_CODE.SETEQUIPMT,
       },
@@ -259,7 +260,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       actions.push({
         actionGuid: actionRemovedGuid,
         actor: officerRemoved.value,
-        date: dateRemoved,
+        date: formatDateObjectAsString(dateRemoved, { format: "date" }),
         activeIndicator: true,
         actionCode: CASE_ACTION_CODE.REMEQUIPMT,
       } as CaseActionDto);
@@ -617,8 +618,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
                       maxDate={new Date()}
                       minDate={dateSet ?? null}
                       onChange={(date: Date, _time: string | null) => {
-                        setDateRemoved(date); 
-                        markDirty(); 
+                        setDateRemoved(date);
+                        markDirty();
                       }}
                       errMsg={dateRemovedErrorMsg}
                       selectedDate={dateRemoved}

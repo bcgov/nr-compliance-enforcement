@@ -3,6 +3,7 @@ import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 import test, { expect } from "@playwright/test";
 import {
   clearFilterById,
+  closeMobileFilters,
   enterDateTimeInDatePicker,
   navigateToDetailsScreen,
   selectItemById,
@@ -45,10 +46,11 @@ test.describe("Verify CEEB specific search filters work", () => {
     await page.locator("#icon-complaints-link").click();
 
     // Filter by action taken
-    await expect(await page.locator("#comp-filter-btn")).toBeVisible();
-    await page.locator("#comp-filter-btn").click();
-    await selectItemById("action-taken-select-id", actionTaken, page);
+    await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
+    await selectItemById("action-taken-select-id:visible", actionTaken, page);
     await waitForSpinner(page);
+    await closeMobileFilters(page);
     await clearFilterById("comp-officer-filter", page);
     await waitForSpinner(page);
     await expect(page.locator("a", { hasText: complaintWithActionTakenID })).toBeVisible();

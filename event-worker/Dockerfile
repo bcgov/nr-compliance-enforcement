@@ -1,6 +1,6 @@
 # Build
-# node:22-bookworm-slim as of 2026-09-15
-FROM node@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 AS build
+# node:22-bookworm-slim as of 2026-10-19
+FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 AS build
 # Install packages, build and keep only prod packages
 USER root
 WORKDIR /app
@@ -11,8 +11,8 @@ RUN npm ci --omit=dev --ignore-scripts && \
   npm run build
 
 # Deployment container
-# node:22-bookworm-slim as of 2026-09-15
-FROM node@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5
+# node:22-bookworm-slim as of 2026-10-19
+FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
 # Set node to production
 ENV NODE_ENV=production
 RUN apt-get --no-install-recommends update && apt-get --no-install-recommends install -y \

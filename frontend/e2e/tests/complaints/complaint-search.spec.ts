@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 import {
+  closeMobileFilters,
   navigateToCreateScreen,
   navigateToTab,
   selectItemById,
@@ -23,14 +24,15 @@ test.describe("Complaint Search Functionality", () => {
     await navigateToTab(complaintTypes[0], true, page);
 
     //-- open the filter tab
-    await page.locator("#comp-filter-btn").click();
+    await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     //-- select 70 mile house community
-    await selectItemById("community-select-id", "70 Mile House", page);
+    await selectItemById("community-select-id:visible", "70 Mile House", page);
     await expect(page.locator("#comp-community-filter")).toBeVisible();
 
     //-- close the filter
-    await page.locator("#comp-filter-btn").click();
+    await closeMobileFilters(page);
 
     //-- there should be 3 complaints
     await expect(page.locator("#complaint-list tbody").locator("tr")).toHaveCount(3);
@@ -84,14 +86,15 @@ test.describe("Complaint Search Functionality", () => {
     await navigateToTab(complaintTypes[0], true, page);
 
     //-- open the filter tab
-    await page.locator("#comp-filter-btn").click();
+    await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     //-- select 70 mile house community
-    await selectItemById("community-select-id", "70 Mile House", page);
+    await selectItemById("community-select-id:visible", "70 Mile House", page);
     await expect(page.locator("#comp-community-filter")).toBeVisible();
 
     //-- close the filter
-    await page.locator("#comp-filter-btn").click();
+    await closeMobileFilters(page);
 
     //-- search for sibling and verify there's one complaint
     await page.locator("#complaint-search").click();
@@ -141,12 +144,13 @@ test.describe("Complaint Search Functionality", () => {
     await expect(page.locator("#comp-zone-filter")).not.toBeVisible();
 
     //-- open the filter tab
-    await page.locator("#comp-filter-btn").click();
+    await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     //-- select east kootenay zone
-    await selectItemById("zone-select-id", "East Kootenay", page);
+    await selectItemById("zone-select-id:visible", "East Kootenay", page);
     await expect(page.locator("#comp-zone-filter")).toBeVisible();
-    await page.locator("#comp-filter-btn").click();
+    await closeMobileFilters(page);
 
     //-- search for fire and verify there's multiple complaints
     await page.locator("#complaint-search").click();
@@ -170,9 +174,11 @@ test.describe("Complaint Search Functionality", () => {
     await page.locator("#comp-zone-filter").click();
     await waitForSpinner(page);
     await expect(page.locator("#comp-zone-filter")).not.toBeVisible();
-    await page.locator("#comp-filter-btn").click();
-    await selectItemById("region-select-filter-id", "Okanagan", page);
+    await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
+    await selectItemById("region-select-filter-id:visible", "Okanagan", page);
     await expect(page.locator("#comp-region-filter")).toBeVisible();
+    await closeMobileFilters(page);
     await page.locator("#complaint-search").click();
     await page.locator("#complaint-search").clear();
     await page.locator("#complaint-search").fill("wildlife");

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { selectItemById, waitForMapToLoad, waitForSpinner } from "../../utils/helpers";
+import { closeMobileFilters, selectItemById, waitForMapToLoad, waitForSpinner } from "../../utils/helpers";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 
 /*
@@ -42,28 +42,31 @@ test.describe("Complaints on map tests", () => {
 
       // find how many markers there are, we'll compare this to the count after another filter is applied
       const complaintCountWithoutFilters = page.locator(".leaflet-marker-icon").count();
-      await page.locator("#comp-filter-btn").click();
+      await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+      await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
       if ("#hwcr-tab".includes(type)) {
         // add the hwcr filters
         // add the region filter
-        await selectItemById("region-select-filter-id", "Thompson Cariboo", page);
-        await selectItemById("zone-select-id", "Cariboo Thompson", page);
-        await selectItemById("community-select-id", "Blue River", page);
-        await selectItemById("nature-of-complaint-select-id", "Food Conditioned", page);
-        await selectItemById("species-select-id", "Bear, Black", page);
+        await selectItemById("region-select-filter-id:visible", "Thompson Cariboo", page);
+        await selectItemById("zone-select-id:visible", "Cariboo Thompson", page);
+        await selectItemById("community-select-id:visible", "Blue River", page);
+        await selectItemById("nature-of-complaint-select-id:visible", "Food Conditioned", page);
+        await selectItemById("species-select-id:visible", "Bear, Black", page);
       } else {
         // add the alegation filters
         // add the region filter
-        await selectItemById("region-select-filter-id", "Okanagan", page);
-        await selectItemById("zone-select-id", "North Okanagan", page);
-        await selectItemById("community-select-id", "Grindrod", page);
-        await selectItemById("violation-type-select-id", "Dumping", page);
+        await selectItemById("region-select-filter-id:visible", "Okanagan", page);
+        await selectItemById("zone-select-id:visible", "North Okanagan", page);
+        await selectItemById("community-select-id:visible", "Grindrod", page);
+        await selectItemById("violation-type-select-id:visible", "Dumping", page);
       }
 
       // count the markers again, they should now have a different count
       const complaintCountWithFilters = await page.locator(".leaflet-marker-icon").count();
       expect(complaintCountWithFilters).not.toBe(complaintCountWithoutFilters);
+
+      await closeMobileFilters(page);
 
       // switch back to list view to verify filters are still applied
       await page.locator('label[for="list_toggle_id"]').click();
@@ -95,8 +98,9 @@ test.describe("Complaints on map tests", () => {
       await page.locator('label[for="map_toggle_id"]').click();
 
       // wait for the map to load
-      await page.locator("#comp-filter-btn").click();
-      await selectItemById("community-select-id", "Kelowna", page);
+      await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+      await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
+      await selectItemById("community-select-id:visible", "Kelowna", page);
 
       // Wait for the filters
       await waitForSpinner(page);
@@ -112,6 +116,7 @@ test.describe("Complaints on map tests", () => {
       // wait for flyTo if a cluster was clicked
       await waitForSpinner(page);
       await waitForMapToLoad(page);
+      await closeMobileFilters(page);
 
       const mapMarker = page.locator(".leaflet-marker-icon.map-marker svg").first();
       await expect(mapMarker).toBeVisible();

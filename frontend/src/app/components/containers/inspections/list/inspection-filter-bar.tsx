@@ -93,8 +93,8 @@ export const InspectionFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggle
       </div>
 
       <div className="filter-pills-container">
-        {renderFilterButton("desktop", toggleShowDesktopFilters, "case-filter-btn")}
-        {renderFilterButton("mobile", toggleShowMobileFilters)}
+        {renderFilterButton("desktop", toggleShowDesktopFilters, "inspection-filter-btn")}
+        {renderFilterButton("mobile", toggleShowMobileFilters, "inspection-filter-btn-mobile")}
 
         {hasFilter("inspectionStatus") && (
           <FilterButton

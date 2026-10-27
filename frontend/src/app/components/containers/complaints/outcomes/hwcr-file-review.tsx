@@ -11,7 +11,7 @@ import { createReview, updateReview } from "@/app/store/reducers/complaint-outco
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 interface HWCRFileReviewProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
@@ -89,7 +89,7 @@ export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
         } else {
           const completeAction = {
             actor: authUserGuid,
-            date: new Date(),
+            date: formatDateObjectAsString(new Date(), { format: "date" }),
             actionCode: "COMPLTREVW",
             activeIndicator: reviewCompleted,
           };
@@ -99,7 +99,7 @@ export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
       } else {
         const completeAction = {
           actor: authUserGuid,
-          date: new Date(),
+          date: formatDateObjectAsString(new Date(), { format: "date" }),
           actionCode: "COMPLTREVW",
           activeIndicator: reviewCompleted,
         };
@@ -344,7 +344,7 @@ export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
                       <dd id="file-review-date">
                         {reviewCompleteDate instanceof Date
                           ? formatDateObjectAsString(reviewCompleteDate, { format: "date" })
-                          : formatDateObjectAsString(parseUTCTimestampToLocal(reviewCompleteDate), { format: "date" })}
+                          : formatDateObjectAsString(parseUTCDateToLocal(reviewCompleteDate, null), { format: "date" })}
                       </dd>
                     </div>
                   </dl>
