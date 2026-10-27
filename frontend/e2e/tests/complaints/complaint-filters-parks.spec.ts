@@ -18,9 +18,9 @@ test.describe("Verify Parks specific search filters work", () => {
       //Need to make sure the filters are loaded before switching tabs.
       await waitForSpinner(page);
       await page.locator(complaintType).click();
-      await expect(page.locator("#comp-filter-btn")).toBeVisible();
-      await page.locator("#comp-filter-btn").click();
-      await expect(page.locator("#comp-filter-park-id")).toBeVisible();
+      await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+      await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
+      await expect(page.locator("#comp-filter-park-id:visible")).toBeVisible();
     });
   }
 
@@ -45,10 +45,10 @@ test.describe("Verify Parks specific search filters work", () => {
     await page.locator("#icon-complaints-link").click();
 
     // Filter by park
-    await expect(page.locator("#comp-filter-btn")).toBeVisible();
-    await page.locator("#comp-filter-btn").click();
-    await selectTypeAheadItemByText("park-select-id", expectedPark, page);
-    await expect(page.locator("#comp-park-filter")).toBeVisible();
+    await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
+    await selectTypeAheadItemByText("park-select-id:visible", expectedPark, page);
+    await expect(page.locator("#comp-park-filter:visible")).toBeVisible();
     await expect(await page.getByRole("link", { name: complaintWithPark })).toBeVisible();
   });
 });

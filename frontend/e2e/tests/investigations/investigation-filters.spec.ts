@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { selectItemById, waitForSpinner } from "../../utils/helpers";
+import { closeMobileFilters, selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Investigation Filter functionality
@@ -14,10 +14,11 @@ test.describe("Investigation Filters", () => {
   });
 
   test("it filters by investigation status", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
+    await page.locator("#investigation-filter-btn:visible, #investigation-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     // Select Open status
-    await selectItemById("investigation-investigationStatus-select-id", "Open", page);
+    await selectItemById("investigation-investigationStatus-select-id:visible", "Open", page);
     await waitForSpinner(page);
 
     // Verify filter pill appears
@@ -31,9 +32,13 @@ test.describe("Investigation Filters", () => {
 
   test("it clears filters", async ({ page }) => {
     // Apply a filter
-    await page.locator("#case-filter-btn").click();
-    await selectItemById("investigation-investigationStatus-select-id", "Open", page);
+    await page.locator("#investigation-filter-btn:visible, #investigation-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
+    await selectItemById("investigation-investigationStatus-select-id:visible", "Open", page);
     await waitForSpinner(page);
+
+    // Attempt to close mobile filters
+    await closeMobileFilters(page);
 
     // Verify filter is applied
     const filterPill = page.locator("#investigation-status-filter-pill");
@@ -48,14 +53,15 @@ test.describe("Investigation Filters", () => {
   });
 
   test("it combines multiple filters", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
+    await page.locator("#investigation-filter-btn:visible, #investigation-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     // Apply status filter
-    await selectItemById("investigation-investigationStatus-select-id", "Open", page);
+    await selectItemById("investigation-investigationStatus-select-id:visible", "Open", page);
     await waitForSpinner(page);
 
     // Apply community filter
-    await selectItemById("investigation-community-select-id", "70 Mile House", page);
+    await selectItemById("investigation-community-select-id:visible", "70 Mile House", page);
     await waitForSpinner(page);
 
     // Both pills should appear
