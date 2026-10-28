@@ -53,6 +53,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
         (referralAgencies.includes(agency.agency) || agency.agency === AgencyType.OTH) &&
         Object.keys(complaintTypesForReferral(agency.agency)).includes(complaint_type),
     )
+    .sort((left, right) => (left.displayOrder ?? 0) - (right.displayOrder ?? 0))
     .map((agency) => ({
       label: agency.longDescription,
       labelElement: <AgencyBanner agency={agency.agency} />,

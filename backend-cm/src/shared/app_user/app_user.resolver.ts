@@ -25,11 +25,8 @@ export class AppUserResolver {
 
   @Query("appUsersByGuids")
   @Roles(coreRoles, Role.PARTY_ACCESS)
-  async findManyByGuids(
-    @Args("appUserGuids") appUserGuids?: string[],
-    @Args("authUserGuids") authUserGuids?: string[],
-  ) {
-    return await this.appUserService.findManyByGuids(appUserGuids, authUserGuids);
+  async findManyByIds(@Args("appUserGuids") appUserGuids?: string[], @Args("authUserGuids") authUserGuids?: string[]) {
+    return await this.appUserService.findManyByIds(appUserGuids, authUserGuids);
   }
 
   @Query("appUser")

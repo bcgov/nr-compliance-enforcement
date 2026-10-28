@@ -52,7 +52,7 @@ export class AppUserService {
     return this.mapper.mapArray<app_user, AppUser>(appUsers as Array<app_user>, "app_user", "AppUser");
   }
 
-  async findManyByGuids(appUserGuids?: string[], authUserGuids?: string[]) {
+  async findManyByIds(appUserGuids?: string[], authUserGuids?: string[]) {
     const appUsers = await this.prisma.app_user.findMany({
       where: {
         OR: [

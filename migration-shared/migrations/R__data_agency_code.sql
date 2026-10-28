@@ -16,8 +16,8 @@ INSERT INTO shared.agency_code (
     ('WEB', 'Wildlife and Ecosystem Branch', 'Wildlife and Ecosystem Branch', 67, TRUE, 'FLYWAY', NOW()),
     ('BCCEA', 'BC CEA', 'BC Compliance and Enforcement Agency', 68, TRUE, 'FLYWAY', NOW()),
     ('NRS', 'Natural Resource Sector', 'Natural Resource Sector', 70, TRUE, 'FLYWAY', NOW()),
-    ('OTH', 'Other', 'Other', 80, TRUE, 'FLYWAY', NOW()),
-    ('POL', 'Police', 'Police', 90, TRUE, 'FLYWAY', NOW())
+    ('POL', 'Police', 'Police', 90, TRUE, 'FLYWAY', NOW()),
+    ('OTH', 'Other', 'Other', 100, TRUE, 'FLYWAY', NOW())
 ON CONFLICT (agency_code) DO UPDATE SET
     short_description = EXCLUDED.short_description,
     long_description = EXCLUDED.long_description,
