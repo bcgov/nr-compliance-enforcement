@@ -1,7 +1,7 @@
 {
   "name": "nr-natsuite",
   "type": "module",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "6.7.2",
@@ -112,7 +112,7 @@
     "util": "0.12.5",
     "utm-latlng": "1.0.8",
     "uuid": "14.0.1",
-    "vite": "7.3.6",
+    "vite": "7.3.7",
     "warning": "4.0.3",
     "web-vitals": "3.5.2",
     "zod": "3.25.76"
