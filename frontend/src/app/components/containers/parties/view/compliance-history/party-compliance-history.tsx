@@ -1,7 +1,8 @@
-import { FC, useCallback } from "react";
+import { FC } from "react";
 import { Badge, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
+  AppUser,
   CaseFile,
   Contravention,
   Inspection,
@@ -17,8 +18,8 @@ import { selectCodeTable } from "@/app/store/reducers/code-table";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
-import { selectOfficers } from "@/app/store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
+import { selectCanAccessInspections, selectCanAccessInvestigations } from "@/app/access/module-access";
 import {
   PartyComplianceActivity,
   PartyComplianceHistoryRow,
@@ -85,9 +86,9 @@ const GET_INSPECTIONS_BY_PARTY = gql`
   }
 `;
 
-const GET_CASE_FILES_BY_ACTIVITIES = gql`
-  query GetCaseFilesByActivityIds($activityIdentifiers: [String!]!) {
-    partyHistoryCaseFiles(activityIdentifiers: $activityIdentifiers) {
+const GET_CASE_FILES_BY_PARTY = gql`
+  query GetCaseFilesByParty($partyId: String!, $partyType: String!) {
+    partyHistoryCaseFiles(partyId: $partyId, partyType: $partyType) {
       caseIdentifier
       name
       leadAgency {
@@ -96,6 +97,16 @@ const GET_CASE_FILES_BY_ACTIVITIES = gql`
       activities {
         activityIdentifier
       }
+    }
+  }
+`;
+
+const GET_APP_USERS_BY_GUIDS = gql`
+  query GetAppUsersByGuids($appUserGuids: [String!]) {
+    appUsersByGuids(appUserGuids: $appUserGuids) {
+      appUserGuid
+      firstName
+      lastName
     }
   }
 `;
@@ -155,7 +166,8 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
 
   const agencyCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
-  const officers = useAppSelector(selectOfficers);
+  const canAccessInvestigations = useAppSelector(selectCanAccessInvestigations);
+  const canAccessInspections = useAppSelector(selectCanAccessInspections);
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
     const partyRoleText: string = partyRoles.find(
@@ -164,22 +176,15 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
     return partyRoleText;
   };
 
-  const getOfficerName = useCallback(
-    (officerGuid: string): string => {
-      const officer = officers?.find((o) => o.app_user_guid === officerGuid);
-      return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
-    },
-    [officers],
-  );
-
   const GetPartyRelations = (
     partyId: string,
     partyType: string,
   ): {
     partyRelations: PartyComplianceRelation[];
     isPartyRelationLoading: boolean;
+    partyRelationError: Error | null;
   } => {
-    const { relatedInvestigations, relatedInspections, isActivityLoading } = GetRelatedActivities(
+    const { relatedInvestigations, relatedInspections, isActivityLoading, activityError } = GetRelatedActivities(
       partyId ?? "",
       partyType ?? "",
     );
@@ -188,24 +193,50 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
 
     const userAgency = getUserAgency();
 
-    const relatedInvestigationsIds = relatedInvestigations?.map((investigation) => investigation.investigationGuid);
-    const relatedInspectionIds = relatedInspections?.map((inspection) => inspection.inspectionGuid);
-
-    const activityIds = [...(relatedInvestigationsIds ?? []), ...(relatedInspectionIds ?? [])];
-
-    const { data: caseData, isLoading: isCaseLoading } = useGraphQLQuery<{
+    const {
+      data: caseData,
+      isLoading: isCaseLoading,
+      error: caseError,
+    } = useGraphQLQuery<{
       partyHistoryCaseFiles: CaseFile[];
-    }>(GET_CASE_FILES_BY_ACTIVITIES, {
-      queryKey: ["activities", activityIds],
-      variables: { activityIdentifiers: activityIds },
-      enabled: !!activityIds && activityIds.length > 0,
+    }>(GET_CASE_FILES_BY_PARTY, {
+      queryKey: ["CaseFileParty", id],
+      variables: { partyId, partyType },
+      enabled: !!partyId && !!partyType,
     });
 
     const relatedCases = caseData?.partyHistoryCaseFiles;
 
     const uniqueCaseIds = [...new Set(relatedCases?.map((item) => item.caseIdentifier))];
 
-    const { rolesInInvestigations, rolesInInspections, isPartyRoleLoading } = GetPartyRoles(id);
+    const { rolesInInvestigations, rolesInInspections, isPartyRoleLoading, partyRoleError } = GetPartyRoles(id);
+
+    const officerGuids = [
+      ...new Set(
+        relatedInvestigations
+          .flatMap((investigation) => [investigation.primaryInvestigatorGuid, investigation.supervisorGuid])
+          .filter((officerGuid): officerGuid is string => !!officerGuid),
+      ),
+    ];
+
+    const {
+      data: officerData,
+      isLoading: isOfficerLoading,
+      error: officerError,
+    } = useGraphQLQuery<{
+      appUsersByGuids: AppUser[];
+    }>(GET_APP_USERS_BY_GUIDS, {
+      queryKey: ["appUsersByGuids", ...officerGuids],
+      variables: { appUserGuids: officerGuids },
+      enabled: officerGuids.length > 0,
+    });
+
+    const officers = officerData?.appUsersByGuids ?? [];
+
+    const getOfficerName = (officerGuid: string): string => {
+      const officer = officers.find((o) => o.appUserGuid === officerGuid);
+      return officer ? `${officer.lastName}, ${officer.firstName}` : "-";
+    };
 
     for (let uniqueCaseId of uniqueCaseIds) {
       const partyRelation: PartyComplianceRelation = {};
@@ -273,9 +304,10 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       }
       partyRelations.push(partyRelation);
     }
-    const isPartyRelationLoading = isActivityLoading || isCaseLoading || isPartyRoleLoading;
+    const isPartyRelationLoading = isActivityLoading || isCaseLoading || isPartyRoleLoading || isOfficerLoading;
+    const partyRelationError = activityError || caseError || partyRoleError || officerError;
 
-    return { partyRelations, isPartyRelationLoading };
+    return { partyRelations, isPartyRelationLoading, partyRelationError };
   };
 
   const GetRelatedActivities = (
@@ -285,8 +317,13 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
     relatedInvestigations: Investigation[];
     relatedInspections: Inspection[];
     isActivityLoading: boolean;
+    activityError: Error | null;
   } => {
-    const { data: investigationData, isLoading: isInvestigationLoading } = useGraphQLQuery<{
+    const {
+      data: investigationData,
+      isLoading: isInvestigationLoading,
+      error: investigationError,
+    } = useGraphQLQuery<{
       partyHistoryInvestigations: Investigation[];
     }>(GET_INVESTIGATIONS_BY_PARTY, {
       queryKey: ["InvestigationParty", id],
@@ -296,7 +333,11 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
 
     const relatedInvestigations = investigationData?.partyHistoryInvestigations ?? [];
 
-    const { data: inspectionData, isLoading: isInspectionLoading } = useGraphQLQuery<{
+    const {
+      data: inspectionData,
+      isLoading: isInspectionLoading,
+      error: inspectionError,
+    } = useGraphQLQuery<{
       partyHistoryInspections: Inspection[];
     }>(GET_INSPECTIONS_BY_PARTY, {
       queryKey: ["InspectionParty", id],
@@ -307,8 +348,9 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
     const relatedInspections = inspectionData?.partyHistoryInspections ?? [];
 
     const isActivityLoading = isInspectionLoading || isInvestigationLoading;
+    const activityError = inspectionError || investigationError;
 
-    return { relatedInvestigations, relatedInspections, isActivityLoading };
+    return { relatedInvestigations, relatedInspections, isActivityLoading, activityError };
   };
 
   const GetPartyRoles = (
@@ -317,8 +359,13 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
     rolesInInvestigations: InvestigationParty[];
     rolesInInspections: InspectionParty[];
     isPartyRoleLoading: boolean;
+    partyRoleError: Error | null;
   } => {
-    const { data: rolesInInvestigationsData, isLoading: isInvestigationRoleLoading } = useGraphQLQuery<{
+    const {
+      data: rolesInInvestigationsData,
+      isLoading: isInvestigationRoleLoading,
+      error: investigationRoleError,
+    } = useGraphQLQuery<{
       InvestigationParties: InvestigationParty[];
     }>(GET_INVESTIGATION_PARTY_ROLES, {
       queryKey: ["InvestigationPartyRoles", id],
@@ -328,7 +375,11 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
 
     const rolesInInvestigations = rolesInInvestigationsData?.InvestigationParties ?? [];
 
-    const { data: rolesInInspectionsData, isLoading: isInspectionRoleLoading } = useGraphQLQuery<{
+    const {
+      data: rolesInInspectionsData,
+      isLoading: isInspectionRoleLoading,
+      error: inspectionRoleError,
+    } = useGraphQLQuery<{
       InspectionParties: InspectionParty[];
     }>(GET_INSPECTION_PARTY_ROLES, {
       queryKey: ["InspectionPartyRoles", id],
@@ -339,11 +390,15 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
     const rolesInInspections = rolesInInspectionsData?.InspectionParties ?? [];
 
     const isPartyRoleLoading = isInvestigationRoleLoading || isInspectionRoleLoading;
+    const partyRoleError = investigationRoleError || inspectionRoleError;
 
-    return { rolesInInvestigations, rolesInInspections, isPartyRoleLoading };
+    return { rolesInInvestigations, rolesInInspections, isPartyRoleLoading, partyRoleError };
   };
 
-  const { partyRelations, isPartyRelationLoading } = GetPartyRelations(partyTypeGuid ?? "", partyType ?? "");
+  const { partyRelations, isPartyRelationLoading, partyRelationError } = GetPartyRelations(
+    partyTypeGuid ?? "",
+    partyType ?? "",
+  );
 
   if (isPartyRelationLoading) {
     return <p>Loading compliance and enforcement history...</p>;
@@ -395,8 +450,10 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       headerClassName: "comp-cell-min-width-50",
       cellClassName: "comp-cell-min-width-50",
       getValue: (row) => (row.activity.name ?? "").toLowerCase(),
-      renderCell: (row) =>
-        row.activity.sameAgency ? (
+      renderCell: (row) => {
+        const canAccessActivity =
+          row.activity.activityType === CaseActivities.INVESTIGATION ? canAccessInvestigations : canAccessInspections;
+        return row.activity.sameAgency && canAccessActivity ? (
           <Link
             to={buildActivityPath(row.activity)}
             className="comp-cell-link"
@@ -405,7 +462,8 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
           </Link>
         ) : (
           <span>{row.activity.name}</span>
-        ),
+        );
+      },
     },
     {
       label: "Role",
@@ -493,6 +551,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       getRowKey={(row) => row.rowKey}
       defaultSort="name"
       defaultSortDirection={SORT_TYPES.ASC}
+      error={partyRelationError}
       emptyMessage="No compliance and enforcement history."
       itemLabel="records"
     />

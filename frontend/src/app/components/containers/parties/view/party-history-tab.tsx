@@ -1,11 +1,8 @@
-import { FC, useEffect, useState, useMemo } from "react";
+import { FC, useState, useMemo } from "react";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { PartyHistoryItem } from "./party-history-item";
-import { EventResult, Event } from "@/generated/graphql";
-import { useAppSelector } from "@/app/hooks/hooks";
-import { selectOfficers } from "@/app/store/reducers/officer";
-import { AppUser } from "@/app/types/app/app_user/app_user";
+import { AppUser, EventResult, Event } from "@/generated/graphql";
 import Paginator from "@/app/components/common/paginator";
 import { Button } from "react-bootstrap";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
@@ -45,6 +42,17 @@ const SEARCH_EVENTS = gql`
   }
 `;
 
+const GET_APP_USERS_BY_GUIDS = gql`
+  query GetAppUsersByGuids($authUserGuids: [String!]) {
+    appUsersByGuids(authUserGuids: $authUserGuids) {
+      authUserGuid
+      firstName
+      lastName
+      agencyCode
+    }
+  }
+`;
+
 interface PartyHistoryTabProps {
   partyIdentifier: string;
 }
@@ -71,21 +79,23 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
   const events = data?.searchEvents?.items || [];
   const totalCount = data?.searchEvents?.pageInfo?.totalCount || 0;
 
-  const allOfficers = useAppSelector(selectOfficers);
-  const [eventOfficers, setEventOfficers] = useState<AppUser[]>([]);
+  const actorGuids = [
+    ...new Set(
+      events
+        .filter((event) => event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && event.actorId)
+        .map((event) => event.actorId),
+    ),
+  ];
 
-  useEffect(() => {
-    if (events.length > 0 && allOfficers) {
-      const userGuids = new Set<string>();
-      for (const event of events) {
-        if (event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && event.actorId) {
-          userGuids.add(event.actorId);
-        }
-      }
-      const officers = allOfficers.filter((o) => userGuids.has(o.auth_user_guid.toUpperCase().split("-").join("")));
-      setEventOfficers(officers);
-    }
-  }, [events, allOfficers]);
+  const {
+    data: appUserData,
+    isLoading: isAppUserLoading,
+    error: appUserError,
+  } = useGraphQLQuery<{ appUsersByGuids: AppUser[] }>(GET_APP_USERS_BY_GUIDS, {
+    queryKey: ["appUsersByGuids", ...actorGuids],
+    variables: { authUserGuids: actorGuids },
+    enabled: actorGuids.length > 0,
+  });
 
   const groupedEvents = useMemo(() => {
     return events.reduce<{ [key: string]: Event[] }>((groups, event) => {
@@ -101,7 +111,7 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
     setPage(1);
   };
 
-  if (isLoading) {
+  if (isLoading || isAppUserLoading) {
     return (
       <div className="container-fluid px-4 py-3">
         <p>Loading party history...</p>
@@ -109,7 +119,7 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
     );
   }
 
-  if (error) {
+  if (error || appUserError) {
     return (
       <div className="container-fluid px-4 py-3">
         <div>Error loading history. Please try again later.</div>
@@ -156,7 +166,7 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
                   <PartyHistoryItem
                     key={event.eventGuid}
                     event={event}
-                    appUsers={eventOfficers}
+                    appUsers={appUserData?.appUsersByGuids}
                   />
                 ))}
               </ul>

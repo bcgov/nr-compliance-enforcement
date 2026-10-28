@@ -4,8 +4,10 @@ import { useInvestigationSearch } from "@/app/components/containers/investigatio
 import { isSidebarOpen, toggleSidebar, isFeatureActive } from "@store/reducers/app";
 import {
   selectCanAccessCases,
+  selectCanAccessComplaints,
   selectCanAccessInspections,
   selectCanAccessInvestigations,
+  selectCanAccessParties,
 } from "@/app/access/module-access";
 import MenuItem from "@apptypes/app/menu-item";
 import { Link, useLocation } from "react-router-dom";
@@ -13,7 +15,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
 import UserService from "@service/user-service";
-import { adminRoles, Roles } from "@apptypes/app/roles";
+import { adminRoles, coreRoles, Roles } from "@apptypes/app/roles";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 export const SideBar: FC = () => {
@@ -22,6 +24,8 @@ export const SideBar: FC = () => {
   const canAccessCases = useAppSelector(selectCanAccessCases);
   const canAccessInvestigations = useAppSelector(selectCanAccessInvestigations);
   const canAccessInspections = useAppSelector(selectCanAccessInspections);
+  const canAccessComplaints = useAppSelector(selectCanAccessComplaints);
+  const canAccessParties = useAppSelector(selectCanAccessParties);
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
   const { pathname } = useLocation();
   const [showToggleTooltip, setShowToggleTooltip] = useState(false);
@@ -32,6 +36,7 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
+      hidden: !canAccessComplaints,
     },
     {
       id: "investigations-link",
@@ -59,13 +64,14 @@ export const SideBar: FC = () => {
       name: "Parties",
       icon: "bi bi-people",
       route: "/parties",
-      hidden: !canAccessCases,
+      hidden: !canAccessParties,
     },
     {
       id: "zone-at-a-glance-link",
       name: "Zone at a glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
+      requiredRoles: coreRoles,
       excludedRoles: [Roles.CEEB, Roles.PARKS, Roles.PROVINCE_WIDE, Roles.SECTOR, Roles.NROS, Roles.MINES],
     },
     {

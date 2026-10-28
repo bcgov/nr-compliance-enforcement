@@ -51,7 +51,12 @@ export class EventService {
     }
   }
 
-  async search(page: number = 1, pageSize: number = 25, filters?: EventFilters): Promise<EventResult> {
+  async search(
+    page: number = 1,
+    pageSize: number = 25,
+    filters?: EventFilters,
+    targetEntityTypeCode?: string,
+  ): Promise<EventResult> {
     try {
       const where: any = {};
 
@@ -70,6 +75,10 @@ export class EventService {
 
       if (filters?.targetId) {
         where.target_id = filters.targetId;
+      }
+
+      if (targetEntityTypeCode) {
+        where.target_entity_type_code = targetEntityTypeCode;
       }
 
       // Date range filter

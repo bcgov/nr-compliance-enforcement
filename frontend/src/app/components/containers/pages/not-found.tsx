@@ -15,7 +15,7 @@ const NotFound: FC = () => {
             <h1 className="comp-padding-top-25">The page or content you are looking for could not be found.</h1>
 
             <p>
-              Return to the <Link to="/complaints/">home page</Link> to try again.
+              Return to the <Link to="/">home page</Link> to try again.
             </p>
 
             <p>

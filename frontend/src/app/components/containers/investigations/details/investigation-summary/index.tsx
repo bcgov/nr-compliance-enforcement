@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { getAvatarInitials } from "@common/methods";
-import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
-import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import { selectCodeTable } from "@/app/store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 import { getMapZoom } from "@/app/common/geocoder";
@@ -35,9 +35,9 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
 }) => {
   const navigate = useNavigate();
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
-  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
-  const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
-  const leadAgency = agencyText ? agencyText.label : "Unknown";
+  const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
+  const agencyText = agencies.find((agency) => agency.agency === investigationData?.leadAgency);
+  const leadAgency = agencyText ? agencyText.longDescription : "Unknown";
   const { center: geocodedCommunityCenter, isLoaded: isCommunityLoaded } = useGeocodedCenter(
     investigationData?.community,
   );

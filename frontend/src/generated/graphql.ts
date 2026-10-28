@@ -124,7 +124,6 @@ export type AgencyCode = {
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
   agencyCode?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
-  externalAgencyIndicator?: Maybe<Scalars['Boolean']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
@@ -2756,6 +2755,7 @@ export type Query = {
   appUserTeamXref?: Maybe<AppUserTeamXref>;
   appUserTeamXrefs: Array<Maybe<AppUserTeamXref>>;
   appUsers: Array<Maybe<AppUser>>;
+  appUsersByGuids: Array<Maybe<AppUser>>;
   approximateAgeCodes: Array<Maybe<ApproximateAgeCode>>;
   buildCodes: Array<Maybe<BuildCode>>;
   caseFile?: Maybe<CaseFile>;
@@ -2905,6 +2905,12 @@ export type QueryappUserTeamXrefArgs = {
 export type QueryappUsersArgs = {
   agencyCode?: InputMaybe<Scalars['String']['input']>;
   officeGuids?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type QueryappUsersByGuidsArgs = {
+  appUserGuids?: InputMaybe<Array<Scalars['String']['input']>>;
+  authUserGuids?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -3175,7 +3181,8 @@ export type QuerypartyArgs = {
 
 
 export type QuerypartyHistoryCaseFilesArgs = {
-  activityIdentifiers: Array<Scalars['String']['input']>;
+  partyId: Scalars['String']['input'];
+  partyType: Scalars['String']['input'];
 };
 
 

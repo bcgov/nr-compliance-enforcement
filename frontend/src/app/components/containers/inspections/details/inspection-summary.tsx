@@ -3,7 +3,8 @@ import { FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
-import { selectAgencyDropdown, selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
+import { selectCodeTable, selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
@@ -32,9 +33,9 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
 
   const { center: geocodedCommunityCenter, isLoaded: isCommunityLoaded } = useGeocodedCenter(inspectionData?.community);
 
-  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
-  const agencyText = leadAgencyOptions.find((option: Option) => option.value === inspectionData?.leadAgency);
-  const leadAgency = agencyText ? agencyText.label : "Unknown";
+  const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
+  const agencyText = agencies.find((agency) => agency.agency === inspectionData?.leadAgency);
+  const leadAgency = agencyText ? agencyText.longDescription : "Unknown";
 
   const dateLogged = parseUTCTimestampToLocal(inspectionData?.openedTimestamp);
   const lastUpdated = parseUTCTimestampToLocal(inspectionData?.updatedTimestamp);

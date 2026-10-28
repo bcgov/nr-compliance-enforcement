@@ -1,15 +1,15 @@
 import { FC, useEffect, useState } from "react";
-import { useAppDispatch } from "@hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { Table } from "react-bootstrap";
-import { generateApiParameters, get, patch } from "@common/api";
+import { generateApiParameters, patch } from "@common/api";
 import config from "@/config";
-import { getFeatureFlag } from "@store/reducers/app";
+import { getAllFeatureFlags, getFeatureFlag, selectAllFeatureFlags } from "@store/reducers/app";
 
 export const FeatureManagement: FC = () => {
   const dispatch = useAppDispatch();
 
-  const [featureData, setFeatureData] = useState<any[]>([]);
+  const featureData = useAppSelector(selectAllFeatureFlags);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const updateFeatureFlag = async (id: string, active_ind: boolean) => {
@@ -23,6 +23,7 @@ export const FeatureManagement: FC = () => {
       if (response) {
         // refresh this session's flags so the change is testable without a reload
         dispatch(getFeatureFlag());
+        dispatch(getAllFeatureFlags());
         ToggleSuccess("Feature has been updated");
       }
     } catch (err) {
@@ -31,25 +32,8 @@ export const FeatureManagement: FC = () => {
   };
 
   useEffect(() => {
-    const getAllFeatureFlags = async () => {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/all`);
-      const response: any = await get(dispatch, parameters);
-      if (response) {
-        setFeatureData(response);
-      }
-    };
-    getAllFeatureFlags();
+    dispatch(getAllFeatureFlags());
   }, [dispatch]);
-
-  const handleChange = (item: any) => {
-    const updateFeatureData = [...featureData];
-    const originalIndex = featureData.findIndex((f) => f.feature_agency_xref_guid === item.feature_agency_xref_guid);
-    if (originalIndex !== -1) {
-      updateFeatureData.splice(originalIndex, 1, { ...featureData[originalIndex], active_ind: !item.active_ind });
-      setFeatureData(updateFeatureData);
-      updateFeatureFlag(item.feature_agency_xref_guid, !item.active_ind);
-    }
-  };
 
   // Filter feature data based on search query
   const filteredFeatureData = searchQuery
@@ -89,6 +73,7 @@ export const FeatureManagement: FC = () => {
                 <th>No</th>
                 <th>Agency</th>
                 <th>Feature</th>
+                <th>Description</th>
                 <th style={{ width: "80px", textAlign: "center" }}>Active</th>
               </tr>
             </thead>
@@ -102,12 +87,15 @@ export const FeatureManagement: FC = () => {
                       <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
                         {item.feature_code.short_description}
                       </td>
+                      <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
+                        {item.feature_code.long_description}
+                      </td>
                       <td style={{ width: "80px", textAlign: "center" }}>
                         <input
                           type="checkbox"
                           id="feature1"
                           checked={item.active_ind}
-                          onChange={() => handleChange(item)}
+                          onChange={() => updateFeatureFlag(item.feature_agency_xref_guid, !item.active_ind)}
                         />
                       </td>
                     </tr>

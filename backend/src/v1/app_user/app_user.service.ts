@@ -1,10 +1,11 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { ForbiddenException, Inject, Injectable, Logger } from "@nestjs/common";
 import { CreateAppUserDto } from "./dto/create-app-user.dto";
 import { UpdateAppUserDto } from "./dto/update-app-user.dto";
 import { UUID } from "node:crypto";
 import { CssService } from "../../external_api/css/css.service";
-import { Role } from "../../enum/role.enum";
+import { Role, adminRoles, coreRoles } from "../../enum/role.enum";
 import { put } from "../../helpers/axios-api";
+import { hasAgencyAccess, hasAssignableRoles, normalizeGuid } from "../../common/methods";
 import {
   getAppUsers,
   getAppUserByGuid,
@@ -133,7 +134,16 @@ export class AppUserService {
     return result;
   }
 
-  async create(appUser: CreateAppUserDto, token: string): Promise<any> {
+  async create(appUser: CreateAppUserDto, token: string, user: any): Promise<any> {
+    if (
+      !hasAgencyAccess(user.client_roles, [appUser.agency_code_ref]) ||
+      (appUser.roles &&
+        (!hasAssignableRoles(appUser.roles.user_roles, appUser.agency_code_ref) ||
+          normalizeGuid(appUser.roles.user_idir) !== normalizeGuid(appUser.auth_user_guid)))
+    ) {
+      throw new ForbiddenException();
+    }
+
     let newAppUser;
 
     try {
@@ -179,7 +189,26 @@ export class AppUserService {
     }
   }
 
-  async update(app_user_guid: UUID, updateAppUserDto: UpdateAppUserDto, token: string): Promise<any> {
+  async update(app_user_guid: UUID, updateAppUserDto: UpdateAppUserDto, token: string, user: any): Promise<any> {
+    // Validate that the user has permission to update the user, admins from one agency shouldn't have global permission
+    const appUser = await getAppUserByGuid(token, app_user_guid);
+    const userGuid = normalizeGuid(user.idir_user_guid);
+    const isOwnRecord = appUser.authUserGuid
+      ? normalizeGuid(appUser.authUserGuid) === userGuid
+      : appUser.userId?.toUpperCase() === user.idir_username.toUpperCase();
+    const linksOwnGuid = !appUser.authUserGuid && normalizeGuid(updateAppUserDto.auth_user_guid) === userGuid;
+    const isProfileUpdate = Object.keys(updateAppUserDto).every(
+      (field) =>
+        ["user_id", "first_name", "last_name", "coms_enrolled_ind"].includes(field) ||
+        (field === "auth_user_guid" && linksOwnGuid),
+    );
+    const canUpdate = adminRoles.some((role) => user.client_roles.includes(role))
+      ? hasAgencyAccess(user.client_roles, [appUser.agencyCode, updateAppUserDto.agency_code_ref ?? appUser.agencyCode])
+      : isOwnRecord && isProfileUpdate;
+    if (!canUpdate) {
+      throw new ForbiddenException();
+    }
+
     const userRoles = updateAppUserDto.user_roles;
     //exclude roles field populated from keycloak from update
     delete (updateAppUserDto as any).user_roles;
@@ -201,9 +230,9 @@ export class AppUserService {
       await updateAppUser(token, app_user_guid, updateInput);
 
       //remove all roles if deactivate_ind is true
-      if (updateAppUserDto.deactivate_ind === true && updateAppUserDto.auth_user_guid) {
+      if (updateAppUserDto.deactivate_ind === true && appUser.authUserGuid) {
         // strip provider suffix (eg @idir)
-        const cssUserGuid = updateAppUserDto.auth_user_guid.split("-").join("");
+        const cssUserGuid = appUser.authUserGuid.split("-").join("");
         for (const roleItem of userRoles) {
           await this.cssService.deleteUserRole(cssUserGuid, roleItem);
         }
@@ -220,9 +249,17 @@ export class AppUserService {
    * If successful, the app user's record has its `coms_enrolled_ind` indicator set to true.
    */
   async requestComsAccess(token: string, app_user_guid: UUID, user: any): Promise<any> {
+    const appUser = await getAppUserByAuthUserGuid(token, user.idir_user_guid);
+    if (appUser?.appUserGuid !== app_user_guid) {
+      throw new ForbiddenException();
+    }
+
     try {
       const currentRoles = user.client_roles;
-      const permissions = currentRoles.includes(Role.READ_ONLY) ? ["READ"] : ["READ", "CREATE", "UPDATE", "DELETE"];
+      const permissions =
+        currentRoles.includes(Role.READ_ONLY) || !coreRoles.some((role) => currentRoles.includes(role))
+          ? ["READ"]
+          : ["READ", "CREATE", "UPDATE", "DELETE"];
       const comsUrl = `${process.env.OBJECTSTORE_API_URL}/bucket`;
 
       const comsPayload = {

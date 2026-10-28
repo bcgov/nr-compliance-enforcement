@@ -52,6 +52,26 @@ export class AppUserService {
     return this.mapper.mapArray<app_user, AppUser>(appUsers as Array<app_user>, "app_user", "AppUser");
   }
 
+  async findManyByGuids(appUserGuids?: string[], authUserGuids?: string[]) {
+    const appUsers = await this.prisma.app_user.findMany({
+      where: {
+        OR: [
+          { app_user_guid: { in: appUserGuids ?? [] } },
+          { auth_user_guid: { in: authUserGuids?.map((guid) => guid.replaceAll("-", "").toUpperCase()) ?? [] } },
+        ],
+      },
+      select: {
+        app_user_guid: true,
+        auth_user_guid: true,
+        first_name: true,
+        last_name: true,
+        agency_code_ref: true,
+      },
+    });
+
+    return this.mapper.mapArray<app_user, AppUser>(appUsers as Array<app_user>, "app_user", "AppUser");
+  }
+
   async findOne(userId?: string, authUserGuid?: string, appUserGuid?: string) {
     const whereClause: any = {};
 

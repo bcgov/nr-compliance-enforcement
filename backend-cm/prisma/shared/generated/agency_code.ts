@@ -23,9 +23,6 @@ export class agency_code {
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
 
-  @ApiProperty({ type: Boolean })
-  external_agency_ind: boolean;
-
   @ApiProperty({ type: String })
   create_user_id: string;
 

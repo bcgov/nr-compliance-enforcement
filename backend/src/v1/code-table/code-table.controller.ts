@@ -1,10 +1,11 @@
-import { Controller, Get, Logger, NotFoundException, Param, UseGuards } from "@nestjs/common";
+import { Controller, ForbiddenException, Get, Logger, NotFoundException, Param, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 
 import { CodeTableService } from "./code-table.service";
-import { adminRoles, coreRoles } from "../../enum/role.enum";
+import { Role, adminRoles, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
+import { User } from "../../auth/decorators/user.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 
 import BaseCodeTable, {
@@ -12,6 +13,7 @@ import BaseCodeTable, {
   AvailableCodeTables,
   ComplaintMethodReceivedType,
   OrganizationCodeTable,
+  PartyCodeTables,
   Sector,
 } from "../../types/models/code-tables";
 
@@ -22,10 +24,17 @@ export class CodeTableController {
   constructor(private readonly service: CodeTableService) {}
 
   @Get(":table")
-  @Roles(coreRoles, adminRoles)
-  async getCodeTableByName(@Param("table") table: string, @Token() token): Promise<BaseCodeTable[]> {
+  @Roles(coreRoles, adminRoles, Role.PARTY_ACCESS)
+  async getCodeTableByName(@Param("table") table: string, @Token() token, @User() user): Promise<BaseCodeTable[]> {
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
+    }
+
+    if (
+      !PartyCodeTables.includes(table) &&
+      ![...coreRoles, ...adminRoles].some((role) => user.client_roles.includes(role))
+    ) {
+      throw new ForbiddenException();
     }
 
     const result = await this.service.getCodeTableByName(table, token);

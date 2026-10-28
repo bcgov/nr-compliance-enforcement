@@ -7,7 +7,7 @@ import { selectOfficerListByAgency, selectOfficers, selectCurrentOfficer } from 
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { AgencyBanner } from "@components/containers/layout/agency-banner";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
-import { selectCodeTable } from "@store/reducers/code-table";
+import { selectAgenciesWithFeature, selectCodeTable } from "@store/reducers/code-table";
 import { getRelatedData, selectComplaint } from "@store/reducers/complaints";
 import { AgencyType } from "@apptypes/app/agency-types";
 import { complaintTypesForReferral } from "@apptypes/app/complaint-types";
@@ -35,6 +35,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
   const currentOfficer = useAppSelector(selectCurrentOfficer);
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
+  const referralAgencies = useAppSelector((state) => selectAgenciesWithFeature(state, FEATURE_TYPES.RECEIVE_REFERRALS));
   const complaintData = useAppSelector(selectComplaint);
   const emailReferenceList = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.EMAIL_REFERENCE));
   const complaintAgency = agencies.find((agency) => agency.agency === complaintData?.ownedBy);
@@ -49,7 +50,8 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
       (agency) =>
         agency.agency !== complaintData?.ownedBy &&
         agency.agency !== AgencyType.SECTOR &&
-        (agency.externalAgencyInd || Object.keys(complaintTypesForReferral(agency.agency)).includes(complaint_type)),
+        (referralAgencies.includes(agency.agency) || agency.agency === AgencyType.OTH) &&
+        Object.keys(complaintTypesForReferral(agency.agency)).includes(complaint_type),
     )
     .map((agency) => ({
       label: agency.longDescription,
@@ -73,15 +75,12 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     setAdditionalEmailInput("");
     if (selectedOption?.value) {
       markDirty();
-      const defaultEmail = emailReferenceList.find((emailReference) => {
-        if (selectedOption.value === "COS") {
-          return (
-            emailReference.agencyCode === selectedOption.value &&
-            emailReference.geoOrgUnitTypeCode === complaintData?.organization.zone
-          );
-        }
-        return emailReference.agencyCode === selectedOption.value;
-      });
+      const defaultEmail = emailReferenceList.find(
+        (emailReference) =>
+          emailReference.agencyCode === selectedOption.value &&
+          (!emailReference.geoOrgUnitTypeCode ||
+            emailReference.geoOrgUnitTypeCode === complaintData?.organization.zone),
+      );
       if (defaultEmail) {
         setDefaultAgencyEmail(defaultEmail.emailAddress);
       } else {

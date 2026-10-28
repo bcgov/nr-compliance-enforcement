@@ -33,7 +33,10 @@ import { DrugRemainingOutcome } from "@apptypes/app/code-tables/drug-remaining-o
 import { Equipment } from "@apptypes/app/code-tables/equipment";
 import { PreventionType } from "@apptypes/app/code-tables/prevention-type";
 import { GirType } from "@apptypes/app/code-tables/gir-type";
-import { getUserAgency } from "@service/user-service";
+import UserService, { getUserAgency } from "@service/user-service";
+import { AgencyType } from "@apptypes/app/agency-types";
+import { adminRoles, coreRoles } from "@apptypes/app/roles";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import {
   fetchDischargeTypes,
   fetchNonComplianceTypes,
@@ -250,6 +253,53 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(agency).any()) {
       dispatch(fetchAgencies());
     }
+    if (!from(partyExternalIdType).any()) {
+      dispatch(fetchPartyExternalIdTypes());
+    }
+    if (!from(partyAssociationRole).any()) {
+      dispatch(fetchPartyAssociationRoles());
+    }
+    if (!from(enforcementActionType).any()) {
+      dispatch(fetchEnforcementActionTypes());
+    }
+    if (!from(ticketOutcomeType).any()) {
+      dispatch(fetchTicketOutcomeTypes());
+    }
+    if (!from(countryType).any()) {
+      dispatch(fetchCountryTypes());
+    }
+    if (!from(countrySubdivisionType).any()) {
+      dispatch(fetchCountrySubdivisionTypes());
+    }
+    if (!from(approximateAgeType).any()) {
+      dispatch(fetchApproximateAgeTypes());
+    }
+    if (!from(genderType).any()) {
+      dispatch(fetchGenderTypes());
+    }
+    if (!from(complexionType).any()) {
+      dispatch(fetchComplexionTypes());
+    }
+    if (!from(buildType).any()) {
+      dispatch(fetchBuildTypes());
+    }
+    if (!from(hairColourType).any()) {
+      dispatch(fetchHairColourTypes());
+    }
+    if (!from(hairLengthType).any()) {
+      dispatch(fetchHairLengthTypes());
+    }
+    if (!from(eyeColourType).any()) {
+      dispatch(fetchEyeColourTypes());
+    }
+    if (!from(facialHairStyleType).any()) {
+      dispatch(fetchFacialHairStyleTypes());
+    }
+
+    // Users without a core or admin role can only read the party code tables
+    if (!UserService.hasRole([...coreRoles, ...adminRoles])) {
+      return;
+    }
 
     if (!from(complaintStatus).any()) {
       dispatch(fetchComplaintStatus());
@@ -386,12 +436,6 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(partyType).any()) {
       dispatch(fetchPartyTypes());
     }
-    if (!from(partyExternalIdType).any()) {
-      dispatch(fetchPartyExternalIdTypes());
-    }
-    if (!from(partyAssociationRole).any()) {
-      dispatch(fetchPartyAssociationRoles());
-    }
     if (!from(taskStatusType).any()) {
       dispatch(fetchTaskStatusTypes());
     }
@@ -403,12 +447,6 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(legislationType).any()) {
       dispatch(fetchLegislationTypes());
-    }
-    if (!from(enforcementActionType).any()) {
-      dispatch(fetchEnforcementActionTypes());
-    }
-    if (!from(ticketOutcomeType).any()) {
-      dispatch(fetchTicketOutcomeTypes());
     }
     if (!from(ticketType).any()) {
       dispatch(fetchTicketTypeCodes());
@@ -431,36 +469,6 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(administrativePenaltyStatusType).any()) {
       dispatch(fetchAdministrativePenaltyStatusTypeCodes());
     }
-    if (!from(countryType).any()) {
-      dispatch(fetchCountryTypes());
-    }
-    if (!from(countrySubdivisionType).any()) {
-      dispatch(fetchCountrySubdivisionTypes());
-    }
-    if (!from(approximateAgeType).any()) {
-      dispatch(fetchApproximateAgeTypes());
-    }
-    if (!from(genderType).any()) {
-      dispatch(fetchGenderTypes());
-    }
-    if (!from(complexionType).any()) {
-      dispatch(fetchComplexionTypes());
-    }
-    if (!from(buildType).any()) {
-      dispatch(fetchBuildTypes());
-    }
-    if (!from(hairColourType).any()) {
-      dispatch(fetchHairColourTypes());
-    }
-    if (!from(hairLengthType).any()) {
-      dispatch(fetchHairLengthTypes());
-    }
-    if (!from(eyeColourType).any()) {
-      dispatch(fetchEyeColourTypes());
-    }
-    if (!from(facialHairStyleType).any()) {
-      dispatch(fetchFacialHairStyleTypes());
-    }
     if (!from(wildlifeManagementUnitType).any()) {
       dispatch(fetchWildlifeManagementUnits());
     }
@@ -471,7 +479,6 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
 
 export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
   try {
-    dispatch(fetchAgencies());
     dispatch(fetchComplaintStatus());
     dispatch(fetchViolations());
     dispatch(fetchSpecies());
@@ -521,13 +528,9 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchEquipmentStatus());
     dispatch(fetchParkAreas());
     dispatch(fetchPartyTypes());
-    dispatch(fetchPartyExternalIdTypes());
-    dispatch(fetchPartyAssociationRoles());
     dispatch(fetchTaskStatusTypes());
     dispatch(fetchTaskCategoryTypes());
     dispatch(fetchLegislationTypes());
-    dispatch(fetchEnforcementActionTypes());
-    dispatch(fetchTicketOutcomeTypes());
     dispatch(fetchTicketTypeCodes());
     dispatch(fetchSanctionTypeCodes());
     dispatch(fetchSanctionStatusTypeCodes());
@@ -535,6 +538,19 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchOrderStatusTypeCodes());
     dispatch(fetchCourtProsecutionStatusTypeCodes());
     dispatch(fetchAdministrativePenaltyStatusTypeCodes());
+    dispatch(fetchWildlifeManagementUnits());
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const fetchPartyCodeTables = (): AppThunk => async (dispatch) => {
+  try {
+    dispatch(fetchAgencies());
+    dispatch(fetchPartyExternalIdTypes());
+    dispatch(fetchPartyAssociationRoles());
+    dispatch(fetchEnforcementActionTypes());
+    dispatch(fetchTicketOutcomeTypes());
     dispatch(fetchCountryTypes());
     dispatch(fetchCountrySubdivisionTypes());
     dispatch(fetchApproximateAgeTypes());
@@ -545,7 +561,6 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchHairLengthTypes());
     dispatch(fetchEyeColourTypes());
     dispatch(fetchFacialHairStyleTypes());
-    dispatch(fetchWildlifeManagementUnits());
   } catch (error) {
     console.error(error);
   }
@@ -972,11 +987,21 @@ export const selectAgencyExternalDropdown = createSelector(
       })),
 );
 
+export const selectAgenciesWithFeature = createSelector(
+  (state: RootState) => state.app.allFeatureFlags,
+  (state: RootState, featureCode: string) => featureCode,
+  (allFeatureFlags, featureCode): Array<string> =>
+    allFeatureFlags
+      .filter((feature) => feature.feature_code.feature_code === featureCode && feature.active_ind)
+      .map((feature) => feature.agency_code_ref),
+);
+
 export const selectAgencyDropdown = createSelector(
   (state: RootState) => state.codeTables.agency,
-  (agencyItems) =>
+  (state: RootState) => selectAgenciesWithFeature(state, FEATURE_TYPES.COMPLAINTS),
+  (agencyItems, complaintAgencies) =>
     agencyItems
-      .filter((agency) => !agency.externalAgencyInd) // filter out the pseudo-agencies
+      .filter((agency) => complaintAgencies.includes(agency.agency))
       .filter((agency) => agency.agency !== "NRS") // filter out the NRS agency
       .map(({ agency, longDescription, isActive }) => ({
         label: longDescription,
@@ -987,9 +1012,23 @@ export const selectAgencyDropdown = createSelector(
 
 export const selectAgencySectorDropdown = createSelector(
   (state: RootState) => state.codeTables.agency,
+  (state: RootState) => selectAgenciesWithFeature(state, FEATURE_TYPES.COMPLAINTS),
+  (agencyItems, complaintAgencies) =>
+    agencyItems
+      .filter((agency) => complaintAgencies.includes(agency.agency))
+      .map(({ agency, longDescription, isActive }) => ({
+        label: longDescription,
+        value: agency,
+        isActive,
+      })),
+);
+
+export const selectAssignableAgencyDropdown = createSelector(
+  (state: RootState) => state.codeTables.agency,
   (agencyItems) =>
     agencyItems
-      .filter((agency) => !agency.externalAgencyInd) // filter out the pseudo-agencies
+      .filter((agency) => agency.agency !== AgencyType.OTH)
+      .sort((left, right) => (left.displayOrder ?? 0) - (right.displayOrder ?? 0))
       .map(({ agency, longDescription, isActive }) => ({
         label: longDescription,
         value: agency,

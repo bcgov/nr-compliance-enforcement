@@ -1,5 +1,5 @@
 import { formatPhoneNumber } from "react-phone-number-input/input";
-import { Role } from "../enum/role.enum";
+import { Role, adminRoles } from "../enum/role.enum";
 import { UUID } from "node:crypto";
 import { toDate, toZonedTime, format } from "date-fns-tz";
 import { logger } from "./logger.config";
@@ -119,11 +119,43 @@ export const getAgenciesFromRoles = (roles: string[]): string[] => {
     [Role.MINES]: "MINES",
     [Role.PARKS]: "PARKS",
     [Role.SECTOR]: "NRS",
+    [Role.FCBC]: "FCBC",
+    [Role.WEB]: "WEB",
+    [Role.BCCEA]: "BCCEA",
+    [Role.ECCC]: "ECCC",
+    [Role.DFO]: "DFO",
+    [Role.POL]: "POL",
   };
 
   return Object.keys(roleToAgencyMap)
     .filter((role) => roles.includes(role))
     .map((role) => roleToAgencyMap[role]);
+};
+
+// strip provider suffix (eg @idir)
+export const normalizeGuid = (guid: string): string => {
+  return guid
+    ?.replace(/@.{0,255}$/, "")
+    .replaceAll("-", "")
+    .toUpperCase();
+};
+
+export const hasAgencyAccess = (roles: string[], agencyCodes: string[]): boolean => {
+  if (roles.includes(Role.GLOBAL_ADMINISTRATOR)) {
+    return true;
+  }
+  const allowedAgencies = new Set([...getAgenciesFromRoles(roles), "NRS"]);
+  return agencyCodes.every((agencyCode) => allowedAgencies.has(agencyCode));
+};
+
+export const hasAssignableRoles = (roles: Array<{ name: string }>, agencyCode: string): boolean => {
+  const roleNames = roles.map((role) => role.name);
+  const agencies = getAgenciesFromRoles(roleNames);
+  return (
+    !adminRoles.some((role) => roleNames.includes(role)) &&
+    agencies.length <= 1 &&
+    agencies.every((agency) => agency === agencyCode)
+  );
 };
 
 export function asUUID(value: string): UUID {
