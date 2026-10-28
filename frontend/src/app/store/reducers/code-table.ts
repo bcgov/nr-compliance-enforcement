@@ -544,7 +544,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const fetchPartyCodeTables = (): AppThunk => async (dispatch) => {
+export const fetchPartyCodeTables = (): AppThunk => (dispatch) => {
   try {
     dispatch(fetchAgencies());
     dispatch(fetchPartyExternalIdTypes());

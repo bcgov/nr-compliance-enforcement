@@ -192,20 +192,7 @@ export class AppUserService {
   async update(app_user_guid: UUID, updateAppUserDto: UpdateAppUserDto, token: string, user: any): Promise<any> {
     // Validate that the user has permission to update the user, admins from one agency shouldn't have global permission
     const appUser = await getAppUserByGuid(token, app_user_guid);
-    const userGuid = normalizeGuid(user.idir_user_guid);
-    const isOwnRecord = appUser.authUserGuid
-      ? normalizeGuid(appUser.authUserGuid) === userGuid
-      : appUser.userId?.toUpperCase() === user.idir_username.toUpperCase();
-    const linksOwnGuid = !appUser.authUserGuid && normalizeGuid(updateAppUserDto.auth_user_guid) === userGuid;
-    const isProfileUpdate = Object.keys(updateAppUserDto).every(
-      (field) =>
-        ["user_id", "first_name", "last_name", "coms_enrolled_ind"].includes(field) ||
-        (field === "auth_user_guid" && linksOwnGuid),
-    );
-    const canUpdate = adminRoles.some((role) => user.client_roles.includes(role))
-      ? hasAgencyAccess(user.client_roles, [appUser.agencyCode, updateAppUserDto.agency_code_ref ?? appUser.agencyCode])
-      : isOwnRecord && isProfileUpdate;
-    if (!canUpdate) {
+    if (!this.hasUpdateAccess(user, appUser, updateAppUserDto)) {
       throw new ForbiddenException();
     }
 
@@ -232,7 +219,7 @@ export class AppUserService {
       //remove all roles if deactivate_ind is true
       if (updateAppUserDto.deactivate_ind === true && appUser.authUserGuid) {
         // strip provider suffix (eg @idir)
-        const cssUserGuid = appUser.authUserGuid.split("-").join("");
+        const cssUserGuid = appUser.authUserGuid.replaceAll("-", "");
         for (const roleItem of userRoles) {
           await this.cssService.deleteUserRole(cssUserGuid, roleItem);
         }
@@ -303,6 +290,27 @@ export class AppUserService {
     } catch (error) {
       this.logger.error(`An error occurred while requesting COMS access: ${(error as Error).message}`);
     }
+  }
+
+  private hasUpdateAccess(user: any, appUser: any, updateAppUserDto: UpdateAppUserDto): boolean {
+    if (adminRoles.some((role) => user.client_roles.includes(role))) {
+      return hasAgencyAccess(user.client_roles, [
+        appUser.agencyCode,
+        updateAppUserDto.agency_code_ref ?? appUser.agencyCode,
+      ]);
+    }
+
+    const userGuid = normalizeGuid(user.idir_user_guid);
+    const isOwnRecord = appUser.authUserGuid
+      ? normalizeGuid(appUser.authUserGuid) === userGuid
+      : appUser.userId?.toUpperCase() === user.idir_username.toUpperCase();
+    const linksOwnGuid = !appUser.authUserGuid && normalizeGuid(updateAppUserDto.auth_user_guid) === userGuid;
+    const isProfileUpdate = Object.keys(updateAppUserDto).every(
+      (field) =>
+        ["user_id", "first_name", "last_name", "coms_enrolled_ind"].includes(field) ||
+        (field === "auth_user_guid" && linksOwnGuid),
+    );
+    return isOwnRecord && isProfileUpdate;
   }
 
   private async mapAppUserToDtoWithOffice(appUser: any, token: string): Promise<any> {

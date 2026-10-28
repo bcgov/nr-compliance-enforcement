@@ -587,6 +587,7 @@ export const getAllFeatureFlags = (): AppThunk => async (dispatch) => {
       dispatch(setAllFeatureFlags(response));
     }
   } catch (error) {
+    console.error(error);
     ToggleError("Unable to get feature flags");
   }
 };

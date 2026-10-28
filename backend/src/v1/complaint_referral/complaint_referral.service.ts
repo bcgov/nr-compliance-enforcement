@@ -42,18 +42,7 @@ export class ComplaintReferralService {
 
   async create(createComplaintReferralDto: any, token: string, user): Promise<ComplaintReferral> {
     const { complaint_identifier: id, referred_to_agency_code_ref } = createComplaintReferralDto;
-
-    // Determine if referral is external. Other is a special case, otherwise determined by agency feature falgs
-    let isExternal = true;
-    if (referred_to_agency_code_ref !== "OTH") {
-      const activeFeatures = (await this._featureFlagService.findByAgency(referred_to_agency_code_ref))
-        .filter((feature) => feature.isActive)
-        .map((feature) => feature.featureCode);
-      if (!activeFeatures.includes("REFRECEIVE")) {
-        throw new BadRequestException(`Unable to refer complaint to ${referred_to_agency_code_ref}`);
-      }
-      isExternal = !activeFeatures.includes("COMPLAINTS");
-    }
+    const isExternal = await this.isExternalReferral(referred_to_agency_code_ref);
 
     // FEATURE FLAG check
     // If both agencies involved have the feature flag active, send the referral email notification
@@ -134,5 +123,22 @@ export class ComplaintReferralService {
       }
     }
     return result;
+  }
+
+  // Determine if referral is external. Other is a special case, otherwise determined by agency feature flags
+  private async isExternalReferral(agencyCode: string): Promise<boolean> {
+    if (agencyCode === "OTH") {
+      return true;
+    }
+
+    const activeFeatures = new Set(
+      (await this._featureFlagService.findByAgency(agencyCode))
+        .filter((feature) => feature.isActive)
+        .map((feature) => feature.featureCode),
+    );
+    if (!activeFeatures.has("REFRECEIVE")) {
+      throw new BadRequestException(`Unable to refer complaint to ${agencyCode}`);
+    }
+    return !activeFeatures.has("COMPLAINTS");
   }
 }
