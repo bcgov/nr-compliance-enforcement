@@ -201,8 +201,8 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
           )}
         </div>
       </div>
-      <Card.Body className="py-2 px-3">
-        <div className="border-bottom">
+      <Card.Body className="py-2 px-3 d-flex flex-column">
+        <div className="flex-grow-1 d-flex flex-column">
           {isBusiness ? (
             <div>
               {detailRow("Doing business as", aliases, anyMatched("alias"))}
@@ -230,47 +230,50 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
               {detailRow("Address", address, anyMatched("addressLine", "city", "postalCode", "province", "country"))}
             </div>
           )}
-          <Button
-            variant="primary"
-            size="sm"
-            className="ms-auto my-3"
-            onClick={() => onAdd(party)}
-            disabled={isDisabled}
-          >
-            <i className="bi bi-plus-circle" />
-            <span>Select profile</span>
-          </Button>
-        </div>
-        <div className="comp-party-match-card-actions">
-          {matchedFields.length > 0 && (
-            <Button
-              variant="link"
-              className="comp-party-match-card-score-toggle p-0"
-              aria-expanded={showMatchScore}
-              onClick={() => setShowMatchScore((show) => !show)}
-            >
-              <span>Why did this match?</span>&nbsp;
-              <i className={`bi bi-chevron-${showMatchScore ? "up" : "down"} me-1`} />
-            </Button>
-          )}
-        </div>
-        {matchedFields.length > 0 && showMatchScore && (
-          <div className="comp-party-match-card-score-table comp-party-match-card-body-line">
-            {matchedFields.map((matchedField, index) => (
-              <Fragment key={`${matchedField.field}-${index}`}>
-                <span>
-                  {isBusiness && matchedField.field === "alias"
-                    ? "Doing business as"
-                    : (MATCH_FIELD_LABELS[matchedField.field] ?? matchedField.field)}
-                  {!matchedField.exact && " (similar)"}
-                </span>
-                <span className="comp-party-match-card-score-points">{`+${matchedField.points}`}</span>
-              </Fragment>
-            ))}
-            <span className="fw-bold">Total</span>
-            <span className="comp-party-match-card-score-points fw-bold">{score}</span>
+          <div className="row mt-auto pt-3 mb-2 align-items-start">
+            <div className="col-auto comp-party-match-card-select">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => onAdd(party)}
+                disabled={isDisabled}
+              >
+                <i className="bi bi-plus-circle" />
+                <span>Select profile</span>
+              </Button>
+            </div>
+            {matchedFields.length > 0 && (
+              <div className="col-auto">
+                <Button
+                  variant="link"
+                  className="comp-party-match-card-score-toggle p-0 pt-1"
+                  aria-expanded={showMatchScore}
+                  onClick={() => setShowMatchScore((show) => !show)}
+                >
+                  <span>Why did this match?</span>&nbsp;
+                  <i className={`bi bi-chevron-${showMatchScore ? "up" : "down"} me-1`} />
+                </Button>
+                {showMatchScore && (
+                  <div className="comp-party-match-card-score-table comp-party-match-card-body-line border-top pt-2 mt-2">
+                    {matchedFields.map((matchedField, index) => (
+                      <Fragment key={`${matchedField.field}-${index}`}>
+                        <span>
+                          {isBusiness && matchedField.field === "alias"
+                            ? "Doing business as"
+                            : (MATCH_FIELD_LABELS[matchedField.field] ?? matchedField.field)}
+                          {!matchedField.exact && " (similar)"}
+                        </span>
+                        <span className="comp-party-match-card-score-points">{`+${matchedField.points}`}</span>
+                      </Fragment>
+                    ))}
+                    <span className="fw-bold">Total</span>
+                    <span className="comp-party-match-card-score-points fw-bold">{score}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </Card.Body>
     </Card>
   );
