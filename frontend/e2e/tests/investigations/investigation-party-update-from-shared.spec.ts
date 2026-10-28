@@ -67,6 +67,14 @@ test.describe("Investigation Party Update From Shared Party", () => {
 
     // The first address added is marked primary
     await page.locator("#add-address-button").click();
+    // Make sure the form has loaded
+    const firstAddressNameInput = page.locator("#address-name-0");
+    await expect(async () => {
+      if ((await firstAddressNameInput.count()) === 0) {
+        await page.locator("#add-address-button").click();
+      }
+      await expect(firstAddressNameInput).toBeVisible();
+    }).toPass();
     await page.locator("#address-name-0").fill("Head office");
     await page.locator("#address-0").fill("123 Main Street");
     await page.locator("#city-0").fill("Victoria");
