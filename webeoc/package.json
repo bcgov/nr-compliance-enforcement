@@ -1,6 +1,6 @@
 {
   "name": "webeoc",
-  "version": "3.0.6",
+  "version": "3.0.14",
   "description": "",
   "author": "",
   "private": true,
@@ -78,6 +78,6 @@
     "picomatch": "^4.0.4",
     "minimatch": "^10.2.3",
     "js-yaml": "^4.1.1",
-    "multer": "2.4.0"
+    "multer": "2.5.0"
   }
 }

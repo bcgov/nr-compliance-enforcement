@@ -470,7 +470,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 validators={{
                   onChange: attachment
                     ? z.custom<FileList | null>(() => true) // optional in edit mode
-                    : z.custom<FileList | null>((val) => val !== null && val.length > 0, {
+                    : z.custom<FileList | null>((val) => val != null && (val as FileList).length > 0, {
                         message: "At least one file is required",
                       }),
                 }}

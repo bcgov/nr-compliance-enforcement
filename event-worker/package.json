@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "3.0.6",
+  "version": "3.0.14",
   "description": "",
   "author": "",
   "private": true,
@@ -42,7 +42,7 @@
     "@types/supertest": "6.0.3",
     "eslint": "8.57.1",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.6",
+    "eslint-plugin-prettier": "5.5.7",
     "globals": "16.5.0",
     "jest": "30.5.2",
     "jest-util": "^29.7.0",
@@ -54,7 +54,7 @@
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.71.1"
+    "typescript-eslint": "8.72.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -79,6 +79,6 @@
     "path-to-regexp": "^8.4.0",
     "js-yaml": "^4.1.1",
     "picomatch": "^4.0.4",
-    "multer": "2.4.0"
+    "multer": "2.5.0"
   }
 }

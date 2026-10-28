@@ -149,7 +149,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       return null;
     },
     z
-      .date({ invalid_type_error: "Date is required" })
+      .date({ error: "Date is required" })
       .nullable()
       .refine((val) => val !== null, {
         message: "Date is required",
