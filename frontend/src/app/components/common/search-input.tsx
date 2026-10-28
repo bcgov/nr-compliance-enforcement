@@ -138,7 +138,7 @@ const SearchInput: FC<Props> = ({
     >
       <TooltipContent
         title="Person searchable fields:"
-        items={["Party name", "Phone", "Email", "Address", "City"]}
+        items={["First name", "Last name", "Phone", "Email", "Address", "City", "External ID"]}
       />
     </Tooltip>
   );
@@ -151,7 +151,16 @@ const SearchInput: FC<Props> = ({
     >
       <TooltipContent
         title="Organization searchable fields:"
-        items={["Legal name", "Organization identifier", "Phone", "Email", "Address", "City"]}
+        items={[
+          "Legal name",
+          "Business number",
+          "WorkSafeBC number",
+          "Phone",
+          "Email",
+          "Address",
+          "City",
+          "External ID",
+        ]}
       />
     </Tooltip>
   );
@@ -177,7 +186,7 @@ const SearchInput: FC<Props> = ({
     >
       <TooltipContent
         title="Investigation searchable fields:"
-        items={["Investigation ID"]}
+        items={["Investigation ID", "Violation ticket number", "Warning number"]}
       />
     </Tooltip>
   );
