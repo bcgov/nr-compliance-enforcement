@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "3.0.9",
+  "version": "3.0.10",
   "description": "",
   "author": "",
   "private": true,
@@ -79,6 +79,6 @@
     "path-to-regexp": "^8.4.0",
     "js-yaml": "^4.1.1",
     "picomatch": "^4.0.4",
-    "multer": "2.4.0"
+    "multer": "2.5.0"
   }
 }
