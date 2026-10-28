@@ -14,8 +14,8 @@ test.describe("Inspection Filters", () => {
   });
 
   test("it filters by inspection status", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
-    await expect(page.locator(".comp-data-filters")).toBeVisible();
+    await page.locator("#inspection-filter-btn:visible, #inspection-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     // Select a status
     const statusSelect = page.locator("#inspection-status-filter");
@@ -33,8 +33,8 @@ test.describe("Inspection Filters", () => {
   });
 
   test("it filters by lead agency", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
-    await expect(page.locator(".comp-data-filters")).toBeVisible();
+    await page.locator("#inspection-filter-btn:visible, #inspection-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     // Select an agency
     const agencySelect = page.locator("#inspection-agency-filter");
@@ -52,8 +52,8 @@ test.describe("Inspection Filters", () => {
   });
 
   test("it filters by date opened", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
-    await expect(page.locator(".comp-data-filters")).toBeVisible();
+    await page.locator("#inspection-filter-btn:visible, #inspection-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     // Enter start date
     const startDateInput = page.locator("#inspection-start-date, input[placeholder*='Start']").first();
@@ -74,8 +74,8 @@ test.describe("Inspection Filters", () => {
   });
 
   test("it clears filters", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
-    await expect(page.locator(".comp-data-filters")).toBeVisible();
+    await page.locator("#inspection-filter-btn:visible, #inspection-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     // Apply a status filter first
     const statusSelect = page.locator("#inspection-status-filter");
@@ -101,8 +101,8 @@ test.describe("Inspection Filters", () => {
   });
 
   test("it combines multiple filters", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
-    await expect(page.locator(".comp-data-filters")).toBeVisible();
+    await page.locator("#inspection-filter-btn:visible, #inspection-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     // Apply status filter
     const statusSelect = page.locator("#inspection-status-filter");

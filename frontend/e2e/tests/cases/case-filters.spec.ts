@@ -14,18 +14,19 @@ test.describe("Case Filter Logic", () => {
   });
 
   test("it displays filter button and opens filter panel", async ({ page }) => {
-    const filterButton = page.locator("#case-filter-btn");
+    const filterButton = page.locator("#case-filter-btn:visible, #case-filter-btn-mobile:visible");
     await expect(filterButton).toBeVisible();
     await expect(filterButton).toContainText("Filters");
 
     await filterButton.click();
 
     // Verify filter panel opens
-    const filterPanel = page.locator(".comp-data-filters");
+    const filterPanel = page.locator(".comp-filter-container:visible");
     await expect(filterPanel).toBeVisible();
 
     // Verify filter header shows
-    await expect(filterPanel.locator(".comp-data-filters-header")).toContainText("Filter by");
+    const filterHeader = page.locator(".comp-data-filters-header:visible, .offcanvas-title:visible");
+    await expect(filterHeader).toContainText("Filter by");
   });
 
   // Agency tests commented out as this has been featured flagged off
@@ -47,10 +48,11 @@ test.describe("Case Filter Logic", () => {
   */
 
   test("it displays date opened filter in panel", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
+    await page.locator("#case-filter-btn:visible, #case-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
     // Verify date range filter is present
-    const dateFilter = page.locator("#case-date-range-filter");
+    const dateFilter = page.locator("#case-date-range-filter:visible");
     await expect(dateFilter).toBeVisible();
     await expect(dateFilter.locator("label")).toContainText("Date opened");
   });
@@ -102,14 +104,15 @@ test.describe("Case Filter Logic", () => {
   */
 
   test("it closes filter panel when clicking close button", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
+    await page.locator("#case-filter-btn:visible, #case-filter-btn-mobile:visible").click();
+    await expect(page.locator(".comp-filter-container:visible")).toBeVisible();
 
-    const filterPanel = page.locator(".comp-data-filters");
-    await expect(filterPanel).toBeVisible();
-
-    const closeButton = filterPanel.locator(".comp-data-filters-header button, .btn-close").first();
+    // Close button is in the desktop panel header or the mobile offcanvas header
+    const closeButton = page.locator(
+      ".comp-data-filters-header .btn-close:visible, .offcanvas-header .btn-close:visible",
+    );
     await closeButton.click();
 
-    await expect(filterPanel).not.toBeVisible();
+    await expect(page.locator(".comp-filter-container:visible")).toBeHidden();
   });
 });

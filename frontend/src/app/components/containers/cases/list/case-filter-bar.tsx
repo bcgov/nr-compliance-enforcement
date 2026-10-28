@@ -97,7 +97,7 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
 
       <div className="filter-pills-container">
         {renderFilterButton("desktop", toggleShowDesktopFilters, "case-filter-btn")}
-        {renderFilterButton("mobile", toggleShowMobileFilters)}
+        {renderFilterButton("mobile", toggleShowMobileFilters, "case-filter-btn-mobile")}
 
         {hasFilter("leadAgency") && (
           <FilterButton

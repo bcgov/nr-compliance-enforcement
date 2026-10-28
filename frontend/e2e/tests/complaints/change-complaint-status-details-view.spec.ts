@@ -4,6 +4,7 @@ import {
   assignSelfToComplaint,
   fillInHWCSection,
   navigateToDetailsScreen,
+  openUpdateStatusModal,
   validateHWCSection,
   waitForSpinner,
 } from "../../utils/helpers";
@@ -59,7 +60,7 @@ test.describe("Complaint Change Status spec - Details View", () => {
         await assignSelfToComplaint(page);
         await waitForSpinner(page);
       }
-      await page.locator("#details-screen-update-status-button").click();
+      await openUpdateStatusModal(page);
       await page.locator("#complaint_status_dropdown").click();
 
       // Select the option with value "Closed"
@@ -77,7 +78,7 @@ test.describe("Complaint Change Status spec - Details View", () => {
           .getByText(/Closed/)
           .first(),
       ).toBeVisible();
-      await page.locator("#details-screen-update-status-button").click();
+      await openUpdateStatusModal(page);
       await page.locator("#complaint_status_dropdown").click();
 
       // Select the option with value "Opened"
@@ -91,7 +92,7 @@ test.describe("Complaint Change Status spec - Details View", () => {
   test("Changes status of unclosable hwcr complaint from open to closed", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000078", true, page);
     await assignSelfToComplaint(page);
-    await page.locator("#details-screen-update-status-button").click();
+    await openUpdateStatusModal(page);
     await page.locator("#complaint_status_dropdown").click();
 
     // Select the option with value "Closed"
