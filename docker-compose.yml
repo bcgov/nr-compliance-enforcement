@@ -164,12 +164,17 @@ services:
         condition: service_completed_successfully
   backend:
     container_name: backend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "npm i && npm run start:dev"
+    entrypoint: sh docker-entrypoint.sh
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
     environment:
       NODE_ENV: development
+      NATS_HOST: nats://nats:4222
+      EVENT_STREAM_NAME: nats_durable_events
       # Windows/WSL2 bind mounts don't emit inotify events into the container so --watch sees nothing, these switch to polling
       TSC_WATCHFILE: DynamicPriorityPolling
       TSC_WATCHDIRECTORY: DynamicPriorityPolling
@@ -204,7 +209,7 @@ services:
     hostname: frontend
     image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 15s
       timeout: 5s
       start_period: 30s
@@ -249,19 +254,13 @@ services:
     working_dir: "/app"
   backend-cm:
     container_name: backend-cm
-    entrypoint: sh -c "apt-get update && \
-      apt-get install -y --no-install-recommends openssl=3.0.22-1~deb12u1 libssl3=3.0.22-1~deb12u1 && \
-      rm -rf /var/lib/apt/lists/* && \
-      npm i && npm run prisma-generate-complaint-outcome && \
-      npm run prisma-generate-shared && \
-      npm run prisma-generate-investigation && \
-      npm run prisma-generate-inspection && \
-      npm run start:dev"
+    entrypoint: sh docker-entrypoint.sh
     environment:
       <<: *postgres-vars
       NODE_ENV: development
       BACKEND_PORT: "3000"
       NATS_HOST: nats://nats:4222
+      EVENT_STREAM_NAME: nats_durable_events
       # Windows/WSL2 bind mounts don't emit inotify events into the container so --watch sees nothing, these switch to polling
       TSC_WATCHFILE: DynamicPriorityPolling
       TSC_WATCHDIRECTORY: DynamicPriorityPolling
@@ -272,6 +271,11 @@ services:
     volumes: ["./backend-cm:/app", "backend_cm_node_modules:/app/node_modules"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api"]
+      interval: 15s
+      timeout: 5s
+      # apt install, npm i and four prisma generates run before the app starts
+      start_period: 180s
+      retries: 3
     working_dir: "/app"
     depends_on:
       migration-complaint-outcome:
@@ -296,6 +300,8 @@ services:
       TSC_WATCHDIRECTORY: DynamicPriorityPolling
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "1000"
+      NATS_HOST: nats://nats:4222
+      EVENT_STREAM_NAME: nats_durable_events
     hostname: event-worker
     image: node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
     links:

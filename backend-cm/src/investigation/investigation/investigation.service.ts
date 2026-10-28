@@ -792,7 +792,23 @@ export class InvestigationService {
     const where: any = {};
 
     if (filters?.search) {
-      where.name = { contains: filters.search, mode: "insensitive" };
+      const term = { contains: filters.search, mode: "insensitive" };
+      // Match the investigation ID, or any active violation ticket / warning number on its enforcement actions
+      const onEnforcementAction = (some: any) => ({
+        contravention: {
+          some: {
+            active_ind: true,
+            contravention_party_xref: {
+              some: { active_ind: true, enforcement_action: { some: { active_ind: true, ...some } } },
+            },
+          },
+        },
+      });
+      where.OR = [
+        { name: term },
+        onEnforcementAction({ ticket: { some: { active_ind: true, ticket_number: term } } }),
+        onEnforcementAction({ warning: { some: { active_ind: true, warning_number: term } } }),
+      ];
     }
 
     if (filters?.leadAgency) {
