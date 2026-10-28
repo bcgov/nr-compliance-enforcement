@@ -1,7 +1,7 @@
 {
   "name": "nr-natsuite",
   "type": "module",
-  "version": "3.0.10",
+  "version": "3.0.14",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "6.7.2",
@@ -16,7 +16,6 @@
     "@swc/helpers": "0.5.23",
     "@tanstack/react-form": "1.33.2",
     "@tanstack/react-query": "5.101.4",
-    "@tanstack/zod-form-adapter": "0.42.1",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "14.3.1",
     "@testing-library/user-event": "14.6.7",
@@ -115,7 +114,7 @@
     "vite": "7.3.7",
     "warning": "4.0.3",
     "web-vitals": "3.5.2",
-    "zod": "3.25.76"
+    "zod": "4.6.6"
   },
   "repository": {
     "type": "git",
@@ -190,7 +189,8 @@
     "minimatch": "^10.2.3",
     "@graphql-codegen/typescript-graphql-request": {
       "immutable": "^4.3.8"
-    }
+    },
+    "happy-dom": "^21.0.4"
   },
   "browser": {
     "fs": false,
