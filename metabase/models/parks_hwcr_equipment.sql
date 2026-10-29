@@ -1,6 +1,6 @@
 SELECT
   "source"."Complaint Identifer" AS "Complaint Identifer",
-  "source"."Incident Datetime (PDT/PST)" AS "Incident Datetime (PDT/PST)",
+  "source"."Incident Datetime (Pacific)" AS "Incident Datetime (Pacific)",
   "source"."Equipment Type" AS "Equipment Type",
   "source"."Trap Set No Capture" AS "Trap Set No Capture"
 FROM
@@ -11,21 +11,7 @@ FROM
     -----------------------------------------------------
     select
       co.complaint_identifier as "Complaint Identifer",
-      case
-        -- This is a temporary solution as it isn't really scalable.
-        when (c.incident_utc_date + c.incident_utc_time) at time zone 'UTC' at time zone 'America/Los_Angeles' between '2025-03-08 02:00:00' and '2025-11-02 01:59:59' -- DST start and end for this year (2025)
-        or (c.incident_utc_date + c.incident_utc_time) at time zone 'UTC' at time zone 'America/Los_Angeles' between '2024-03-10 02:00:00' and '2024-11-03 01:59:59' -- DST start and end for last year (2024)
-        then (
-          (
-            (c.incident_utc_date + c.incident_utc_time) at time zone 'UTC'
-          ) at time zone 'PDT'
-        ) -- PDT if within DST
-        else (
-          (
-            (c.incident_utc_date + c.incident_utc_time) at time zone 'UTC'
-          ) at time zone 'PST'
-        ) -- PST if outside DST
-      end as "Incident Datetime (PDT/PST)",
+      (c.incident_utc_date + c.incident_utc_time) at time zone 'UTC' at time zone 'America/Vancouver' as "Incident Datetime (Pacific)",
       ec.short_description as "Equipment Type",
       case
         when eat.was_animal_captured = 'N' then 'Yes'
