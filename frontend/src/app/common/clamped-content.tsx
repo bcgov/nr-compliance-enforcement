@@ -1,0 +1,61 @@
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { BsChevronDown, BsChevronUp } from "react-icons/bs";
+
+interface ClampedContentProps {
+  maxLines: number;
+  children: ReactNode;
+}
+
+/**
+ * Clamps content to a number of rendered lines with a fade-out, and shows a "View more" toggle only
+ * when the content actually overflows.
+ */
+export const ClampedContent: FC<ClampedContentProps> = ({ maxLines, children }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [viewMore, setViewMore] = useState(false);
+
+  // Measured only while collapsed (expanded content never overflows), and re-measured on resize
+  // since a narrower column wraps onto more lines
+  useEffect(() => {
+    const element = contentRef.current;
+    if (!element || viewMore) return;
+
+    const observer = new ResizeObserver(() => setIsOverflowing(element.scrollHeight > element.clientHeight));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [viewMore]);
+
+  const isFaded = !viewMore && isOverflowing;
+
+  return (
+    <>
+      <div
+        ref={contentRef}
+        className={`clamped-content${isFaded ? " clamped-content--faded" : ""}`}
+        style={viewMore ? undefined : { maxHeight: `${maxLines}lh` }}
+      >
+        {children}
+      </div>
+      {isOverflowing && (
+        <div className="d-flex justify-content-center">
+          <button
+            type="button"
+            className="btn btn-link p-0"
+            onClick={() => setViewMore(!viewMore)}
+          >
+            {viewMore ? (
+              <>
+                View less <BsChevronUp />
+              </>
+            ) : (
+              <>
+                View more <BsChevronDown />
+              </>
+            )}
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
