@@ -3,10 +3,10 @@ import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@/app/store/reducers/code-table";
 import { FC, Fragment } from "react";
-import { Contravention } from "@/generated/graphql";
+import { PartyHistoryContravention } from "@/generated/graphql";
 
 export type LegislationRowProps = {
-  contravention: Contravention;
+  contravention: PartyHistoryContravention;
   partyReference: string;
 };
 

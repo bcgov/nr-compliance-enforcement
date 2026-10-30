@@ -71,7 +71,7 @@ export const SideBar: FC = () => {
       name: "Zone at a glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
-      requiredRoles: coreRoles,
+      requiredRoles: [Roles.COS],
       excludedRoles: [Roles.CEEB, Roles.PARKS, Roles.PROVINCE_WIDE, Roles.SECTOR, Roles.NROS, Roles.MINES],
     },
     {

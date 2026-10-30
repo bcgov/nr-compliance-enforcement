@@ -42,9 +42,10 @@ const SEARCH_EVENTS = gql`
   }
 `;
 
-const GET_APP_USERS_BY_GUIDS = gql`
-  query GetAppUsersByGuids($authUserGuids: [String!]) {
-    appUsersByGuids(authUserGuids: $authUserGuids) {
+export const GET_APP_USERS_BY_GUIDS = gql`
+  query GetAppUsersByGuids($appUserGuids: [String!], $authUserGuids: [String!]) {
+    appUsersByGuids(appUserGuids: $appUserGuids, authUserGuids: $authUserGuids) {
+      appUserGuid
       authUserGuid
       firstName
       lastName

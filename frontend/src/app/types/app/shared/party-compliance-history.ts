@@ -1,4 +1,4 @@
-import { Contravention } from "@/generated/graphql";
+import { PartyHistoryContravention } from "@/generated/graphql";
 
 export type PartyComplianceActivity = {
   id?: string | null;
@@ -12,7 +12,7 @@ export type PartyComplianceActivity = {
   primaryInvestigatorName?: string;
   supervisorName?: string;
   dateOpened?: Date | null;
-  contraventions?: Contravention[] | null;
+  contraventions?: PartyHistoryContravention[] | null;
 };
 
 export type PartyComplianceRelation = {
@@ -26,5 +26,5 @@ export type PartyComplianceRelation = {
 export type PartyComplianceHistoryRow = {
   rowKey: string;
   activity: PartyComplianceActivity;
-  contravention: Contravention | null;
+  contravention: PartyHistoryContravention | null;
 };

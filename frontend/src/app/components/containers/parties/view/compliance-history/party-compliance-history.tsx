@@ -3,12 +3,12 @@ import { Badge, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   AppUser,
-  CaseFile,
-  Contravention,
-  Inspection,
   InspectionParty,
-  Investigation,
   InvestigationParty,
+  PartyHistoryCaseFile,
+  PartyHistoryContravention,
+  PartyHistoryInspection,
+  PartyHistoryInvestigation,
 } from "@/generated/graphql";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { useAppSelector } from "@/app/hooks/hooks";
@@ -31,6 +31,7 @@ import { CompColumn } from "@/app/types/app/comp-tables";
 import { CompTable } from "@/app/components/common/comp-table";
 import { SORT_TYPES } from "@/app/constants/sort-direction";
 import { Agency } from "@/app/types/app/code-tables/agency";
+import { GET_APP_USERS_BY_GUIDS } from "@/app/components/containers/parties/view/party-history-tab";
 
 const GET_INVESTIGATIONS_BY_PARTY = gql`
   query GetInvestigationsByParty($partyId: String!, $partyType: String!) {
@@ -82,6 +83,9 @@ const GET_INSPECTIONS_BY_PARTY = gql`
       locationAddress
       locationDescription
       name
+      inspectionStatus {
+        shortDescription
+      }
     }
   }
 `;
@@ -97,16 +101,6 @@ const GET_CASE_FILES_BY_PARTY = gql`
       activities {
         activityIdentifier
       }
-    }
-  }
-`;
-
-const GET_APP_USERS_BY_GUIDS = gql`
-  query GetAppUsersByGuids($appUserGuids: [String!]) {
-    appUsersByGuids(appUserGuids: $appUserGuids) {
-      appUserGuid
-      firstName
-      lastName
     }
   }
 `;
@@ -198,7 +192,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       isLoading: isCaseLoading,
       error: caseError,
     } = useGraphQLQuery<{
-      partyHistoryCaseFiles: CaseFile[];
+      partyHistoryCaseFiles: PartyHistoryCaseFile[];
     }>(GET_CASE_FILES_BY_PARTY, {
       queryKey: ["CaseFileParty", id],
       variables: { partyId, partyType },
@@ -275,7 +269,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
             primaryInvestigatorName: getOfficerName(currenInvestigation?.primaryInvestigatorGuid ?? ""),
             supervisorName: getOfficerName(currenInvestigation?.supervisorGuid ?? ""),
             dateOpened: parseUTCTimestampToLocal(currenInvestigation?.openedTimestamp),
-            contraventions: (currenInvestigation?.contraventions as Contravention[]) ?? null,
+            contraventions: (currenInvestigation?.contraventions as PartyHistoryContravention[]) ?? null,
           });
         }
 
@@ -314,8 +308,8 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
     partyId: string,
     partyType: string,
   ): {
-    relatedInvestigations: Investigation[];
-    relatedInspections: Inspection[];
+    relatedInvestigations: PartyHistoryInvestigation[];
+    relatedInspections: PartyHistoryInspection[];
     isActivityLoading: boolean;
     activityError: Error | null;
   } => {
@@ -324,7 +318,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       isLoading: isInvestigationLoading,
       error: investigationError,
     } = useGraphQLQuery<{
-      partyHistoryInvestigations: Investigation[];
+      partyHistoryInvestigations: PartyHistoryInvestigation[];
     }>(GET_INVESTIGATIONS_BY_PARTY, {
       queryKey: ["InvestigationParty", id],
       variables: { partyId, partyType },
@@ -338,7 +332,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       isLoading: isInspectionLoading,
       error: inspectionError,
     } = useGraphQLQuery<{
-      partyHistoryInspections: Inspection[];
+      partyHistoryInspections: PartyHistoryInspection[];
     }>(GET_INSPECTIONS_BY_PARTY, {
       queryKey: ["InspectionParty", id],
       variables: { partyId, partyType },
