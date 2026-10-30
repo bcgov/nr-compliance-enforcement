@@ -22,6 +22,7 @@ WHERE true;
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'COMPREF'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
 AND agency_code_ref IN (
     SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
 );
@@ -33,6 +34,7 @@ AND agency_code_ref IN (
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'COMPCOLLAB'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
 AND agency_code_ref IN (
     SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
 );
@@ -44,6 +46,7 @@ AND agency_code_ref IN (
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'INVESTIGTN'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
 AND agency_code_ref IN (
     SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
 );
@@ -55,6 +58,7 @@ AND agency_code_ref IN (
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'INSPECTION'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
 AND agency_code_ref IN (
     SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
 );
@@ -82,6 +86,7 @@ WHERE feature_code = 'COLEMAIL';
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'SECTORVIEW'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
 AND agency_code_ref IN (
     SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
 );
@@ -89,6 +94,7 @@ AND agency_code_ref IN (
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'PARTY'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
 AND agency_code_ref IN (
     SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
 );
@@ -100,6 +106,7 @@ AND agency_code_ref IN (
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'CASES'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
 AND agency_code_ref IN (
     SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
 );
@@ -111,6 +118,7 @@ AND agency_code_ref IN (
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'ASMTCOMNTS'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
 AND agency_code_ref IN (
     SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
 );

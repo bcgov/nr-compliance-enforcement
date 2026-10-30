@@ -1,12 +1,15 @@
+-- Add the new COMPLAINTS and REFRECEIVE feature flags
 INSERT INTO complaint.feature_code
 VALUES
-    ('COMPLAINTS', 'Enable Complaints', 'Enables complaints for the agency. When off, referrals to the agency close the complaint and notify by email only, and the agency is left out of collaborator and lead-agency lists.', 413, true, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
+    ('COMPLAINTS', 'Enable Complaints', 'Enables complaints for the agency. When off, referrals to the agency close the complaint and notify by email only.', 413, true, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
     ('REFRECEIVE', 'Receive Complaint Referrals', 'Allows the agency to be selected as the new lead agency when a complaint is referred.', 414, true, 'FLYWAY', NOW(), 'FLYWAY', NOW());
 
+-- Rename/repurpose the PARTY flag which was unused
 UPDATE complaint.feature_code
 SET short_description = 'Enable Parties', long_description = 'Enables the high level navigation to parties and party details.', update_user_id = 'FLYWAY', update_utc_timestamp = NOW()
 WHERE feature_code = 'PARTY';
 
+-- Set feature flags, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'PARKS', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -48,6 +51,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'PARKS', true, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'COS', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -89,6 +93,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'COS', true, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'EPO', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -130,6 +135,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'EPO', true, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'ECCC', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -171,6 +177,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'ECCC', true, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'DFO', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -212,6 +219,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'DFO', true, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'NROS', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -253,6 +261,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'NROS', true, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'MINES', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -294,6 +303,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'MINES', true, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'POL', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -335,12 +345,14 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'POL', true, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- NRS is special, but needs COMPLAINTS enabled and shouldn't get referrals
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLAINTS', 'NRS', true, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
     (gen_random_uuid(), 'REFRECEIVE', 'NRS', false, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Enable parties for all agencies that have cases enabled
 UPDATE complaint.feature_agency_xref p
 SET active_ind = c.active_ind, update_user_id = 'FLYWAY', update_utc_timestamp = NOW()
 FROM complaint.feature_agency_xref c
@@ -349,6 +361,7 @@ WHERE p.agency_code_ref = c.agency_code_ref
   AND c.feature_code = 'CASES'
   AND p.agency_code_ref IN ('PARKS', 'COS', 'EPO', 'ECCC', 'DFO', 'NROS', 'MINES', 'NRS', 'POL');
 
+-- Set feature flags with parties=true, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'FCBC', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -390,6 +403,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'FCBC', false, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags with parties=true, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'WEB', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -431,6 +445,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'WEB', false, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Set feature flags with parties=true, existing rows are unchanged due to ON CONFLICT DO NOTHING
 INSERT INTO complaint.feature_agency_xref (feature_agency_xref_guid, feature_code, agency_code_ref, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES
     (gen_random_uuid(), 'COMPLIMENT', 'BCCEA', false, 'FLYWAY', NOW(), 'FLYWAY', NOW()),
@@ -472,6 +487,7 @@ VALUES
     (gen_random_uuid(), 'REFRECEIVE', 'BCCEA', false, 'FLYWAY', NOW(), 'FLYWAY', NOW())
 ON CONFLICT DO NOTHING;
 
+-- Enable parties for DFO
 UPDATE complaint.feature_agency_xref
 SET active_ind = true, update_user_id = 'FLYWAY', update_utc_timestamp = NOW()
 WHERE feature_code = 'PARTY'
