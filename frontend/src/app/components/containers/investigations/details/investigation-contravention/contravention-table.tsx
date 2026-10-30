@@ -8,7 +8,7 @@ import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { LegislationCitation } from "@/app/common/legislation-citation";
+import { CONTRAVENTION_MAX_LINES, LegislationDisplay } from "@/app/common/legislation-display";
 import { ClampedContent } from "@/app/common/clamped-content";
 
 interface ContraventionTableProps {
@@ -29,13 +29,10 @@ const LegislationCell: FC<{ legislationIdentifierRef: string }> = ({ legislation
 
   return (
     <ClampedContent maxLines={CONTRAVENTION_MAX_LINES}>
-      <LegislationCitation legislation={legislation?.data?.legislation} />
+      <LegislationDisplay legislation={legislation?.data?.legislation} />
     </ClampedContent>
   );
 };
-
-// Contraventions longer than this collapse behind "View more"
-const CONTRAVENTION_MAX_LINES = 5;
 
 export const ContraventionTable: FC<ContraventionTableProps> = ({
   contraventions,

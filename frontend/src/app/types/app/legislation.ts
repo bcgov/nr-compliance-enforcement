@@ -52,18 +52,18 @@ export enum indentByType {
   DIV = "legislation-indent-0", //NOSONAR - divisions are structural elements like parts
 }
 
-export interface LegislationCitationLine {
+interface LegislationDisplayLine {
   type: string;
   citation: string;
   text: string;
 }
 
-export interface LegislationCitationParts {
+interface LegislationDisplayParts {
   actName: string;
   isRegulation: boolean;
   sectionFullCitation: string;
   sectionTitle: string;
-  subsections: LegislationCitationLine[];
+  subsections: LegislationDisplayLine[];
 }
 
 const getNodeText = (node: Legislation): string => node.alternateText ?? node.legislationText ?? "";
@@ -78,12 +78,12 @@ const getNodeCitation = (node: Legislation): string =>
  * for its text. Other nodes above the section (part, division) are covered by the section's full
  * citation.
  */
-export const buildLegislationCitationParts = (legislation: Legislation): LegislationCitationParts => {
+export const buildLegislationDisplayParts = (legislation: Legislation): LegislationDisplayParts => {
   // Ancestors are returned nearest-first; reverse so the chain runs from the act down to the target
   const ancestors = (legislation.ancestors ?? []).filter((node): node is Legislation => !!node).toReversed();
   const chain = [...ancestors, legislation];
 
-  const subsections: LegislationCitationLine[] = [];
+  const subsections: LegislationDisplayLine[] = [];
   let actName = "";
   let isRegulation = false;
   let section: Legislation | undefined;

@@ -7,9 +7,10 @@ import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { EnforcementActionViewEditContentReadOnly } from "./enforcement-action-view-edit-content-read-only";
 import { EnforcementActionForm, NOTICE_OF_CANCELLATION_ACT_CITATIONS } from "./enforcement-action-form";
-import { LegislationText } from "@/app/components/common/legislation-text";
 import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
+import { CONTRAVENTION_MAX_LINES, LegislationDisplay } from "@/app/common/legislation-display";
+import { ClampedContent } from "@/app/common/clamped-content";
 
 interface EnforcementActionViewEditContentProps {
   currentStep: number;
@@ -27,16 +28,6 @@ interface EnforcementActionViewEditContentProps {
   onIsSavingChange: (isSaving: boolean) => void;
   onIsBlockedChange?: (isBlocked: boolean) => void;
 }
-
-export const ContraventionLabel: FC<{ legislation?: Legislation | null }> = ({ legislation }) => {
-  if (!legislation) return <span>Loading...</span>;
-  const displayText = legislation.alternateText ?? legislation.legislationText;
-  return (
-    <>
-      {legislation.fullCitation} : <LegislationText>{displayText}</LegislationText>
-    </>
-  );
-};
 
 export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditContentProps> = ({
   investigationGuid,
@@ -89,7 +80,11 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
     );
   }, [legislation]);
 
-  const contraventionLabel = <ContraventionLabel legislation={legislation} />;
+  const contraventionLabel = (
+    <ClampedContent maxLines={CONTRAVENTION_MAX_LINES}>
+      <LegislationDisplay legislation={legislation} />
+    </ClampedContent>
+  );
 
   const enforcementActionLabel =
     enforcementActionCodes.find(
