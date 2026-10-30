@@ -1,4 +1,4 @@
-import { FC, useState, useCallback, useMemo } from "react";
+import { FC, useState, useCallback, useMemo, useEffect } from "react";
 import { CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
@@ -9,6 +9,9 @@ import { InspectionFilterBar } from "./list/inspection-filter-bar";
 import { InspectionMap } from "./map/inspection-map";
 import { useInspectionSearch } from "./hooks/use-inspection-search";
 import { uniq, compact } from "lodash";
+import { useLocation } from "react-router-dom";
+import { useAppDispatch } from "@hooks/hooks";
+import { setInspectionListUrl } from "@store/reducers/inspection-list-url";
 
 const SEARCH_INSPECTIONS = gql`
   query SearchInspections($page: Int, $pageSize: Int, $filters: InspectionFilters) {
@@ -49,10 +52,17 @@ const GET_CASE_FILES_BY_ACTIVITIES = gql`
 `;
 
 const Inspections: FC = () => {
+  const dispatch = useAppDispatch();
+  const location = useLocation();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
   const { searchValues, getFilters } = useInspectionSearch();
+
+  // Track the current /inspections URL in Redux so returning to the list restores filters.
+  useEffect(() => {
+    dispatch(setInspectionListUrl(location.pathname + location.search));
+  }, [dispatch, location.pathname, location.search]);
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchInspections: InspectionResult }>(SEARCH_INSPECTIONS, {
     queryKey: [

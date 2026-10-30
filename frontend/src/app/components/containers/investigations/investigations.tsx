@@ -9,7 +9,11 @@ import { InvestigationFilterBar } from "./list/investigation-filter-bar";
 import { InvestigationMap } from "./map/investigation-map";
 import { useInvestigationSearch } from "./hooks/use-investigation-search";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { setInvestigationListUrl } from "@store/reducers/investigation-list-url";
+import {
+  selectInvestigationDefaultsActive,
+  setInvestigationListUrl,
+  setInvestigationListUrlDefaultsActive,
+} from "@store/reducers/investigation-list-url";
 import { uniq, compact } from "lodash";
 import { gql } from "graphql-request";
 import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigationSearchQuery";
@@ -39,6 +43,7 @@ const Investigations: FC = () => {
   const { searchValues, getFilters, setValues } = useInvestigationSearch();
   const appUserGuid = useAppSelector(selectAppUserGuid);
   const defaultRegion = useAppSelector(selectDefaultRegion);
+  const defaultsApplied = useAppSelector(selectInvestigationDefaultsActive);
 
   // Track the current /investigations URL in Redux so any subsequent navigation
   // to the list (sidebar, breadcrumbs, post-create redirect) restores filters.
@@ -71,8 +76,10 @@ const Investigations: FC = () => {
   // Apply role-based default filters only on a truly fresh navigation (no filter
   // params present at all). COS: Open + Primary Investigator = current user.
   // Inspector: Open + their region. Existing filters (e.g. from a shared link
-  // or a restored URL) are left untouched.
+  // or a restored URL) are left untouched. Persist search params for the session.
   useEffect(() => {
+    if (defaultsApplied) return;
+
     const isFreshSearch =
       searchValues.region === null &&
       searchValues.zone === null &&
@@ -83,15 +90,19 @@ const Investigations: FC = () => {
       searchValues.startDate === null &&
       searchValues.endDate === null;
 
+    // Arrived with filters (shared link), so treat the session as already defaulted
     if (!isFreshSearch) {
+      dispatch(setInvestigationListUrlDefaultsActive());
       return;
     }
 
     if (UserService.hasRole(Roles.COS)) {
       if (UserService.hasRole(Roles.INSPECTOR) && defaultRegion) {
         setValues({ investigationStatus: "OPEN", region: defaultRegion.value });
+        dispatch(setInvestigationListUrlDefaultsActive());
       } else if (appUserGuid) {
         setValues({ investigationStatus: "OPEN", primaryInvestigator: appUserGuid });
+        dispatch(setInvestigationListUrlDefaultsActive());
       }
     }
   }, []);

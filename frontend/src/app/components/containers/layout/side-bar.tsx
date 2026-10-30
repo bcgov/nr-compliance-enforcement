@@ -1,6 +1,8 @@
 import { FC, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
+import { useCaseSearch } from "@/app/components/containers/cases/hooks/use-case-search";
+import { useInspectionSearch } from "@/app/components/containers/inspections/hooks/use-inspection-search";
 import { isSidebarOpen, toggleSidebar, isFeatureActive } from "@store/reducers/app";
 import {
   selectCanAccessCases,
@@ -23,6 +25,8 @@ export const SideBar: FC = () => {
   const canAccessInvestigations = useAppSelector(selectCanAccessInvestigations);
   const canAccessInspections = useAppSelector(selectCanAccessInspections);
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
+  const { searchURL: caseSearchURL } = useCaseSearch();
+  const { searchURL: inspectionSearchURL } = useInspectionSearch();
   const { pathname } = useLocation();
   const [showToggleTooltip, setShowToggleTooltip] = useState(false);
 
@@ -44,14 +48,14 @@ export const SideBar: FC = () => {
       id: "inspections-link",
       name: "Inspections",
       icon: "bi bi-ui-checks",
-      route: "/inspections",
+      route: inspectionSearchURL,
       hidden: !canAccessInspections,
     },
     {
       id: "cases-link",
       name: "Cases",
       icon: "bi bi-folder",
-      route: "/cases",
+      route: caseSearchURL,
       hidden: !canAccessCases,
     },
     {
