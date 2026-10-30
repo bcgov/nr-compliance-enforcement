@@ -2,7 +2,7 @@ import { Resolver, Query } from "@nestjs/graphql";
 import { GeoOrganizationUnitCodeService } from "./geo_organization_unit_code.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { UseGuards } from "@nestjs/common";
-import { coreRoles } from "../../enum/role.enum";
+import { adminRoles, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 
 @UseGuards(JwtRoleGuard)
@@ -11,7 +11,7 @@ export class GeoOrganizationUnitCodeResolver {
   constructor(private readonly geoOrganizationUnitCodeService: GeoOrganizationUnitCodeService) {}
 
   @Query("geoOrganizationUnitCodes")
-  @Roles(coreRoles)
+  @Roles(coreRoles, adminRoles)
   async findAll() {
     return await this.geoOrganizationUnitCodeService.findAll();
   }

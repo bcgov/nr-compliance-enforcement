@@ -5,6 +5,12 @@ const ROLE_TO_AGENCY: Record<string, string> = {
   PARKS: "PARKS",
   NROS: "NROS",
   MINES: "MINES",
+  FCBC: "FCBC",
+  WEB: "WEB",
+  BCCEA: "BCCEA",
+  ECCC: "ECCC",
+  DFO: "DFO",
+  POL: "POL",
 };
 
 export type ClientRoles = string | string[] | undefined | null;

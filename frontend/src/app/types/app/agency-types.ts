@@ -5,6 +5,13 @@ export const AgencyType = {
   MINES: "MINES",
   PARKS: "PARKS",
   SECTOR: "NRS",
+  FCBC: "FCBC",
+  WEB: "WEB",
+  BCCEA: "BCCEA",
+  ECCC: "ECCC",
+  DFO: "DFO",
+  POL: "POL",
+  OTH: "OTH",
 };
 
 export const AgencyNames = {
@@ -14,4 +21,11 @@ export const AgencyNames = {
   NRS: { short: "Natural Resource Sector", long: "Natural Resource Sector" },
   NROS: { short: "NROS", long: "Natural Resource Officer Service" },
   MINES: { short: "Mines", long: "Mines Health, Safety & Enforcement" },
+};
+
+export const AgencyTabLabels: Record<string, string> = {
+  [AgencyType.ECCC]: "ECCC",
+  [AgencyType.DFO]: "DFO",
+  [AgencyType.FCBC]: "FCBC",
+  [AgencyType.WEB]: "WEB",
 };

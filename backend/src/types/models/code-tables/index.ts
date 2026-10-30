@@ -97,6 +97,24 @@ export const AvailableCodeTables = [
   "wildlife-management-unit-type",
 ];
 
+export const PartyCodeTables = [
+  "agency",
+  "party-association-role",
+  "party-external-id-type",
+  "approximate-age-type",
+  "gender-type",
+  "country-type",
+  "country-subdivision-type",
+  "complexion-type",
+  "build-type",
+  "hair-colour-type",
+  "hair-length-type",
+  "eye-colour-type",
+  "facial-hair-style-type",
+  "enforcement-action-type",
+  "ticket-outcome-type",
+];
+
 export const AvailableAgencies = ["cos"];
 
 export default BaseCodeTable;

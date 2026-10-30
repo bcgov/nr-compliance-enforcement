@@ -15,6 +15,13 @@ enum Roles {
   HWCR_ONLY = "HWCR only",
   SECTOR = "SECTOR",
   CASE_ACCESS = "Case Access",
+  FCBC = "FCBC",
+  WEB = "WEB",
+  BCCEA = "BCCEA",
+  ECCC = "ECCC",
+  DFO = "DFO",
+  POL = "POL",
+  PARTY_ACCESS = "Party Access",
 }
 
 const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS, Roles.NROS, Roles.MINES, Roles.SECTOR];

@@ -1,8 +1,9 @@
 import { FC } from "react";
-import { Event } from "@/generated/graphql";
-import { AppUser } from "@/app/types/app/app_user/app_user";
+import { AppUser, Event } from "@/generated/graphql";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { useAppSelector } from "@/app/hooks/hooks";
+import { selectCodeTable } from "@/app/store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import {
   selectApproximateAges,
   selectBuilds,
@@ -159,13 +160,15 @@ const useEventDescription = (event: Event): string => {
 
 export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers }) => {
   const eventDescription = useEventDescription(event);
+  const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
 
   const getActorName = () => {
     const actorId = event.actorId;
     if (actorId && event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && appUsers) {
-      const officer = appUsers.find((o) => o.auth_user_guid?.toUpperCase().split("-").join("") === actorId);
+      const officer = appUsers.find((o) => o.authUserGuid?.toUpperCase().replaceAll("-", "") === actorId);
       if (officer) {
-        return `${officer.last_name}, ${officer.first_name} (${officer.agency_code?.shortDescription})`;
+        const agency = agencies.find((item) => item.agency === officer.agencyCode);
+        return `${officer.lastName}, ${officer.firstName} (${agency?.shortDescription})`;
       }
     }
     return actorId;

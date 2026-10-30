@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { Injectable, Logger, Inject, Scope } from "@nestjs/common";
+import { Injectable, Logger, Inject, Scope, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "./../complaint/entities/complaint.entity";
@@ -41,6 +41,9 @@ export class ComplaintReferralService {
   private readonly logger = new Logger(ComplaintReferralService.name);
 
   async create(createComplaintReferralDto: any, token: string, user): Promise<ComplaintReferral> {
+    const { complaint_identifier: id, referred_to_agency_code_ref } = createComplaintReferralDto;
+    const isExternal = await this.isExternalReferral(referred_to_agency_code_ref);
+
     // FEATURE FLAG check
     // If both agencies involved have the feature flag active, send the referral email notification
     const referredByActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
@@ -57,7 +60,6 @@ export class ComplaintReferralService {
     createComplaintReferralDto.create_user_id = idir;
     createComplaintReferralDto.update_user_id = idir;
 
-    const { complaint_identifier: id, referred_to_agency_code_ref, externalAgencyInd } = createComplaintReferralDto;
     const { type, fileName, tz, attachments } = createComplaintReferralDto.documentExportParams;
     // Generate the document export from the referring agency if sending the referral email
     let complaintExport;
@@ -73,7 +75,7 @@ export class ComplaintReferralService {
         owned_by_agency_code_ref: referred_to_agency_code_ref,
         comp_last_upd_utc_timestamp: new Date(),
       };
-      if (externalAgencyInd) {
+      if (isExternal) {
         updateData.complaint_status_code = "CLOSED";
         updateData.comp_last_upd_utc_timestamp = new Date();
       }
@@ -93,6 +95,7 @@ export class ComplaintReferralService {
       const complaint = await this._complaintService.findById(id, type, undefined, token);
       const recipientList = await this._emailService.sendReferralEmail(
         createComplaintReferralDto,
+        isExternal,
         complaint,
         senderEmail,
         senderName,
@@ -120,5 +123,22 @@ export class ComplaintReferralService {
       }
     }
     return result;
+  }
+
+  // Determine if referral is external. Other is a special case, otherwise determined by agency feature flags
+  private async isExternalReferral(agencyCode: string): Promise<boolean> {
+    if (agencyCode === "OTH") {
+      return true;
+    }
+
+    const activeFeatures = new Set(
+      (await this._featureFlagService.findByAgency(agencyCode))
+        .filter((feature) => feature.isActive)
+        .map((feature) => feature.featureCode),
+    );
+    if (!activeFeatures.has("REFRECEIVE")) {
+      throw new BadRequestException(`Unable to refer complaint to ${agencyCode}`);
+    }
+    return !activeFeatures.has("COMPLAINTS");
   }
 }

@@ -19,7 +19,7 @@ const CaseManagementPilotRestricted: FC = () => {
             </p>
 
             <p>
-              Return to the <Link to="/complaints/">home page</Link> to continue.
+              Return to the <Link to="/">home page</Link> to continue.
             </p>
           </div>
         </div>

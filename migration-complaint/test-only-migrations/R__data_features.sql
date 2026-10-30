@@ -16,36 +16,52 @@ SET email_address = 'ceds@gov.bc.ca'
 WHERE true;
 
 ---------------------
--- Enable referrals in dev/test for all users
+-- Enable referrals in dev/test for agencies with complaints enabled
 ---------------------
 
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
-WHERE feature_code = 'COMPREF';
+WHERE feature_code = 'COMPREF'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
+AND agency_code_ref IN (
+    SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
+);
 
 ---------------------
--- Enable collaboration in dev/test for all users
----------------------
-
-UPDATE feature_agency_xref
-SET active_ind = 'Y'
-WHERE feature_code = 'COMPCOLLAB';
-
----------------------
--- Enable investigations in dev/test for all users
+-- Enable collaboration in dev/test for agencies with complaints enabled
 ---------------------
 
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
-WHERE feature_code = 'INVESTIGTN';
+WHERE feature_code = 'COMPCOLLAB'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
+AND agency_code_ref IN (
+    SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
+);
 
 ---------------------
--- Enable inspections in dev/test for all users
+-- Enable investigations in dev/test for agencies with complaints enabled
 ---------------------
 
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
-WHERE feature_code = 'INSPECTION';
+WHERE feature_code = 'INVESTIGTN'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
+AND agency_code_ref IN (
+    SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
+);
+
+---------------------
+-- Enable inspections in dev/test for agencies with complaints enabled
+---------------------
+
+UPDATE feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'INSPECTION'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
+AND agency_code_ref IN (
+    SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
+);
 
 ---------------------
 -- Disable referral emails in dev and test for all users
@@ -64,32 +80,48 @@ SET active_ind = 'N'
 WHERE feature_code = 'COLEMAIL';
 
 ---------------------
--- Disable sector view in dev/test for all users
+-- Enable sector view and parties in dev/test for agencies with complaints enabled
 ---------------------
 
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
-WHERE feature_code = 'SECTORVIEW';
+WHERE feature_code = 'SECTORVIEW'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
+AND agency_code_ref IN (
+    SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
+);
 
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
-WHERE feature_code = 'PARTY';
+WHERE feature_code = 'PARTY'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
+AND agency_code_ref IN (
+    SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
+);
 
 ---------------------
--- Enable cases in dev/test for all users
----------------------
-
-UPDATE feature_agency_xref
-SET active_ind = 'Y'
-WHERE feature_code = 'CASES';
-
----------------------
--- Enable assessment comments in dev/test for all users
+-- Enable cases in dev/test for agencies with complaints enabled
 ---------------------
 
 UPDATE feature_agency_xref
 SET active_ind = 'Y'
-WHERE feature_code = 'ASMTCOMNTS';
+WHERE feature_code = 'CASES'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
+AND agency_code_ref IN (
+    SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
+);
+
+---------------------
+-- Enable assessment comments in dev/test for agencies with complaints enabled
+---------------------
+
+UPDATE feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'ASMTCOMNTS'
+-- Some agencies are party-only or considered "external" where no user access is expected, so do not grant these agencies access to these features
+AND agency_code_ref IN (
+    SELECT agency_code_ref FROM feature_agency_xref WHERE feature_code = 'COMPLAINTS' AND active_ind = 'Y'
+);
 
 ---------------------
 -- Disable Case Creation for all agencies

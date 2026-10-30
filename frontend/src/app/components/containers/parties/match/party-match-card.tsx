@@ -14,6 +14,7 @@ import { getPartyName } from "@/app/common/party-name";
 import { isYoungPerson } from "@/app/common/methods";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { CompBadge } from "@/app/common/comp-badge";
+import { selectCanAccessParties } from "@/app/access/module-access";
 
 const MATCH_FIELD_LABELS: Record<string, string> = {
   driversLicenseNumber: "Driver's licence",
@@ -83,6 +84,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
   const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
   const countries = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY));
+  const canAccessParties = useAppSelector(selectCanAccessParties);
 
   const name = getPartyName(party);
 
@@ -168,14 +170,18 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({
     >
       <div className="d-flex justify-content-between align-items-center pt-2 px-3">
         <div className="w-100 border-bottom d-flex align-items-center gap-2 pb-2 justify-content-between">
-          <Link
-            to={`/party/${party.partyIdentifier}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="comp-party-match-card-name"
-          >
-            {name}
-          </Link>
+          {canAccessParties ? (
+            <Link
+              to={`/party/${party.partyIdentifier}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="comp-party-match-card-name"
+            >
+              {name}
+            </Link>
+          ) : (
+            <span className="comp-party-match-card-name">{name}</span>
+          )}
           {score >= STRONG_MATCH_MINIMUM ? (
             <CompBadge
               id="strong-match"

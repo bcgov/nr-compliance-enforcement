@@ -99,25 +99,16 @@ export class CodeTableService {
       case "agency": {
         // TODO: Rename case Management query once CM refactor is done
         const { data } = await get(token, {
-          query:
-            "{agencyCodes{agencyCode shortDescription longDescription displayOrder activeIndicator externalAgencyIndicator}}",
+          query: "{agencyCodes{agencyCode shortDescription longDescription displayOrder activeIndicator}}",
         });
         const results = data.agencyCodes.map(
-          ({
-            agencyCode,
-            shortDescription,
-            longDescription,
-            displayOrder,
-            activeIndicator,
-            externalAgencyIndicator,
-          }) => {
+          ({ agencyCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: Agency = {
               agency: agencyCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,
               isActive: activeIndicator,
-              externalAgencyInd: externalAgencyIndicator,
             };
             return table;
           },
@@ -782,7 +773,6 @@ export class CodeTableService {
               longDescription: longDescription,
               displayOrder: displayOrder,
               isActive: activeIndicator,
-              externalAgencyInd: false, // Included in the type but external agencies are only in Natcom, not CM
             };
             return table;
           },

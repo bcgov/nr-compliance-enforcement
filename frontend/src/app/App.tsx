@@ -1,5 +1,5 @@
 import { FC, ReactElement, useEffect } from "react";
-import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
+import { Navigate, Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { TOAST_POSITION } from "@/app/common/toast";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,6 +23,7 @@ import CaseEdit from "./components/containers/cases/edit/case-edit";
 import Compliments from "./components/containers/compliments/compliments";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 import {
+  getAllFeatureFlags,
   getCodeTableVersion,
   getConfigurations,
   getFeatureFlag,
@@ -44,6 +45,7 @@ import {
   selectIsCasesFeatureEnabled,
   selectIsInspectionsFeatureEnabled,
   selectIsInvestigationsFeatureEnabled,
+  selectIsPartiesFeatureEnabled,
 } from "@/app/access/module-access";
 import { PartyView } from "./components/containers/parties/view";
 import { InspectionDetails } from "@/app/components/containers/inspections/details/inspection-details";
@@ -63,19 +65,28 @@ const App: FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getOfficerDefaultZone());
+    if (UserService.hasRole([...coreRoles, ...adminRoles])) {
+      dispatch(getOfficers());
+    }
+    if (UserService.hasRole(coreRoles)) {
+      dispatch(getOfficerDefaultZone());
+      dispatch(getAllFeatureFlags());
+    }
     dispatch(fetchAllCodeTables());
-    dispatch(getOfficers());
     dispatch(getConfigurations());
     dispatch(getCodeTableVersion());
     dispatch(getFeatureFlag());
     dispatch(getTokenProfile());
   }, [dispatch]);
 
-  const casesFeatureOn = useAppSelector(selectIsCasesFeatureEnabled);
-  const investigationsFeatureOn = useAppSelector(selectIsInvestigationsFeatureEnabled);
-  const inspectionsFeatureOn = useAppSelector(selectIsInspectionsFeatureEnabled);
+  const isCoreUser = UserService.hasRole(coreRoles);
+  // Users without a core role need these routes registered to get the unauthorized page
+  const casesFeatureOn = useAppSelector(selectIsCasesFeatureEnabled) || !isCoreUser;
+  const investigationsFeatureOn = useAppSelector(selectIsInvestigationsFeatureEnabled) || !isCoreUser;
+  const inspectionsFeatureOn = useAppSelector(selectIsInspectionsFeatureEnabled) || !isCoreUser;
+  const partiesFeatureOn = useAppSelector(selectIsPartiesFeatureEnabled);
   const hasCaseAccess = UserService.hasRole(Roles.CASE_ACCESS);
+  const hasPartyAccess = UserService.hasRole(Roles.PARTY_ACCESS);
   const pilotGate = (element: ReactElement) => (hasCaseAccess ? element : <CaseManagementPilotRestricted />);
 
   return (
@@ -97,11 +108,22 @@ const App: FC = () => {
           className={typeof navigator !== "undefined" && navigator.webdriver ? "toast-container-e2e" : undefined}
         />
         <Routes>
-          <Route element={<ProtectedRoutes roles={coreRoles} />}>
+          <Route element={<ProtectedRoutes roles={[...coreRoles, Roles.PARTY_ACCESS]} />}>
             <Route
               path="/"
-              element={<ComplaintsRouteWrapper />}
+              element={
+                isCoreUser ? (
+                  <ComplaintsRouteWrapper />
+                ) : (
+                  <Navigate
+                    to="/parties"
+                    replace
+                  />
+                )
+              }
             />
+          </Route>
+          <Route element={<ProtectedRoutes roles={coreRoles} />}>
             <Route
               path="/complaints/:type?"
               element={<ComplaintsRouteWrapper />}
@@ -152,28 +174,19 @@ const App: FC = () => {
               path="/compliments"
               element={<Compliments />}
             />
-            {casesFeatureOn && (
-              <Route
-                path="/parties"
-                element={pilotGate(<Parties />)}
-              />
-            )}
-            {casesFeatureOn && (
+            {partiesFeatureOn && (
               <Route
                 path="/party/:id/edit"
-                element={pilotGate(<PartyEdit />)}
-              />
-            )}
-            {casesFeatureOn && (
-              <Route
-                path="/party/:id"
-                element={pilotGate(<PartyView />)}
-              />
-            )}
-            {casesFeatureOn && (
-              <Route
-                path="/party/:id/:tabKey"
-                element={pilotGate(<PartyView />)}
+                element={
+                  hasPartyAccess ? (
+                    <PartyEdit />
+                  ) : (
+                    <Navigate
+                      to="/not-authorized"
+                      replace
+                    />
+                  )
+                }
               />
             )}
             {investigationsFeatureOn && (
@@ -296,6 +309,26 @@ const App: FC = () => {
               path="/complaint/createComplaint"
               element={<CreateComplaint />}
             />
+          </Route>
+          <Route element={<ProtectedRoutes roles={[Roles.PARTY_ACCESS]} />}>
+            {partiesFeatureOn && (
+              <Route
+                path="/parties"
+                element={<Parties />}
+              />
+            )}
+            {partiesFeatureOn && (
+              <Route
+                path="/party/:id"
+                element={<PartyView />}
+              />
+            )}
+            {partiesFeatureOn && (
+              <Route
+                path="/party/:id/:tabKey"
+                element={<PartyView />}
+              />
+            )}
           </Route>
           <Route element={<ProtectedRoutes roles={adminRoles} />}>
             <Route

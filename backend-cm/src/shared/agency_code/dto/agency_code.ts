@@ -7,7 +7,6 @@ export class AgencyCode {
   longDescription: string;
   displayOrder: number;
   activeIndicator: boolean;
-  externalAgencyIndicator: boolean;
 }
 
 export const mapPrismaAgencyCodeToAgencyCode = (mapper: Mapper) => {
@@ -34,10 +33,6 @@ export const mapPrismaAgencyCodeToAgencyCode = (mapper: Mapper) => {
     forMember(
       (dest) => dest.activeIndicator,
       mapFrom((src) => src.active_ind),
-    ),
-    forMember(
-      (dest) => dest.externalAgencyIndicator,
-      mapFrom((src) => src.external_agency_ind),
     ),
   );
 };

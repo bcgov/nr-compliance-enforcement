@@ -21,7 +21,7 @@ import {
   userId,
 } from "@store/reducers/app";
 import { RELINK_IDIR } from "@apptypes/modal/modal-types";
-import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/code-table";
+import { selectAssignableAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
 import {
   CEEB_ROLE_OPTIONS,
   NROS_ROLE_OPTIONS,
@@ -30,6 +30,12 @@ import {
   PARKS_ROLE_OPTIONS,
   ROLE_OPTIONS,
   SECTOR_ROLE_OPTIONS,
+  FCBC_ROLE_OPTIONS,
+  WEB_ROLE_OPTIONS,
+  BCCEA_ROLE_OPTIONS,
+  ECCC_ROLE_OPTIONS,
+  DFO_ROLE_OPTIONS,
+  POL_ROLE_OPTIONS,
 } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
@@ -67,7 +73,7 @@ export const EditUser: FC<EditUserProps> = ({
   const officerData = useAppSelector(selectOfficerByAppUserGuid(officer.value));
   const notification = useAppSelector(selectNotification);
   const teams = useAppSelector(selectTeamDropdown);
-  const agency = useAppSelector(selectAgencySectorDropdown);
+  const agency = useAppSelector(selectAssignableAgencyDropdown);
   const parkAreasList = useAppSelector(selectParkAreasDropdown);
   const availableOffices = useAppSelector(selectOffices);
   const adminIdirUsername = useAppSelector(userId);
@@ -139,18 +145,7 @@ export const EditUser: FC<EditUserProps> = ({
     const currentRoles = mapRolesDropdown(userRoles);
     setSelectedRoles(currentRoles);
 
-    const roleToAgency: Array<[string, string]> = [
-      ["CEEB", AgencyType.CEEB],
-      ["NROS", AgencyType.NROS],
-      ["MINES", AgencyType.MINES],
-      ["COS", AgencyType.COS],
-      ["PARKS", AgencyType.PARKS],
-    ];
-
-    const primaryAgency =
-      roleToAgency.find(([keyword]) => userRoles.some((role: any) => role.includes(keyword)))?.[1] ??
-      // Fallback to sector role
-      AgencyType.SECTOR;
+    const primaryAgency = officerData.agency_code_ref;
 
     const currentAgency = mapValueToDropdownList(primaryAgency, agencyList);
 
@@ -216,6 +211,24 @@ export const EditUser: FC<EditUserProps> = ({
         break;
       case AgencyType.PARKS:
         setRoleList(PARKS_ROLE_OPTIONS);
+        break;
+      case AgencyType.FCBC:
+        setRoleList(FCBC_ROLE_OPTIONS);
+        break;
+      case AgencyType.WEB:
+        setRoleList(WEB_ROLE_OPTIONS);
+        break;
+      case AgencyType.BCCEA:
+        setRoleList(BCCEA_ROLE_OPTIONS);
+        break;
+      case AgencyType.ECCC:
+        setRoleList(ECCC_ROLE_OPTIONS);
+        break;
+      case AgencyType.DFO:
+        setRoleList(DFO_ROLE_OPTIONS);
+        break;
+      case AgencyType.POL:
+        setRoleList(POL_ROLE_OPTIONS);
         break;
       default:
         setRoleList(SECTOR_ROLE_OPTIONS);
@@ -379,6 +392,21 @@ export const EditUser: FC<EditUserProps> = ({
           await dispatch(updateOfficerReducer(app_user_guid, { park_area_guid: selectedParkArea?.value ?? null }));
         }
         //Update roles
+        let res = await updateTeamRole(
+          selectedUserIdir,
+          officerData?.app_user_guid,
+          selectedUserAgency?.value,
+          null,
+          mapRoles,
+        );
+        return res;
+      }
+      case AgencyType.FCBC:
+      case AgencyType.WEB:
+      case AgencyType.BCCEA:
+      case AgencyType.ECCC:
+      case AgencyType.DFO:
+      case AgencyType.POL: {
         let res = await updateTeamRole(
           selectedUserIdir,
           officerData?.app_user_guid,

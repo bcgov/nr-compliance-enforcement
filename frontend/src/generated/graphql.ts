@@ -124,7 +124,6 @@ export type AgencyCode = {
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
   agencyCode?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
-  externalAgencyIndicator?: Maybe<Scalars['Boolean']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
@@ -2504,6 +2503,76 @@ export type PartyFilters = {
   sortOrder?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PartyHistoryCaseActivity = {
+  __typename?: 'PartyHistoryCaseActivity';
+  activityIdentifier?: Maybe<Scalars['String']['output']>;
+};
+
+export type PartyHistoryCaseFile = {
+  __typename?: 'PartyHistoryCaseFile';
+  activities?: Maybe<Array<Maybe<PartyHistoryCaseActivity>>>;
+  caseIdentifier?: Maybe<Scalars['String']['output']>;
+  leadAgency?: Maybe<AgencyCode>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type PartyHistoryContravention = {
+  __typename?: 'PartyHistoryContravention';
+  contraventionIdentifier: Scalars['String']['output'];
+  date?: Maybe<Scalars['DateTime']['output']>;
+  investigationParty?: Maybe<Array<Maybe<PartyHistoryContraventionParty>>>;
+  legislationIdentifierRef: Scalars['String']['output'];
+};
+
+export type PartyHistoryContraventionParty = {
+  __typename?: 'PartyHistoryContraventionParty';
+  enforcementActions?: Maybe<Array<Maybe<PartyHistoryEnforcementAction>>>;
+  partyReference?: Maybe<Scalars['String']['output']>;
+};
+
+export type PartyHistoryEnforcementAction = {
+  __typename?: 'PartyHistoryEnforcementAction';
+  enforcementActionCode: EnforcementActionCode;
+  enforcementActionIdentifier: Scalars['String']['output'];
+  ticket?: Maybe<PartyHistoryTicket>;
+};
+
+export type PartyHistoryInspection = {
+  __typename?: 'PartyHistoryInspection';
+  description?: Maybe<Scalars['String']['output']>;
+  inspectionGuid?: Maybe<Scalars['String']['output']>;
+  inspectionStatus?: Maybe<InspectionStatusCode>;
+  leadAgency?: Maybe<Scalars['String']['output']>;
+  locationAddress?: Maybe<Scalars['String']['output']>;
+  locationDescription?: Maybe<Scalars['String']['output']>;
+  locationGeometry?: Maybe<Scalars['Point']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type PartyHistoryInvestigation = {
+  __typename?: 'PartyHistoryInvestigation';
+  contraventions?: Maybe<Array<Maybe<PartyHistoryContravention>>>;
+  description?: Maybe<Scalars['String']['output']>;
+  investigationGuid?: Maybe<Scalars['String']['output']>;
+  investigationStatus?: Maybe<InvestigationStatusCode>;
+  leadAgency?: Maybe<Scalars['String']['output']>;
+  locationAddress?: Maybe<Scalars['String']['output']>;
+  locationDescription?: Maybe<Scalars['String']['output']>;
+  locationGeometry?: Maybe<Scalars['Point']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
+  supervisorGuid?: Maybe<Scalars['String']['output']>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type PartyHistoryTicket = {
+  __typename?: 'PartyHistoryTicket';
+  ticketOutcomeCode: Scalars['String']['output'];
+};
+
 export type PartyMatchInput = {
   addresses?: InputMaybe<Array<AddressMatchInput>>;
   aliases?: InputMaybe<Array<AliasMatchInput>>;
@@ -2756,6 +2825,7 @@ export type Query = {
   appUserTeamXref?: Maybe<AppUserTeamXref>;
   appUserTeamXrefs: Array<Maybe<AppUserTeamXref>>;
   appUsers: Array<Maybe<AppUser>>;
+  appUsersByGuids: Array<Maybe<AppUser>>;
   approximateAgeCodes: Array<Maybe<ApproximateAgeCode>>;
   buildCodes: Array<Maybe<BuildCode>>;
   caseFile?: Maybe<CaseFile>;
@@ -2840,9 +2910,9 @@ export type Query = {
   party?: Maybe<Party>;
   partyAssociationRoles: Array<Maybe<PartyAssociationRole>>;
   partyExternalIdCodes: Array<Maybe<PartyExternalIdCode>>;
-  partyHistoryCaseFiles?: Maybe<Array<Maybe<CaseFile>>>;
-  partyHistoryInspections?: Maybe<Array<Maybe<Inspection>>>;
-  partyHistoryInvestigations?: Maybe<Array<Maybe<Investigation>>>;
+  partyHistoryCaseFiles?: Maybe<Array<Maybe<PartyHistoryCaseFile>>>;
+  partyHistoryInspections?: Maybe<Array<Maybe<PartyHistoryInspection>>>;
+  partyHistoryInvestigations?: Maybe<Array<Maybe<PartyHistoryInvestigation>>>;
   partyTypeCodes: Array<Maybe<PartyTypeCode>>;
   people?: Maybe<Array<Maybe<Person>>>;
   person?: Maybe<Person>;
@@ -2905,6 +2975,12 @@ export type QueryappUserTeamXrefArgs = {
 export type QueryappUsersArgs = {
   agencyCode?: InputMaybe<Scalars['String']['input']>;
   officeGuids?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type QueryappUsersByGuidsArgs = {
+  appUserGuids?: InputMaybe<Array<Scalars['String']['input']>>;
+  authUserGuids?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -3175,7 +3251,8 @@ export type QuerypartyArgs = {
 
 
 export type QuerypartyHistoryCaseFilesArgs = {
-  activityIdentifiers: Array<Scalars['String']['input']>;
+  partyId: Scalars['String']['input'];
+  partyType: Scalars['String']['input'];
 };
 
 

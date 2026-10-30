@@ -35,21 +35,8 @@ export class EmailService {
 
     const emailReferences = await this._emailReferenceService.findActiveByAgency(referredToAgencyCode);
     for (const ref of emailReferences) {
-      switch (referredToAgencyCode) {
-        case "COS":
-          if (complaint.organization?.zone && ref.geo_organization_unit_code === complaint.organization.zone) {
-            recipientList.push(ref.email_address);
-          }
-          break;
-        case "EPO":
-        case "PARKS":
-        case "NROS":
-        case "MINES":
-          recipientList.push(ref.email_address);
-          break;
-        default: {
-          break;
-        }
+      if (!ref.geo_organization_unit_code || ref.geo_organization_unit_code === complaint.organization?.zone) {
+        recipientList.push(ref.email_address);
       }
     }
     return recipientList;
@@ -105,6 +92,7 @@ export class EmailService {
 
   sendReferralEmail = async (
     createComplaintReferralDto,
+    isExternal,
     complaint,
     senderEmailAddress,
     senderName,
@@ -119,7 +107,6 @@ export class EmailService {
       app_user_guid_ref,
       complaint_url,
       additionalEmailRecipients,
-      externalAgencyInd,
     } = createComplaintReferralDto;
 
     const { type, fileName } = createComplaintReferralDto.documentExportParams;
@@ -176,7 +163,7 @@ export class EmailService {
         await this._getComplaintDetailsByType(type, complaint, communityName, token);
 
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
-      const emailSubject = externalAgencyInd
+      const emailSubject = isExternal
         ? `${envFlag}Referral from ${referredByAgency}: ${subjectTypeDescription} complaint #${id}`
         : `${envFlag}NatSuite referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
 
@@ -191,7 +178,7 @@ export class EmailService {
         supportEmail,
         complaintSummaryText,
         complaintUrl: complaint_url,
-        isExternal: externalAgencyInd,
+        isExternal,
       };
 
       const emailBody = generateReferralEmailBody(generateReferralEmailParams);

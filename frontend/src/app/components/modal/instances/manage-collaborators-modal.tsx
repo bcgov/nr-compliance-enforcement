@@ -5,7 +5,7 @@ import { selectModalData } from "@store/reducers/app";
 import { CompSelect } from "@components/common/comp-select";
 import { AgencyBanner } from "@components/containers/layout/agency-banner";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
-import { selectCodeTable } from "@store/reducers/code-table";
+import { selectAgenciesWithFeature, selectCodeTable } from "@store/reducers/code-table";
 import { filterOfficerByAgency, selectOfficers } from "@store/reducers/officer";
 import Option from "@apptypes/app/option";
 import { AppUser } from "@/app/types/app/app_user/app_user";
@@ -34,6 +34,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ su
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
+  const complaintAgencies = useAppSelector((state) => selectAgenciesWithFeature(state, FEATURE_TYPES.COMPLAINTS));
   const complaintData = useAppSelector(selectComplaint);
 
   const { title, onDirtyChange } = modalData;
@@ -71,7 +72,9 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ su
   const agencyOptions = agencies
     .filter(
       (agency) =>
-        !agency.externalAgencyInd && agency.agency !== complaintData?.ownedBy && agency.agency !== AgencyType.SECTOR,
+        complaintAgencies.includes(agency.agency) &&
+        agency.agency !== complaintData?.ownedBy &&
+        agency.agency !== AgencyType.SECTOR,
     )
     .map((agency) => ({
       label: agency.longDescription,

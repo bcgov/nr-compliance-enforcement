@@ -2,7 +2,7 @@ import { Logger, UseGuards } from "@nestjs/common";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Args, Query, Resolver, Mutation, Int } from "@nestjs/graphql";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { coreRoles } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";
 import { PartyService } from "./party.service";
 import {
@@ -22,7 +22,7 @@ export class PartyResolver {
   private readonly logger = new Logger(PartyResolver.name);
 
   @Query("party")
-  @Roles(coreRoles)
+  @Roles(coreRoles, Role.PARTY_ACCESS)
   async findOne(@Args("partyIdentifier") id: string) {
     try {
       return await this.partyService.findOne(id);
@@ -37,7 +37,7 @@ export class PartyResolver {
   }
 
   @Query("searchParties")
-  @Roles(coreRoles)
+  @Roles(coreRoles, Role.PARTY_ACCESS)
   async search(
     @Args("page", { type: () => Int, nullable: true, defaultValue: 1 }) page: number,
     @Args("pageSize", { type: () => Int, nullable: true, defaultValue: 25 }) pageSize: number,

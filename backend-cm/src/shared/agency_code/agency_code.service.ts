@@ -22,7 +22,6 @@ export class AgencyCodeService {
         long_description: true,
         display_order: true,
         active_ind: true,
-        external_agency_ind: true,
       },
     });
 

@@ -21,12 +21,12 @@ export class AppUserController {
 
   @Post()
   @Roles(adminRoles)
-  create(@Body() createAppUserDto: CreateAppUserDto, @Token() token: string) {
-    return this.appUserService.create(createAppUserDto, token);
+  create(@Body() createAppUserDto: CreateAppUserDto, @Token() token: string, @User() user) {
+    return this.appUserService.create(createAppUserDto, token, user);
   }
 
   @Get()
-  @Roles(coreRoles)
+  @Roles(coreRoles, adminRoles)
   findAll(@Token() token: string) {
     return this.appUserService.findAll(token);
   }
@@ -44,7 +44,7 @@ export class AppUserController {
   }
 
   @Get("/find-by-auth-user-guid/:auth_user_guid")
-  @Roles(coreRoles)
+  @Roles(coreRoles, Role.PARTY_ACCESS)
   findByAuthUserGuid(@Param("auth_user_guid") auth_user_guid: string, @Token() token: string) {
     return this.appUserService.findByAuthUserGuid(auth_user_guid, token);
   }
@@ -56,19 +56,19 @@ export class AppUserController {
   }
 
   @Get("/find-by-email/:email")
-  @Roles(coreRoles)
+  @Roles(coreRoles, adminRoles)
   findByEmail(@Param("email") email: string, @Token() token: string) {
     return this.appUserService.findByEmail(email, token);
   }
 
   @Patch(":id")
-  @Roles(coreRoles, adminRoles)
-  update(@Param("id") id: UUID, @Body() updateAppUserDto: UpdateAppUserDto, @Token() token: string) {
-    return this.appUserService.update(id, updateAppUserDto, token);
+  @Roles(coreRoles, adminRoles, Role.PARTY_ACCESS)
+  update(@Param("id") id: UUID, @Body() updateAppUserDto: UpdateAppUserDto, @Token() token: string, @User() user) {
+    return this.appUserService.update(id, updateAppUserDto, token, user);
   }
 
   @Put("/request-coms-access/:app_user_guid")
-  @Roles(coreRoles, Role.READ_ONLY)
+  @Roles(coreRoles, Role.READ_ONLY, Role.PARTY_ACCESS)
   requestComsAccess(@Token() token, @Param("app_user_guid") app_user_guid: UUID, @User() user) {
     return this.appUserService.requestComsAccess(token, app_user_guid, user);
   }

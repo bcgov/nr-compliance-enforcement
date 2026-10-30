@@ -5,12 +5,12 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficers } from "@store/reducers/officer";
 import { fetchOfficeAssignments, selectOffices } from "@store/reducers/office";
 import { selectParkAreasDropdown } from "@store/reducers/code-table-selectors";
-import { selectTeamDropdown } from "@store/reducers/code-table";
+import { selectAssignableAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
 import { CompSelect } from "@components/common/comp-select";
 import { SORT_TYPES } from "@constants/sort-direction";
 import Option from "@apptypes/app/option";
 import { AppUser } from "@apptypes/app/app_user/app_user";
-import { AgencyType, AgencyNames } from "@/app/types/app/agency-types";
+import { AgencyType, AgencyNames, AgencyTabLabels } from "@/app/types/app/agency-types";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
@@ -42,6 +42,7 @@ function getAgencyLabel(officer: AppUser): string {
 
 function getAgencyLabelByCode(agencyCode: string, agencyCodes: Agency[] | undefined): string {
   return (
+    AgencyTabLabels[agencyCode] ??
     agencyCodes?.find(({ agency }) => agency === agencyCode)?.shortDescription ??
     AgencyNames[agencyCode as keyof typeof AgencyNames]?.short ??
     agencyCode
@@ -100,16 +101,6 @@ function getAgencyDetailDisplay(
 }
 
 type SortColumn = "name" | "user_id" | "agency" | "agency_detail" | "role" | "zone" | "region" | "coms_access";
-
-// Agencies with a dedicated tab / table
-const AGENCY_TAB_CODES = [
-  AgencyType.COS,
-  AgencyType.PARKS,
-  AgencyType.CEEB,
-  AgencyType.NROS,
-  AgencyType.MINES,
-  AgencyType.SECTOR,
-] as const;
 
 // Labels for the agency detail column
 const AGENCY_DETAIL_COLUMN_LABEL: Record<string, string> = {
@@ -207,6 +198,7 @@ export const SelectUser: FC<SelectUserProps> = ({
   const parkAreas = useAppSelector(selectParkAreasDropdown);
   const teams = useAppSelector(selectTeamDropdown);
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
+  const assignableAgencies = useAppSelector(selectAssignableAgencyDropdown);
   const [activeAgencyTab, setActiveAgencyTab] = useState<string>(AgencyType.COS);
 
   // Sort state retained for CSV export
@@ -217,10 +209,12 @@ export const SelectUser: FC<SelectUserProps> = ({
   const userAgency = UserService.getUserAgency();
   const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
 
-  // Tabs the active user can see: GLOBAL_ADMINISTRATOR sees all
-  // AGENCY_ADMINISTRATOR sees COS, CEEB, PARKS based on their core roles, and NRS
+  // Agencies with a dedicated tab / table
+  const agencyTabCodes = useMemo(() => assignableAgencies.map(({ value }) => value), [assignableAgencies]);
+
+  // GLOBAL_ADMINISTRATOR sees all tabs, AGENCY_ADMINISTRATOR sees their core role agencies and NRS
   const visibleTabCodes = useMemo((): string[] => {
-    if (isGlobalAdmin) return [...AGENCY_TAB_CODES];
+    if (isGlobalAdmin) return agencyTabCodes;
     if (UserService.hasRole(Roles.AGENCY_ADMINISTRATOR)) {
       const tabs: string[] = [];
       if (UserService.hasRole(Roles.COS)) tabs.push(AgencyType.COS);
@@ -233,7 +227,7 @@ export const SelectUser: FC<SelectUserProps> = ({
       return tabs;
     }
     return [];
-  }, []);
+  }, [agencyTabCodes]);
 
   const handleSort = useCallback((key: string, direction: string) => {
     setSortColumn(key as SortColumn);
@@ -276,10 +270,10 @@ export const SelectUser: FC<SelectUserProps> = ({
     [offices, parkAreas, teams],
   );
 
-  // Filter officers by tab: each officer's agency comes from officer.agency_code.agency (EPO, COS, PARKS, NRS/SECTOR).
+  // Filter officers by tab: each officer's agency comes from officer.agency_code.agency.
   const officersByAgency = useMemo(() => {
     if (!officers?.length) return {} as Record<string, AppUser[]>;
-    return AGENCY_TAB_CODES.reduce(
+    return agencyTabCodes.reduce(
       (acc, code) => {
         acc[code] = officers.filter((u) => {
           const officerAgency = getOfficerAgencyCode(u);
@@ -290,7 +284,7 @@ export const SelectUser: FC<SelectUserProps> = ({
       },
       {} as Record<string, AppUser[]>,
     );
-  }, [officers]);
+  }, [officers, agencyTabCodes]);
 
   // Retained for CSV export only
   const sortedOfficersForTab = useMemo(() => {
@@ -313,11 +307,13 @@ export const SelectUser: FC<SelectUserProps> = ({
 
   const agencyTabsWithLabels = useMemo(
     () =>
-      AGENCY_TAB_CODES.map((code) => ({
-        code,
-        label: getAgencyLabelByCode(code, agencyCodes) || code,
-      })).filter(({ code }) => visibleTabCodes.includes(code)),
-    [agencyCodes, visibleTabCodes],
+      agencyTabCodes
+        .map((code) => ({
+          code,
+          label: getAgencyLabelByCode(code, agencyCodes) || code,
+        }))
+        .filter(({ code }) => visibleTabCodes.includes(code)),
+    [agencyCodes, agencyTabCodes, visibleTabCodes],
   );
 
   const handleOfficerChange = (input: Option | null | undefined) => {

@@ -7,7 +7,8 @@ import { UUID } from "node:crypto";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import config from "@/config";
 import { generateApiParameters, get, patch, put } from "@common/api";
-import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
+import UserService, { AUTH_TOKEN, getUserAgency } from "@service/user-service";
+import { adminRoles, coreRoles } from "@apptypes/app/roles";
 
 import { DropdownOption } from "@apptypes/app/drop-down-option";
 
@@ -18,13 +19,13 @@ import { ConfigurationState } from "@apptypes/state/configuration-state";
 import { NotificationState } from "@apptypes/state/notification-state";
 import { ToggleError } from "@common/toast";
 import { CodeTableVersionState } from "@apptypes/state/code-table-version-state";
-import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
+import { fetchCaseCodeTables, fetchComplaintCodeTables, fetchPartyCodeTables } from "./code-table";
 import { Action, ThunkAction } from "@reduxjs/toolkit";
 import { ComsInviteResponse } from "@apptypes/app/coms-invite-response";
 import { AxiosError } from "axios";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { ActiveFilters } from "@apptypes/app/active-filters";
-import { FeatureFlagState } from "@apptypes/state/feature-flag-state";
+import { FeatureAgencyXref, FeatureFlagState } from "@apptypes/state/feature-flag-state";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -39,6 +40,7 @@ enum ActionTypes {
   SET_USER_AGENCY = "app/SET_USER_AGENCY",
   SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
   SET_FEATURE_FLAG = "app/SET_FEATURE_FLAG",
+  SET_ALL_FEATURE_FLAGS = "app/SET_ALL_FEATURE_FLAGS",
   SET_ACTIVE_TAB = "app/SET_ACTIVE_TAB",
   SET_ACTIVE_COMPLAINTS_VIEW_TYPE = "app/SET_ACTIVE_COMPLAINTS_VIEW_TYPE",
 }
@@ -61,6 +63,11 @@ export const setCodeTableVersion = (version: CodeTableVersionState) => ({
 
 export const setFeatureFlag = (features: any) => ({
   type: ActionTypes.SET_FEATURE_FLAG,
+  payload: features,
+});
+
+export const setAllFeatureFlags = (features: Array<FeatureAgencyXref>) => ({
+  type: ActionTypes.SET_ALL_FEATURE_FLAGS,
   payload: features,
 });
 
@@ -317,6 +324,14 @@ export const isFeatureActive =
     );
   };
 
+export const selectAllFeatureFlags = (state: RootState): Array<FeatureAgencyXref> => {
+  const {
+    app: { allFeatureFlags },
+  } = state;
+
+  return allFeatureFlags;
+};
+
 export const listActiveFilters =
   () =>
   (state: RootState): ActiveFilters => {
@@ -529,13 +544,19 @@ export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
 
     if (response) {
       const { complaintManagement: newComplaint, caseManagement: newCase } = response;
+      const hasCoreOrAdminRole = UserService.hasRole([...coreRoles, ...adminRoles]);
 
       //Compare previous version with new version
-      if (Number(newComplaint.configurationValue) > Number(prevComplaint.configurationValue)) {
+      const hasNewComplaintVersion = Number(newComplaint.configurationValue) > Number(prevComplaint.configurationValue);
+      const hasNewCaseVersion = Number(newCase.configurationValue) > Number(prevCase.configurationValue);
+      if (hasCoreOrAdminRole && hasNewComplaintVersion) {
         dispatch(fetchComplaintCodeTables());
       }
-      if (Number(newCase.configurationValue) > Number(prevCase.configurationValue)) {
+      if (hasCoreOrAdminRole && hasNewCaseVersion) {
         dispatch(fetchCaseCodeTables());
+      }
+      if (hasNewComplaintVersion || hasNewCaseVersion) {
+        dispatch(fetchPartyCodeTables());
       }
       //set new version to redux store
       dispatch(setCodeTableVersion(response));
@@ -555,6 +576,19 @@ export const getFeatureFlag = (): AppThunk => async (dispatch) => {
     }
   } catch (error) {
     ToggleError("Unable to get feature flag");
+  }
+};
+
+export const getAllFeatureFlags = (): AppThunk => async (dispatch) => {
+  try {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/all`);
+    const response = await get<Array<FeatureAgencyXref>>(dispatch, parameters);
+    if (response) {
+      dispatch(setAllFeatureFlags(response));
+    }
+  } catch (error) {
+    console.error(error);
+    ToggleError("Unable to get feature flags");
   }
 };
 
@@ -622,6 +656,7 @@ const initialState: AppState = {
     },
   },
   featureFlags: [],
+  allFeatureFlags: [],
   activeTab: "HWCR",
   activeComplaintsViewType: "list",
 };
@@ -741,6 +776,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     case ActionTypes.SET_FEATURE_FLAG: {
       const { payload } = action;
       return { ...state, featureFlags: payload };
+    }
+    case ActionTypes.SET_ALL_FEATURE_FLAGS: {
+      const { payload } = action;
+      return { ...state, allFeatureFlags: payload };
     }
     case ActionTypes.SET_ACTIVE_TAB: {
       const { payload } = action;
