@@ -30,7 +30,7 @@ import { CompTable } from "@/app/components/common/comp-table";
 import { SORT_TYPES } from "@/app/constants/sort-direction";
 import { Agency } from "@/app/types/app/code-tables/agency";
 import { LegislationRow } from "@/app/components/containers/parties/view/compliance-history/legislation-row";
-import { ClampedContent } from "@/app/common/clamped-content";
+import { ExpandableContent } from "@/app/common/expandable-content";
 
 const GET_INVESTIGATIONS_BY_PARTY = gql`
   query GetInvestigationsByParty($partyId: String!, $partyType: String!) {
@@ -431,7 +431,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       cellClassName: "comp-cell-min-width-250",
       renderCell: (row) => (
         // Each contravention's .party-compliance-outcomes grid is one countable item
-        <ClampedContent
+        <ExpandableContent
           maxLines={COMPLIANCE_HISTORY_MAX_LINES}
           itemSelector=".party-compliance-outcomes"
         >
@@ -444,7 +444,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
               />
             ))}
           </div>
-        </ClampedContent>
+        </ExpandableContent>
       ),
     },
     {

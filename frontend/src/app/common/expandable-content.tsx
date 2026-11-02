@@ -1,14 +1,14 @@
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
-interface ClampedContentProps {
+interface ExpandableContentProps {
   maxLines: number;
   // Selector for countable items; when set, the toggle reads "View X more" with the number not fully visible
   itemSelector?: string;
   children: ReactNode;
 }
 
-// Items whose bottom edge falls below the clamped box are not fully visible
+// Items whose bottom edge falls below the expandable box are not fully visible
 const countHiddenItems = (container: HTMLElement, itemSelector: string): number => {
   const visibleBottom = container.getBoundingClientRect().bottom;
   return Array.from(container.querySelectorAll(itemSelector)).filter(
@@ -17,19 +17,19 @@ const countHiddenItems = (container: HTMLElement, itemSelector: string): number 
 };
 
 /**
- * Clamps content to a number of rendered lines with a fade-out, and shows a "View more" toggle only
+ * Constrains content to a number of rendered lines with a fade-out, and shows a "View more" toggle only
  * when the content actually overflows.
  */
-export const ClampedContent: FC<ClampedContentProps> = ({ maxLines, itemSelector, children }) => {
+export const ExpandableContent: FC<ExpandableContentProps> = ({ maxLines, itemSelector, children }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [viewMore, setViewMore] = useState(false);
   const [hiddenCount, setHiddenCount] = useState(0);
 
-  // Measured only while collapsed (expanded content never overflows). Re-measured when the clamped
+  // Measured only while collapsed (expanded content never overflows). Re-measured when the constrained
   // box resizes (a narrower column wraps onto more lines) and when the content itself changes
-  // size (e.g. legislation loading after mount), which the clamped box alone may not reflect
+  // size (e.g. legislation loading after mount), which the constrained box alone may not reflect
   useEffect(() => {
     const element = contentRef.current;
     const inner = innerRef.current;
@@ -54,7 +54,7 @@ export const ClampedContent: FC<ClampedContentProps> = ({ maxLines, itemSelector
     <>
       <div
         ref={contentRef}
-        className={`clamped-content${isFaded ? " clamped-content--faded" : ""}`}
+        className={`expandable-content${isFaded ? " expandable-content--faded" : ""}`}
         style={viewMore ? undefined : { maxHeight: `${maxLines}lh` }}
       >
         <div ref={innerRef}>{children}</div>

@@ -9,7 +9,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CONTRAVENTION_MAX_LINES, LegislationDisplay } from "@/app/common/legislation-display";
-import { ClampedContent } from "@/app/common/clamped-content";
+import { ExpandableContent } from "@/app/common/expandable-content";
 
 interface ContraventionTableProps {
   contraventions: Contravention[];
@@ -28,9 +28,9 @@ const LegislationCell: FC<{ legislationIdentifierRef: string }> = ({ legislation
   const legislation = useLegislation(legislationIdentifierRef, true);
 
   return (
-    <ClampedContent maxLines={CONTRAVENTION_MAX_LINES}>
+    <ExpandableContent maxLines={CONTRAVENTION_MAX_LINES}>
       <LegislationDisplay legislation={legislation?.data?.legislation} />
-    </ClampedContent>
+    </ExpandableContent>
   );
 };
 

@@ -1254,11 +1254,11 @@ td.actions-col {
   margin-bottom: 0;
 }
 
-.clamped-content {
+.expandable-content {
   overflow: hidden;
 }
 
 // Fades the cut-off lines when collapsed content overflows
-.clamped-content--faded {
+.expandable-content--faded {
   mask-image: linear-gradient(to bottom, #000 60%, transparent);
 }

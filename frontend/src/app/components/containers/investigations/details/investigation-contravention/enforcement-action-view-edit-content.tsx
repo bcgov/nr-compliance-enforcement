@@ -10,7 +10,7 @@ import { EnforcementActionForm, NOTICE_OF_CANCELLATION_ACT_CITATIONS } from "./e
 import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { CONTRAVENTION_MAX_LINES, LegislationDisplay } from "@/app/common/legislation-display";
-import { ClampedContent } from "@/app/common/clamped-content";
+import { ExpandableContent } from "@/app/common/expandable-content";
 
 interface EnforcementActionViewEditContentProps {
   currentStep: number;
@@ -81,9 +81,9 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   }, [legislation]);
 
   const contraventionLabel = (
-    <ClampedContent maxLines={CONTRAVENTION_MAX_LINES}>
+    <ExpandableContent maxLines={CONTRAVENTION_MAX_LINES}>
       <LegislationDisplay legislation={legislation} />
-    </ClampedContent>
+    </ExpandableContent>
   );
 
   const enforcementActionLabel =
