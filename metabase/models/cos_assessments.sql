@@ -11,7 +11,7 @@ FROM
     -----------------------------------------------------
     select
       co.complaint_identifier as "Complaint Identifer",
-	    to_char(asd.action_date, 'YYYY-MM-DD') as "Assessment Date",
+	    asd.action_date as "Assessment Date",
       case
         when asm.attended_ind is true then 'Yes'
         when asm.attended_ind is false then 'No'
