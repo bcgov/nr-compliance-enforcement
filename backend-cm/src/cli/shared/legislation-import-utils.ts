@@ -90,9 +90,6 @@ export function buildFullCitation(
       case "DIV":
         parts.push(`Division ${node.citation}`);
         break;
-      case "SCHED":
-        parts.push(`Schedule ${node.citation}`);
-        break;
       case "RULE":
         parts.push(`Rule ${node.citation}`);
         break;
@@ -113,6 +110,14 @@ export function buildFullCitation(
           parts.push(`"${node.sectionTitle}"`);
         }
         break;
+    }
+  }
+
+  // Schedules are a special case because provincial legislation does not have a citation
+  if (node.typeCode === "SCHED") {
+    const scheduleLabel = node.citation ? `Schedule ${node.citation}` : node.sectionTitle;
+    if (scheduleLabel) {
+      parts.push(scheduleLabel);
     }
   }
 

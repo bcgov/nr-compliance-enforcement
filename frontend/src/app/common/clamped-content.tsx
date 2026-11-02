@@ -60,7 +60,7 @@ export const ClampedContent: FC<ClampedContentProps> = ({ maxLines, itemSelector
         <div ref={innerRef}>{children}</div>
       </div>
       {isOverflowing && (
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-end">
           <button
             type="button"
             className="btn btn-link p-0"
