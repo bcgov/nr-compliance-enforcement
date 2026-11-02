@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Legislation } from "@/generated/graphql";
 import { LegislationText } from "@/app/components/common/legislation-text";
-import { buildLegislationDisplayParts, indentByType } from "@/app/types/app/legislation";
+import { buildLegislationDisplayParts, formatCitationWithAct, indentByType } from "@/app/types/app/legislation";
 
 // Contraventions longer than this collapse behind "View more" wherever they are displayed in full
 export const CONTRAVENTION_MAX_LINES = 5;
@@ -17,11 +17,9 @@ interface LegislationDisplayProps {
 export const LegislationDisplay: FC<LegislationDisplayProps> = ({ legislation }) => {
   if (!legislation) return <span>Loading...</span>;
 
-  const { actName, isRegulation, sectionFullCitation, sectionTitle, subsections } =
-    buildLegislationDisplayParts(legislation);
-
-  // A regulation's full citation omits its parent act
-  const heading = isRegulation ? `${actName}, ${sectionFullCitation}` : sectionFullCitation;
+  const parts = buildLegislationDisplayParts(legislation);
+  const { sectionTitle, subsections } = parts;
+  const heading = formatCitationWithAct(parts, parts.sectionFullCitation);
 
   return (
     <div className="legislation-display">

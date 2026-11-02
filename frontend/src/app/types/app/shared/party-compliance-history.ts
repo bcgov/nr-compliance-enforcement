@@ -26,5 +26,5 @@ export type PartyComplianceRelation = {
 export type PartyComplianceHistoryRow = {
   rowKey: string;
   activity: PartyComplianceActivity;
-  contravention: Contravention | null;
+  contraventions: Contravention[];
 };

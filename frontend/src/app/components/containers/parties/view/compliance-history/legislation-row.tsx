@@ -4,6 +4,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@/app/store/reducers/code-table";
 import { FC, Fragment } from "react";
 import { Contravention } from "@/generated/graphql";
+import { buildLegislationDisplayParts, formatCitationWithAct } from "@/app/types/app/legislation";
 
 export type LegislationRowProps = {
   contravention: Contravention;
@@ -11,9 +12,12 @@ export type LegislationRowProps = {
 };
 
 export const LegislationRow: FC<LegislationRowProps> = ({ contravention, partyReference }) => {
-  const legislation = useLegislation(contravention?.legislationIdentifierRef, false);
+  // Ancestors are needed to put the act in front of a regulation's citation
+  const legislation = useLegislation(contravention?.legislationIdentifierRef, true);
   const legislationData = legislation?.data?.legislation;
-  const displayText = legislationData?.fullCitation;
+  const displayText = legislationData
+    ? formatCitationWithAct(buildLegislationDisplayParts(legislationData), legislationData.fullCitation ?? "")
+    : undefined;
   const enforcementActions = useAppSelector((state) => state.codeTables["enforcement-action-type"]);
   const ticketOutcomes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.TICKET_OUTCOME_TYPE));
 
@@ -50,5 +54,3 @@ export const LegislationRow: FC<LegislationRowProps> = ({ contravention, partyRe
     </div>
   );
 };
-
-export default LegislationRow;

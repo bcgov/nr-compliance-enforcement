@@ -113,3 +113,9 @@ export const buildLegislationDisplayParts = (legislation: Legislation): Legislat
     subsections,
   };
 };
+
+// A regulation's full citation omits its parent act, so the act is added in front
+export const formatCitationWithAct = (
+  parts: Pick<LegislationDisplayParts, "actName" | "isRegulation">,
+  citation: string,
+): string => (parts.isRegulation ? `${parts.actName}, ${citation}` : citation);
