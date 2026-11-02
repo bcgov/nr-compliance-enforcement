@@ -3,7 +3,7 @@ import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@/app/store/reducers/code-table";
 import { FC, Fragment } from "react";
-import { Contravention, PartyHistoryContravention } from "@/generated/graphql";
+import { PartyHistoryContravention } from "@/generated/graphql";
 import { buildLegislationDisplayParts, formatCitationWithAct } from "@/app/types/app/legislation";
 
 export type LegislationRowProps = {

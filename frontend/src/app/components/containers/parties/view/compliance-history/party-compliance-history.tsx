@@ -488,7 +488,7 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
           itemSelector=".party-compliance-outcomes"
         >
           <div className="party-compliance-contraventions">
-            {row.contraventions.map((contravention) => (
+            {row.contraventions?.map((contravention) => (
               <LegislationRow
                 key={contravention.contraventionIdentifier}
                 contravention={contravention}
