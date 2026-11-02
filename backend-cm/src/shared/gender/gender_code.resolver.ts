@@ -1,7 +1,7 @@
 import { Resolver, Query } from "@nestjs/graphql";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { UseGuards } from "@nestjs/common";
-import { coreRoles } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { GenderCodeService } from "src/shared/gender/gender_code.service";
 
@@ -11,7 +11,7 @@ export class GenderCodeResolver {
   constructor(private readonly genderCodeService: GenderCodeService) {}
 
   @Query("genderCodes")
-  @Roles(coreRoles)
+  @Roles(coreRoles, Role.PARTY_ACCESS)
   async findAll() {
     return await this.genderCodeService.findAll();
   }
