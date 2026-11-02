@@ -12,17 +12,21 @@ interface ClampedContentProps {
  */
 export const ClampedContent: FC<ClampedContentProps> = ({ maxLines, children }) => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [viewMore, setViewMore] = useState(false);
 
-  // Measured only while collapsed (expanded content never overflows), and re-measured on resize
-  // since a narrower column wraps onto more lines
+  // Measured only while collapsed (expanded content never overflows). Re-measured when the clamped
+  // box resizes (a narrower column wraps onto more lines) and when the content itself changes
+  // size (e.g. legislation loading after mount), which the clamped box alone may not reflect
   useEffect(() => {
     const element = contentRef.current;
-    if (!element || viewMore) return;
+    const inner = innerRef.current;
+    if (!element || !inner || viewMore) return;
 
     const observer = new ResizeObserver(() => setIsOverflowing(element.scrollHeight > element.clientHeight));
     observer.observe(element);
+    observer.observe(inner);
     return () => observer.disconnect();
   }, [viewMore]);
 
@@ -35,7 +39,7 @@ export const ClampedContent: FC<ClampedContentProps> = ({ maxLines, children }) 
         className={`clamped-content${isFaded ? " clamped-content--faded" : ""}`}
         style={viewMore ? undefined : { maxHeight: `${maxLines}lh` }}
       >
-        {children}
+        <div ref={innerRef}>{children}</div>
       </div>
       {isOverflowing && (
         <div className="d-flex justify-content-center">
