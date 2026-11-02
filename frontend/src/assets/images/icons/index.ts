@@ -16,6 +16,9 @@ const agencyIcons: { [key: string]: any } = {
   NROS: NROS,
   MINES: MINES,
   OTH: EXTERNAL,
+  FCBC: EXTERNAL,
+  WEB: EXTERNAL,
+  BCCEA: EXTERNAL,
 };
 
 export default agencyIcons;

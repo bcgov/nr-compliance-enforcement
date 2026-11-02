@@ -6,12 +6,14 @@ import { PartyHistoryTab } from "./party-history-tab";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { Party } from "@/generated/graphql";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import PartyDetail from "@/app/components/containers/parties/view/party-detail/party-detail";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { isYoungPerson } from "@/app/common/methods";
 import { getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
+import UserService from "@/app/service/user-service";
+import { coreRoles } from "@/app/types/app/roles";
 import {
   DetailField,
   DetailSection,
@@ -177,6 +179,23 @@ export const PartyView: FC = () => {
     );
   }
 
+  let editDisabledReason: string | undefined;
+  if (!UserService.hasRole(coreRoles)) {
+    editDisabledReason = "You are not authorized to edit parties";
+  }
+
+  const editButton = (
+    <Button
+      variant="outline-light"
+      id="party-detail-edit-button"
+      onClick={editButtonClick}
+      disabled={!!editDisabledReason}
+    >
+      <i className="bi bi-pencil"></i>
+      <span>Edit party</span>
+    </Button>
+  );
+
   return (
     <>
       {!partyData && <div className="case-not-found">No data found for ID: {id}</div>}
@@ -199,15 +218,20 @@ export const PartyView: FC = () => {
                   <i className="bi bi-arrow-left"></i>
                   <span>Parties</span>
                 </Button>
-                {editButtonClick && (
-                  <Button
-                    variant="outline-light"
-                    id="party-detail-edit-button"
-                    onClick={editButtonClick}
+                {editDisabledReason ? (
+                  <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip id="party-detail-edit-disabled-tooltip">{editDisabledReason}</Tooltip>}
                   >
-                    <i className="bi bi-pencil"></i>
-                    <span>Edit party</span>
-                  </Button>
+                    <span
+                      className="d-inline-block ms-2"
+                      style={{ cursor: "not-allowed" }}
+                    >
+                      {editButton}
+                    </span>
+                  </OverlayTrigger>
+                ) : (
+                  editButton
                 )}
               </>
             }

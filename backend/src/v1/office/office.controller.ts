@@ -4,7 +4,7 @@ import { CreateOfficeDto } from "./dto/create-office.dto";
 import { UpdateOfficeDto } from "./dto/update-office.dto";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
-import { coreRoles } from "../../enum/role.enum";
+import { adminRoles, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
 import { UUID } from "node:crypto";
@@ -20,7 +20,7 @@ export class OfficeController {
   constructor(private readonly officeService: OfficeService) {}
 
   @Get("/offices-by-agency")
-  @Roles(coreRoles)
+  @Roles(coreRoles, adminRoles)
   async findOffices(@Token() token: string): Promise<Array<OfficeAssignmentDto>> {
     const result = await this.officeService.findOffices(token);
     return result;

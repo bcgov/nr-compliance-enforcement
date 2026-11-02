@@ -104,3 +104,66 @@ input PartyMatchInput {
   contactMethods: [ContactMethodMatchInput!]
   externalIds: [PartyExternalIdMatchInput!]
 }
+
+# Party history reads bypass RLS, so these types only expose what the compliance history should show.
+type PartyHistoryInvestigation {
+  investigationGuid: String
+  description: String
+  leadAgency: String
+  investigationStatus: InvestigationStatusCode
+  openedTimestamp: DateTime
+  updatedTimestamp: DateTime
+  locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
+  name: String
+  supervisorGuid: String
+  primaryInvestigatorGuid: String
+  contraventions: [PartyHistoryContravention]
+}
+
+type PartyHistoryContravention {
+  contraventionIdentifier: String!
+  legislationIdentifierRef: String!
+  investigationParty: [PartyHistoryContraventionParty]
+  date: DateTime
+}
+
+type PartyHistoryContraventionParty {
+  partyReference: String
+  enforcementActions: [PartyHistoryEnforcementAction]
+}
+
+type PartyHistoryEnforcementAction {
+  enforcementActionIdentifier: String!
+  enforcementActionCode: EnforcementActionCode!
+  ticket: PartyHistoryTicket
+}
+
+type PartyHistoryTicket {
+  ticketOutcomeCode: String!
+}
+
+type PartyHistoryInspection {
+  inspectionGuid: String
+  description: String
+  leadAgency: String
+  inspectionStatus: InspectionStatusCode
+  openedTimestamp: DateTime
+  updatedTimestamp: DateTime
+  name: String
+  locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
+}
+
+type PartyHistoryCaseFile {
+  caseIdentifier: String
+  leadAgency: AgencyCode
+  name: String
+  activities: [PartyHistoryCaseActivity]
+}
+
+type PartyHistoryCaseActivity {
+  activityIdentifier: String
+}

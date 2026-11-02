@@ -196,6 +196,24 @@ export const getUserAgency = () => {
   if (hasRole("MINES")) {
     agency = AgencyType.MINES;
   }
+  if (hasRole("FCBC")) {
+    agency = AgencyType.FCBC;
+  }
+  if (hasRole("WEB")) {
+    agency = AgencyType.WEB;
+  }
+  if (hasRole("BCCEA")) {
+    agency = AgencyType.BCCEA;
+  }
+  if (hasRole("ECCC")) {
+    agency = AgencyType.ECCC;
+  }
+  if (hasRole("DFO")) {
+    agency = AgencyType.DFO;
+  }
+  if (hasRole("POL")) {
+    agency = AgencyType.POL;
+  }
   return agency;
 };
 

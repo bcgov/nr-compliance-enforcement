@@ -18,7 +18,7 @@ export class AppUserTeamXrefResolver {
   }
 
   @Query("appUserTeamXref")
-  @Roles(coreRoles)
+  @Roles(coreRoles, adminRoles)
   async findOne(@Args("appUserGuid") appUserGuid: string) {
     return await this.appUserTeamXrefService.findOne(appUserGuid);
   }

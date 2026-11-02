@@ -7,6 +7,7 @@ import { adminRoles } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { TeamUpdate } from "src/types/models/general/team-update";
 import { Token } from "../../auth/decorators/token.decorator";
+import { User } from "../../auth/decorators/user.decorator";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("team")
@@ -31,7 +32,12 @@ export class TeamController {
 
   @Patch("update/:app_user_guid")
   @Roles(adminRoles)
-  update(@Param("app_user_guid") appUserGuid: UUID, @Body() updateTeamData: TeamUpdate, @Token() token: string) {
-    return this.teamService.update(appUserGuid, updateTeamData, token);
+  update(
+    @Param("app_user_guid") appUserGuid: UUID,
+    @Body() updateTeamData: TeamUpdate,
+    @Token() token: string,
+    @User() user,
+  ) {
+    return this.teamService.update(appUserGuid, updateTeamData, token, user);
   }
 }

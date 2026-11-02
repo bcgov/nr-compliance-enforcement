@@ -22,8 +22,18 @@ export class PartyHistoryService {
     return withRlsBypass(() => this.inspectionService.findManyByParty(partyId, partyType));
   }
 
-  findCaseFilesByActivityIds(activityIdentifiers: string[]) {
+  findCaseFilesByParty(partyId: string, partyType: string) {
     // Bypass RLS to get history across all agencies
-    return withRlsBypass(() => this.caseFileService.findCaseFilesByActivityIds(activityIdentifiers));
+    return withRlsBypass(async () => {
+      const [investigations, inspections] = await Promise.all([
+        this.investigationService.findManyByParty(partyId, partyType),
+        this.inspectionService.findManyByParty(partyId, partyType),
+      ]);
+
+      return this.caseFileService.findCaseFilesByActivityIds([
+        ...investigations.map((investigation) => investigation.investigationGuid),
+        ...inspections.map((inspection) => inspection.inspectionGuid),
+      ]);
+    });
   }
 }

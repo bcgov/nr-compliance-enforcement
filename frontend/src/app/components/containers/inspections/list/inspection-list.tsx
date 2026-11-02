@@ -5,11 +5,11 @@ import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { CaseFile, Inspection } from "@/generated/graphql";
 import { applyStatusClass } from "@common/methods";
-import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import { selectCodeTable } from "@/app/store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { useInspectionSearch } from "../hooks/use-inspection-search";
 import { SORT_TYPES } from "@constants/sort-direction";
-import Option from "@apptypes/app/option";
 import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type Props = {
@@ -28,7 +28,7 @@ export const InspectionList: FC<Props> = ({
   cases = new Map(),
 }) => {
   const { searchValues, setValues, setSort } = useInspectionSearch();
-  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
 
   const handleSort = useCallback(
     (sortKey: string, sortDirection: string) => {
@@ -108,12 +108,12 @@ export const InspectionList: FC<Props> = ({
       cellClassName: "",
       isSortable: true,
       getValue: (inspection) => {
-        const agency = leadAgencyOptions.find((o: Option) => o.value === inspection.leadAgency);
-        return agency?.label ?? "";
+        const agency = agencies.find((item) => item.agency === inspection.leadAgency);
+        return agency?.longDescription ?? "";
       },
       renderCell: (inspection) => {
-        const agency = leadAgencyOptions.find((o: Option) => o.value === inspection.leadAgency);
-        return agency?.label ?? "-";
+        const agency = agencies.find((item) => item.agency === inspection.leadAgency);
+        return agency?.longDescription ?? "-";
       },
     },
     {

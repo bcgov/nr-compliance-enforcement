@@ -12,7 +12,7 @@ export class OfficeResolver {
   constructor(private readonly officeService: OfficeService) {}
 
   @Query("offices")
-  @Roles(coreRoles)
+  @Roles(coreRoles, adminRoles)
   async findAll(
     @Args("geoOrganizationUnitCodes") geoOrganizationUnitCodes?: string[],
     @Args("agencyCode") agencyCode?: string,
