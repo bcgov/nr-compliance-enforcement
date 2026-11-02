@@ -288,8 +288,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                 enforcementActionsWithAttachments={enforcementActionsWithAttachments}
                 onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
                 onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
-                onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
-                  onEditEnforcementAction(eaId, contraventionId, pGuid)
+                onEditEnforcementAction={(eaId, contraventionId, pGuid, readOnly) =>
+                  onEditEnforcementAction(eaId, contraventionId, pGuid, readOnly)
                 }
               />
             </div>
@@ -311,8 +311,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               enforcementActionsWithAttachments={enforcementActionsWithAttachments}
               onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
               onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
-              onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
-                onEditEnforcementAction(eaId, contraventionId, pGuid)
+              onEditEnforcementAction={(eaId, contraventionId, pGuid, readOnly) =>
+                onEditEnforcementAction(eaId, contraventionId, pGuid, readOnly)
               }
             />
           </div>
