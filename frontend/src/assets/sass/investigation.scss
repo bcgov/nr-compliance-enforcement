@@ -70,3 +70,17 @@
   color: $gray-500;
   cursor: not-allowed;
 }
+
+.comp-investigations-at-a-glance {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+
+  // Hide the metabase footer
+  iframe {
+    position: absolute;
+    width: 100%;
+    height: calc(100% + 68px);
+    border: 0;
+  }
+}

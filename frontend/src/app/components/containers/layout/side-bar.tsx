@@ -6,6 +6,7 @@ import {
   selectCanAccessCases,
   selectCanAccessInspections,
   selectCanAccessInvestigations,
+  selectIsInvestigationsAtAGlanceFeatureEnabled,
 } from "@/app/access/module-access";
 import MenuItem from "@apptypes/app/menu-item";
 import { Link, useLocation } from "react-router-dom";
@@ -22,6 +23,7 @@ export const SideBar: FC = () => {
   const canAccessCases = useAppSelector(selectCanAccessCases);
   const canAccessInvestigations = useAppSelector(selectCanAccessInvestigations);
   const canAccessInspections = useAppSelector(selectCanAccessInspections);
+  const investigationsAtAGlanceFeatureOn = useAppSelector(selectIsInvestigationsAtAGlanceFeatureEnabled);
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
   const { pathname } = useLocation();
   const [showToggleTooltip, setShowToggleTooltip] = useState(false);
@@ -67,6 +69,14 @@ export const SideBar: FC = () => {
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
       excludedRoles: [Roles.CEEB, Roles.PARKS, Roles.PROVINCE_WIDE, Roles.SECTOR, Roles.NROS, Roles.MINES],
+    },
+    {
+      id: "investigations-at-a-glance-link",
+      name: "Investigations at a glance",
+      icon: "bi bi-bar-chart-line",
+      route: "/investigations/at-a-glance",
+      hidden: !canAccessInvestigations || !investigationsAtAGlanceFeatureOn,
+      requiredRoles: [Roles.COS],
     },
     {
       id: "user-management",

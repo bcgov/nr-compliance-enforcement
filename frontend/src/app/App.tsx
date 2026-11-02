@@ -40,10 +40,12 @@ import { LegislationSourceManagement } from "./components/containers/admin/legis
 import { AppUpdate } from "./AppUpdate";
 import Investigations from "@/app/components/containers/investigations/investigations";
 import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
+import { InvestigationsAtAGlance } from "@/app/components/containers/investigations/at-a-glance/investigations-at-a-glance";
 import {
   selectIsCasesFeatureEnabled,
   selectIsInspectionsFeatureEnabled,
   selectIsInvestigationsFeatureEnabled,
+  selectIsInvestigationsAtAGlanceFeatureEnabled,
 } from "@/app/access/module-access";
 import { PartyView } from "./components/containers/parties/view";
 import { InspectionDetails } from "@/app/components/containers/inspections/details/inspection-details";
@@ -75,6 +77,7 @@ const App: FC = () => {
   const casesFeatureOn = useAppSelector(selectIsCasesFeatureEnabled);
   const investigationsFeatureOn = useAppSelector(selectIsInvestigationsFeatureEnabled);
   const inspectionsFeatureOn = useAppSelector(selectIsInspectionsFeatureEnabled);
+  const investigationsAtAGlanceFeatureOn = useAppSelector(selectIsInvestigationsAtAGlanceFeatureEnabled);
   const hasCaseAccess = UserService.hasRole(Roles.CASE_ACCESS);
   const pilotGate = (element: ReactElement) => (hasCaseAccess ? element : <CaseManagementPilotRestricted />);
 
@@ -180,6 +183,12 @@ const App: FC = () => {
               <Route
                 path="/investigations"
                 element={pilotGate(<Investigations />)}
+              />
+            )}
+            {investigationsFeatureOn && investigationsAtAGlanceFeatureOn && (
+              <Route
+                path="/investigations/at-a-glance"
+                element={pilotGate(<InvestigationsAtAGlance />)}
               />
             )}
             {investigationsFeatureOn && (

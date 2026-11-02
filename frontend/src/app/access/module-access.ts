@@ -17,6 +17,9 @@ export const selectIsInvestigationsFeatureEnabled = (state: RootState): boolean 
 export const selectIsInspectionsFeatureEnabled = (state: RootState): boolean =>
   isFeatureActive(FEATURE_TYPES.INSPECTIONS)(state);
 
+export const selectIsInvestigationsAtAGlanceFeatureEnabled = (state: RootState): boolean =>
+  isFeatureActive(FEATURE_TYPES.INVESTIGATIONS_AT_A_GLANCE)(state);
+
 export const selectCanAccessCases = (state: RootState): boolean =>
   isFeatureActive(FEATURE_TYPES.CASES)(state) && casesRoleBypass();
 

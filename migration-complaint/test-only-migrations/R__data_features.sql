@@ -92,6 +92,14 @@ SET active_ind = 'Y'
 WHERE feature_code = 'ASMTCOMNTS';
 
 ---------------------
+-- Enable investigations at a glance in dev/test for all users
+---------------------
+
+UPDATE feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'INVGLANCE';
+
+---------------------
 -- Disable Case Creation for all agencies
 ---------------------
 
