@@ -1,10 +1,12 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { ForbiddenException, Inject, Injectable, Logger } from "@nestjs/common";
 import { CssService } from "../../external_api/css/css.service";
-import { Role } from "../../enum/role.enum";
+import { adminRoles } from "../../enum/role.enum";
 import { TeamUpdate } from "../../types/models/general/team-update";
+import { hasAgencyAccess, hasAssignableRoles, normalizeGuid } from "../../common/methods";
 import {
   getTeams,
   getTeamByGuid,
+  getAppUserByGuid,
   updateAppUser,
   getAppUserTeamXref,
   createAppUserTeamXref,
@@ -68,12 +70,21 @@ export class TeamService {
     };
   }
 
-  async update(appUserGuid: string, updateTeamData: TeamUpdate, token: string) {
+  async update(appUserGuid: string, updateTeamData: TeamUpdate, token: string, user: any) {
     let result = {
       team: false,
       roles: false,
     };
     const { teamCode, agencyCode, userIdir, roles: updateRoles, adminIdirUsername } = updateTeamData;
+
+    const appUser = await getAppUserByGuid(token, appUserGuid);
+    if (
+      !hasAgencyAccess(user.client_roles, [appUser.agencyCode, agencyCode]) ||
+      !hasAssignableRoles(updateRoles, agencyCode) ||
+      normalizeGuid(userIdir) !== normalizeGuid(appUser.authUserGuid)
+    ) {
+      throw new ForbiddenException();
+    }
 
     try {
       // Update the app user's agency
@@ -117,7 +128,7 @@ export class TeamService {
       for await (const roleItem of currentRoles) {
         const rolesMatchWithUpdate = updateRoles.some((updateRole) => updateRole.name === roleItem.name);
         //Remove existing roles that do not match with updated roles, but still keeps Admin roles
-        if (roleItem.name !== (Role.GLOBAL_ADMINISTRATOR || Role.AGENCY_ADMINISTRATOR) && !rolesMatchWithUpdate) {
+        if (!adminRoles.includes(roleItem.name) && !rolesMatchWithUpdate) {
           await this.cssService.deleteUserRole(userIdir, roleItem.name);
         }
       }

@@ -4,5 +4,4 @@ type AgencyCode {
   longDescription: String
   displayOrder: Int
   activeIndicator: Boolean
-  externalAgencyIndicator: Boolean
 }

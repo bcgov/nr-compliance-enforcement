@@ -17,13 +17,13 @@ export class FeatureFlagController {
   constructor(private readonly featureFlagService: FeatureFlagService) {}
 
   @Get("/all")
-  @Roles(Role.GLOBAL_ADMINISTRATOR)
+  @Roles(coreRoles, Role.GLOBAL_ADMINISTRATOR)
   findAll() {
     return this.featureFlagService.findAll();
   }
 
   @Get("features-by-agency/:agencyCode")
-  @Roles(adminRoles, coreRoles)
+  @Roles(adminRoles, coreRoles, Role.PARTY_ACCESS)
   async findByAgency(@Param("agencyCode") agencyCode: string) {
     return await this.featureFlagService.findByAgency(agencyCode);
   }
