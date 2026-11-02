@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Contravention, EnforcementAction, InvestigationParty, Legislation } from "@/generated/graphql";
+import { Contravention, EnforcementAction, InvestigationParty } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
