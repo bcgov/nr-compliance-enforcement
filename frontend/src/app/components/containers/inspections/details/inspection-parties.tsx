@@ -115,7 +115,7 @@ export const InspectionSummary: FC<InspectionPartiesProps> = ({ inspectionGuid, 
             onClick={handleAddParty}
           >
             <i className="bi bi-plus-circle me-1" /> {/**/}
-            Add Party
+            Add party
           </Button>
         </div>
       </div>
