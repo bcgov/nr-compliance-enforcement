@@ -5,7 +5,7 @@ import { CompColumn } from "@/app/types/app/comp-tables";
 import { usePartySearch } from "../hooks/use-party-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import { calculateAgeYears, isYoungPerson } from "@common/methods";
+import { isYoungPerson } from "@common/methods";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
