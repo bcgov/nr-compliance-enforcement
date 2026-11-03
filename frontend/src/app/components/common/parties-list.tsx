@@ -17,10 +17,9 @@ import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input";
-import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural, calculateAgeYears } from "@/app/common/methods";
+import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/common/methods";
 import { getBusinessIdentifier, getPartyMissingFields, getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
-import { parseUTCDateToLocal } from "@/app/common/date-utils";
 
 const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "CMPLNNT", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
@@ -68,10 +67,7 @@ const PartiesList: React.FC<Props> = ({
 
   const getDateOfBirth = (person: InvestigationPerson): string => {
     if (person.dateOfBirth) {
-      const formattedDateOfBirth = String(person.dateOfBirth).slice(0, 10);
-      const dateOfBirth = parseUTCDateToLocal(person.dateOfBirth);
-      const age = dateOfBirth ? calculateAgeYears(dateOfBirth) : null;
-      return age == null ? formattedDateOfBirth : `${formattedDateOfBirth} (${age})`;
+      return String(person.dateOfBirth).slice(0, 10);
     }
     if (person.approximateAgeCode) {
       return (
