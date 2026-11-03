@@ -2,7 +2,7 @@ import { Logger } from "@nestjs/common";
 import { Query, Resolver } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { coreRoles } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { TicketOutcomeCodeService } from "../../investigation/ticket_outcome_code/ticket_outcome_code.service";
 
 @Resolver("TicketOutcome")
@@ -11,7 +11,7 @@ export class TicketOutcomeCodeResolver {
   private readonly logger = new Logger(TicketOutcomeCodeResolver.name);
 
   @Query("ticketOutcomeCodes")
-  @Roles(coreRoles)
+  @Roles(coreRoles, Role.PARTY_ACCESS)
   async findTicketOutcomeCodes() {
     try {
       return await this.ticketOutcomeService.findTicketOutcomeCodes();

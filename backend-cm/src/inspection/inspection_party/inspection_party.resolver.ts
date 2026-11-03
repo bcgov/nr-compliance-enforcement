@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
-import { coreRoles } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { CreateInspectionPartyInput } from "../inspection_party/dto/inspection_party";
 import { InspectionPartyService } from "../inspection_party/inspection_party_service";
@@ -44,7 +44,7 @@ export class InspectionPartyResolver {
   }
 
   @Query("InspectionParties")
-  @Roles(coreRoles)
+  @Roles(coreRoles, Role.PARTY_ACCESS)
   async findManyByParty(@Args("partyRefId") partyRefId: string) {
     try {
       return await this.inspectionPartyService.findManyByRef(partyRefId);

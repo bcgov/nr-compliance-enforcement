@@ -1,5 +1,6 @@
 type Query {
   appUsers(officeGuids: [String!], agencyCode: String): [AppUser]!
+  appUsersByGuids(appUserGuids: [String!], authUserGuids: [String!]): [AppUser]!
   appUser(appUserGuid: String, userId: String, authUserGuid: String): AppUser
   searchAppUsers(searchTerm: String!): [AppUser]!
 }

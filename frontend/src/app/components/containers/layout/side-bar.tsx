@@ -6,8 +6,10 @@ import { useInspectionSearch } from "@/app/components/containers/inspections/hoo
 import { isSidebarOpen, toggleSidebar, isFeatureActive } from "@store/reducers/app";
 import {
   selectCanAccessCases,
+  selectCanAccessComplaints,
   selectCanAccessInspections,
   selectCanAccessInvestigations,
+  selectCanAccessParties,
 } from "@/app/access/module-access";
 import MenuItem from "@apptypes/app/menu-item";
 import { Link, useLocation } from "react-router-dom";
@@ -24,6 +26,8 @@ export const SideBar: FC = () => {
   const canAccessCases = useAppSelector(selectCanAccessCases);
   const canAccessInvestigations = useAppSelector(selectCanAccessInvestigations);
   const canAccessInspections = useAppSelector(selectCanAccessInspections);
+  const canAccessComplaints = useAppSelector(selectCanAccessComplaints);
+  const canAccessParties = useAppSelector(selectCanAccessParties);
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
   const { searchURL: caseSearchURL } = useCaseSearch();
   const { searchURL: inspectionSearchURL } = useInspectionSearch();
@@ -36,6 +40,7 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
+      hidden: !canAccessComplaints,
     },
     {
       id: "investigations-link",
@@ -63,13 +68,14 @@ export const SideBar: FC = () => {
       name: "Parties",
       icon: "bi bi-people",
       route: "/parties",
-      hidden: !canAccessCases,
+      hidden: !canAccessParties,
     },
     {
       id: "zone-at-a-glance-link",
       name: "Zone at a glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
+      requiredRoles: [Roles.COS],
       excludedRoles: [Roles.CEEB, Roles.PARKS, Roles.PROVINCE_WIDE, Roles.SECTOR, Roles.NROS, Roles.MINES],
     },
     {

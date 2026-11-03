@@ -24,7 +24,6 @@ model agency_code {
   long_description                                                             String?                     @db.VarChar(256)
   display_order                                                                Int?
   active_ind                                                                   Boolean                     @default(true)
-  external_agency_ind                                                          Boolean                     @default(false)
   create_user_id                                                               String                      @db.VarChar(32)
   create_utc_timestamp                                                         DateTime                    @default(now()) @db.Timestamp(6)
   update_user_id                                                               String?                     @db.VarChar(32)

@@ -348,6 +348,18 @@ const mapAgencyToRole = (agency: string): string => {
     role = "MINES";
   } else if (agency === "PARKS") {
     role = "PARKS";
+  } else if (agency === "FCBC") {
+    role = "FCBC";
+  } else if (agency === "WEB") {
+    role = "WEB";
+  } else if (agency === "BCCEA") {
+    role = "BCCEA";
+  } else if (agency === "ECCC") {
+    role = "ECCC";
+  } else if (agency === "DFO") {
+    role = "DFO";
+  } else if (agency === "POL") {
+    role = "POL";
   }
   return role;
 };

@@ -1,11 +1,13 @@
 import { Logger, UseGuards } from "@nestjs/common";
 import { JwtOrApiKeyGuard } from "../../auth/jwt-or-apikey.guard";
-import { Args, Query, Mutation, Resolver } from "@nestjs/graphql";
+import { Args, Query, Mutation, Resolver, Context } from "@nestjs/graphql";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { coreRoles } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";
 import { EventService } from "./event.service";
 import { EventCreateInput, EventFilters } from "./dto/event";
+import { validateEventSearch } from "./utils/validate-event-search";
+import { hasRole } from "../../common/has-role";
 
 @UseGuards(JwtOrApiKeyGuard)
 @Resolver("Event")
@@ -31,14 +33,23 @@ export class EventResolver {
   }
 
   @Query("searchEvents")
-  @Roles(coreRoles)
+  @Roles(coreRoles, Role.PARTY_ACCESS)
   async search(
     @Args("page") page?: number,
     @Args("pageSize") pageSize?: number,
     @Args("filters") filters?: EventFilters,
+    @Context() context?: any,
   ) {
+    const clientRoles = context.req?.user?.client_roles;
+    validateEventSearch(clientRoles, filters?.targetId);
+
     try {
-      return await this.eventService.search(page, pageSize, filters);
+      return await this.eventService.search(
+        page,
+        pageSize,
+        filters,
+        hasRole(clientRoles, coreRoles) ? undefined : "PARTY",
+      );
     } catch (error) {
       this.logger.error(error);
       throw new GraphQLError("Error searching events", {
