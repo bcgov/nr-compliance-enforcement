@@ -18,7 +18,12 @@ interface ContraventionTableProps {
   enforcementActionsWithAttachments?: Set<string>;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
   onAddEnforcementAction: (contraventionId: string, partyId: string | null) => void;
-  onEditEnforcementAction: (enforcementActionId: string, contraventionId: string, partyGuid: string | null) => void;
+  onEditEnforcementAction: (
+    enforcementActionId: string,
+    contraventionId: string,
+    partyGuid: string | null,
+    isReadOnly: boolean,
+  ) => void;
 }
 
 // Thin wrapper so each row can call the legislation hook independently
@@ -139,9 +144,13 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
                     type="button"
                     className="btn btn-link p-0 text-start"
                     onClick={() =>
-                      onEditEnforcementAction(ea.enforcementActionIdentifier, c.contraventionIdentifier, partyGuid)
+                      onEditEnforcementAction(
+                        ea.enforcementActionIdentifier,
+                        c.contraventionIdentifier,
+                        partyGuid,
+                        isReadOnly,
+                      )
                     }
-                    disabled={isReadOnly}
                   >
                     {label}
                   </button>
