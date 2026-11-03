@@ -1,13 +1,12 @@
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useCaseSearch } from "@/app/components/containers/cases/hooks/use-case-search";
+import { useInspectionSearch } from "@/app/components/containers/inspections/hooks/use-inspection-search";
 
 interface InspectionEditHeaderProps {
   cancelButtonClick: () => void;
   saveButtonClick: () => void;
   isEditMode?: boolean;
-  caseIdentifier?: string;
   inspectionGuid?: string;
   inspectionName?: string;
 }
@@ -16,11 +15,10 @@ export const InspectionEditHeader: FC<InspectionEditHeaderProps> = ({
   cancelButtonClick,
   saveButtonClick,
   isEditMode = false,
-  caseIdentifier,
   inspectionGuid,
   inspectionName,
 }) => {
-  const { searchURL: caseSearchURL } = useCaseSearch();
+  const { searchURL: inspectionSearchURL } = useInspectionSearch();
 
   return (
     <div className="comp-details-header">
@@ -30,11 +28,11 @@ export const InspectionEditHeader: FC<InspectionEditHeaderProps> = ({
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to={caseSearchURL}>Cases</Link>
+                <Link to={inspectionSearchURL}>Inspections</Link>
               </li>
-              {caseIdentifier && (
+              {isEditMode && inspectionGuid && (
                 <li className="breadcrumb-item comp-nav-item-name-inverted">
-                  <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link>
+                  <Link to={`/inspection/${inspectionGuid}`}>{inspectionName || inspectionGuid}</Link>
                 </li>
               )}
               <li
