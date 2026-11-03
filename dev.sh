@@ -22,7 +22,7 @@ error() { echo -e "${RED}[error]${NC} $*" >&2; exit 1; }
 wait_for_service() {
   local service="$1"
   local url="$2"
-  local timeout="${3:-120}"
+  local timeout="${3:-180}"
   local retries=0
   local max=$(( timeout / 2 ))
   info "Waiting for ${service}..."

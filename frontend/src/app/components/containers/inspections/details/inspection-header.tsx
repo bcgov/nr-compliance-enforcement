@@ -7,6 +7,7 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ChangeStatusModal } from "@/app/components/common/change-status-modal";
 import { applyStatusClass } from "@/app/common/methods";
+import { useInspectionSearch } from "@/app/components/containers/inspections/hooks/use-inspection-search";
 
 const UPDATE_INSPECTION = gql`
   mutation UpdateInspection($inspectionGuid: String!, $input: UpdateInspectionInput!) {
@@ -30,6 +31,7 @@ export const InspectionHeader: FC<InspectionHeaderProps> = ({ inspection, onStat
   const inspectionId = inspection?.name || inspection?.inspectionGuid || "Unknown";
 
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const { searchURL: inspectionSearchURL } = useInspectionSearch();
 
   const updateStatusMutation = useGraphQLMutation(UPDATE_INSPECTION, {
     onSuccess: () => {
@@ -57,7 +59,7 @@ export const InspectionHeader: FC<InspectionHeaderProps> = ({ inspection, onStat
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb">
                 <li className="breadcrumb-item comp-nav-item-name-inverted">
-                  <Link to="/inspections">Inspections</Link>
+                  <Link to={inspectionSearchURL}>Inspections</Link>
                 </li>
                 <li
                   className="breadcrumb-item"

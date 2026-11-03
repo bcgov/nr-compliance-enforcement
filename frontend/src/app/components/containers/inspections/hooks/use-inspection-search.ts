@@ -2,6 +2,8 @@ import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { useAppSelector } from "@hooks/hooks";
+import { selectInspectionListUrl } from "@store/reducers/inspection-list-url";
 
 export interface InspectionSearchParams {
   search: string;
@@ -148,5 +150,6 @@ export const useInspectionSearch = () => {
     clearValues,
     resetSearch,
     getFilters,
+    searchURL: useAppSelector(selectInspectionListUrl),
   };
 };

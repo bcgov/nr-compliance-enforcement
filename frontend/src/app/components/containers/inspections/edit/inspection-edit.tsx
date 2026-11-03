@@ -252,7 +252,6 @@ const InspectionEdit: FC = () => {
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
         isEditMode={isEditMode}
-        caseIdentifier={caseIdentifier}
         inspectionGuid={id}
         inspectionName={inspectionData?.getInspection?.name}
       />

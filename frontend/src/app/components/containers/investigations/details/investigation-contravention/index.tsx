@@ -170,7 +170,12 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     });
   };
 
-  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string | null) => {
+  const onEditEnforcementAction = (
+    enforcementActionId: string,
+    contraventionId: string,
+    partyGuid: string | null,
+    isReadOnly: boolean,
+  ) => {
     const resolved = resolveContraventionAndParty(contraventionId, partyGuid);
     if (!resolved) return;
 
@@ -185,7 +190,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     openEnforcementActionModal({
       titles: ["Decision details", "Edit decision"],
       totalSteps: 2,
-      isEdit: true,
+      isEdit: !isReadOnly,
       deleteFromStep: 1,
       skipValidateForSteps: [0],
       nextButtonLabel: "Edit",
@@ -283,8 +288,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                 enforcementActionsWithAttachments={enforcementActionsWithAttachments}
                 onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
                 onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
-                onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
-                  onEditEnforcementAction(eaId, contraventionId, pGuid)
+                onEditEnforcementAction={(eaId, contraventionId, pGuid, readOnly) =>
+                  onEditEnforcementAction(eaId, contraventionId, pGuid, readOnly)
                 }
               />
             </div>
@@ -306,8 +311,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               enforcementActionsWithAttachments={enforcementActionsWithAttachments}
               onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
               onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
-              onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
-                onEditEnforcementAction(eaId, contraventionId, pGuid)
+              onEditEnforcementAction={(eaId, contraventionId, pGuid, readOnly) =>
+                onEditEnforcementAction(eaId, contraventionId, pGuid, readOnly)
               }
             />
           </div>
