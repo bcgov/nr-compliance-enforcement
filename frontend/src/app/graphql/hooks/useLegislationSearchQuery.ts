@@ -122,12 +122,17 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
   return { data, isLoading, isFetching, error };
 };
 
-export const convertLegislationToOption = (legislation: Legislation[] | undefined): Option[] => {
+type LegislationOptionValueKey = "legislationGuid" | "legislationSourceGuid";
+
+export const convertLegislationToOption = (
+  legislation: Legislation[] | undefined,
+  valueKey: LegislationOptionValueKey = "legislationGuid",
+): Option[] => {
   return (
     legislation
       ?.map((legislation) => ({
         label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.
-        value: legislation.legislationGuid ?? "",
+        value: legislation[valueKey] ?? "",
       }))
       .sort((a, b) => a.label.localeCompare(b.label)) ?? []
   );
@@ -138,12 +143,15 @@ const formatActLabel = (act: Legislation): string => {
   return act.sourceAcronym ? `${shortName} (${act.sourceAcronym})` : shortName;
 };
 
-export const convertActsToOption = (acts: Legislation[] | undefined): Option[] => {
+export const convertActsToOption = (
+  acts: Legislation[] | undefined,
+  valueKey: LegislationOptionValueKey = "legislationGuid",
+): Option[] => {
   return (
     acts
       ?.map((act) => ({
         label: formatActLabel(act),
-        value: act.legislationGuid ?? "",
+        value: act[valueKey] ?? "",
       }))
       .sort((a, b) => a.label.localeCompare(b.label)) ?? []
   );
@@ -152,9 +160,18 @@ export const convertActsToOption = (acts: Legislation[] | undefined): Option[] =
 const FEDERAL_SOURCE_TYPE = "FEDERAL";
 
 // Provincial acts first, federal second; empty groups are dropped so no blank section renders
-export const convertActsToGroupedOptions = (acts: Legislation[] | undefined): GroupBase<Option>[] => {
-  const provincialActs = convertActsToOption(acts?.filter((act) => act.sourceType !== FEDERAL_SOURCE_TYPE));
-  const federalActs = convertActsToOption(acts?.filter((act) => act.sourceType === FEDERAL_SOURCE_TYPE));
+export const convertActsToGroupedOptions = (
+  acts: Legislation[] | undefined,
+  valueKey: LegislationOptionValueKey = "legislationGuid",
+): GroupBase<Option>[] => {
+  const provincialActs = convertActsToOption(
+    acts?.filter((act) => act.sourceType !== FEDERAL_SOURCE_TYPE),
+    valueKey,
+  );
+  const federalActs = convertActsToOption(
+    acts?.filter((act) => act.sourceType === FEDERAL_SOURCE_TYPE),
+    valueKey,
+  );
   return [
     { label: "Provincial", options: provincialActs },
     { label: "Federal", options: federalActs },

@@ -28,6 +28,7 @@ import { PARTY_TYPES } from "src/common/party";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
 import { CosGeoOrgUnitService } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.service";
+import { LegislationService } from "src/shared/legislation/legislation.service";
 import { DECISION_DETAIL_INCLUDE } from "../enforcement_action/enforcement_action.constants";
 import { TaskStatus } from "src/enum/task-status.enum";
 import { InvestigationStatus } from "src/enum/investigation-status.enum";
@@ -46,6 +47,7 @@ export class InvestigationService {
     private readonly eventPublisher: EventPublisherService,
     private readonly caseActivityService: CaseActivityService,
     private readonly cosGeoOrgUnitService: CosGeoOrgUnitService,
+    private readonly legislationService: LegislationService,
   ) {}
 
   async findOne(investigationGuid: string) {
@@ -841,7 +843,53 @@ export class InvestigationService {
       where.investigation_opened_utc_timestamp = this._buildDateRangeWhereClause(filters);
     }
 
+    if (filters?.investigationSource) {
+      where.investigation_source = filters.investigationSource;
+    }
+
+    // Each contravention filter is matched independently, so they combine as an AND on the investigation
+    const contraventionFilters: any[] = [];
+
+    if (filters?.act || filters?.regulation) {
+      contraventionFilters.push(await this._buildLegislationWhereClause(filters));
+    }
+
+    if (filters?.decision) {
+      contraventionFilters.push({
+        contravention_party_xref: {
+          some: {
+            active_ind: true,
+            enforcement_action: { some: { active_ind: true, enforcement_action_code: filters.decision } },
+          },
+        },
+      });
+    }
+
+    if (contraventionFilters.length > 0) {
+      where.AND = contraventionFilters.map((filter) => ({
+        contravention: { some: { active_ind: true, ...filter } },
+      }));
+    }
+
     return where;
+  }
+
+  // Act and regulation filters are legislation source guids, which are stable across legislation versions.
+  // Contraventions reference a versioned legislation node in the shared schema, so resolve which of the
+  // legislation in use belongs to the selected source (a regulation is narrower than its act, so it wins).
+  private async _buildLegislationWhereClause(filters: InvestigationFilters): Promise<any> {
+    const contraventions = await this.prisma.contravention.findMany({
+      where: { active_ind: true, investigation: { owned_by_agency_ref: filters.leadAgency } },
+      select: { legislation_guid_ref: true },
+      distinct: ["legislation_guid_ref"],
+    });
+
+    const legislationGuids = await this.legislationService.filterByLegislationSource(
+      contraventions.map((contravention) => contravention.legislation_guid_ref),
+      filters.regulation ?? filters.act,
+    );
+
+    return { legislation_guid_ref: { in: legislationGuids } };
   }
 
   private async _buildGeoOrganizationUnitWhereClause(filters: InvestigationFilters): Promise<any> {

@@ -66,6 +66,10 @@ const Investigations: FC = () => {
       searchValues.supervisor,
       searchValues.startDate,
       searchValues.endDate,
+      searchValues.investigationSource,
+      searchValues.act,
+      searchValues.regulation,
+      searchValues.decision,
       searchValues.sortBy,
       searchValues.sortOrder,
       searchValues.page,
@@ -88,7 +92,11 @@ const Investigations: FC = () => {
       searchValues.fileCoordinator === null &&
       searchValues.supervisor === null &&
       searchValues.startDate === null &&
-      searchValues.endDate === null;
+      searchValues.endDate === null &&
+      searchValues.investigationSource === null &&
+      searchValues.act === null &&
+      searchValues.regulation === null &&
+      searchValues.decision === null;
 
     // Arrived with filters (shared link), so treat the session as already defaulted
     if (!isFreshSearch) {
