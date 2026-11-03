@@ -203,11 +203,20 @@
   }
 }
 
+// The decision column matches the 160px Decision header (comp-cell-width-160) less the
+// cell's horizontal padding, so decisions line up under their header
 .party-compliance-outcomes {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) calc(160px - 1rem);
   column-gap: 1rem;
   row-gap: 0.25rem;
+}
+
+// Spacing between contraventions matches the table cell's vertical padding
+.party-compliance-contraventions {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.75rem;
 }
 
 .comp-party-match-rules-title,
