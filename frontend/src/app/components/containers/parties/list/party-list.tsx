@@ -6,7 +6,7 @@ import { usePartySearch } from "../hooks/use-party-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { calculateAgeYears } from "@common/methods";
-import { parseUTCDateToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input/input";
@@ -66,12 +66,14 @@ const getBusinessNumber = (identifiers: BusinessIdentifier[]): string => {
   return businessNumber?.identifierValue ?? "";
 };
 
-const getAgeDisplay = (party: Party, approxAges: ApproximateAgeType[]): number | string => {
+const getDateOfBirthDisplay = (party: Party, approxAges: ApproximateAgeType[]): string => {
   const dateOfBirth = parseUTCDateToLocal(party?.person?.dateOfBirth) ?? null;
   if (!dateOfBirth) {
     return approxAges.find((a) => a.approximateAgeCode === party.person?.approximateAgeCode)?.shortDescription ?? "";
   }
-  return calculateAgeYears(dateOfBirth) ?? "";
+  const formattedDateOfBirth = formatDateObjectAsString(dateOfBirth, { format: "date" });
+  const age = calculateAgeYears(dateOfBirth);
+  return age == null ? formattedDateOfBirth : `${formattedDateOfBirth} (${age})`;
 };
 
 const partyNameColumn = (label: string): CompColumn<any> => ({
@@ -134,8 +136,8 @@ const getPersonColumns = (
     headerClassName: "comp-cell-min-width-60",
     cellClassName: "comp-cell-width-60",
     isSortable: false,
-    getValue: (party) => getAgeDisplay(party, approxAges),
-    renderCell: (party) => getAgeDisplay(party, approxAges),
+    getValue: (party) => getDateOfBirthDisplay(party, approxAges),
+    renderCell: (party) => getDateOfBirthDisplay(party, approxAges),
   },
   {
     label: "Sex as per ID",
