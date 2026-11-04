@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useCaseSearch } from "@/app/components/containers/cases/hooks/use-case-search";
 
 interface CaseEditHeaderProps {
   cancelButtonClick: () => void;
@@ -17,6 +18,8 @@ export const CaseEditHeader: FC<CaseEditHeaderProps> = ({
   caseIdentifier,
   caseName,
 }) => {
+  const { searchURL: caseSearchURL } = useCaseSearch();
+
   return (
     <div className="comp-details-header">
       <div className="comp-container">
@@ -25,7 +28,7 @@ export const CaseEditHeader: FC<CaseEditHeaderProps> = ({
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to="/cases">Cases</Link>
+                <Link to={caseSearchURL}>Cases</Link>
               </li>
               <li
                 className="breadcrumb-item"

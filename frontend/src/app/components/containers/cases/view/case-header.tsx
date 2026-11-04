@@ -9,6 +9,7 @@ import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { useCaseSearch } from "@/app/components/containers/cases/hooks/use-case-search";
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
@@ -25,6 +26,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
   const createdBy = createdByUser?.user_id || "Unknown";
 
   const location = useLocation();
+  const { searchURL: caseSearchURL } = useCaseSearch();
 
   const isOnSummaryTab = location.pathname.split("/").length <= 3;
 
@@ -37,7 +39,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb">
                 <li className="breadcrumb-item comp-nav-item-name-inverted">
-                  <Link to="/cases">Cases</Link>
+                  <Link to={caseSearchURL}>Cases</Link>
                 </li>
                 <li
                   className="breadcrumb-item"

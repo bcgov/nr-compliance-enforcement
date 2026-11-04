@@ -19,6 +19,7 @@ import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CaseFileCreateInput, CaseFileUpdateInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
+import { useCaseSearch } from "@/app/components/containers/cases/hooks/use-case-search";
 
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
@@ -83,6 +84,7 @@ const CaseEdit: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id?: string }>();
+  const { searchURL: caseSearchURL } = useCaseSearch();
   const isEditMode = !!id;
 
   const agencyOptions = useAppSelector(selectAgencyDropdown);
@@ -176,9 +178,9 @@ const CaseEdit: FC = () => {
     if (isEditMode && id) {
       navigate(`/case/${id}`);
     } else {
-      navigate("/cases");
+      navigate(caseSearchURL);
     }
-  }, [navigate, isEditMode, id, form]);
+  }, [navigate, isEditMode, id, form, caseSearchURL]);
 
   const cancelButtonClick = useCallback(() => {
     dispatch(

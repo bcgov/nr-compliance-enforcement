@@ -1,6 +1,7 @@
-import { FC, useState, useCallback } from "react";
+import { FC, useState, useEffect, useCallback } from "react";
+import { useAppDispatch } from "@hooks/hooks";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { CaseFileResult } from "@/generated/graphql";
@@ -9,6 +10,7 @@ import { CaseList } from "./list";
 import { CaseFilterBar } from "./list/case-filter-bar";
 import { CaseMap } from "./map/case-map";
 import { useCaseSearch } from "./hooks/use-case-search";
+import { setCaseListUrl } from "@store/reducers/case-list-url";
 
 const SEARCH_CASE_FILES = gql`
   query SearchCaseFiles($page: Int, $pageSize: Int, $filters: CaseFileFilters) {
@@ -37,6 +39,8 @@ const SEARCH_CASE_FILES = gql`
 
 const Cases: FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const showCreateCaseBtn = false;
 
@@ -44,6 +48,12 @@ const Cases: FC = () => {
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
   const { searchValues, getFilters } = useCaseSearch();
+
+  // Track the current /cases URL in Redux so any subsequent navigation
+  // to the list (sidebar, breadcrumbs, post-create redirect) restores filters.
+  useEffect(() => {
+    dispatch(setCaseListUrl(location.pathname + location.search));
+  }, [dispatch, location.pathname, location.search]);
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchCaseFiles: CaseFileResult }>(SEARCH_CASE_FILES, {
     queryKey: [

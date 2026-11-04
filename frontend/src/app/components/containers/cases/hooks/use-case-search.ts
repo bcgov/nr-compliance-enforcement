@@ -1,7 +1,9 @@
 import { useSearchParams } from "react-router-dom";
+import { useAppSelector } from "@hooks/hooks";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { selectCaseListUrl } from "@store/reducers/case-list-url";
 
 export interface CaseSearchParams {
   search: string;
@@ -145,5 +147,6 @@ export const useCaseSearch = () => {
     clearValues,
     resetSearch,
     getFilters,
+    searchURL: useAppSelector(selectCaseListUrl),
   };
 };
