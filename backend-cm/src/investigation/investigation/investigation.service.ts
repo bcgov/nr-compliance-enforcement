@@ -32,6 +32,7 @@ import { LegislationService } from "src/shared/legislation/legislation.service";
 import { DECISION_DETAIL_INCLUDE } from "../enforcement_action/enforcement_action.constants";
 import { TaskStatus } from "src/enum/task-status.enum";
 import { InvestigationStatus } from "src/enum/investigation-status.enum";
+import { isUUID } from "class-validator";
 
 @Injectable()
 export class InvestigationService {
@@ -847,46 +848,47 @@ export class InvestigationService {
       where.investigation_source = filters.investigationSource;
     }
 
-    // Each contravention filter is matched independently, so they combine as an AND on the investigation
-    const contraventionFilters: any[] = [];
+    // Contravention filters all apply to the same contravention, e.g. a decision made under the selected act
+    const contraventionFilter: any = {};
 
     if (filters?.act || filters?.regulation) {
-      contraventionFilters.push(await this._buildLegislationWhereClause(filters));
+      Object.assign(contraventionFilter, await this._buildLegislationWhereClause(filters));
     }
 
     if (filters?.decision) {
-      contraventionFilters.push({
-        contravention_party_xref: {
-          some: {
-            active_ind: true,
-            enforcement_action: { some: { active_ind: true, enforcement_action_code: filters.decision } },
-          },
+      contraventionFilter.contravention_party_xref = {
+        some: {
+          active_ind: true,
+          enforcement_action: { some: { active_ind: true, enforcement_action_code: filters.decision } },
         },
-      });
+      };
     }
 
-    if (contraventionFilters.length > 0) {
-      where.AND = contraventionFilters.map((filter) => ({
-        contravention: { some: { active_ind: true, ...filter } },
-      }));
+    if (Object.keys(contraventionFilter).length > 0) {
+      where.contravention = { some: { active_ind: true, ...contraventionFilter } };
     }
 
     return where;
   }
 
-  // Act and regulation filters are legislation source guids, which are stable across legislation versions.
-  // Contraventions reference a versioned legislation node in the shared schema, so resolve which of the
-  // legislation in use belongs to the selected source (a regulation is narrower than its act, so it wins).
   private async _buildLegislationWhereClause(filters: InvestigationFilters): Promise<any> {
-    const contraventions = await this.prisma.contravention.findMany({
-      where: { active_ind: true, investigation: { owned_by_agency_ref: filters.leadAgency } },
-      select: { legislation_guid_ref: true },
-      distinct: ["legislation_guid_ref"],
+    const legislationSourceGuid = filters.regulation || filters.act;
+
+    if (!isUUID(legislationSourceGuid)) {
+      return { legislation_guid_ref: { in: [] } };
+    }
+
+    const contraventions = await this.prisma.contravention.groupBy({
+      by: ["legislation_guid_ref"],
+      where: {
+        active_ind: true,
+        ...(filters.leadAgency && { investigation: { owned_by_agency_ref: filters.leadAgency } }),
+      },
     });
 
     const legislationGuids = await this.legislationService.filterByLegislationSource(
       contraventions.map((contravention) => contravention.legislation_guid_ref),
-      filters.regulation ?? filters.act,
+      legislationSourceGuid,
     );
 
     return { legislation_guid_ref: { in: legislationGuids } };

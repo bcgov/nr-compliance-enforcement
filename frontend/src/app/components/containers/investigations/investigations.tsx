@@ -85,6 +85,8 @@ const Investigations: FC = () => {
     if (defaultsApplied) return;
 
     const isFreshSearch =
+      searchValues.search === "" &&
+      searchValues.investigationStatus === null &&
       searchValues.region === null &&
       searchValues.zone === null &&
       searchValues.community === null &&

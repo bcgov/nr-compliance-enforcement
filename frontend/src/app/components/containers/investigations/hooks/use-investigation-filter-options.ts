@@ -4,7 +4,6 @@ import { selectInvestigationSourceCodeDropdown } from "@store/reducers/code-tabl
 import { selectEnforcementActionsByAgency } from "@store/reducers/code-table-selectors";
 import {
   convertActsToGroupedOptions,
-  convertActsToOption,
   convertLegislationToOption,
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
@@ -36,11 +35,15 @@ export const useInvestigationFilterOptions = (act: string | null) => {
     enabled: !!actLegislationGuid,
   });
 
-  const actOptions = useMemo(() => convertActsToOption(acts, "legislationSourceGuid"), [acts]);
   const actGroups = useMemo(() => convertActsToGroupedOptions(acts, "legislationSourceGuid"), [acts]);
+  const actOptions = useMemo(() => actGroups.flatMap((group) => group.options), [actGroups]);
+
   const regulationOptions = useMemo(
-    () => (act ? convertLegislationToOption(regulationsQuery.data?.legislations, "legislationSourceGuid") : []),
-    [act, regulationsQuery.data],
+    () =>
+      act && !regulationsQuery.isPlaceholderData
+        ? convertLegislationToOption(regulationsQuery.data?.legislations, "legislationSourceGuid")
+        : [],
+    [act, regulationsQuery.data, regulationsQuery.isPlaceholderData],
   );
 
   return { sourceOptions, decisionOptions, actOptions, actGroups, regulationOptions };

@@ -98,7 +98,7 @@ export const useInvestigationSearch = () => {
       endDate: deserializeDate(searchParams.get("endDate")),
       investigationSource: searchParams.get("investigationSource"),
       act: searchParams.get("act"),
-      regulation: searchParams.get("regulation"),
+      regulation: searchParams.get("act") ? searchParams.get("regulation") : null,
       decision: searchParams.get("decision"),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,

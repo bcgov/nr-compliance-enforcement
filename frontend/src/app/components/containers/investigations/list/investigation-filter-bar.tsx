@@ -76,6 +76,8 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
     return searchValues.startDate != null || searchValues.endDate != null;
   };
 
+  const decisionLabel = decisionOptions.find((option) => option.value === searchValues.decision)?.label;
+
   const getDateRangeLabel = (): string => {
     const { startDate, endDate } = searchValues;
 
@@ -243,11 +245,7 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
         {hasFilter("decision") && (
           <FilterButton
             id="investigation-decision-filter-pill"
-            label={`Decision${
-              decisionOptions.some((option) => option.value === searchValues.decision)
-                ? `: ${decisionOptions.find((option) => option.value === searchValues.decision)?.label}`
-                : ""
-            }`}
+            label={decisionLabel ? `Decision: ${decisionLabel}` : "Decision"}
             name="decision"
             clear={removeFilter}
           />
