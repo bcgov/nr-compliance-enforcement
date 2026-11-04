@@ -90,7 +90,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
         taskStatusCode: task ? undefined : "OPEN", // default to open for new tasks
         assignedUserIdentifier: value.officerAssigned || undefined,
         appUserIdentifier: currentUserGuid,
-        description: value.description?.trim() || undefined,
+        description: value.description?.trim() || null,
         subject: value.subject,
         dueDate: value.dueDate as Date,
         taskCategoryTypeCode: value.taskCategory,
