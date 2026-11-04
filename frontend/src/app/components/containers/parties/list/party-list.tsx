@@ -10,7 +10,7 @@ import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input/input";
-import { Address, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
+import { Address, Alias, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
 import { CountryType } from "@/app/types/app/code-tables/country";
@@ -67,6 +67,17 @@ const getBusinessNumber = (identifiers: BusinessIdentifier[]): string => {
   return businessNumber?.identifierValue ?? "";
 };
 
+const getAliases = (aliases: Alias[]): string => (aliases ?? []).map((a) => a.name).join(", ");
+
+const aliasesColumn = (label: string): CompColumn<any> => ({
+  label,
+  headerClassName: "comp-cell-min-width-140",
+  cellClassName: "comp-cell-width-140",
+  isSortable: false,
+  getValue: (party) => getAliases(party.aliases),
+  renderCell: (party) => getAliases(party.aliases),
+});
+
 const getDateOfBirthDisplay = (party: Party, approxAges: ApproximateAgeType[]): string => {
   const dateOfBirth = parseUTCDateToLocal(party?.person?.dateOfBirth) ?? null;
   if (!dateOfBirth) {
@@ -110,6 +121,7 @@ const getBusinessColumns = (
   countries: CountryType[],
 ): CompColumn<any>[] => [
   partyNameColumn("Legal name"),
+  aliasesColumn("Doing business as"),
   {
     label: "Business number",
     headerClassName: "comp-cell-min-width-110",
@@ -142,6 +154,7 @@ const getPersonColumns = (
   approxAges: ApproximateAgeType[],
 ): CompColumn<any>[] => [
   partyNameColumn("Party name"),
+  aliasesColumn("Alias(es)"),
   {
     label: "Date of birth",
     sortKey: "age",

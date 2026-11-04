@@ -4,11 +4,12 @@ import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { Contravention, EnforcementAction } from "@/generated/graphql";
 import { parseUTCDateToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
-import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { CONTRAVENTION_MAX_LINES, LegislationDisplay } from "@/app/common/legislation-display";
+import { ExpandableContent } from "@/app/common/expandable-content";
 
 interface ContraventionTableProps {
   contraventions: Contravention[];
@@ -18,21 +19,23 @@ interface ContraventionTableProps {
   enforcementActionsWithAttachments?: Set<string>;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
   onAddEnforcementAction: (contraventionId: string, partyId: string | null) => void;
-  onEditEnforcementAction: (enforcementActionId: string, contraventionId: string, partyGuid: string | null) => void;
+  onEditEnforcementAction: (
+    enforcementActionId: string,
+    contraventionId: string,
+    partyGuid: string | null,
+    isReadOnly: boolean,
+  ) => void;
 }
 
 // Thin wrapper so each row can call the legislation hook independently
 const LegislationCell: FC<{ legislationIdentifierRef: string }> = ({ legislationIdentifierRef }) => {
-  const legislation = useLegislation(legislationIdentifierRef, false);
-  const legislationData = legislation?.data?.legislation;
+  // Ancestors are needed to build the citation heading and subsection lines
+  const legislation = useLegislation(legislationIdentifierRef, true);
 
-  if (!legislationData) return <span>Loading...</span>;
-
-  const displayText = legislationData.alternateText ?? legislationData.legislationText;
   return (
-    <>
-      {legislationData.fullCitation} : <LegislationText>{displayText}</LegislationText>
-    </>
+    <ExpandableContent maxLines={CONTRAVENTION_MAX_LINES}>
+      <LegislationDisplay legislation={legislation?.data?.legislation} />
+    </ExpandableContent>
   );
 };
 
@@ -139,9 +142,13 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
                     type="button"
                     className="btn btn-link p-0 text-start"
                     onClick={() =>
-                      onEditEnforcementAction(ea.enforcementActionIdentifier, c.contraventionIdentifier, partyGuid)
+                      onEditEnforcementAction(
+                        ea.enforcementActionIdentifier,
+                        c.contraventionIdentifier,
+                        partyGuid,
+                        isReadOnly,
+                      )
                     }
-                    disabled={isReadOnly}
                   >
                     {label}
                   </button>
