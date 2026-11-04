@@ -12,6 +12,8 @@ export const CompTableRow = <T,>({
   const isExpandable = !!renderExpandedContent;
   const expandedClass = isExpanded ? "comp-cell-parent-expanded" : "";
   const visibleColumns = columns.filter((col) => !col.isHidden);
+  // Header-only columns are covered by a preceding column's colSpan, so they get no body cell
+  const bodyColumns = visibleColumns.filter((col) => !col.isHeaderOnly);
 
   const handleRowClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -40,9 +42,10 @@ export const CompTableRow = <T,>({
         )}
 
         {/* Data cells - hidden columns are skipped */}
-        {visibleColumns.map((col) => (
+        {bodyColumns.map((col) => (
           <td
             key={col.label}
+            colSpan={col.colSpan}
             className={`${col.cellClassName ?? ""} ${expandedClass}`}
           >
             {col.renderCell(row)}
