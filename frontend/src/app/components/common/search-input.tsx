@@ -138,7 +138,7 @@ const SearchInput: FC<Props> = ({
     >
       <TooltipContent
         title="Person searchable fields:"
-        items={["First name", "Last name", "Phone", "Email", "Address", "City", "External ID"]}
+        items={["First name", "Last name", "Alias", "Phone", "Email", "Address", "City", "External ID"]}
       />
     </Tooltip>
   );
@@ -153,6 +153,7 @@ const SearchInput: FC<Props> = ({
         title="Organization searchable fields:"
         items={[
           "Legal name",
+          "Doing business as",
           "Business number",
           "WorkSafeBC number",
           "Phone",
