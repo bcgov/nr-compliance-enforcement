@@ -158,6 +158,28 @@ export class LegislationService {
     }
   }
 
+  // Returns the legislationGuids that belong to the given source or one of its child sources (an Act's regulations).
+  // Matching on source rather than legislation_guid covers every imported version of the legislation.
+  async filterByLegislationSource(legislationGuids: string[], legislationSourceGuid: string): Promise<string[]> {
+    if (legislationGuids.length === 0) {
+      return [];
+    }
+
+    const result = await this.prisma.$queryRaw<Array<{ legislation_guid: string }>>`
+      SELECT l.legislation_guid
+      FROM legislation l
+      INNER JOIN legislation_version lv ON l.legislation_version_guid = lv.legislation_version_guid
+      INNER JOIN legislation_source ls ON lv.legislation_source_guid = ls.legislation_source_guid
+      WHERE l.legislation_guid = ANY(${legislationGuids}::uuid[])
+        AND (
+          ls.legislation_source_guid = ${legislationSourceGuid}::uuid
+          OR ls.parent_legislation_source_guid = ${legislationSourceGuid}::uuid
+        )
+    `;
+
+    return result.map((row) => row.legislation_guid);
+  }
+
   async findOne(legislationGuid: string, includeAncestors: boolean = false) {
     if (!includeAncestors) {
       const prismaLegislation = await this.prisma.legislation.findFirst({

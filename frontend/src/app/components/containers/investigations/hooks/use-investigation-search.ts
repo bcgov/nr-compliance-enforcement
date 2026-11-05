@@ -19,6 +19,10 @@ export interface InvestigationSearchParams {
   supervisor: string | null;
   startDate: Date | null;
   endDate: Date | null;
+  investigationSource: string | null;
+  act: string | null;
+  regulation: string | null;
+  decision: string | null;
   sortBy: string;
   sortOrder: string;
   page: number;
@@ -37,6 +41,10 @@ const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   supervisor: null,
   startDate: null,
   endDate: null,
+  investigationSource: null,
+  act: null,
+  regulation: null,
+  decision: null,
   sortBy: "openedTimestamp",
   sortOrder: SORT_TYPES.DESC,
   page: 1,
@@ -92,6 +100,10 @@ export const useInvestigationSearch = () => {
       supervisor: searchParams.get("supervisor"),
       startDate: deserializeDate(searchParams.get("startDate")),
       endDate: deserializeDate(searchParams.get("endDate")),
+      investigationSource: searchParams.get("investigationSource"),
+      act: searchParams.get("act"),
+      regulation: searchParams.get("act") ? searchParams.get("regulation") : null,
+      decision: searchParams.get("decision"),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
       page: parseInt(searchParams.get("page") || "1", 10),
