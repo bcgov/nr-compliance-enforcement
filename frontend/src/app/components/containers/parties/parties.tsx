@@ -31,6 +31,9 @@ const SEARCH_PARTIES = gql`
           country
           isPrimary
         }
+        aliases {
+          name
+        }
         person {
           personGuid
           firstName

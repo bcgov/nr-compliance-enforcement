@@ -2649,6 +2649,13 @@ export class PartyService {
         drivers_license_number: true,
       },
     },
+    alias: {
+      where: { active_ind: true },
+      select: {
+        alias_guid: true,
+        name: true,
+      },
+    },
     party_external_id: {
       where: { active_ind: true },
       select: {
@@ -2792,6 +2799,17 @@ export class PartyService {
           },
           { person: { first_name: { contains: term, mode: "insensitive" } } },
           { person: { last_name: { contains: term, mode: "insensitive" } } },
+          {
+            alias: {
+              some: {
+                active_ind: true,
+                name: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
           {
             party_external_id: {
               some: {

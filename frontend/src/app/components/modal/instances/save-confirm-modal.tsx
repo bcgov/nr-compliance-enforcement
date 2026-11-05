@@ -39,8 +39,8 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
               variant="warning"
               className="comp-complaint-details-alert"
             >
-              <div className="d-flex align-items-center gap-2">
-                <i className="bi bi-info-circle" />
+              <div className="d-flex align-items-top gap-2">
+                <i className="bi bi-info-circle-fill" />
                 <span>{warningText}</span>
               </div>
             </Alert>

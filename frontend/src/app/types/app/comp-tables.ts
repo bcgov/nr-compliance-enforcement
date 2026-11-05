@@ -3,6 +3,8 @@ import { ReactNode } from "react";
 export type CompColumn<T> = {
   label: string; // Display label for the column
   isHidden?: boolean; // used to conditionally hide columns
+  colSpan?: number; // number of columns the body cell spans; the columns it covers set isHeaderOnly
+  isHeaderOnly?: boolean; // renders a header but no body cell, for a column covered by a preceding colSpan
   sortKey?: string; // key to use for server side sorting.  Defaults to label if not provided
   headerClassName?: string; // list of classes to apply to header of the column
   cellClassName?: string; // list of classes to apply to the cells of the column

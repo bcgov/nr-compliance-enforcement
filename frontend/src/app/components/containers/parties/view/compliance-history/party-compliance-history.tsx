@@ -25,12 +25,13 @@ import {
   PartyComplianceHistoryRow,
   PartyComplianceRelation,
 } from "@/app/types/app/shared/party-compliance-history";
-import LegislationRow from "@/app/components/containers/parties/view/compliance-history/legislation-row";
 import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { CompTable } from "@/app/components/common/comp-table";
 import { SORT_TYPES } from "@/app/constants/sort-direction";
 import { Agency } from "@/app/types/app/code-tables/agency";
+import { LegislationRow } from "@/app/components/containers/parties/view/compliance-history/legislation-row";
+import { ExpandableContent } from "@/app/common/expandable-content";
 import { GET_APP_USERS_BY_GUIDS } from "@/app/components/containers/parties/view/party-history-tab";
 
 const GET_INVESTIGATIONS_BY_PARTY = gql`
@@ -130,19 +131,16 @@ const buildActivityPath = (activity: PartyComplianceActivity): string => {
   return `/${segment}/${activity.id}`;
 };
 
-// One row per contravention; open investigations and those without contraventions get a single row with no contravention details.
+// Rows longer than this collapse behind "View X more"
+const COMPLIANCE_HISTORY_MAX_LINES = 10;
+
+// One row per activity with all of its contraventions; open investigations show no contravention details.
 const buildHistoryRows = (activities: PartyComplianceActivity[]): PartyComplianceHistoryRow[] =>
-  activities.flatMap<PartyComplianceHistoryRow>((activity) => {
-    const contraventions = activity.status === "Open" ? [] : (activity.contraventions ?? []);
-    if (contraventions.length === 0) {
-      return [{ rowKey: activity.id ?? "", activity, contravention: null }];
-    }
-    return contraventions.map((contravention) => ({
-      rowKey: `${activity.id}-${contravention.contraventionIdentifier}`,
-      activity,
-      contravention,
-    }));
-  });
+  activities.map((activity) => ({
+    rowKey: activity.id ?? "",
+    activity,
+    contraventions: activity.status === "Open" ? [] : (activity.contraventions ?? []),
+  }));
 
 interface PartyComplianceHistoryProps {
   partyReference: string;
@@ -463,8 +461,8 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       label: "Role",
       sortKey: "role",
       isSortable: true,
-      headerClassName: "comp-cell-min-width-150",
-      cellClassName: "comp-cell-min-width-150",
+      headerClassName: "comp-cell-width-135 comp-cell-min-width-135",
+      cellClassName: "comp-cell-width-135 comp-cell-min-width-135",
       getValue: (row) => (row.activity.role ?? "").toLowerCase(),
       renderCell: (row) => <Badge bg="species-badge comp-species-badge">{row.activity.role}</Badge>,
     },
@@ -478,18 +476,36 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       renderCell: (row) => formatDateObjectAsString(row.activity.dateOpened, { format: "date" }),
     },
     {
-      label: "Outcomes",
+      label: "Contravention",
+      // Spans the Decision column too, so each contravention stays level with its decision
+      colSpan: 2,
       headerClassName: "comp-cell-min-width-250",
       cellClassName: "comp-cell-min-width-250",
-      renderCell: (row) =>
-        row.contravention ? (
-          <LegislationRow
-            contravention={row.contravention}
-            partyReference={partyReference}
-          />
-        ) : (
-          ""
-        ),
+      renderCell: (row) => (
+        // Each contravention's .party-compliance-outcomes grid is one countable item
+        <ExpandableContent
+          maxLines={COMPLIANCE_HISTORY_MAX_LINES}
+          itemSelector=".party-compliance-outcomes"
+        >
+          <div className="party-compliance-contraventions">
+            {row.contraventions?.map((contravention) => (
+              <LegislationRow
+                key={contravention.contraventionIdentifier}
+                contravention={contravention}
+                partyReference={partyReference}
+              />
+            ))}
+          </div>
+        </ExpandableContent>
+      ),
+    },
+    {
+      label: "Decision",
+      // Fixed width so the decision text in the spanning cell lines up under this header;
+      // the matching grid column is in .party-compliance-outcomes
+      isHeaderOnly: true,
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      renderCell: () => null,
     },
     {
       label: "Primary investigator",
@@ -513,8 +529,8 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       label: "Agency",
       sortKey: "agency",
       isSortable: true,
-      headerClassName: "comp-cell-min-width-100",
-      cellClassName: "comp-cell-min-width-100",
+      headerClassName: "comp-cell-width-90 comp-cell-min-width-90",
+      cellClassName: "comp-cell-width-90 comp-cell-min-width-90",
       getValue: (row) => (row.activity.leadAgency ?? "").toLowerCase(),
       renderCell: (row) => renderAgencyBadge(row),
     },
@@ -522,8 +538,8 @@ export const PartyComplianceHistory: FC<PartyComplianceHistoryProps> = ({
       label: "Status",
       sortKey: "status",
       isSortable: true,
-      headerClassName: "comp-cell-min-width-100",
-      cellClassName: "comp-cell-min-width-100",
+      headerClassName: "comp-cell-width-85 comp-cell-min-width-85",
+      cellClassName: "comp-cell-width-85 comp-cell-min-width-85",
       getValue: (row) => (row.activity.status ?? "").toLowerCase(),
       renderCell: (row) => (
         <Badge
