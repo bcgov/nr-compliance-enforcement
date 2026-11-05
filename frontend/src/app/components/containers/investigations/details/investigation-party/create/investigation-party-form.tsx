@@ -410,10 +410,11 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           modalType: SAVE_CONFIRM,
           data: {
             title: "Save party",
-            description:
+            warnings: [
               "Saving this party will update its details for all NatSuite users and will be available for use in future investigations.",
+            ],
             cancelText: "Cancel",
-            saveText: "Save and close",
+            saveText: "Save changes",
           },
           callback: () => {
             form.handleSubmit();
@@ -637,7 +638,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               onClick={saveButtonClick}
               disabled={saveDisabled}
             >
-              Save changes
+              {editParty ? `Save changes` : `Save new party`}
             </Button>
           </>
         }
@@ -648,6 +649,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             }
             isPublished={!!editParty?.partyReference}
             isYoungPerson={personIsYoung}
+            isIncomplete={isEditMode && !editParty?.partyReference}
           />
         }
         isEditMode={true}
