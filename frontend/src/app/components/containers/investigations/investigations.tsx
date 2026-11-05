@@ -37,9 +37,7 @@ const Investigations: FC = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
-  const { searchValues, getFilters, setValues } = useInvestigationSearch();
-  const appUserGuid = useAppSelector(selectAppUserGuid);
-  const defaultRegion = useAppSelector(selectDefaultRegion);
+  const { searchValues, getFilters, setValues, getDefaultFilters } = useInvestigationSearch();
   const defaultsApplied = useAppSelector(selectInvestigationDefaultsActive);
 
   // Track the current /investigations URL in Redux so any subsequent navigation
@@ -93,14 +91,10 @@ const Investigations: FC = () => {
       return;
     }
 
-    if (UserService.hasRole(Roles.COS)) {
-      if (UserService.hasRole(Roles.INSPECTOR) && defaultRegion) {
-        setValues({ investigationStatus: "OPEN", region: defaultRegion.value });
-        dispatch(setInvestigationListUrlDefaultsActive());
-      } else if (appUserGuid) {
-        setValues({ investigationStatus: "OPEN", primaryInvestigator: appUserGuid });
-        dispatch(setInvestigationListUrlDefaultsActive());
-      }
+    const defaultFilters = getDefaultFilters();
+    if (Object.keys(defaultFilters).length > 0) {
+      setValues(defaultFilters);
+      dispatch(setInvestigationListUrlDefaultsActive());
     }
   }, []);
 
