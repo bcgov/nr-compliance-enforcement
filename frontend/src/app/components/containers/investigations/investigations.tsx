@@ -17,9 +17,6 @@ import {
 import { uniq, compact } from "lodash";
 import { gql } from "graphql-request";
 import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigationSearchQuery";
-import { appUserGuid as selectAppUserGuid, selectDefaultRegion } from "@/app/store/reducers/app";
-import UserService from "@/app/service/user-service";
-import { Roles } from "@/app/types/app/roles";
 
 const GET_CASE_FILES_BY_ACTIVITIES = gql`
   query GetCaseFilesByActivityIds($activityIdentifiers: [String!]!) {
