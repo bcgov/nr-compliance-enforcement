@@ -106,9 +106,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     const payload: Array<ComplaintFilterPayload> = [
       ...Object.entries(filters).map(([filter, value]) => ({
         filter,
-        value: value as Option | Date | null, // Explicitly casting value to the correct type
+        value: value as Option | Date | null,
       })),
-      { filter: "status", value: { value: "OPEN", label: "Open" } as Option },
     ];
 
     return payload;
@@ -335,11 +334,12 @@ const getFilters = (
   defaultRegion: DropdownOption | null,
   defaultParkArea: DropdownOption | null,
 ) => {
-  let filters: any = {};
+  // All roles default to "Open"
+  let filters: any = { status: { value: "OPEN", label: "Open" } };
 
   // If user has both Parks and Province-wide roles, default filter are "Open" and "Unassigned"
   if (UserService.hasRole(Roles.PROVINCE_WIDE) && UserService.hasRole(Roles.PARKS)) {
-    return { officer: { value: "Unassigned", label: "Unassigned" } };
+    return { ...filters, officer: { value: "Unassigned", label: "Unassigned" } };
   }
 
   // Province-wide, HWCR only and Parks role defaults to only "Open" so skip the other checks
