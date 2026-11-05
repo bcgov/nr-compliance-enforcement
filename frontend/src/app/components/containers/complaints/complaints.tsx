@@ -23,7 +23,14 @@ import {
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES, SECTOR_TYPES, NROS_TYPES, MINES_TYPES } from "@apptypes/app/complaint-types";
+import {
+  COMPLAINT_TYPES,
+  CEEB_TYPES,
+  HWCR_ONLY_TYPES,
+  SECTOR_TYPES,
+  NROS_TYPES,
+  MINES_TYPES,
+} from "@apptypes/app/complaint-types";
 import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
@@ -91,9 +98,9 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
   const [search, setSearch] = useState(storedSearchParams.query ?? "");
 
-  const handleComplaintTabChange = (complaintType: string) => {
-    setComplaintType(complaintType);
-    dispatch(resetComplaintSearchParameters());
+  // Builds the default filter payload (role-based filters plus status Open).
+  // Used when changing tabs and when resetting filters.
+  const getDefaultFilterPayload = (): Array<ComplaintFilterPayload> => {
     let filters = getFilters(currentOfficer, defaultZone, defaultRegion, defaultParkArea);
 
     const payload: Array<ComplaintFilterPayload> = [
@@ -104,8 +111,21 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       { filter: "status", value: { value: "OPEN", label: "Open" } as Option },
     ];
 
+    return payload;
+  };
+
+  // Resets filters to the defaults while preserving search and sort
+  const handleResetFilters = () => {
+    filterDispatch(resetFilters(getDefaultFilterPayload()));
+  };
+
+  const handleComplaintTabChange = (complaintType: string) => {
+    setComplaintType(complaintType);
+    dispatch(resetComplaintSearchParameters());
+
     setSearch("");
-    filterDispatch(resetFilters(payload));
+    filterDispatch(resetFilters(getDefaultFilterPayload()));
+
     dispatch(setActiveTab(complaintType));
   };
 
@@ -190,6 +210,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           complaintType={complaintType}
           searchQuery={search}
           applySearchQuery={setSearch}
+          onResetFilters={handleResetFilters}
         />
       </div>
 
