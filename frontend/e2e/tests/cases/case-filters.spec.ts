@@ -115,4 +115,31 @@ test.describe("Case Filter Logic", () => {
 
     await expect(page.locator(".comp-filter-container:visible")).toBeHidden();
   });
+
+  test("it resets filters back to the defaults", async ({ page }) => {
+    await page.goto("/cases?startDate=2026-10-05&endDate=2026-10-08");
+    await waitForSpinner(page);
+
+    const dateRangePill = page.locator("#case-date-range-filter-pill");
+    await expect(dateRangePill).toBeVisible();
+
+    await page.locator("#case-reset-filters-btn").click();
+    await waitForSpinner(page);
+
+    await expect(dateRangePill).toBeHidden();
+    await expect(page).not.toHaveURL(/startDate=|endDate=/);
+  });
+
+  test("it keeps search and sort when resetting filters", async ({ page }) => {
+    await page.goto("/cases?startDate=2026-10-05&endDate=2026-10-08&search=test&sortBy=name&sortOrder=ASC");
+    await waitForSpinner(page);
+
+    await page.locator("#case-reset-filters-btn").click();
+    await waitForSpinner(page);
+
+    await expect(page.locator("#case-date-range-filter-pill")).toBeHidden();
+    await expect(page).toHaveURL(/search=test/);
+    await expect(page).toHaveURL(/sortBy=name/);
+    await expect(page).toHaveURL(/sortOrder=ASC/);
+  });
 });

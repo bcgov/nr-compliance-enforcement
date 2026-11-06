@@ -143,7 +143,7 @@ const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
 const ComplaintFilterProvider: FC<ProviderProps> = ({ children, freshSearch, complaintFilters }) => {
   let startingState = { ...initialState };
   if (freshSearch) {
-    startingState = { ...startingState, ...complaintFilters, status: { value: "OPEN", label: "Open" } };
+    startingState = { ...startingState, ...complaintFilters };
   } else {
     const activeFilters = convertFilterNames(complaintFilters);
     startingState = { ...startingState, ...activeFilters };

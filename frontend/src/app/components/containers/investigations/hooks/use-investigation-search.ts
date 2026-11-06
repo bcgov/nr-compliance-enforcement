@@ -1,9 +1,11 @@
 import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
-import { getUserAgency } from "@service/user-service";
+import UserService, { getUserAgency } from "@service/user-service";
 import { useAppSelector } from "@hooks/hooks";
 import { selectInvestigationListUrl } from "@store/reducers/investigation-list-url";
+import { appUserGuid as selectAppUserGuid, selectDefaultRegion } from "@store/reducers/app";
+import { Roles } from "@/app/types/app/roles";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface InvestigationSearchParams {
@@ -83,6 +85,8 @@ const serializeSearchValueToUrl = (key: keyof InvestigationSearchParams, value: 
 
 export const useInvestigationSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const appUserGuid = useAppSelector(selectAppUserGuid);
+  const defaultRegion = useAppSelector(selectDefaultRegion);
 
   const searchValues: InvestigationSearchParams = useMemo(
     () => ({
@@ -112,8 +116,7 @@ export const useInvestigationSearch = () => {
   const setValues = useCallback(
     (
       values:
-        | Partial<InvestigationSearchParams>
-        | { [K in keyof InvestigationSearchParams]: InvestigationSearchParams[K] },
+        Partial<InvestigationSearchParams> | { [K in keyof InvestigationSearchParams]: InvestigationSearchParams[K] },
     ) => {
       setSearchParams(
         (currentParams) => {
@@ -170,6 +173,41 @@ export const useInvestigationSearch = () => {
     setSearchParams(new URLSearchParams(), { replace: true });
   }, [setSearchParams]);
 
+  // Role-based default filters. COS: Open + Primary Investigator = current user.
+  // Inspector: Open + their region.
+  const getDefaultFilters = useCallback((): Partial<InvestigationSearchParams> => {
+    if (UserService.hasRole(Roles.COS)) {
+      if (UserService.hasRole(Roles.INSPECTOR) && defaultRegion) {
+        return { investigationStatus: "OPEN", region: defaultRegion.value };
+      }
+      if (appUserGuid) {
+        return { investigationStatus: "OPEN", primaryInvestigator: appUserGuid };
+      }
+    }
+    return {};
+  }, [appUserGuid, defaultRegion]);
+
+  // Resets filters to the role-based defaults while preserving search, sort and view type.
+  // Done in a single setValues call so the URL is updated once.
+  const resetFilters = useCallback(() => {
+    setValues({
+      investigationStatus: DEFAULT_SEARCH_VALUES.investigationStatus,
+      region: DEFAULT_SEARCH_VALUES.region,
+      zone: DEFAULT_SEARCH_VALUES.zone,
+      community: DEFAULT_SEARCH_VALUES.community,
+      primaryInvestigator: DEFAULT_SEARCH_VALUES.primaryInvestigator,
+      fileCoordinator: DEFAULT_SEARCH_VALUES.fileCoordinator,
+      supervisor: DEFAULT_SEARCH_VALUES.supervisor,
+      startDate: DEFAULT_SEARCH_VALUES.startDate,
+      endDate: DEFAULT_SEARCH_VALUES.endDate,
+      investigationSource: DEFAULT_SEARCH_VALUES.investigationSource,
+      act: DEFAULT_SEARCH_VALUES.act,
+      regulation: DEFAULT_SEARCH_VALUES.regulation,
+      decision: DEFAULT_SEARCH_VALUES.decision,
+      ...getDefaultFilters(),
+    });
+  }, [setValues, getDefaultFilters]);
+
   const getFilters = useCallback(() => {
     const { viewType, page, pageSize, ...filters } = searchValues;
     return { ...filters, leadAgency: getUserAgency() };
@@ -181,6 +219,8 @@ export const useInvestigationSearch = () => {
     setSort,
     clearValues,
     resetSearch,
+    getDefaultFilters,
+    resetFilters,
     getFilters,
     searchURL: useAppSelector(selectInvestigationListUrl),
   };
