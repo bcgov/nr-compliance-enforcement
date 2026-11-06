@@ -200,6 +200,10 @@ export const useInvestigationSearch = () => {
       supervisor: DEFAULT_SEARCH_VALUES.supervisor,
       startDate: DEFAULT_SEARCH_VALUES.startDate,
       endDate: DEFAULT_SEARCH_VALUES.endDate,
+      investigationSource: DEFAULT_SEARCH_VALUES.investigationSource,
+      act: DEFAULT_SEARCH_VALUES.act,
+      regulation: DEFAULT_SEARCH_VALUES.regulation,
+      decision: DEFAULT_SEARCH_VALUES.decision,
       ...getDefaultFilters(),
     });
   }, [setValues, getDefaultFilters]);
