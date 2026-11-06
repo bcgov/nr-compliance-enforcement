@@ -174,7 +174,8 @@
     "path-to-regexp": "^8.4.0",
     "picomatch": "^4.0.4",
     "copyfiles": {
-      "glob": "^7.2.3"
+      "glob": "^7.2.3",
+      "minimatch": "^10.2.3"
     },
     "@nestjs/graphql": {
       "@graphql-tools/utils": "12.0.4"
