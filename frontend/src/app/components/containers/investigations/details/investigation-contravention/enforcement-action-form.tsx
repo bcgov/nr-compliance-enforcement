@@ -70,17 +70,25 @@ const boolToOption = (value: boolean | null | undefined): string => {
 const optionToBool = (value: string): boolean | null => (value === "" ? null : value === "true");
 
 // ticket_amount is stored as Decimal(10, 2) so enforce max amount
-const ticketAmountValidator = z
+const fineAmountValidator = z
   .string()
-  .min(1, "Ticket amount is required")
+  .min(1, "Ticket fine amount is required")
   .refine(
     (val) => {
       const amount = Number.parseFloat(val);
       return Number.isNaN(amount) || amount < 100_000_000;
     },
-    { message: "Ticket amount must be less than 100,000,000" },
+    { message: "Ticket fine amount must be less than 100,000,000" },
   );
-
+const paidAmountValidator = z
+  .string()
+  .refine(
+    (val) => {
+      const amount = Number.parseFloat(val);
+      return Number.isNaN(amount) || amount < 100_000_000;
+    },
+    { message: "Ticket paid amount must be less than 100,000,000" },
+  );
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
     updateInvestigationTimestamp(investigationGuid: $investigationGuid) {
@@ -284,7 +292,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       comment: enforcementAction?.comment ?? "",
       // Violation Ticket
       ticketTypeCode: enforcementAction?.ticket?.ticketTypeCode ?? "",
-      ticketAmount: enforcementAction?.ticket?.ticketAmount?.toString() ?? "",
+      fineAmount: enforcementAction?.ticket?.fineAmount?.toString() ?? "",
+      paidAmount: enforcementAction?.ticket?.paidAmount?.toString() ?? "",
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
       ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "INPR",
       noticeOfCancellationNumber: enforcementAction?.ticket?.noticeOfCancellationNumber ?? "",
@@ -357,7 +366,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 
     return {
       ticketOutcomeCode: value.ticketOutcomeCode,
-      ticketAmount: Number.parseFloat(value.ticketAmount),
+      fineAmount: Number.parseFloat(value.fineAmount),
+      paidAmount: Number.parseFloat(value.paidAmount),
       ticketNumber: value.ticketNumber,
       ticketTypeCode: value.ticketTypeCode || null,
       appealHearingDate: value.appealHearingDate ? new Date(value.appealHearingDate).toISOString() : null,
@@ -813,17 +823,17 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 <div className="col-6">
                   <FormField
                     form={form}
-                    name="ticketAmount"
-                    label="Amount"
+                    name="fineAmount"
+                    label="Fine amount"
                     required
                     validators={{
-                      onChange: ticketAmountValidator,
-                      onSubmit: ticketAmountValidator,
+                      onChange: fineAmountValidator,
+                      onSubmit: fineAmountValidator,
                     }}
                     render={(field) => (
                       <CompInput
-                        id="enforcement-action-ticket-amount"
-                        divid="enforcement-action-ticket-amount-value"
+                        id="enforcement-action-ticket-fine-amount"
+                        divid="enforcement-action-ticket-fine-amount-value"
                         type="input"
                         inputClass="comp-form-control"
                         error={field.state.meta.errors?.[0]?.message ?? ""}
@@ -834,13 +844,41 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                           }
                         }}
                         value={field.state.value}
-                        placeholder="Enter amount"
+                        placeholder="Enter fine amount"
                       />
                     )}
                   />
                 </div>
               </div>
               <div className="row mb-3">
+                <div className="col-6">
+                  <FormField
+                    form={form}
+                    name="paidAmount"
+                    label="Paid amount"
+                    validators={{
+                      onChange: paidAmountValidator,
+                      onSubmit: paidAmountValidator,
+                    }}
+                    render={(field) => (
+                      <CompInput
+                        id="enforcement-action-ticket-paid-amount"
+                        divid="enforcement-action-ticket-paid-amount-value"
+                        type="input"
+                        inputClass="comp-form-control"
+                        error={field.state.meta.errors?.[0]?.message ?? ""}
+                        onChange={(evt: any) => {
+                          const value = evt.target.value;
+                          if (/^\d*\.?\d{0,2}$/.test(value)) {
+                            field.handleChange(value);
+                          }
+                        }}
+                        value={field.state.value}
+                        placeholder="Enter paid amount"
+                      />
+                    )}
+                  />
+                </div>
                 <div className="col-6">
                   {renderSelectField("ticketOutcomeCode", "Status", ticketOutcomeOptions, {
                     id: "enforcement-action-ticket-outcome",
@@ -849,11 +887,21 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                     isClearable: false,
                   })}
                 </div>
+              </div>
+              <div className="row mb-3">
                 <div className="col-6">
                   {renderDateField(
                     "appealHearingDate",
                     "Appeal hearing date",
                     "enforcement-action-ticket-appeal-hearing-date",
+                    undefined,
+                  )}
+                </div>
+                <div className="col-6">
+                  {renderDateField(
+                    "paidDate",
+                    "Paid date",
+                    "enforcement-action-ticket-paid-date",
                     undefined,
                   )}
                 </div>

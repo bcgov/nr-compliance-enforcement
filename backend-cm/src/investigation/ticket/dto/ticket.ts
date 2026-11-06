@@ -5,7 +5,8 @@ export class Ticket {
   ticketIdentifier: string;
   enforcementActionIdentifier: string;
   ticketOutcomeCode: string;
-  ticketAmount: number;
+  fineAmount: number;
+  paidAmount?: number;
   ticketNumber: string;
   activeIndicator: boolean;
   paidDate?: Date;
@@ -32,8 +33,12 @@ export const mapPrismaTicketToTicket = (mapper: Mapper) => {
       mapFrom((src) => src.ticket_outcome_code),
     ),
     forMember(
-      (dest) => dest.ticketAmount,
-      mapFrom((src) => src.ticket_amount),
+      (dest) => dest.paidAmount,
+      mapFrom((src) => src.paid_amount),
+    ),
+    forMember(
+      (dest) => dest.fineAmount,
+      mapFrom((src) => src.fine_amount),
     ),
     forMember(
       (dest) => dest.ticketNumber,

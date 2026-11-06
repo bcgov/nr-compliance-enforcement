@@ -210,7 +210,8 @@ export const GET_INVESTIGATION = gql`
             ticket {
               ticketIdentifier
               ticketOutcomeCode
-              ticketAmount
+              fineAmount
+              paidAmount
               ticketNumber
               paidDate
               ticketTypeCode
