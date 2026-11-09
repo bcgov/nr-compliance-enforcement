@@ -84,7 +84,7 @@ export class AppUserActivityXrefService {
           },
         });
 
-        if (assigned && assigned.app_user_guid === appUserGuid) {
+        if (assigned?.app_user_guid === appUserGuid) {
           return;
         }
 
@@ -123,7 +123,7 @@ export class AppUserActivityXrefService {
     }
   }
 
-  async findAssignees(activityType: string, activityIdentifiers: string[]) {
+  findAssignees(activityType: string, activityIdentifiers: string[]) {
     return this.prisma.app_user_activity_xref.findMany({
       where: {
         activity_type: activityType,
@@ -149,7 +149,7 @@ export class AppUserActivityXrefService {
     return assigned.map((xref) => xref.activity_identifier_ref);
   }
 
-  async findCollaborators(activityType: string, activityIdentifier: string) {
+  findCollaborators(activityType: string, activityIdentifier: string) {
     return this.prisma.app_user_activity_xref.findMany({
       where: {
         activity_type: activityType,
