@@ -17,9 +17,6 @@ import {
 import { uniq, compact } from "lodash";
 import { gql } from "graphql-request";
 import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigationSearchQuery";
-import { appUserGuid as selectAppUserGuid, selectDefaultRegion } from "@/app/store/reducers/app";
-import UserService from "@/app/service/user-service";
-import { Roles } from "@/app/types/app/roles";
 
 const GET_CASE_FILES_BY_ACTIVITIES = gql`
   query GetCaseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -40,9 +37,7 @@ const Investigations: FC = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
-  const { searchValues, getFilters, setValues } = useInvestigationSearch();
-  const appUserGuid = useAppSelector(selectAppUserGuid);
-  const defaultRegion = useAppSelector(selectDefaultRegion);
+  const { searchValues, getFilters, setValues, getDefaultFilters } = useInvestigationSearch();
   const defaultsApplied = useAppSelector(selectInvestigationDefaultsActive);
 
   // Track the current /investigations URL in Redux so any subsequent navigation
@@ -106,14 +101,10 @@ const Investigations: FC = () => {
       return;
     }
 
-    if (UserService.hasRole(Roles.COS)) {
-      if (UserService.hasRole(Roles.INSPECTOR) && defaultRegion) {
-        setValues({ investigationStatus: "OPEN", region: defaultRegion.value });
-        dispatch(setInvestigationListUrlDefaultsActive());
-      } else if (appUserGuid) {
-        setValues({ investigationStatus: "OPEN", primaryInvestigator: appUserGuid });
-        dispatch(setInvestigationListUrlDefaultsActive());
-      }
+    const defaultFilters = getDefaultFilters();
+    if (Object.keys(defaultFilters).length > 0) {
+      setValues(defaultFilters);
+      dispatch(setInvestigationListUrlDefaultsActive());
     }
   }, []);
 

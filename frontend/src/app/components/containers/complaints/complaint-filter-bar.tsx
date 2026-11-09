@@ -20,6 +20,7 @@ type Props = {
   applySearchQuery: Function;
   toggleShowMobileFilters: MouseEventHandler;
   toggleShowDesktopFilters: MouseEventHandler;
+  onResetFilters: () => void;
 };
 
 export const ComplaintFilterBar: FC<Props> = ({
@@ -30,6 +31,7 @@ export const ComplaintFilterBar: FC<Props> = ({
   applySearchQuery,
   toggleShowMobileFilters,
   toggleShowDesktopFilters,
+  onResetFilters,
 }) => {
   const { state: filters, dispatch } = useContext(ComplaintFilterContext);
   const appDispatch = useAppDispatch();
@@ -380,6 +382,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             clear={removeFilter}
           />
         )}
+
+        <Button
+          variant="link"
+          size="sm"
+          id="comp-reset-filters-btn"
+          onClick={onResetFilters}
+        >
+          Reset
+        </Button>
       </div>
     </div>
   );

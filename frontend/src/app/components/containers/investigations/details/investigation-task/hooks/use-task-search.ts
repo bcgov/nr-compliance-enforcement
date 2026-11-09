@@ -75,9 +75,15 @@ export const useTaskSearch = () => {
     [setValues],
   );
 
+  // Resets filters to their defaults. Tasks have no role-based default filters, so all filters are cleared.
+  const resetFilters = useCallback(() => {
+    clearValues(["categoryFilter", "statusFilter", "officerFilter"]);
+  }, [clearValues]);
+
   return {
     searchValues,
     setValues,
     clearValues,
+    resetFilters,
   };
 };

@@ -123,11 +123,18 @@ export const useExhibitsSearch = () => {
     setSearchParams(new URLSearchParams(), { replace: true });
   }, [setSearchParams]);
 
+  // Resets filters to their defaults while preserving search and sort.
+  // Exhibits have no role-based default filters, so all filters are cleared.
+  const resetFilters = useCallback(() => {
+    clearValues(["taskFilter", "propertyTypeFilter", "officerFilter", "intakeStartDate", "intakeEndDate"]);
+  }, [clearValues]);
+
   return {
     searchValues,
     setValues,
     setSort,
     clearValues,
     resetSearch,
+    resetFilters,
   };
 };

@@ -137,4 +137,36 @@ test.describe("Inspection Filters", () => {
       await expect(agencyPill).toBeVisible();
     }
   });
+
+  test("it resets filters back to the defaults", async ({ page }) => {
+    await page.goto("/inspections?startDate=2026-10-05&endDate=2026-10-08");
+    await waitForSpinner(page);
+
+    // Verify filter pill appears
+    const dateRangePill = page.locator("#inspection-date-range-filter-pill");
+    await expect(dateRangePill).toBeVisible();
+
+    await page.locator("#inspection-reset-filters-btn").click();
+    await waitForSpinner(page);
+
+    // Verify filter pill and date params are removed
+    await expect(dateRangePill).toBeHidden();
+    await expect(page).not.toHaveURL(/startDate=|endDate=/);
+  });
+
+  test("it keeps search and sort when resetting filters", async ({ page }) => {
+    await page.goto(
+      "/inspections?startDate=2026-10-05&endDate=2026-10-08&search=test&sortBy=openedTimestamp&sortOrder=ASC",
+    );
+    await waitForSpinner(page);
+
+    await page.locator("#inspection-reset-filters-btn").click();
+    await waitForSpinner(page);
+
+    // Verify filters are cleared but search and sort remain
+    await expect(page.locator("#inspection-date-range-filter-pill")).toBeHidden();
+    await expect(page).toHaveURL(/search=test/);
+    await expect(page).toHaveURL(/sortBy=openedTimestamp/);
+    await expect(page).toHaveURL(/sortOrder=ASC/);
+  });
 });
