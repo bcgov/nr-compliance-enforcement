@@ -127,10 +127,12 @@ const ENFORCEMENT_ACTION_FIELDS = `
   ticket {
     ticketIdentifier
     ticketOutcomeCode
-    ticketAmount
+    fineAmount
+    paidAmount
     ticketNumber
     ticketTypeCode
     appealHearingDate
+    paidDate
     noticeOfCancellationNumber
   }
 `;
@@ -294,6 +296,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketTypeCode: enforcementAction?.ticket?.ticketTypeCode ?? "",
       fineAmount: enforcementAction?.ticket?.fineAmount?.toString() ?? "",
       paidAmount: enforcementAction?.ticket?.paidAmount?.toString() ?? "",
+      paidDate: parseUTCDateToLocal(enforcementAction?.ticket?.paidDate),
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
       ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "INPR",
       noticeOfCancellationNumber: enforcementAction?.ticket?.noticeOfCancellationNumber ?? "",
@@ -368,6 +371,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       ticketOutcomeCode: value.ticketOutcomeCode,
       fineAmount: Number.parseFloat(value.fineAmount),
       paidAmount: Number.parseFloat(value.paidAmount),
+      paidDate: value.paidDate ? new Date(value.paidDate).toISOString() : null,
       ticketNumber: value.ticketNumber,
       ticketTypeCode: value.ticketTypeCode || null,
       appealHearingDate: value.appealHearingDate ? new Date(value.appealHearingDate).toISOString() : null,
