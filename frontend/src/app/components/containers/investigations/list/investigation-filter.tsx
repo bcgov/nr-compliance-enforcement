@@ -1,4 +1,5 @@
 import { FC, useMemo } from "react";
+import { GroupBase } from "react-select";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
@@ -13,6 +14,7 @@ import { selectOfficersByAgency } from "@store/reducers/officer";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { getUserAgency } from "@service/user-service";
 import { useInvestigationSearch, InvestigationSearchParams } from "../hooks/use-investigation-search";
+import { useInvestigationFilterOptions } from "../hooks/use-investigation-filter-options";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
@@ -52,8 +54,16 @@ export const InvestigationFilter: FC = () => {
     ),
   );
 
+  const { sourceOptions, decisionOptions, actOptions, actGroups, regulationOptions } = useInvestigationFilterOptions(
+    searchValues.act,
+  );
+
   const handleFieldChange = (fieldName: keyof InvestigationSearchParams) => (option: Option | null) => {
     setValues({ [fieldName]: option?.value });
+  };
+
+  const handleActChange = (option: Option | null) => {
+    setValues({ act: option?.value, regulation: null });
   };
 
   const handleDateRangeChange = (dates: [Date, Date]) => {
@@ -75,7 +85,7 @@ export const InvestigationFilter: FC = () => {
   const renderSelectFilter = (
     id: string,
     label: string,
-    options: Option[],
+    options: Option[] | GroupBase<Option>[],
     placeholder: string,
     value: Option | null,
     onChange: (option: Option | null) => void,
@@ -176,6 +186,43 @@ export const InvestigationFilter: FC = () => {
         "Select",
         statusOptions.find((option) => option.value === searchValues.investigationStatus) || null,
         handleFieldChange("investigationStatus"),
+      )}
+
+      {renderSelectFilter(
+        "source",
+        "Source",
+        sourceOptions,
+        "Select",
+        sourceOptions.find((option) => option.value === searchValues.investigationSource) || null,
+        handleFieldChange("investigationSource"),
+      )}
+
+      {renderSelectFilter(
+        "act",
+        "Act",
+        actGroups,
+        "Select",
+        actOptions.find((option) => option.value === searchValues.act) || null,
+        handleActChange,
+      )}
+
+      {searchValues.act &&
+        renderSelectFilter(
+          "regulation",
+          "Regulation",
+          regulationOptions,
+          "Select",
+          regulationOptions.find((option) => option.value === searchValues.regulation) || null,
+          handleFieldChange("regulation"),
+        )}
+
+      {renderSelectFilter(
+        "decision",
+        "Decision",
+        decisionOptions,
+        "Select",
+        decisionOptions.find((option) => option.value === searchValues.decision) || null,
+        handleFieldChange("decision"),
       )}
     </div>
   );

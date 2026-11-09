@@ -14,6 +14,7 @@ import { selectOfficersByAgency } from "@store/reducers/officer";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { getUserAgency } from "@service/user-service";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
+import { useInvestigationFilterOptions } from "../hooks/use-investigation-filter-options";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
@@ -39,11 +40,16 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
     }
     return map;
   }, [agencyOfficers]);
+  const { sourceOptions, decisionOptions, actOptions, regulationOptions } = useInvestigationFilterOptions(
+    searchValues.act,
+  );
 
   const removeFilter = useCallback(
     (filterName: string) => {
       if (filterName === "dateRange") {
         clearValues(["startDate", "endDate"]);
+      } else if (filterName === "act") {
+        clearValues(["act", "regulation"]);
       } else {
         clearValues(filterName as keyof typeof searchValues);
       }
@@ -69,6 +75,8 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
   const hasDateRange = (): boolean => {
     return searchValues.startDate != null || searchValues.endDate != null;
   };
+
+  const decisionLabel = decisionOptions.find((option) => option.value === searchValues.decision)?.label;
 
   const getDateRangeLabel = (): string => {
     const { startDate, endDate } = searchValues;
@@ -203,6 +211,42 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
             id="investigation-date-range-filter-pill"
             label={getDateRangeLabel()}
             name="dateRange"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("investigationSource") && (
+          <FilterButton
+            id="investigation-source-filter-pill"
+            label={sourceOptions.find((option) => option.value === searchValues.investigationSource)?.label || "Source"}
+            name="investigationSource"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("act") && (
+          <FilterButton
+            id="investigation-act-filter-pill"
+            label={actOptions.find((option) => option.value === searchValues.act)?.label || "Act"}
+            name="act"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("regulation") && (
+          <FilterButton
+            id="investigation-regulation-filter-pill"
+            label={regulationOptions.find((option) => option.value === searchValues.regulation)?.label || "Regulation"}
+            name="regulation"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("decision") && (
+          <FilterButton
+            id="investigation-decision-filter-pill"
+            label={decisionLabel ? `Decision: ${decisionLabel}` : "Decision"}
+            name="decision"
             clear={removeFilter}
           />
         )}
