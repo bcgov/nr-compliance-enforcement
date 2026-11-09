@@ -80,6 +80,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
             isSafetyConcern={!!(person?.safetyConcernIndicator || business?.safetyConcernIndicator)}
             isPublished={isPublished}
             isYoungPerson={personIsYoung}
+            isIncomplete={!isPublished}
           />
         }
         actions={

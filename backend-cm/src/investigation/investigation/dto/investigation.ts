@@ -90,6 +90,22 @@ export class InvestigationFilters {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
+  investigationSource?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  act?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  regulation?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  decision?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
   sortBy?: string;
 
   @Field(() => String, { nullable: true })

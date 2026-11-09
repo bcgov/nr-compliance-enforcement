@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "3.0.19",
+  "version": "3.0.22",
   "description": "",
   "author": "",
   "private": true,
@@ -74,7 +74,7 @@
     "testEnvironment": "node"
   },
   "overrides": {
-    "minimatch": "^10.2.3",
+    "minimatch": "^11.0.0",
     "glob": ">=10.5.0",
     "path-to-regexp": "^8.4.0",
     "js-yaml": "^4.1.1",

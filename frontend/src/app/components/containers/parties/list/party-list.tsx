@@ -1,12 +1,12 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, ReactNode, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { usePartySearch } from "../hooks/use-party-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import { calculateAgeYears } from "@common/methods";
-import { parseUTCDateToLocal } from "@/app/common/date-utils";
+import { isYoungPerson } from "@common/methods";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input/input";
@@ -16,6 +16,7 @@ import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subd
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
 import { getPartyName } from "@/app/common/party-name";
+import { Badge } from "react-bootstrap";
 
 type Props = {
   parties: any[];
@@ -77,12 +78,25 @@ const aliasesColumn = (label: string): CompColumn<any> => ({
   renderCell: (party) => getAliases(party.aliases),
 });
 
-const getAgeDisplay = (party: Party, approxAges: ApproximateAgeType[]): number | string => {
+const getDateOfBirthDisplay = (party: Party, approxAges: ApproximateAgeType[]): string => {
   const dateOfBirth = parseUTCDateToLocal(party?.person?.dateOfBirth) ?? null;
   if (!dateOfBirth) {
     return approxAges.find((a) => a.approximateAgeCode === party.person?.approximateAgeCode)?.shortDescription ?? "";
   }
-  return calculateAgeYears(dateOfBirth) ?? "";
+  return formatDateObjectAsString(dateOfBirth, { format: "date" });
+};
+
+const renderDateOfBirthCell = (party: Party, approxAges: ApproximateAgeType[]): ReactNode => {
+  const dateOfBirthText = getDateOfBirthDisplay(party, approxAges);
+  const dateOfBirth = parseUTCDateToLocal(party?.person?.dateOfBirth) ?? null;
+  if (!isYoungPerson(dateOfBirth, party.person?.approximateAgeCode)) {
+    return dateOfBirthText;
+  }
+  return (
+    <>
+      {dateOfBirthText} <Badge bg="species-badge comp-species-badge">Young person</Badge>
+    </>
+  );
 };
 
 const partyNameColumn = (label: string): CompColumn<any> => ({
@@ -142,13 +156,13 @@ const getPersonColumns = (
   partyNameColumn("Party name"),
   aliasesColumn("Alias(es)"),
   {
-    label: "Age",
+    label: "Date of birth",
     sortKey: "age",
     headerClassName: "comp-cell-min-width-60",
     cellClassName: "comp-cell-width-60",
     isSortable: false,
-    getValue: (party) => getAgeDisplay(party, approxAges),
-    renderCell: (party) => getAgeDisplay(party, approxAges),
+    getValue: (party) => getDateOfBirthDisplay(party, approxAges),
+    renderCell: (party) => renderDateOfBirthCell(party, approxAges),
   },
   {
     label: "Sex as per ID",
