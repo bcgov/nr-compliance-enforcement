@@ -880,6 +880,16 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                   />
                 </div>
                 <div className="col-6">
+                  {renderDateField(
+                    "paidDate",
+                    "Paid date",
+                    "enforcement-action-ticket-paid-date",
+                    undefined,
+                  )}
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-6">
                   {renderSelectField("ticketOutcomeCode", "Status", ticketOutcomeOptions, {
                     id: "enforcement-action-ticket-outcome",
                     required: true,
@@ -887,21 +897,11 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                     isClearable: false,
                   })}
                 </div>
-              </div>
-              <div className="row mb-3">
                 <div className="col-6">
                   {renderDateField(
                     "appealHearingDate",
                     "Appeal hearing date",
                     "enforcement-action-ticket-appeal-hearing-date",
-                    undefined,
-                  )}
-                </div>
-                <div className="col-6">
-                  {renderDateField(
-                    "paidDate",
-                    "Paid date",
-                    "enforcement-action-ticket-paid-date",
                     undefined,
                   )}
                 </div>
