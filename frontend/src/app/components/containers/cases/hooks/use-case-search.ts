@@ -135,6 +135,12 @@ export const useCaseSearch = () => {
     setSearchParams(new URLSearchParams(), { replace: true });
   }, [setSearchParams]);
 
+  // Resets filters to their defaults while preserving search, sort and view type.
+  // Cases have no role-based default filters, so all filters are cleared.
+  const resetFilters = useCallback(() => {
+    clearValues(["leadAgency", "startDate", "endDate"]);
+  }, [clearValues]);
+
   const getFilters = useCallback(() => {
     const { viewType, page, pageSize, ...filters } = searchValues;
     return filters;
@@ -146,6 +152,7 @@ export const useCaseSearch = () => {
     setSort,
     clearValues,
     resetSearch,
+    resetFilters,
     getFilters,
     searchURL: useAppSelector(selectCaseListUrl),
   };

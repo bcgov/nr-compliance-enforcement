@@ -424,7 +424,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       const enforcementActionLabel =
         enforcementActionOptions.find((opt) => opt.value === value.enforcementActionCode)?.label ?? "";
       await attachmentsRef.current?.persist(enforcementActionId, {
-        fileType: "Photo",
+        fileType: "Document",
         title: value.ticketNumber,
         description: enforcementActionLabel,
         date: value.dateIssued,

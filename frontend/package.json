@@ -1,7 +1,7 @@
 {
   "name": "nr-natsuite",
   "type": "module",
-  "version": "3.0.18",
+  "version": "3.0.23",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "6.7.2",
@@ -186,7 +186,7 @@
     "flatted": "^3.4.2",
     "@graphql-tools/utils": "12.0.4",
     "js-yaml": "^4.1.1",
-    "minimatch": "^10.2.3",
+    "minimatch": "^11.0.0",
     "@graphql-codegen/typescript-graphql-request": {
       "immutable": "^4.3.8"
     },

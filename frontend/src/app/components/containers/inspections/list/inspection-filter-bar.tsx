@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const InspectionFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
-  const { searchValues, setValues, clearValues } = useInspectionSearch();
+  const { searchValues, setValues, clearValues, resetFilters } = useInspectionSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
@@ -122,6 +122,14 @@ export const InspectionFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggle
             clear={removeFilter}
           />
         )}
+        <Button
+          variant="link"
+          size="sm"
+          id="inspection-reset-filters-btn"
+          onClick={resetFilters}
+        >
+          Reset
+        </Button>
       </div>
     </div>
   );

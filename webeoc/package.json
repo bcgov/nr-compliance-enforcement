@@ -1,6 +1,6 @@
 {
   "name": "webeoc",
-  "version": "3.0.18",
+  "version": "3.0.23",
   "description": "",
   "author": "",
   "private": true,
@@ -76,7 +76,7 @@
     "flatted": "^3.4.2",
     "path-to-regexp": "^8.4.0",
     "picomatch": "^4.0.4",
-    "minimatch": "^10.2.3",
+    "minimatch": "^11.0.0",
     "js-yaml": "^4.1.1",
     "multer": "2.5.0"
   }

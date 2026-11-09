@@ -68,4 +68,37 @@ test.describe("Investigation Filters", () => {
     await expect(page.locator("#investigation-status-filter-pill")).toBeVisible();
     await expect(page.locator("#investigation-community-filter-pill")).toBeVisible();
   });
+
+  test("it resets filters back to the defaults", async ({ page }) => {
+    await page.goto("/investigations?startDate=2026-10-05&endDate=2026-10-08");
+    await waitForSpinner(page);
+
+    // Verify filter pill appears
+    const dateRangePill = page.locator("#investigation-date-range-filter-pill");
+    await expect(dateRangePill).toBeVisible();
+
+    await page.locator("#investigation-reset-filters-btn").click();
+    await waitForSpinner(page);
+
+    // Verify the date filter is removed and the default status filter is applied
+    await expect(dateRangePill).toBeHidden();
+    await expect(page).not.toHaveURL(/startDate=|endDate=/);
+    await expect(page.locator("#investigation-status-filter-pill")).toContainText("Open");
+  });
+
+  test("it keeps search and sort when resetting filters", async ({ page }) => {
+    await page.goto(
+      "/investigations?startDate=2026-10-05&endDate=2026-10-08&search=test&sortBy=openedTimestamp&sortOrder=ASC",
+    );
+    await waitForSpinner(page);
+
+    await page.locator("#investigation-reset-filters-btn").click();
+    await waitForSpinner(page);
+
+    // Verify filters are reset but search and sort remain
+    await expect(page.locator("#investigation-date-range-filter-pill")).toBeHidden();
+    await expect(page).toHaveURL(/search=test/);
+    await expect(page).toHaveURL(/sortBy=openedTimestamp/);
+    await expect(page).toHaveURL(/sortOrder=ASC/);
+  });
 });

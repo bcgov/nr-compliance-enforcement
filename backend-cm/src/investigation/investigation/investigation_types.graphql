@@ -74,6 +74,10 @@ input InvestigationFilters {
   supervisor: String
   startDate: DateTime
   endDate: DateTime
+  investigationSource: String
+  act: String
+  regulation: String
+  decision: String
   sortBy: String
   sortOrder: String
 }
