@@ -35,10 +35,6 @@ import { investigation_person_facial_hair_style_code_ref_h as _investigation_per
 import { investigation_person_h as _investigation_person_h } from "./investigation_person_h";
 import { investigation_status_code as _investigation_status_code } from "./investigation_status_code";
 import { investigation_status_code_h as _investigation_status_code_h } from "./investigation_status_code_h";
-import { officer_investigation_xref as _officer_investigation_xref } from "./officer_investigation_xref";
-import { officer_investigation_xref_code as _officer_investigation_xref_code } from "./officer_investigation_xref_code";
-import { officer_investigation_xref_code_h as _officer_investigation_xref_code_h } from "./officer_investigation_xref_code_h";
-import { officer_investigation_xref_h as _officer_investigation_xref_h } from "./officer_investigation_xref_h";
 import { task as _task } from "./task";
 import { task_category_type_code as _task_category_type_code } from "./task_category_type_code";
 import { task_h as _task_h } from "./task_h";
@@ -105,10 +101,6 @@ export namespace PrismaModel {
   export class investigation_person_h extends _investigation_person_h {}
   export class investigation_status_code extends _investigation_status_code {}
   export class investigation_status_code_h extends _investigation_status_code_h {}
-  export class officer_investigation_xref extends _officer_investigation_xref {}
-  export class officer_investigation_xref_code extends _officer_investigation_xref_code {}
-  export class officer_investigation_xref_code_h extends _officer_investigation_xref_code_h {}
-  export class officer_investigation_xref_h extends _officer_investigation_xref_h {}
   export class task extends _task {}
   export class task_category_type_code extends _task_category_type_code {}
   export class task_h extends _task_h {}
@@ -175,10 +167,6 @@ export namespace PrismaModel {
     investigation_person_h,
     investigation_status_code,
     investigation_status_code_h,
-    officer_investigation_xref,
-    officer_investigation_xref_code,
-    officer_investigation_xref_code_h,
-    officer_investigation_xref_h,
     task,
     task_category_type_code,
     task_h,

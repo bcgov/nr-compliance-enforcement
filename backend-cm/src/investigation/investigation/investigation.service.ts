@@ -18,6 +18,9 @@ import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { Point } from "src/common/custom_scalars";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
 import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
+import { AppUserActivityXrefService } from "src/shared/app_user_activity_xref/app_user_activity_xref.service";
+import { AppUserActivityXref } from "src/shared/app_user_activity_xref/dto/app_user_activity_xref";
+import { app_user_activity_xref } from "prisma/shared/generated/app_user_activity_xref";
 import { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
@@ -46,6 +49,7 @@ export class InvestigationService {
     private readonly eventPublisher: EventPublisherService,
     private readonly caseActivityService: CaseActivityService,
     private readonly cosGeoOrgUnitService: CosGeoOrgUnitService,
+    private readonly appUserActivityXrefService: AppUserActivityXrefService,
   ) {}
 
   async findOne(investigationGuid: string) {
@@ -266,6 +270,14 @@ export class InvestigationService {
         party.isUpToDate = !reflected || !sharedUpdated || reflected >= sharedUpdated;
       }
 
+      const collaborators = await this.appUserActivityXrefService.findCollaborators("INVSTGTN", investigationGuid);
+      mappedResult.collaborators = this.mapper.mapArray<app_user_activity_xref, AppUserActivityXref>(
+        collaborators as Array<app_user_activity_xref>,
+        "app_user_activity_xref",
+        "AppUserActivityXref",
+      );
+      await this.setAssignees([mappedResult]);
+
       return mappedResult;
     } catch (error) {
       this.logger.error("Error mapping investigation:", error);
@@ -316,11 +328,13 @@ export class InvestigationService {
     });
 
     try {
-      return this.mapper.mapArray<investigation, Investigation>(
+      const mappedInvestigations = this.mapper.mapArray<investigation, Investigation>(
         prismaInvestigations as Array<investigation>,
         "investigation",
         "Investigation",
       );
+      await this.setAssignees(mappedInvestigations);
+      return mappedInvestigations;
     } catch (error) {
       this.logger.error("Error fetching investigations by IDs:", error);
       throw error;
@@ -411,11 +425,13 @@ export class InvestigationService {
     });
 
     try {
-      return this.mapper.mapArray<investigation, Investigation>(
+      const mappedInvestigations = this.mapper.mapArray<investigation, Investigation>(
         prismaInvestigations as Array<investigation>,
         "investigation",
         "Investigation",
       );
+      await this.setAssignees(mappedInvestigations);
+      return mappedInvestigations;
     } catch (error) {
       const mappingError = error as Error;
       this.logger.error(`Error mapping investigations by Party IDs: ${mappingError.message}`, mappingError.stack);
@@ -465,9 +481,6 @@ export class InvestigationService {
             investigation_opened_utc_timestamp: new Date(),
             location_address: input.locationAddress || null,
             location_description: input.locationDescription || null,
-            primary_investigator_guid_ref: input.primaryInvestigatorGuid || null,
-            supervisor_guid_ref: input.supervisorGuid || null,
-            file_coordinator_guid_ref: input.fileCoordinatorGuid || null,
             discovery_date_utc_date: input.discoveryDate,
             discovery_date_utc_time: input.discoveryTime,
             geo_organization_unit_code_ref: input.community || null,
@@ -489,6 +502,8 @@ export class InvestigationService {
         (await this.fetchLocationGeometryPoints([investigation.investigation_guid], db)).get(
           investigation.investigation_guid,
         ) ?? null;
+      // if this raises an exception the transaction will be rolled back
+      await this.assignRoles(investigation.investigation_guid, input);
     });
     // Try to create case activity record, and if it fails, delete the investigation
     try {
@@ -535,11 +550,13 @@ export class InvestigationService {
     }
 
     try {
-      return this.mapper.map<investigation, Investigation>(
+      const mappedResult = this.mapper.map<investigation, Investigation>(
         investigation as investigation,
         "investigation",
         "Investigation",
       );
+      await this.setAssignees([mappedResult]);
+      return mappedResult;
     } catch (error) {
       this.logger.error("Error mapping investigation:", error);
       throw error;
@@ -595,19 +612,6 @@ export class InvestigationService {
         if (input.locationDescription !== undefined) {
           updateData.location_description = input.locationDescription;
         }
-        if (input.primaryInvestigatorGuid !== undefined) {
-          updateData.primary_investigator_guid_ref = input.primaryInvestigatorGuid;
-        }
-        if (input.supervisorGuid !== undefined) {
-          updateData.supervisor_guid_ref = input.supervisorGuid;
-        }
-
-        if (input.fileCoordinatorGuid === "") {
-          updateData.file_coordinator_guid_ref = null;
-        } else {
-          updateData.file_coordinator_guid_ref = input.fileCoordinatorGuid;
-        }
-
         if (input.discoveryDate !== undefined) {
           updateData.discovery_date_utc_date = input.discoveryDate;
         }
@@ -654,6 +658,8 @@ export class InvestigationService {
         this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
         throw error;
       }
+      // if this raises an exception the transaction will be rolled back
+      await this.assignRoles(investigationGuid, input);
     });
     if (input.investigationStatus !== undefined) {
       this.eventPublisher.publishActivityStatusChangeEvents(
@@ -663,11 +669,13 @@ export class InvestigationService {
       );
     }
     try {
-      return this.mapper.map<investigation, Investigation>(
+      const mappedResult = this.mapper.map<investigation, Investigation>(
         updatedInvestigation as investigation,
         "investigation",
         "Investigation",
       );
+      await this.setAssignees([mappedResult]);
+      return mappedResult;
     } catch (error) {
       this.logger.error(`Error mapping investigation with guid ${investigationGuid}:`, error);
       throw error;
@@ -825,16 +833,24 @@ export class InvestigationService {
       where.geo_organization_unit_code_ref = filters.community;
     }
 
-    if (filters?.primaryInvestigator) {
-      where.primary_investigator_guid_ref = filters.primaryInvestigator;
-    }
+    const assigneeFilters = [
+      { code: "ASSIGNEE", appUserGuid: filters?.primaryInvestigator },
+      { code: "FILECOORD", appUserGuid: filters?.fileCoordinator },
+      { code: "SUPERVISOR", appUserGuid: filters?.supervisor },
+    ].filter((assigneeFilter) => assigneeFilter.appUserGuid);
 
-    if (filters?.fileCoordinator) {
-      where.file_coordinator_guid_ref = filters.fileCoordinator;
-    }
-
-    if (filters?.supervisor) {
-      where.supervisor_guid_ref = filters.supervisor;
+    if (assigneeFilters.length > 0) {
+      where.AND = await Promise.all(
+        assigneeFilters.map(async (assigneeFilter) => ({
+          investigation_guid: {
+            in: await this.appUserActivityXrefService.findAssignedActivityIdentifiers(
+              "INVSTGTN",
+              assigneeFilter.code,
+              assigneeFilter.appUserGuid,
+            ),
+          },
+        })),
+      );
     }
 
     if (filters?.startDate || filters?.endDate) {
@@ -876,12 +892,12 @@ export class InvestigationService {
         mapper: this.mapper,
         whereClause: where,
         includeClause: {
-          officer_investigation_xref: true,
           investigation_status_code: true,
         },
         orderByClause: orderBy,
       },
     );
+    await this.setAssignees(result.items);
 
     return {
       items: result.items,
@@ -1004,6 +1020,55 @@ export class InvestigationService {
     }
   }
 
+  private async setAssignees(investigations: Investigation[]): Promise<void> {
+    if (investigations.length === 0) return;
+    const assignees = await this.appUserActivityXrefService.findAssignees(
+      "INVSTGTN",
+      investigations.map((investigation) => investigation.investigationGuid),
+    );
+    for (const investigation of investigations) {
+      const findAssignee = (code: string) =>
+        assignees.find(
+          (assignee) =>
+            assignee.activity_identifier_ref === investigation.investigationGuid &&
+            assignee.app_user_activity_xref_code === code,
+        )?.app_user_guid;
+      investigation.primaryInvestigatorGuid = findAssignee("ASSIGNEE");
+      investigation.supervisorGuid = findAssignee("SUPERVISOR");
+      investigation.fileCoordinatorGuid = findAssignee("FILECOORD");
+    }
+  }
+
+  private async assignRoles(
+    investigationGuid: string,
+    input: CreateInvestigationInput | UpdateInvestigationInput,
+  ): Promise<void> {
+    if (input.primaryInvestigatorGuid !== undefined) {
+      await this.appUserActivityXrefService.assign(
+        "INVSTGTN",
+        investigationGuid,
+        "ASSIGNEE",
+        input.primaryInvestigatorGuid || null,
+      );
+    }
+    if (input.supervisorGuid !== undefined) {
+      await this.appUserActivityXrefService.assign(
+        "INVSTGTN",
+        investigationGuid,
+        "SUPERVISOR",
+        input.supervisorGuid || null,
+      );
+    }
+    if (input.fileCoordinatorGuid !== undefined) {
+      await this.appUserActivityXrefService.assign(
+        "INVSTGTN",
+        investigationGuid,
+        "FILECOORD",
+        input.fileCoordinatorGuid || null,
+      );
+    }
+  }
+
   async updateLocationGeometryPoint(tx: any, investigationGuid: string, point: Point): Promise<void> {
     let point_data = null;
     if (point) {
@@ -1045,5 +1110,18 @@ export class InvestigationService {
       );
       throw error;
     }
+  }
+
+  async addCollaborator(investigationGuid: string, appUserGuid: string): Promise<Investigation> {
+    // Update the timestamp first to validate that the investigation actually exists
+    await this.updateInvestigationTimestamp(investigationGuid);
+    await this.appUserActivityXrefService.addCollaborator("INVSTGTN", investigationGuid, appUserGuid);
+    return await this.findOne(investigationGuid);
+  }
+
+  async removeCollaborator(investigationGuid: string, appUserActivityXrefGuid: string): Promise<Investigation> {
+    await this.appUserActivityXrefService.removeCollaborator("INVSTGTN", investigationGuid, appUserActivityXrefGuid);
+    await this.updateInvestigationTimestamp(investigationGuid);
+    return await this.findOne(investigationGuid);
   }
 }

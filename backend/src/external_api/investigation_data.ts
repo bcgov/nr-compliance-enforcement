@@ -251,3 +251,24 @@ export const getContinuationReportActivities = async (token: string, investigati
     generatedOn: formatDate(new Date().toISOString()),
   };
 };
+
+// Used for Investigation collaborator email
+export const getInvestigationByGuid = async (token: string, investigationGuid: string) => {
+  const query = `{
+    getInvestigation(investigationGuid: "${investigationGuid}") {
+      name
+      leadAgency
+      collaborators {
+        appUserGuid
+      }
+    }
+  }`;
+
+  const { data, errors } = await get(token, { query });
+
+  if (errors) {
+    throw new Error(`GraphQL errors occurred while fetching investigation: ${JSON.stringify(errors)}`);
+  }
+
+  return data?.getInvestigation || null;
+};

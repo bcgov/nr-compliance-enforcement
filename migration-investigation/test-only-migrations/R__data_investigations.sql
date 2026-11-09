@@ -889,3 +889,31 @@ VALUES
     'OFFND'
   )
 ON CONFLICT DO NOTHING;
+
+-- Set primary investigator for seed investigations
+INSERT INTO shared.app_user_activity_xref (
+  activity_type,
+  activity_identifier_ref,
+  app_user_guid,
+  app_user_activity_xref_code,
+  active_ind,
+  create_user_id
+)
+SELECT 'INVSTGTN', investigation_guid::text, primary_investigator_guid_ref, 'ASSIGNEE', true, create_user_id
+FROM investigation.investigation
+WHERE primary_investigator_guid_ref IS NOT NULL
+ON CONFLICT DO NOTHING;
+
+-- Set supervisor for seed investigations
+INSERT INTO shared.app_user_activity_xref (
+  activity_type,
+  activity_identifier_ref,
+  app_user_guid,
+  app_user_activity_xref_code,
+  active_ind,
+  create_user_id
+)
+SELECT 'INVSTGTN', investigation_guid::text, supervisor_guid_ref, 'SUPERVISOR', true, create_user_id
+FROM investigation.investigation
+WHERE supervisor_guid_ref IS NOT NULL
+ON CONFLICT DO NOTHING;

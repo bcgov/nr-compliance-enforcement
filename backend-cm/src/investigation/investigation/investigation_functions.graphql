@@ -12,4 +12,6 @@ type Mutation {
   createInvestigation(input: CreateInvestigationInput!): Investigation!
   updateInvestigation(investigationGuid: String!, input: UpdateInvestigationInput!): Investigation!
   updateInvestigationTimestamp(investigationGuid: String!): Investigation!
+  addCollaboratorToInvestigation(investigationGuid: String!, appUserGuid: String!): Investigation!
+  removeCollaboratorFromInvestigation(investigationGuid: String!, appUserActivityXrefGuid: String!): Investigation!
 }

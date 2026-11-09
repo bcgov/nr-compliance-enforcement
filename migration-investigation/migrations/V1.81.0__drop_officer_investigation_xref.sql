@@ -1,0 +1,7 @@
+DROP TABLE investigation.officer_investigation_xref;
+
+DROP TABLE investigation.officer_investigation_xref_h;
+
+DROP TABLE investigation.officer_investigation_xref_code;
+
+DROP TABLE investigation.officer_investigation_xref_code_h;

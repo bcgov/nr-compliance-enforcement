@@ -262,35 +262,34 @@ model flyway_schema_history {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 /// This model contains an index with non-default null sort order and requires additional setup for migrations. Visit https://pris.ly/d/default-index-null-ordering for more info.
 model investigation {
-  investigation_guid                 String                       @id(map: "PK_investigation_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_description          String?                      @db.VarChar(4000)
-  owned_by_agency_ref                String                       @db.VarChar(10)
-  investigation_status               String                       @db.VarChar(10)
-  investigation_opened_utc_timestamp DateTime                     @db.Timestamp(6)
-  create_user_id                     String                       @db.VarChar(32)
-  create_utc_timestamp               DateTime                     @db.Timestamp(6)
-  update_user_id                     String?                      @db.VarChar(32)
-  update_utc_timestamp               DateTime?                    @db.Timestamp(6)
-  name                               String                       @default("") @db.VarChar(100)
+  investigation_guid                 String                    @id(map: "PK_investigation_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_description          String?                   @db.VarChar(4000)
+  owned_by_agency_ref                String                    @db.VarChar(10)
+  investigation_status               String                    @db.VarChar(10)
+  investigation_opened_utc_timestamp DateTime                  @db.Timestamp(6)
+  create_user_id                     String                    @db.VarChar(32)
+  create_utc_timestamp               DateTime                  @db.Timestamp(6)
+  update_user_id                     String?                   @db.VarChar(32)
+  update_utc_timestamp               DateTime?                 @db.Timestamp(6)
+  name                               String                    @default("") @db.VarChar(100)
   location_geometry_point            Unsupported("geometry")?
-  location_address                   String?                      @db.VarChar(120)
-  location_description               String?                      @db.VarChar(4000)
-  created_by_app_user_guid_ref       String?                      @db.Uuid
-  supervisor_guid_ref                String?                      @db.Uuid
-  primary_investigator_guid_ref      String?                      @db.Uuid
-  file_coordinator_guid_ref          String?                      @db.Uuid
-  discovery_date_utc_date            DateTime?                    @db.Date
-  discovery_date_utc_time            DateTime?                    @db.Time(6)
-  geo_organization_unit_code_ref     String?                      @db.VarChar(10)
-  investigation_source               String                       @db.VarChar(16)
+  location_address                   String?                   @db.VarChar(120)
+  location_description               String?                   @db.VarChar(4000)
+  created_by_app_user_guid_ref       String?                   @db.Uuid
+  supervisor_guid_ref                String?                   @db.Uuid
+  primary_investigator_guid_ref      String?                   @db.Uuid
+  file_coordinator_guid_ref          String?                   @db.Uuid
+  discovery_date_utc_date            DateTime?                 @db.Date
+  discovery_date_utc_time            DateTime?                 @db.Time(6)
+  geo_organization_unit_code_ref     String?                   @db.VarChar(10)
+  investigation_source               String                    @db.VarChar(16)
   activity_note                      activity_note[]
   contravention                      contravention[]
   diary_date                         diary_date[]
   exhibit                            exhibit[]
-  investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
-  investigation_source_code          investigation_source_code    @relation(fields: [investigation_source], references: [investigation_source_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_source_code")
+  investigation_status_code          investigation_status_code @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
+  investigation_source_code          investigation_source_code @relation(fields: [investigation_source], references: [investigation_source_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_source_code")
   investigation_party                investigation_party[]
-  officer_investigation_xref         officer_investigation_xref[]
   task                               task[]
 
   @@unique([name, owned_by_agency_ref], map: "uq_investigation_name_agency")
@@ -748,63 +747,6 @@ model investigation_status_code_h {
   operation_user_id                String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at            DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation    Json?
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model officer_investigation_xref {
-  officer_investigation_xref_guid                                                                                             String                          @id(map: "PK_officer_investigation_xref_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  officer_guid_ref                                                                                                            String                          @db.Uuid
-  investigation_guid                                                                                                          String                          @db.Uuid
-  officer_investigation_xref_code                                                                                             String                          @db.VarChar(10)
-  create_user_id                                                                                                              String                          @db.VarChar(32)
-  create_utc_timestamp                                                                                                        DateTime                        @db.Timestamp(6)
-  update_user_id                                                                                                              String                          @db.VarChar(32)
-  update_utc_timestamp                                                                                                        DateTime                        @db.Timestamp(6)
-  active_ind                                                                                                                  Boolean
-  investigation                                                                                                               investigation                   @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_officer_investigation_xref__investigation_guid")
-  officer_investigation_xref_code_officer_investigation_xref_officer_investigation_xref_codeToofficer_investigation_xref_code officer_investigation_xref_code @relation("officer_investigation_xref_officer_investigation_xref_codeToofficer_investigation_xref_code", fields: [officer_investigation_xref_code], references: [officer_investigation_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_officer_investigation_xref__officer_investigation_xref_code")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model officer_investigation_xref_code {
-  officer_investigation_xref_code                                                                                        String                       @id(map: "PK_officer_investigation_xref_code") @db.VarChar(10)
-  short_description                                                                                                      String                       @db.VarChar(50)
-  long_description                                                                                                       String?                      @db.VarChar(250)
-  display_order                                                                                                          Int
-  active_ind                                                                                                             Boolean                      @default(true)
-  create_user_id                                                                                                         String                       @db.VarChar(32)
-  create_utc_timestamp                                                                                                   DateTime                     @db.Timestamp(6)
-  update_user_id                                                                                                         String                       @db.VarChar(32)
-  update_utc_timestamp                                                                                                   DateTime                     @db.Timestamp(6)
-  officer_investigation_xref_officer_investigation_xref_officer_investigation_xref_codeToofficer_investigation_xref_code officer_investigation_xref[] @relation("officer_investigation_xref_officer_investigation_xref_codeToofficer_investigation_xref_code")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model officer_investigation_xref_code_h {
-  h_officer_investigation_xref_code_guid String   @id(map: "PK_h_officer_investigation_xref_code") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  target_row_id                          String   @db.VarChar(20)
-  operation_type                         String   @db.Char(1)
-  operation_user_id                      String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
-  operation_executed_at                  DateTime @default(now()) @db.Timestamp(6)
-  data_after_executed_operation          Json?
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model officer_investigation_xref_h {
-  h_officer_investigation_xref_guid String   @id(map: "PK_h_officer_investigation_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  target_row_id                     String   @db.Uuid
-  operation_type                    String   @db.Char(1)
-  operation_user_id                 String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
-  operation_executed_at             DateTime @default(now()) @db.Timestamp(6)
-  data_after_executed_operation     Json?
 
   @@schema("investigation")
 }

@@ -12,9 +12,17 @@ import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { PaginationUtility } from "src/common/pagination.utility";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { CosGeoOrgUnitModule } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.module";
+import { AppUserActivityXrefModule } from "src/shared/app_user_activity_xref/app_user_activity_xref.module";
 
 @Module({
-  imports: [PrismaModuleInvestigation, PrismaModuleShared, AutomapperModule, UserModule, CosGeoOrgUnitModule],
+  imports: [
+    PrismaModuleInvestigation,
+    PrismaModuleShared,
+    AutomapperModule,
+    UserModule,
+    CosGeoOrgUnitModule,
+    AppUserActivityXrefModule,
+  ],
   providers: [
     DiaryDateResolver,
     DiaryDateService,
