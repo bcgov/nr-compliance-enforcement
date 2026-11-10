@@ -6,9 +6,9 @@ interface InvestigationListUrlState {
   defaultsActive: boolean;
 }
 
-// Default filters are defined in the URL
+// Default filters are applied by the Investigations page (see getDefaultFilters in useInvestigationSearch)
 const initialState: InvestigationListUrlState = {
-  url: "/investigations?investigationStatus=OPEN",
+  url: "/investigations",
   defaultsActive: false,
 };
 

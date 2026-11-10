@@ -106,7 +106,7 @@ const Investigations: FC = () => {
       setValues(defaultFilters);
       dispatch(setInvestigationListUrlDefaultsActive());
     }
-  }, []);
+  }, [defaultsApplied, searchValues, getDefaultFilters, setValues, dispatch]);
 
   const investigationGuids = useMemo(
     () =>
