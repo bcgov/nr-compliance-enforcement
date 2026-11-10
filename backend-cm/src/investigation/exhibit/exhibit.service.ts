@@ -177,8 +177,6 @@ export class ExhibitService {
     };
   }
 
-  // Officers who collected the investigation's exhibits, so the officer filter can keep offering
-  // deactivated officers who still have exhibits on it
   async findCollectors(investigationGuid: string): Promise<string[]> {
     const exhibits = await this.prisma.exhibit.findMany({
       where: { active_ind: true, investigation_guid: investigationGuid },

@@ -94,7 +94,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     enabled: !!userAgency,
   });
 
-  // Deactivated officers are only offered while they still have complaints assigned to them
+  // Deactivated officers are shown if they still have complaints assigned to them
   const officersByAgency: Option[] = [
     { value: "Unassigned", label: "Unassigned", isActive: true },
     ...agencyOfficerOptions.map((option) => ({

@@ -364,8 +364,6 @@ const mapAgencyToRole = (agency: string): string => {
   return role;
 };
 
-// Deactivated users stay in officer lists so work already assigned to them still shows their name, but are
-// flagged inactive so a CompSelect with showInactive={false} won't offer them for new work
 export const toOfficerOption = (officer: AppUser, value: string = officer.app_user_guid): Option => ({
   value,
   label: `${officer.last_name}, ${officer.first_name}`,

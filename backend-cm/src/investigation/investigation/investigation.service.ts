@@ -685,8 +685,7 @@ export class InvestigationService {
    * A contravention is considered to have a documented decision when at least one xref exists for the contravention
    * AND all xrefs have an enforcement action record.
    */
-  // Officers currently in each role across the agency's investigations, so the list filters can keep offering
-  // deactivated officers who still have investigations assigned to them
+
   async findAssignees(leadAgency: string): Promise<InvestigationAssignees> {
     const investigations = await this.prisma.investigation.findMany({
       where: { owned_by_agency_ref: leadAgency },

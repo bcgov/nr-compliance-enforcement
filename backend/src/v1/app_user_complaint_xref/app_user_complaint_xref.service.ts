@@ -71,8 +71,6 @@ export class AppUserComplaintXrefService {
       .getOne();
   }
 
-  // Users currently assigned to the agency's complaints, so the complaint filter can keep offering
-  // deactivated officers who still have complaints assigned to them
   async findAssigneesByAgency(agency: string): Promise<string[]> {
     const assignees = await this.repository
       .createQueryBuilder("app_user_complaint_xref")
