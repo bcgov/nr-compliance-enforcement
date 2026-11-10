@@ -10,6 +10,7 @@ import { StagingComplaintsApiService } from "./staging-complaints-api-service/st
 import { ActionsTakenPublisherService } from "./publishers/actions-taken-publisher.service";
 import { ActionsTakenSubscriberService } from "./subscribers/actions-taken-subscriber.service";
 import { ComplaintApiService } from "./complaint-api-service/complaint-api.service";
+import { ChefsSubscriberService } from "src/subscribers/chefs-subscriber.service";
 
 @Module({
   imports: [HttpModule, ScheduleModule.forRoot()],
@@ -23,6 +24,7 @@ import { ComplaintApiService } from "./complaint-api-service/complaint-api.servi
     ActionsTakenPublisherService,
     ActionsTakenSubscriberService,
     ComplaintApiService,
+    ChefsSubscriberService,
   ],
 })
 export class AppModule {}

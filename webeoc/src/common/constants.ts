@@ -25,6 +25,10 @@ export const STREAM_TOPICS = {
   UPDATE_ACTION_TAKEN: `${process.env.WEBEOC_STREAM_NAME}.update-action-taken`,
 };
 
+export const CHEFS_STREAM_TOPICS = {
+  PRIVATE_FORMS: "PRIVATE.forms.>",
+};
+
 export const STAGING_APIS = {
   ACTION_TAKEN: "complaint/staging/action-taken",
   UPDATE_ACTION_TAKEN: "complaint/staging/action-taken-update",
