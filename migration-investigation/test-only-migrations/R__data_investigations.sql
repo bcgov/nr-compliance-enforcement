@@ -899,9 +899,11 @@ INSERT INTO shared.app_user_activity_xref (
   active_ind,
   create_user_id
 )
-SELECT 'INVSTGTN', investigation_guid::text, primary_investigator_guid_ref, 'ASSIGNEE', true, create_user_id
-FROM investigation.investigation
-WHERE primary_investigator_guid_ref IN (SELECT app_user_guid FROM shared.app_user)
+SELECT 'INVSTGTN', i.investigation_guid::text, u.app_user_guid, 'ASSIGNEE', true, i.create_user_id
+FROM investigation.investigation i
+-- Shared runs R__test_user_guids before ENCETST1 exists on a new database, so look the user up by user_id
+JOIN shared.app_user u ON u.user_id = 'ENCETST1'
+WHERE i.primary_investigator_guid_ref IS NOT NULL
 ON CONFLICT DO NOTHING;
 
 -- Set supervisor for seed investigations
@@ -913,7 +915,8 @@ INSERT INTO shared.app_user_activity_xref (
   active_ind,
   create_user_id
 )
-SELECT 'INVSTGTN', investigation_guid::text, supervisor_guid_ref, 'SUPERVISOR', true, create_user_id
-FROM investigation.investigation
-WHERE supervisor_guid_ref IN (SELECT app_user_guid FROM shared.app_user)
+SELECT 'INVSTGTN', i.investigation_guid::text, u.app_user_guid, 'SUPERVISOR', true, i.create_user_id
+FROM investigation.investigation i
+JOIN shared.app_user u ON u.user_id = 'ENCETST1'
+WHERE i.supervisor_guid_ref IS NOT NULL
 ON CONFLICT DO NOTHING;
