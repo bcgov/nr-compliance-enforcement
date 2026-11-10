@@ -9,6 +9,7 @@ import {
   InvestigationFilters,
   InvestigationResult,
   InvestigationCloseEligibility,
+  InvestigationAssignees,
 } from "./dto/investigation";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
@@ -684,6 +685,24 @@ export class InvestigationService {
    * A contravention is considered to have a documented decision when at least one xref exists for the contravention
    * AND all xrefs have an enforcement action record.
    */
+  // Officers currently in each role across the agency's investigations, so the list filters can keep offering
+  // deactivated officers who still have investigations assigned to them
+  async findAssignees(leadAgency: string): Promise<InvestigationAssignees> {
+    const investigations = await this.prisma.investigation.findMany({
+      where: { owned_by_agency_ref: leadAgency },
+      select: { primary_investigator_guid_ref: true, file_coordinator_guid_ref: true, supervisor_guid_ref: true },
+      distinct: ["primary_investigator_guid_ref", "file_coordinator_guid_ref", "supervisor_guid_ref"],
+    });
+
+    const distinctGuids = (guids: (string | null)[]) => [...new Set(guids.filter((guid) => guid !== null))];
+
+    return {
+      primaryInvestigators: distinctGuids(investigations.map((i) => i.primary_investigator_guid_ref)),
+      fileCoordinators: distinctGuids(investigations.map((i) => i.file_coordinator_guid_ref)),
+      supervisors: distinctGuids(investigations.map((i) => i.supervisor_guid_ref)),
+    };
+  }
+
   async evaluateCloseEligibility(investigationGuid: string): Promise<InvestigationCloseEligibility> {
     const found = await withRlsTransaction(this.prisma, async (db) => {
       return db.investigation.findUnique({

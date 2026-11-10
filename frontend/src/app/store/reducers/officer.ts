@@ -364,6 +364,14 @@ const mapAgencyToRole = (agency: string): string => {
   return role;
 };
 
+// Deactivated users stay in officer lists so work already assigned to them still shows their name, but are
+// flagged inactive so a CompSelect with showInactive={false} won't offer them for new work
+export const toOfficerOption = (officer: AppUser, value: string = officer.app_user_guid): Option => ({
+  value,
+  label: `${officer.last_name}, ${officer.first_name}`,
+  isActive: !officer.deactivate_ind,
+});
+
 export const filterOfficerByAgency = (agency: string, officers: AppUser[]): AppUser[] => {
   const role = mapAgencyToRole(agency);
   const result = officers.filter((officer) => {
@@ -436,11 +444,7 @@ export const selectOfficerListByAgency = createSelector(
   (officers, complaint): Array<Option> => {
     if (complaint?.ownedBy) {
       const officerList = filterOfficerByAgency(complaint.ownedBy, officers || []);
-      const officerDropdown = officerList.map((officer: AppUser) => ({
-        value: officer.auth_user_guid,
-        label: `${officer.last_name}, ${officer.first_name}`,
-      }));
-      return officerDropdown;
+      return officerList.map((officer: AppUser) => toOfficerOption(officer, officer.auth_user_guid));
     }
     return [];
   },
@@ -452,15 +456,13 @@ export const selectOfficerAndCollaboratorListByAgency = createSelector(
     if (complaint?.ownedBy) {
       const officerList = filterOfficerByAgency(complaint.ownedBy, officers ?? []);
 
-      const officerOptions = officerList.map((officer: AppUser) => ({
-        value: officer.auth_user_guid,
-        label: `${officer.last_name}, ${officer.first_name}`,
-      }));
+      const officerOptions = officerList.map((officer: AppUser) => toOfficerOption(officer, officer.auth_user_guid));
 
       const collaboratorOptions = collaborators.map((collaborator: Collaborator) => ({
         value: collaborator.authUserGuid,
         label: `${collaborator.lastName}, ${collaborator.firstName}`,
         labelElement: renderLabelElement(collaborator),
+        isActive: !officers?.find((officer) => officer.auth_user_guid === collaborator.authUserGuid)?.deactivate_ind,
       }));
 
       return [...collaboratorOptions, ...officerOptions].filter(
@@ -481,10 +483,7 @@ export const selectOfficersByAgencyDropdownUsingPersonGuid =
       .filter(
         (officer: AppUser) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
       ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
-      .map((officer: AppUser) => ({
-        value: officer.app_user_guid,
-        label: `${officer.last_name}, ${officer.first_name}`,
-      }));
+      .map((officer: AppUser) => toOfficerOption(officer));
 
     return officerDropdown;
   };
@@ -495,10 +494,7 @@ export const selectOfficersByAgencyDropdownUsingPersonGuid =
 export const selectOfficerListByAgencyCode = (agency: string) =>
   createSelector([selectOfficers], (officers): Array<Option> => {
     const officerList = filterOfficerByAgency(agency, officers || []);
-    return officerList.map((officer: AppUser) => ({
-      value: officer.app_user_guid,
-      label: `${officer.last_name}, ${officer.first_name}`,
-    }));
+    return officerList.map((officer: AppUser) => toOfficerOption(officer));
   });
 
 export const selectOfficersByReportedBy =

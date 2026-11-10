@@ -261,7 +261,10 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
             />
           </div>
           <div className="comp-data-filters-body">
-            <ExhibitsFilter tasks={tasks} />
+            <ExhibitsFilter
+              investigationGuid={investigationGuid}
+              tasks={tasks}
+            />
           </div>
         </div>
       </div>
@@ -278,7 +281,10 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
         <Offcanvas.Title>Filters</Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
-        <ExhibitsFilter tasks={tasks} />
+        <ExhibitsFilter
+          investigationGuid={investigationGuid}
+          tasks={tasks}
+        />
       </Offcanvas.Body>
     </Offcanvas>
   );

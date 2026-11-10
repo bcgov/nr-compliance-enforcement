@@ -8,4 +8,5 @@ type Query {
   getExhibitsByTask(taskId: String): [Exhibit]!
   searchExhibitsByInvestigation(page: Int = 1, pageSize: Int = 25, filters: ExhibitFilters!): ExhibitResult!
   getExhibit(exhibitGuid: String): Exhibit
+  exhibitCollectors(investigationGuid: String!): [String!]!
 }

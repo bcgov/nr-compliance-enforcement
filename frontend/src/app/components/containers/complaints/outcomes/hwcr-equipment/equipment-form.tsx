@@ -115,7 +115,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       const officerAssigned: any = officersInAgencyList
         .filter((appUser: any) => {
           const appUserGuid = appUser.app_user_guid ?? appUser.appUserGuid;
-          return appUserGuid === assignedOfficer;
+          // Don't default to an assignee who has since been deactivated
+          return appUserGuid === assignedOfficer && !appUser.deactivate_ind;
         })
         .map((item: any) => {
           const firstName = item.first_name ?? item.firstName;

@@ -177,6 +177,18 @@ export class ExhibitService {
     };
   }
 
+  // Officers who collected the investigation's exhibits, so the officer filter can keep offering
+  // deactivated officers who still have exhibits on it
+  async findCollectors(investigationGuid: string): Promise<string[]> {
+    const exhibits = await this.prisma.exhibit.findMany({
+      where: { active_ind: true, investigation_guid: investigationGuid },
+      select: { collected_by_app_user_guid_ref: true },
+      distinct: ["collected_by_app_user_guid_ref"],
+    });
+
+    return exhibits.map((exhibit) => exhibit.collected_by_app_user_guid_ref);
+  }
+
   async findOne(exhibitGuid: string) {
     const prismaExhibit = await this.prisma.exhibit.findUnique({
       select: {

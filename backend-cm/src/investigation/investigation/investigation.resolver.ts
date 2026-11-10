@@ -9,6 +9,7 @@ import {
   UpdateInvestigationInput,
   InvestigationFilters,
   InvestigationCloseEligibility,
+  InvestigationAssignees,
 } from "src/investigation/investigation/dto/investigation";
 import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 
@@ -151,6 +152,21 @@ export class InvestigationResolver {
       this.logger.error("Check investigation name exists error:", error);
       throw new GraphQLError("Error checking investigation name", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Query("investigationAssignees")
+  @Roles(coreRoles)
+  async findAssignees(@Args("leadAgency") leadAgency: string): Promise<InvestigationAssignees> {
+    try {
+      return await this.investigationService.findAssignees(leadAgency);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching data from investigation schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
       });
     }
   }

@@ -71,6 +71,23 @@ export class AppUserComplaintXrefService {
       .getOne();
   }
 
+  // Users currently assigned to the agency's complaints, so the complaint filter can keep offering
+  // deactivated officers who still have complaints assigned to them
+  async findAssigneesByAgency(agency: string): Promise<string[]> {
+    const assignees = await this.repository
+      .createQueryBuilder("app_user_complaint_xref")
+      .innerJoin("app_user_complaint_xref.complaint_identifier", "complaint")
+      .select("DISTINCT app_user_complaint_xref.app_user_guid", "app_user_guid")
+      .where("app_user_complaint_xref.app_user_complaint_xref_code = :code", {
+        code: AppUserComplaintXrefCodeEnum.ASSIGNEE,
+      })
+      .andWhere("app_user_complaint_xref.active_ind = :active_ind", { active_ind: true })
+      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency })
+      .getRawMany<{ app_user_guid: string }>();
+
+    return assignees.map((assignee) => assignee.app_user_guid);
+  }
+
   async findAssignedByComplaint(complaint_identifier: any): Promise<AppUserComplaintXref> {
     return this.repository.findOne({
       where: {

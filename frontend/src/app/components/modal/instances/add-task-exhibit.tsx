@@ -9,7 +9,7 @@ import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import { selectOfficers, selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficerListByAgencyCode, toOfficerOption } from "@/app/store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { CreateUpdateExhibitInput, Exhibit } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
@@ -98,13 +98,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
   // Include the initial officer in the dropdown list even if they're inactive or in a different agency
   const assignableOfficersExtended =
     initialOfficer && !assignableOfficers.some((opt) => opt.value === initialOfficer.app_user_guid)
-      ? [
-          ...assignableOfficers,
-          {
-            value: initialOfficer.app_user_guid,
-            label: `${initialOfficer.last_name}, ${initialOfficer.first_name}`,
-          },
-        ]
+      ? [...assignableOfficers, toOfficerOption(initialOfficer)]
       : assignableOfficers;
 
   const assignableOfficersSorted = [...assignableOfficersExtended].sort((a, b) =>

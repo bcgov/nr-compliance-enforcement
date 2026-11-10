@@ -1,4 +1,5 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
+import { gql } from "graphql-request";
 import { CompSelect } from "@components/common/comp-select";
 import { FilterDate } from "@components/common/filter-date";
 import Option from "@apptypes/app/option";
@@ -9,16 +10,42 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+
+const EXHIBIT_COLLECTORS = gql`
+  query ExhibitCollectors($investigationGuid: String!) {
+    exhibitCollectors(investigationGuid: $investigationGuid)
+  }
+`;
 
 type Props = {
+  investigationGuid: string;
   tasks?: Task[];
 };
 
-export const ExhibitsFilter: FC<Props> = ({ tasks = [] }) => {
+export const ExhibitsFilter: FC<Props> = ({ investigationGuid, tasks = [] }) => {
   const { searchValues, setValues } = useExhibitsSearch();
 
   const userAgency = getUserAgency();
-  const officerOptions = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(userAgency, COMPLAINT_TYPES.ERS));
+  const agencyOfficerOptions = useAppSelector(
+    selectOfficersByAgencyDropdownUsingPersonGuid(userAgency, COMPLAINT_TYPES.ERS),
+  );
+  const { data: collectorsData } = useGraphQLQuery<{ exhibitCollectors: string[] }>(EXHIBIT_COLLECTORS, {
+    queryKey: ["exhibitCollectors", investigationGuid],
+    variables: { investigationGuid },
+    enabled: !!investigationGuid,
+  });
+  const collectors = collectorsData?.exhibitCollectors;
+
+  // Deactivated officers are only offered while they still have exhibits on this investigation
+  const officerOptions: Option[] = useMemo(
+    () =>
+      agencyOfficerOptions.map((option) => ({
+        ...option,
+        isActive: option.isActive || !!collectors?.includes(option.value ?? ""),
+      })),
+    [agencyOfficerOptions, collectors],
+  );
 
   const taskOptions: Option[] = tasks
     .filter((task) => task.activeIndicator)

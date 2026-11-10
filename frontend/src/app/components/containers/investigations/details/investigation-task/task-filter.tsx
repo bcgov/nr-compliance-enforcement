@@ -41,8 +41,13 @@ export const TaskFilter: FC<Props> = ({ assignedOfficerIds }) => {
     (o) => assignedOfficerIds.includes(o.app_user_guid) && !agencyOfficerGuids.has(o.app_user_guid),
   );
 
+  // Deactivated officers are only worth filtering by while they still have tasks on this investigation
   const officerOptions: Option[] = [...(officersInAgencyList ?? []), ...assignedOutsideAgency]
-    .map((o) => ({ value: o.app_user_guid, label: `${o.last_name}, ${o.first_name}` }))
+    .map((o) => ({
+      value: o.app_user_guid,
+      label: `${o.last_name}, ${o.first_name}`,
+      isActive: !o.deactivate_ind || assignedOfficerIds.includes(o.app_user_guid),
+    }))
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
 
   const handleCategoryFilterChange = (option: Option | null) => {
