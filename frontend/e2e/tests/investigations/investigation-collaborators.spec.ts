@@ -98,6 +98,9 @@ test.describe("Investigation Collaborators", () => {
       page.locator(".Toastify__toast-body", { hasText: "Investigation status updated successfully" }),
     ).toBeVisible();
 
+    await page.goto(investigationUrl);
+    await waitForSpinner(page);
+
     await page.getByRole("button", { name: "Actions Menu" }).click();
     await expect(page.getByRole("button", { name: /Manage collaborators/ })).toBeDisabled();
   });
