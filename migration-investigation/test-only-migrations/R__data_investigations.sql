@@ -901,7 +901,7 @@ INSERT INTO shared.app_user_activity_xref (
 )
 SELECT 'INVSTGTN', investigation_guid::text, primary_investigator_guid_ref, 'ASSIGNEE', true, create_user_id
 FROM investigation.investigation
-WHERE primary_investigator_guid_ref IS NOT NULL
+WHERE primary_investigator_guid_ref IN (SELECT app_user_guid FROM shared.app_user)
 ON CONFLICT DO NOTHING;
 
 -- Set supervisor for seed investigations
@@ -915,5 +915,5 @@ INSERT INTO shared.app_user_activity_xref (
 )
 SELECT 'INVSTGTN', investigation_guid::text, supervisor_guid_ref, 'SUPERVISOR', true, create_user_id
 FROM investigation.investigation
-WHERE supervisor_guid_ref IS NOT NULL
+WHERE supervisor_guid_ref IN (SELECT app_user_guid FROM shared.app_user)
 ON CONFLICT DO NOTHING;
