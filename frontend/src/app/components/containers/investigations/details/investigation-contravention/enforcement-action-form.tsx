@@ -437,9 +437,16 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     try {
       const enforcementActionLabel =
         enforcementActionOptions.find((opt) => opt.value === value.enforcementActionCode)?.label ?? "";
+      // ticket type changes dont clear the form fields so we need to explicitly check the type
+      let enforcementActionTitle = "";
+      if (isViolationTicket) {
+        enforcementActionTitle = value.ticketNumber;
+      } else if (selectedCode === CODE_WARNING) {
+        enforcementActionTitle = value.warningNumber;
+      }
       await attachmentsRef.current?.persist(enforcementActionId, {
         fileType: "Document",
-        title: value.ticketNumber,
+        title: enforcementActionTitle,
         description: enforcementActionLabel,
         date: value.dateIssued,
         takenBy: value.servingOfficer,
