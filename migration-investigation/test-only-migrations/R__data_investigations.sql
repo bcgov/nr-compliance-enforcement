@@ -901,7 +901,7 @@ INSERT INTO shared.app_user_activity_xref (
 )
 SELECT 'INVSTGTN', i.investigation_guid::text, u.app_user_guid, 'ASSIGNEE', true, i.create_user_id
 FROM investigation.investigation i
--- Shared runs R__test_user_guids before ENCETST1 exists on a new database, so look the user up by user_id
+-- Databases created before R__test_user_guids inserted ENCETST1 keep its generated guid, so look the user up by user_id
 JOIN shared.app_user u ON u.user_id = 'ENCETST1'
 WHERE i.primary_investigator_guid_ref IS NOT NULL
 ON CONFLICT DO NOTHING;
