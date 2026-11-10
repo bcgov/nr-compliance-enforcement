@@ -32,7 +32,8 @@ input CreateEnforcementActionInput {
   dateIssued: DateTime!
   appUserIdentifier: String!
   ticketOutcomeCode: String
-  ticketAmount: Float
+  fineAmount: Float
+  paidAmount: Float
   ticketNumber: String
   paidDate: DateTime
   comment: String
@@ -62,7 +63,8 @@ input UpdateEnforcementActionInput {
   dateIssued: DateTime
   appUserIdentifier: String
   ticketOutcomeCode: String
-  ticketAmount: Float
+  fineAmount: Float
+  paidAmount: Float
   ticketNumber: String
   paidDate: DateTime
   comment: String

@@ -14,7 +14,7 @@ export class ticket {
   ticket_outcome_code: string;
 
   @ApiProperty({ type: Number })
-  ticket_amount: number;
+  fine_amount: number;
 
   @ApiProperty({ type: String })
   ticket_number: string;
@@ -45,6 +45,9 @@ export class ticket {
 
   @ApiPropertyOptional({ type: String })
   notice_of_cancellation_number?: string;
+
+  @ApiPropertyOptional({ type: Number })
+  paid_amount?: number;
 
   @ApiProperty({ type: () => enforcement_action })
   enforcement_action: enforcement_action;

@@ -244,11 +244,12 @@ export class EnforcementActionService {
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
             ...(input.ticketOutcomeCode &&
-              input.ticketAmount !== undefined && {
+              input.fineAmount !== undefined && {
                 ticket: {
                   create: {
                     ticket_outcome_code: input.ticketOutcomeCode,
-                    ticket_amount: input.ticketAmount,
+                    fine_amount: input.fineAmount,
+                    paid_amount: input.paidAmount,
                     ticket_number: input.ticketNumber,
                     paid_date: input.paidDate,
                     ticket_type_code: input.ticketTypeCode ?? null,
@@ -322,7 +323,7 @@ export class EnforcementActionService {
           },
         });
 
-        const isViolationTicket = input.ticketOutcomeCode !== undefined && input.ticketAmount !== undefined;
+        const isViolationTicket = input.ticketOutcomeCode !== undefined && input.fineAmount !== undefined;
 
         if (isViolationTicket) {
           const existingTicket = await db.ticket.findFirst({
@@ -337,7 +338,8 @@ export class EnforcementActionService {
               where: { ticket_guid: existingTicket.ticket_guid },
               data: {
                 ticket_outcome_code: input.ticketOutcomeCode,
-                ticket_amount: input.ticketAmount,
+                fine_amount: input.fineAmount,
+                paid_amount: input.paidAmount,
                 ticket_number: input.ticketNumber,
                 notice_of_cancellation_number: input.noticeOfCancellationNumber,
                 paid_date: input.paidDate,
@@ -352,7 +354,8 @@ export class EnforcementActionService {
               data: {
                 enforcement_action_guid: input.enforcementActionIdentifier,
                 ticket_outcome_code: input.ticketOutcomeCode,
-                ticket_amount: input.ticketAmount,
+                fine_amount: input.fineAmount,
+                paid_amount: input.paidAmount,
                 ticket_number: input.ticketNumber,
                 notice_of_cancellation_number: input.noticeOfCancellationNumber,
                 paid_date: input.paidDate,
