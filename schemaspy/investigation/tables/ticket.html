@@ -183,7 +183,7 @@
                                     <td><p>Foreign key to ticket_outcome_code. Code representing the current outcome of the ticket. Defaults to Issued.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="ticket_amount">ticket_amount</span></td>
+                                    <td><span id="fine_amount">fine_amount</span></td>
                                     <td>numeric</td>
                                     <td>10,2</td>
                                     <td title=''></td>
@@ -197,7 +197,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The monetary amount of the violation ticket.</p></td>
+                                    <td><p>The fine amount of the violation ticket.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="ticket_number">ticket_number</span></td>
@@ -374,6 +374,23 @@
                                     </td>
                                     <td><p>A notice of cancellation is issued at the same time that an officer issues a violation ticket against the wildlife or firearms act, notifying the party of interest that there will be action taken against their license if they do not pay the associated violation ticket.</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="paid_amount">paid_amount</span></td>
+                                    <td>numeric</td>
+                                    <td>10,2</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The amount paid against the violation ticket, if any.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -433,7 +450,7 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="ticket.html" target="_top" title="ticket" alt="" coords="341,72,772,552">
+<area shape="rect" id="node1" href="ticket.html" target="_top" title="ticket" alt="" coords="341,72,772,581">
 <area shape="rect" id="node2" href="enforcement_action.html" target="_top" title="enforcement_action" alt="" coords="5,5,297,181">
 <area shape="rect" id="node3" href="ticket_outcome_code.html" target="_top" title="ticket_outcome_code" alt="" coords="28,199,275,316">
 <area shape="rect" id="node4" href="ticket_type_code.html" target="_top" title="ticket_type_code" alt="" coords="35,397,267,515">
@@ -450,7 +467,7 @@
 <area shape="rect" id="node4" href="court_prosecution.html" target="_top" title="court_prosecution" alt="" coords="773,216,997,304">
 <area shape="rect" id="node7" href="enforcement_order.html" target="_top" title="enforcement_order" alt="" coords="768,321,1001,409">
 <area shape="rect" id="node8" href="restorative_justice.html" target="_top" title="restorative_justice" alt="" coords="771,427,999,515">
-<area shape="rect" id="node9" href="ticket.html" target="_top" title="ticket" alt="" coords="669,637,1100,1117">
+<area shape="rect" id="node9" href="ticket.html" target="_top" title="ticket" alt="" coords="669,637,1100,1147">
 <area shape="rect" id="node10" href="ticket_outcome_code.html" target="_top" title="ticket_outcome_code" alt="" coords="356,699,603,816">
 <area shape="rect" id="node11" href="ticket_type_code.html" target="_top" title="ticket_type_code" alt="" coords="363,963,595,1080">
 <area shape="rect" id="node12" href="warning.html" target="_top" title="warning" alt="" coords="812,532,957,620">
