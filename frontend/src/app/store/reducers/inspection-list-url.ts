@@ -5,9 +5,9 @@ interface InspectionListUrlState {
   url: string;
 }
 
-// Default filters are defined in the URL
+// No default filters currently defined. Add getDefaultFilters in useInpsectionSearch when required
 const initialState: InspectionListUrlState = {
-  url: "/inspections?inspectionStatus=OPEN",
+  url: "/inspections",
 };
 
 const inspectionListUrlSlice = createSlice({
