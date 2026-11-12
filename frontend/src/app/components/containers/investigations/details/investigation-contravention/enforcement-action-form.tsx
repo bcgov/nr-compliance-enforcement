@@ -441,7 +441,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       let enforcementActionTitle = "";
       if (isViolationTicket) {
         enforcementActionTitle = value.ticketNumber;
-      } else if (selectedCode === CODE_WARNING) {
+      } else if (isWarning) {
         enforcementActionTitle = value.warningNumber;
       }
       await attachmentsRef.current?.persist(enforcementActionId, {
