@@ -686,6 +686,34 @@ export class InvestigationService {
     }
   }
 
+  async findAssignees(leadAgency: string): Promise<InvestigationAssignees> {
+    const investigations = await this.prisma.investigation.findMany({
+      where: { owned_by_agency_ref: leadAgency },
+      select: { investigation_guid: true },
+    });
+
+    const assignees = await this.shared.app_user_activity_xref.groupBy({
+      by: ["app_user_guid", "app_user_activity_xref_code"],
+      where: {
+        activity_type: "INVSTGTN",
+        activity_identifier_ref: { in: investigations.map((investigation) => investigation.investigation_guid) },
+        app_user_activity_xref_code: { in: ["ASSIGNEE", "FILECOORD", "SUPERVISOR"] },
+        active_ind: true,
+      },
+    });
+
+    const assigneesWithCode = (code: string) =>
+      assignees
+        .filter((assignee) => assignee.app_user_activity_xref_code === code)
+        .map((assignee) => assignee.app_user_guid);
+
+    return {
+      primaryInvestigators: assigneesWithCode("ASSIGNEE"),
+      fileCoordinators: assigneesWithCode("FILECOORD"),
+      supervisors: assigneesWithCode("SUPERVISOR"),
+    };
+  }
+
   /**
    * Evaluates whether an investigation currently satisfies the criteria required to be closed:
    *     1) All contraventions have a documented decision
@@ -693,23 +721,6 @@ export class InvestigationService {
    * A contravention is considered to have a documented decision when at least one xref exists for the contravention
    * AND all xrefs have an enforcement action record.
    */
-
-  async findAssignees(leadAgency: string): Promise<InvestigationAssignees> {
-    const investigations = await this.prisma.investigation.findMany({
-      where: { owned_by_agency_ref: leadAgency },
-      select: { primary_investigator_guid_ref: true, file_coordinator_guid_ref: true, supervisor_guid_ref: true },
-      distinct: ["primary_investigator_guid_ref", "file_coordinator_guid_ref", "supervisor_guid_ref"],
-    });
-
-    const distinctGuids = (guids: (string | null)[]) => [...new Set(guids.filter((guid) => guid !== null))];
-
-    return {
-      primaryInvestigators: distinctGuids(investigations.map((i) => i.primary_investigator_guid_ref)),
-      fileCoordinators: distinctGuids(investigations.map((i) => i.file_coordinator_guid_ref)),
-      supervisors: distinctGuids(investigations.map((i) => i.supervisor_guid_ref)),
-    };
-  }
-
   async evaluateCloseEligibility(investigationGuid: string): Promise<InvestigationCloseEligibility> {
     const found = await withRlsTransaction(this.prisma, async (db) => {
       return db.investigation.findUnique({
