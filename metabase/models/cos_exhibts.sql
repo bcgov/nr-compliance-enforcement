@@ -73,7 +73,11 @@ FROM
       left join investigation.task_category_type_code tcc on tcc.task_category_type_code = tsk.task_category_type_code
       left join investigation.investigation_source_code src on src.investigation_source_code = inv.investigation_source
       left join shared.cos_geo_org_unit_flat_mvw gfv on gfv.area_code = inv.geo_organization_unit_code_ref
-      left join shared.app_user per on per.app_user_guid = inv.primary_investigator_guid_ref
+      left join shared.app_user_activity_xref asg on asg.activity_identifier_ref = inv.investigation_guid::text
+      and asg.activity_type = 'INVSTGTN'
+      and asg.app_user_activity_xref_code = 'ASSIGNEE'
+      and asg.active_ind = true
+      left join shared.app_user per on per.app_user_guid = asg.app_user_guid
       left join shared.app_user col on col.app_user_guid = exh.collected_by_app_user_guid_ref
     where
       exh.active_ind = true
