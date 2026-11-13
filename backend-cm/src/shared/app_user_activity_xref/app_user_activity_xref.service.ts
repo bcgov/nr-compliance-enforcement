@@ -70,55 +70,56 @@ export class AppUserActivityXrefService {
   async assign(
     activityType: string,
     activityIdentifier: string,
-    code: string,
-    appUserGuid: string | null,
+    assignments: { code: string; appUserGuid: string | null }[],
   ): Promise<void> {
     try {
       await this.prisma.$transaction(async (tx) => {
-        const assigned = await tx.app_user_activity_xref.findFirst({
-          where: {
-            activity_type: activityType,
-            activity_identifier_ref: activityIdentifier,
-            app_user_activity_xref_code: code,
-            active_ind: true,
-          },
-        });
-
-        if (assigned?.app_user_guid === appUserGuid) {
-          return;
-        }
-
-        if (assigned) {
-          await tx.app_user_activity_xref.update({
+        for (const { code, appUserGuid } of assignments) {
+          const assigned = await tx.app_user_activity_xref.findFirst({
             where: {
-              app_user_activity_xref_guid: assigned.app_user_activity_xref_guid,
-            },
-            data: {
-              active_ind: false,
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
-            },
-          });
-        }
-
-        if (appUserGuid) {
-          await tx.app_user_activity_xref.create({
-            data: {
               activity_type: activityType,
               activity_identifier_ref: activityIdentifier,
-              app_user_guid: appUserGuid,
               app_user_activity_xref_code: code,
               active_ind: true,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
             },
           });
+
+          if (assigned?.app_user_guid === appUserGuid) {
+            continue;
+          }
+
+          if (assigned) {
+            await tx.app_user_activity_xref.update({
+              where: {
+                app_user_activity_xref_guid: assigned.app_user_activity_xref_guid,
+              },
+              data: {
+                active_ind: false,
+                update_user_id: this.user.getIdirUsername(),
+                update_utc_timestamp: new Date(),
+              },
+            });
+          }
+
+          if (appUserGuid) {
+            await tx.app_user_activity_xref.create({
+              data: {
+                activity_type: activityType,
+                activity_identifier_ref: activityIdentifier,
+                app_user_guid: appUserGuid,
+                app_user_activity_xref_code: code,
+                active_ind: true,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+                update_user_id: this.user.getIdirUsername(),
+                update_utc_timestamp: new Date(),
+              },
+            });
+          }
         }
       });
     } catch (error) {
-      this.logger.error(`Error assigning ${code}:`, error);
+      this.logger.error(`Error assigning ${assignments.map(({ code }) => code).join(", ")}:`, error);
       throw error;
     }
   }

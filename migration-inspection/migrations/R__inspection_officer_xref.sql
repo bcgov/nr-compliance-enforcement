@@ -1,0 +1,1 @@
+-- Effectively deleted: officer_inspection_xref_code was dropped in V1.81.0__drop_officer_inspection_xref.sql

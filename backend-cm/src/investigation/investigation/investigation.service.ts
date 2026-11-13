@@ -1093,30 +1093,14 @@ export class InvestigationService {
     investigationGuid: string,
     input: CreateInvestigationInput | UpdateInvestigationInput,
   ): Promise<void> {
-    if (input.primaryInvestigatorGuid !== undefined) {
-      await this.appUserActivityXrefService.assign(
-        "INVSTGTN",
-        investigationGuid,
-        "ASSIGNEE",
-        input.primaryInvestigatorGuid || null,
-      );
-    }
-    if (input.supervisorGuid !== undefined) {
-      await this.appUserActivityXrefService.assign(
-        "INVSTGTN",
-        investigationGuid,
-        "SUPERVISOR",
-        input.supervisorGuid || null,
-      );
-    }
-    if (input.fileCoordinatorGuid !== undefined) {
-      await this.appUserActivityXrefService.assign(
-        "INVSTGTN",
-        investigationGuid,
-        "FILECOORD",
-        input.fileCoordinatorGuid || null,
-      );
-    }
+    const assignments = [
+      { code: "ASSIGNEE", appUserGuid: input.primaryInvestigatorGuid },
+      { code: "SUPERVISOR", appUserGuid: input.supervisorGuid },
+      { code: "FILECOORD", appUserGuid: input.fileCoordinatorGuid },
+    ]
+      .filter(({ appUserGuid }) => appUserGuid !== undefined)
+      .map(({ code, appUserGuid }) => ({ code, appUserGuid: appUserGuid || null }));
+    await this.appUserActivityXrefService.assign("INVSTGTN", investigationGuid, assignments);
   }
 
   async updateLocationGeometryPoint(tx: any, investigationGuid: string, point: Point): Promise<void> {
@@ -1144,9 +1128,10 @@ export class InvestigationService {
     }
   }
 
-  async updateInvestigationTimestamp(investigationGuid: string): Promise<void> {
+  async updateInvestigationTimestamp(investigationGuid: string, tx?: any): Promise<void> {
+    const client = tx ?? this.prisma;
     try {
-      await this.prisma.investigation.update({
+      await client.investigation.update({
         where: { investigation_guid: investigationGuid },
         data: {
           update_utc_timestamp: new Date(),
@@ -1163,15 +1148,19 @@ export class InvestigationService {
   }
 
   async addCollaborator(investigationGuid: string, appUserGuid: string): Promise<Investigation> {
-    // Update the timestamp first to validate that the investigation actually exists
-    await this.updateInvestigationTimestamp(investigationGuid);
-    await this.appUserActivityXrefService.addCollaborator("INVSTGTN", investigationGuid, appUserGuid);
+    // Collaborators are saved by the shared client so the timestamp update is done first but commits last
+    await this.prisma.$transaction(async (tx) => {
+      await this.updateInvestigationTimestamp(investigationGuid, tx);
+      await this.appUserActivityXrefService.addCollaborator("INVSTGTN", investigationGuid, appUserGuid);
+    });
     return await this.findOne(investigationGuid);
   }
 
   async removeCollaborator(investigationGuid: string, appUserActivityXrefGuid: string): Promise<Investigation> {
-    await this.appUserActivityXrefService.removeCollaborator("INVSTGTN", investigationGuid, appUserActivityXrefGuid);
-    await this.updateInvestigationTimestamp(investigationGuid);
+    await this.prisma.$transaction(async (tx) => {
+      await this.updateInvestigationTimestamp(investigationGuid, tx);
+      await this.appUserActivityXrefService.removeCollaborator("INVSTGTN", investigationGuid, appUserActivityXrefGuid);
+    });
     return await this.findOne(investigationGuid);
   }
 }

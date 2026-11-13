@@ -1,0 +1,1 @@
+-- Effectively deleted: the test user is now created in migration-shared/test-only-migrations/R__test_user_guids.sql
