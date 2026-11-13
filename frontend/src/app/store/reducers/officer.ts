@@ -379,26 +379,13 @@ export const filterOfficerByAgency = (agency: string, officers: AppUser[]): AppU
     const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? false; // Assume false if cos_geo_org_unit is null or undefined
     const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
 
-    //Deactivated officers has empty roles,
-    //so the only way to  determine agency is based on whether office_guid null/not null for now
-    let agencyCodeForDeactivatedOfficer;
     if (officer.deactivate_ind) {
-      if (officer.office_guid) {
-        agencyCodeForDeactivatedOfficer = "COS";
-      } else {
-        agencyCodeForDeactivatedOfficer = "EPO";
-      }
+      return officer.agency_code_ref === agency;
     }
 
     if (agency === "COS") {
-      if (officer.deactivate_ind) {
-        return agency === agencyCodeForDeactivatedOfficer;
-      } else return !fromAdminOffice && roleMatch;
-    } else if (agency === "EPO" || agency === "NROS" || agency === "MINES") {
-      let result = officer.deactivate_ind === true ? agency === agencyCodeForDeactivatedOfficer : roleMatch;
-      return result;
-    } else if (agency === "PARKS") {
-      //Cannot handle deactivated officers for parks... will be addressed once we understand if Parks users have offices
+      return !fromAdminOffice && roleMatch;
+    } else if (agency === "EPO" || agency === "NROS" || agency === "MINES" || agency === "PARKS") {
       return roleMatch;
     } else {
       return false;
