@@ -22,10 +22,12 @@ business_identifier_h
 business_h
 app_user_team_xref_h
 app_user_h
+app_user_activity_xref_h
 alias_h
 event
 geo_org_unit_structure
 contact_method
+app_user_activity_xref
 person_facial_hair_style_code
 party_external_id
 park_area_xref
@@ -71,8 +73,9 @@ business_person_xref_code
 business_identifier_code
 build_code
 approximate_age_code
-case_activity_type_code
+app_user_activity_xref_code
 park_area
 event_entity_type_code
 country_code
+case_activity_type_code
 agency_code

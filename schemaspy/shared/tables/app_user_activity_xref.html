@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>officer_inspection_xref - default.inspection</title>
+        <title>app_user_activity_xref - default.shared</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -46,7 +46,7 @@
                 <nav class="navbar navbar-static-top">
                     <div class="container">
                         <div class="navbar-header">
-                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.inspection</span>
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.shared</span>
                             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
                         </div>
 
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>officer_inspection_xref</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>app_user_activity_xref</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>Used to create a relationship between an officer and a inspection. One officer can play many roles on a inspection, and many people could be involved in a single inspection.</p>
+                            <p>Associates a user to a case activity and defines the nature of the relationship between them.</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="officer_inspection_xref_guid">officer_inspection_xref_guid</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="app_user_activity_xref_guid">app_user_activity_xref_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -136,27 +136,10 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>System generated unique key for a relationship between an officer and a inspection. This key should never be exposed to users via any system utilizing the tables.</p></td>
+                                    <td><p>The system-generated unique identifier for the user to activity relationship record.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="officer_guid_ref">officer_guid_ref</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>A reference to the system generated unique key for an officer found outside of this schema.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="inspection_guid">inspection_guid</span></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="app_user_guid">app_user_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -169,16 +152,16 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="officer_inspection_xref.inspection_guid references inspection.inspection_guid via FK_officer_inspection_xref__inspection_guid"><a href='inspection.html'>inspection</a><span class='relatedKey'>.inspection_guid</span></td>
-                                                <td class="constraint detail">FK_officer_inspection_xref__inspection_guid</td>
+                                                <td title="app_user_activity_xref.app_user_guid references app_user.app_user_guid via app_user_activity_xref_app_user_fk"><a href='app_user.html'>app_user</a><span class='relatedKey'>.app_user_guid</span></td>
+                                                <td class="constraint detail">app_user_activity_xref_app_user_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>The GUID for the inspection.</p></td>
+                                    <td><p>The unique identifier of the user participating in the relationship.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="officer_inspection_xref_code">officer_inspection_xref_code</span></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="activity_type">activity_type</span></td>
                                     <td>varchar</td>
                                     <td>10</td>
                                     <td title=''></td>
@@ -191,13 +174,69 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="officer_inspection_xref.officer_inspection_xref_code references officer_inspection_xref_code.officer_inspection_xref_code via FK_officer_inspection_xref__officer_inspection_xref_code"><a href='officer_inspection_xref_code.html'>officer_inspection_xref_code</a><span class='relatedKey'>.officer_inspection_xref_code</span></td>
-                                                <td class="constraint detail">FK_officer_inspection_xref__officer_inspection_xref_code</td>
+                                                <td title="app_user_activity_xref.activity_type references case_activity_type_code.case_activity_type_code via app_user_activity_xref_activity_type_fk"><a href='case_activity_type_code.html'>case_activity_type_code</a><span class='relatedKey'>.case_activity_type_code</span></td>
+                                                <td class="constraint detail">app_user_activity_xref_activity_type_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>A human readable code used to identify a relationship type between an officer and a inspection.</p></td>
+                                    <td><p>Foreign Key: Human readable code representing a case activity.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="activity_identifier_ref">activity_identifier_ref</span></td>
+                                    <td>varchar</td>
+                                    <td>50</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Business key representing a case activity stored in another system or schema. For example an investigation: investigation.investigation.investigation_guid, or an inspection: inspection.inspection.inspection_guid</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="app_user_activity_xref_code">app_user_activity_xref_code</span></td>
+                                    <td>varchar</td>
+                                    <td>16</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="app_user_activity_xref.app_user_activity_xref_code references app_user_activity_xref_code.app_user_activity_xref_code via app_user_activity_xref_code_fk"><a href='app_user_activity_xref_code.html'>app_user_activity_xref_code</a><span class='relatedKey'>.app_user_activity_xref_code</span></td>
+                                                <td class="constraint detail">app_user_activity_xref_code_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>A human readable code that identifies the type of relationship between the user and the activity.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="active_ind">active_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>true</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>A boolean indicator to determine if the user to activity relationship is active.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -214,7 +253,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created the relationship between an officer and a inspection.</p></td>
+                                    <td><p>The id of the user that created the user to activity relationship.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
@@ -222,7 +261,7 @@
                                     <td>29,6</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td>now()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
@@ -231,13 +270,13 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the relationship between an officer and a inspection  was created.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>The timestamp when the user to activity relationship was created. The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
                                     <td>varchar</td>
                                     <td>32</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -248,30 +287,13 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that updated the relationship between an officer and a inspection .</p></td>
+                                    <td><p>The id of the user that updated the user to activity relationship.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
                                     <td>timestamp</td>
                                     <td>29,6</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The timestamp when the relationship between an officer and a inspection  was updated.  The timestamp is stored in UTC with no Offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="active_ind">active_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -282,7 +304,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A boolean indicator to determine if the relationship type between an officer and a inspection code is active.</p></td>
+                                    <td><p>The timestamp when the user to activity relationship was updated. The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -315,10 +337,46 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_officer_inspection_xref_guid</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> app_user_activity_xref_pk</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>officer_inspection_xref_guid</td>
+                                    <td>app_user_activity_xref_guid</td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> app_user_activity_xref_assignee_active_unique</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>activity_type + activity_identifier_ref</td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> app_user_activity_xref_collaborat_active_unique</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>activity_type + activity_identifier_ref + app_user_guid</td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> app_user_activity_xref_filecoord_active_unique</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>activity_type + activity_identifier_ref</td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> app_user_activity_xref_supervisor_active_unique</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>activity_type + activity_identifier_ref</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_app_user_activity_xref_activity_identifier_ref</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>activity_identifier_ref</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>idx_app_user_activity_xref_app_user_guid</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>app_user_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -339,25 +397,60 @@
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
                                     <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="373,71,781,404">
-<area shape="rect" id="node2" href="inspection.html" target="_top" title="inspection" alt="" coords="5,5,329,269">
-<area shape="rect" id="node3" href="officer_inspection_xref_code.html" target="_top" title="officer_inspection_xref_code" alt="" coords="15,287,319,404">
+<area shape="rect" id="node1" href="app_user_activity_xref.html" target="_top" title="app_user_activity_xref" alt="" coords="349,196,753,559">
+<area shape="rect" id="node2" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="21,257,289,375">
+<area shape="rect" id="node3" href="app_user_activity_xref_code.html" target="_top" title="app_user_activity_xref_code" alt="" coords="5,392,305,509">
+<area shape="rect" id="node4" href="app_user.html" target="_top" title="app_user" alt="" coords="39,5,271,240">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/officer_inspection_xref.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/app_user_activity_xref.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,5,637,269">
-<area shape="rect" id="node2" href="inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,67,269,155">
-<area shape="rect" id="node3" href="inspection_party.html" target="_top" title="inspection_party" alt="" coords="779,8,991,96">
-<area shape="rect" id="node4" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="681,155,1089,488">
-<area shape="rect" id="node5" href="officer_inspection_xref_code.html" target="_top" title="officer_inspection_xref_code" alt="" coords="323,287,627,404">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="397,108,629,343">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,125,185,213">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="229,199,353,287">
+<area shape="rect" id="node4" href="app_user_activity_xref.html" target="_top" title="app_user_activity_xref" alt="" coords="1017,384,1421,747">
+<area shape="rect" id="node5" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="689,321,957,439">
+<area shape="rect" id="node6" href="app_user_activity_xref_code.html" target="_top" title="app_user_activity_xref_code" alt="" coords="673,504,973,621">
+<area shape="rect" id="node7" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="704,111,943,199">
+<area shape="rect" id="node8" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1129,89,1310,177">
+<area shape="rect" id="node9" href="case_file.html" target="_top" title="case_file" alt="" coords="750,5,897,93">
+<area shape="rect" id="node10" href="party.html" target="_top" title="party" alt="" coords="762,216,885,304">
+<area shape="rect" id="node11" href="party_association_role_code.html" target="_top" title="party_association_role_code" alt="" coords="1069,279,1370,367">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/officer_inspection_xref.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/app_user_activity_xref.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="app_user_activity_xref.html" target="_top" title="app_user_activity_xref" alt="" coords="349,196,753,559">
+<area shape="rect" id="node2" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="21,257,289,375">
+<area shape="rect" id="node3" href="app_user_activity_xref_code.html" target="_top" title="app_user_activity_xref_code" alt="" coords="5,392,305,509">
+<area shape="rect" id="node4" href="app_user.html" target="_top" title="app_user" alt="" coords="39,5,271,240">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/app_user_activity_xref.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="432,108,664,343">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,92,185,180">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="247,165,371,253">
+<area shape="rect" id="node4" href="park_area.html" target="_top" title="park_area" alt="" coords="229,271,388,359">
+<area shape="rect" id="node5" href="app_user_activity_xref.html" target="_top" title="app_user_activity_xref" alt="" coords="1052,384,1456,747">
+<area shape="rect" id="node6" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="724,321,992,439">
+<area shape="rect" id="node7" href="app_user_activity_xref_code.html" target="_top" title="app_user_activity_xref_code" alt="" coords="708,504,1008,621">
+<area shape="rect" id="node8" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="739,111,977,199">
+<area shape="rect" id="node9" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1163,89,1345,177">
+<area shape="rect" id="node10" href="case_file.html" target="_top" title="case_file" alt="" coords="785,5,931,93">
+<area shape="rect" id="node11" href="party.html" target="_top" title="party" alt="" coords="797,216,919,304">
+<area shape="rect" id="node12" href="party_association_role_code.html" target="_top" title="party_association_role_code" alt="" coords="1103,279,1405,367">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/app_user_activity_xref.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

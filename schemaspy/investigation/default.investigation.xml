@@ -425,7 +425,7 @@
          <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the exhibit record after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
       </table>
-      <table name="flyway_schema_history" numRows="63" remarks="" schema="investigation" type="TABLE">
+      <table name="flyway_schema_history" numRows="66" remarks="" schema="investigation" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
@@ -451,7 +451,6 @@
             <child column="investigation_guid" foreignKey="fk_diary_date_investigation" implied="false" onDeleteCascade="false" schema="investigation" table="diary_date"/>
             <child column="investigation_guid" foreignKey="fk_exhibit__investigation" implied="false" onDeleteCascade="false" schema="investigation" table="exhibit"/>
             <child column="investigation_guid" foreignKey="fk_investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="investigation_party"/>
-            <child column="investigation_guid" foreignKey="FK_officer_investigation_xref__investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="officer_investigation_xref"/>
             <child column="investigation_guid" foreignKey="task_investigation_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="task"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="investigation_description" nullable="true" remarks="A summary of the investigation as provided by users." size="4000" type="varchar" typeCode="12"/>
@@ -469,13 +468,10 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="location_address" nullable="true" remarks="Address of the investigation." size="120" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="location_description" nullable="true" remarks="Description of the investigation location." size="4000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="created_by_app_user_guid_ref" nullable="true" remarks="ID of the user who created this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="supervisor_guid_ref" nullable="true" remarks="ID of the user who is a team commander/supervisor of this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="primary_investigator_guid_ref" nullable="true" remarks="ID of the user who is a primary investor of this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="file_coordinator_guid_ref" nullable="true" remarks="ID of the user who is a file coordinator with this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="discovery_date_utc_date" nullable="true" remarks="The date when the investigation was discovered." size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="18" name="discovery_date_utc_time" nullable="true" remarks="The time when the investigation was discovered." size="15" type="time" typeCode="92"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="geo_organization_unit_code_ref" nullable="true" remarks="A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy." size="10" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="investigation_source" nullable="false" remarks="The source code for the investigation" size="16" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="discovery_date_utc_date" nullable="true" remarks="The date when the investigation was discovered." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="discovery_date_utc_time" nullable="true" remarks="The time when the investigation was discovered." size="15" type="time" typeCode="92"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="geo_organization_unit_code_ref" nullable="true" remarks="A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="investigation_source" nullable="false" remarks="The source code for the investigation" size="16" type="varchar" typeCode="12">
             <parent column="investigation_source_code" foreignKey="fk_investigation_source_code" implied="false" onDeleteCascade="false" schema="investigation" table="investigation_source_code"/>
          </column>
          <primaryKey column="investigation_guid" sequenceNumberInPK="1"/>
@@ -1008,66 +1004,6 @@
          <primaryKey column="h_investigation_status_code_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_investigation_status_code" unique="true">
             <column ascending="true" name="h_investigation_status_code_guid"/>
-         </index>
-      </table>
-      <table name="officer_investigation_xref" remarks="Used to create a relationship between an officer and a investigation. One officer can play many roles on a investigation, and many people could be involved in a single investigation." schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="officer_investigation_xref_guid" nullable="false" remarks="System generated unique key for a relationship between an officer and a investigation. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="officer_guid_ref" nullable="false" remarks="A reference to the system generated unique key for an officer found outside of this schema." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="investigation_guid" nullable="false" remarks="The GUID for the investigation." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="investigation_guid" foreignKey="FK_officer_investigation_xref__investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="investigation"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="officer_investigation_xref_code" nullable="false" remarks="A human readable code used to identify a relationship type between an officer and a investigation." size="10" type="varchar" typeCode="12">
-            <parent column="officer_investigation_xref_code" foreignKey="FK_officer_investigation_xref__officer_investigation_xref_code" implied="false" onDeleteCascade="false" schema="investigation" table="officer_investigation_xref_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the relationship between an officer and a investigation." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the relationship between an officer and a investigation  was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the relationship between an officer and a investigation ." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the relationship between an officer and a investigation  was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the relationship type between an officer and a investigation code is active." size="1" type="bool" typeCode="-7"/>
-         <primaryKey column="officer_investigation_xref_guid" sequenceNumberInPK="1"/>
-         <index name="PK_officer_investigation_xref_guid" unique="true">
-            <column ascending="true" name="officer_investigation_xref_guid"/>
-         </index>
-      </table>
-      <table name="officer_investigation_xref_code" numRows="1" remarks="Used to track the relationship type between officer and investigation.  For example: 'ASSIGNEE' = Assignee" schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="officer_investigation_xref_code" nullable="false" remarks="A human readable code used to identify a relationship type between an officer and a investigation." size="10" type="varchar" typeCode="12">
-            <child column="officer_investigation_xref_code" foreignKey="FK_officer_investigation_xref__officer_investigation_xref_code" implied="false" onDeleteCascade="false" schema="investigation" table="officer_investigation_xref"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the relationship type between an officer and a investigation." size="50" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the relationship type between an officer and a investigation." size="250" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the relationship type between an officer and a investigation code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="Boolean flag indicating if the relationship is active." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the relationship type between an officer and a investigation." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the relationship type between an officer and a investigation  was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the relationship type between an officer and a investigation ." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the relationship type between an officer and a investigation  was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="officer_investigation_xref_code" sequenceNumberInPK="1"/>
-         <index name="PK_officer_investigation_xref_code" unique="true">
-            <column ascending="true" name="officer_investigation_xref_code"/>
-         </index>
-      </table>
-      <table name="officer_investigation_xref_code_h" numRows="1" remarks="History table for officer_investigation_xref_code table" schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_officer_investigation_xref_code_guid" nullable="false" remarks="System generated unique key for officer_investigation_xref_code history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the officer_investigation_xref_code that has been created or modified." size="20" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
-         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the officer_investigation_xref_code table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the officer_investigation_xref_code table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
-         <primaryKey column="h_officer_investigation_xref_code_guid" sequenceNumberInPK="1"/>
-         <index name="PK_h_officer_investigation_xref_code" unique="true">
-            <column ascending="true" name="h_officer_investigation_xref_code_guid"/>
-         </index>
-      </table>
-      <table name="officer_investigation_xref_h" remarks="History table for officer_investigation_xref table" schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_officer_investigation_xref_guid" nullable="false" remarks="System generated unique key for officer_investigation_xref history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the officer_investigation_xref that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
-         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the officer_investigation_xref table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the officer_investigation_xref table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
-         <primaryKey column="h_officer_investigation_xref_guid" sequenceNumberInPK="1"/>
-         <index name="PK_h_officer_investigation_xref" unique="true">
-            <column ascending="true" name="h_officer_investigation_xref_guid"/>
          </index>
       </table>
       <table name="order_status_code" remarks="Reference table defining the possible statuses of an order." schema="investigation" type="TABLE">

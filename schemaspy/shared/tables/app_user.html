@@ -131,6 +131,11 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
+                                                <td title="app_user_activity_xref.app_user_guid references app_user.app_user_guid via app_user_activity_xref_app_user_fk"><a href='app_user_activity_xref.html'>app_user_activity_xref</a><span class='relatedKey'>.app_user_guid</span></td>
+                                                <td class="constraint detail">app_user_activity_xref_app_user_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="app_user_team_xref.app_user_guid references app_user.app_user_guid via app_user_team_xref_user_fk"><a href='app_user_team_xref.html'>app_user_team_xref</a><span class='relatedKey'>.app_user_guid</span></td>
                                                 <td class="constraint detail">app_user_team_xref_user_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
@@ -462,75 +467,83 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="593,143,960,623">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,485,237,603">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="281,427,549,603">
-<area shape="rect" id="node4" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1007,199,1255,375">
-<area shape="rect" id="node5" href="case_file.html" target="_top" title="case_file" alt="" coords="1004,481,1259,687">
-<area shape="rect" id="node6" href="party.html" target="_top" title="party" alt="" coords="1004,5,1259,181">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="593,284,960,764">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,627,237,744">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="281,568,549,744">
+<area shape="rect" id="node4" href="app_user_activity_xref.html" target="_top" title="app_user_activity_xref" alt="" coords="1004,5,1273,240">
+<area shape="rect" id="node5" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1015,257,1263,433">
+<area shape="rect" id="node6" href="case_file.html" target="_top" title="case_file" alt="" coords="1011,679,1266,884">
+<area shape="rect" id="node7" href="party.html" target="_top" title="party" alt="" coords="1011,451,1266,627">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/app_user.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="1417,321,1559,409">
-<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="1080,319,1335,495">
-<area shape="rect" id="node4" href="app_user.html" target="_top" title="app_user" alt="" coords="669,375,1036,855">
-<area shape="rect" id="node17" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="748,269,957,357">
-<area shape="rect" id="node3" href="alias.html" target="_top" title="alias" alt="" coords="1430,427,1546,515">
-<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,511,245,599">
-<area shape="rect" id="node6" href="office.html" target="_top" title="office" alt="" coords="425,617,549,705">
-<area shape="rect" id="node14" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,723,304,811">
-<area shape="rect" id="node7" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1083,661,1331,837">
-<area shape="rect" id="node8" href="team.html" target="_top" title="team" alt="" coords="792,872,913,960">
-<area shape="rect" id="node9" href="business.html" target="_top" title="business" alt="" coords="1413,532,1563,620">
-<area shape="rect" id="node10" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1397,5,1579,93">
-<area shape="rect" id="node11" href="case_file.html" target="_top" title="case_file" alt="" coords="1134,199,1281,287">
-<area shape="rect" id="node12" href="contact_method.html" target="_top" title="contact_method" alt="" coords="1641,461,1851,549">
-<area shape="rect" id="node13" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="356,723,617,811">
-<area shape="rect" id="node15" href="legislation_configuration.html" target="_top" title="legislation_configuration" alt="" coords="348,128,625,216">
-<area shape="rect" id="node16" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="375,440,598,528">
-<area shape="rect" id="node18" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="1379,111,1597,199">
-<area shape="rect" id="node19" href="person.html" target="_top" title="person" alt="" coords="1421,216,1555,304">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="1488,5,1629,93">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="1103,247,1357,423">
+<area shape="rect" id="node4" href="app_user.html" target="_top" title="app_user" alt="" coords="669,467,1036,947">
+<area shape="rect" id="node20" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="748,279,957,367">
+<area shape="rect" id="node3" href="alias.html" target="_top" title="alias" alt="" coords="1501,111,1617,199">
+<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,607,245,695">
+<area shape="rect" id="node6" href="office.html" target="_top" title="office" alt="" coords="425,709,549,797">
+<area shape="rect" id="node17" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,851,304,939">
+<area shape="rect" id="node7" href="app_user_activity_xref.html" target="_top" title="app_user_activity_xref" alt="" coords="1424,713,1693,948">
+<area shape="rect" id="node8" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="1096,775,1364,863">
+<area shape="rect" id="node9" href="app_user_activity_xref_code.html" target="_top" title="app_user_activity_xref_code" alt="" coords="1080,880,1380,968">
+<area shape="rect" id="node10" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1106,581,1354,757">
+<area shape="rect" id="node11" href="team.html" target="_top" title="team" alt="" coords="792,964,913,1052">
+<area shape="rect" id="node12" href="business.html" target="_top" title="business" alt="" coords="1484,216,1633,304">
+<area shape="rect" id="node13" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1468,605,1649,693">
+<area shape="rect" id="node14" href="case_file.html" target="_top" title="case_file" alt="" coords="1157,440,1303,528">
+<area shape="rect" id="node15" href="contact_method.html" target="_top" title="contact_method" alt="" coords="1737,145,1947,233">
+<area shape="rect" id="node16" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="356,851,617,939">
+<area shape="rect" id="node18" href="legislation_configuration.html" target="_top" title="legislation_configuration" alt="" coords="348,604,625,692">
+<area shape="rect" id="node19" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="375,325,598,413">
+<area shape="rect" id="node21" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="1449,357,1668,445">
+<area shape="rect" id="node22" href="person.html" target="_top" title="person" alt="" coords="1491,463,1626,551">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/app_user.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="593,183,960,663">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,261,237,379">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="281,337,549,513">
-<area shape="rect" id="node4" href="park_area.html" target="_top" title="park_area" alt="" coords="299,531,531,677">
-<area shape="rect" id="node5" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1007,228,1255,404">
-<area shape="rect" id="node6" href="case_file.html" target="_top" title="case_file" alt="" coords="1004,5,1259,211">
-<area shape="rect" id="node7" href="party.html" target="_top" title="party" alt="" coords="1004,421,1259,597">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="593,255,960,735">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,333,237,451">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="281,409,549,585">
+<area shape="rect" id="node4" href="park_area.html" target="_top" title="park_area" alt="" coords="299,603,531,749">
+<area shape="rect" id="node5" href="app_user_activity_xref.html" target="_top" title="app_user_activity_xref" alt="" coords="1004,228,1273,463">
+<area shape="rect" id="node6" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1015,480,1263,656">
+<area shape="rect" id="node7" href="case_file.html" target="_top" title="case_file" alt="" coords="1011,5,1266,211">
+<area shape="rect" id="node8" href="party.html" target="_top" title="party" alt="" coords="1011,673,1266,849">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/app_user.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="1417,463,1559,551">
-<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="1080,249,1335,425">
-<area shape="rect" id="node4" href="app_user.html" target="_top" title="app_user" alt="" coords="669,305,1036,785">
-<area shape="rect" id="node20" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="748,200,957,288">
-<area shape="rect" id="node3" href="alias.html" target="_top" title="alias" alt="" coords="1430,252,1546,340">
-<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,592,245,680">
-<area shape="rect" id="node6" href="office.html" target="_top" title="office" alt="" coords="425,695,549,783">
-<area shape="rect" id="node7" href="park_area.html" target="_top" title="park_area" alt="" coords="371,800,603,947">
-<area shape="rect" id="node15" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,1000,304,1088">
-<area shape="rect" id="node8" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1083,697,1331,873">
-<area shape="rect" id="node9" href="team.html" target="_top" title="team" alt="" coords="792,1013,913,1101">
-<area shape="rect" id="node10" href="business.html" target="_top" title="business" alt="" coords="1413,357,1563,445">
-<area shape="rect" id="node11" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1397,5,1579,93">
-<area shape="rect" id="node12" href="case_file.html" target="_top" title="case_file" alt="" coords="1134,129,1281,217">
-<area shape="rect" id="node13" href="contact_method.html" target="_top" title="contact_method" alt="" coords="1641,321,1851,409">
-<area shape="rect" id="node14" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="356,1000,617,1088">
-<area shape="rect" id="node16" href="legislation_configuration.html" target="_top" title="legislation_configuration" alt="" coords="348,484,625,572">
-<area shape="rect" id="node17" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="375,589,598,677">
-<area shape="rect" id="node18" href="park_area_mapping.html" target="_top" title="park_area_mapping" alt="" coords="735,803,971,891">
-<area shape="rect" id="node19" href="park_area_xref.html" target="_top" title="park_area_xref" alt="" coords="754,908,951,996">
-<area shape="rect" id="node21" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="1379,568,1597,656">
-<area shape="rect" id="node22" href="person.html" target="_top" title="person" alt="" coords="1421,111,1555,199">
+<area shape="rect" id="node1" href="address.html" target="_top" title="address" alt="" coords="1488,5,1629,93">
+<area shape="rect" id="node2" href="party.html" target="_top" title="party" alt="" coords="1103,247,1357,423">
+<area shape="rect" id="node4" href="app_user.html" target="_top" title="app_user" alt="" coords="669,471,1036,951">
+<area shape="rect" id="node23" href="party_type_code.html" target="_top" title="party_type_code" alt="" coords="748,279,957,367">
+<area shape="rect" id="node3" href="alias.html" target="_top" title="alias" alt="" coords="1501,111,1617,199">
+<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,1008,245,1096">
+<area shape="rect" id="node6" href="office.html" target="_top" title="office" alt="" coords="425,736,549,824">
+<area shape="rect" id="node7" href="park_area.html" target="_top" title="park_area" alt="" coords="371,841,603,988">
+<area shape="rect" id="node18" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,1252,304,1340">
+<area shape="rect" id="node8" href="app_user_activity_xref.html" target="_top" title="app_user_activity_xref" alt="" coords="1424,767,1693,1001">
+<area shape="rect" id="node9" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="1096,739,1364,827">
+<area shape="rect" id="node10" href="app_user_activity_xref_code.html" target="_top" title="app_user_activity_xref_code" alt="" coords="1080,887,1380,975">
+<area shape="rect" id="node11" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1106,545,1354,721">
+<area shape="rect" id="node12" href="team.html" target="_top" title="team" alt="" coords="792,1179,913,1267">
+<area shape="rect" id="node13" href="business.html" target="_top" title="business" alt="" coords="1484,216,1633,304">
+<area shape="rect" id="node14" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1468,635,1649,723">
+<area shape="rect" id="node15" href="case_file.html" target="_top" title="case_file" alt="" coords="1157,440,1303,528">
+<area shape="rect" id="node16" href="contact_method.html" target="_top" title="contact_method" alt="" coords="1737,145,1947,233">
+<area shape="rect" id="node17" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="356,1252,617,1340">
+<area shape="rect" id="node19" href="legislation_configuration.html" target="_top" title="legislation_configuration" alt="" coords="348,1005,625,1093">
+<area shape="rect" id="node20" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="375,1111,598,1199">
+<area shape="rect" id="node21" href="park_area_mapping.html" target="_top" title="park_area_mapping" alt="" coords="735,968,971,1056">
+<area shape="rect" id="node22" href="park_area_xref.html" target="_top" title="park_area_xref" alt="" coords="754,1073,951,1161">
+<area shape="rect" id="node24" href="party_external_id.html" target="_top" title="party_external_id" alt="" coords="1449,357,1668,445">
+<area shape="rect" id="node25" href="person.html" target="_top" title="person" alt="" coords="1491,463,1626,551">
 </map>
                                         <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/app_user.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>

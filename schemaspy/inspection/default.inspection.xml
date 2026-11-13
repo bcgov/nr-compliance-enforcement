@@ -25,7 +25,6 @@
       <table name="inspection" remarks="The central entity of the inspections system." schema="inspection" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="inspection_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="inspection_guid" foreignKey="fk_inspection_guid" implied="false" onDeleteCascade="false" schema="inspection" table="inspection_party"/>
-            <child column="inspection_guid" foreignKey="FK_officer_inspection_xref__inspection_guid" implied="false" onDeleteCascade="false" schema="inspection" table="officer_inspection_xref"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="inspection_description" nullable="true" remarks="A summary of the inspection as provided by users." size="4000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="owned_by_agency_ref" nullable="false" remarks="A reference to the human readable code used to identify the agency that owns this case, found in the shared schema." size="10" type="varchar" typeCode="12"/>
@@ -205,66 +204,6 @@
          <primaryKey column="h_inspection_status_code_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_inspection_status_code" unique="true">
             <column ascending="true" name="h_inspection_status_code_guid"/>
-         </index>
-      </table>
-      <table name="officer_inspection_xref" remarks="Used to create a relationship between an officer and a inspection. One officer can play many roles on a inspection, and many people could be involved in a single inspection." schema="inspection" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="officer_inspection_xref_guid" nullable="false" remarks="System generated unique key for a relationship between an officer and a inspection. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="officer_guid_ref" nullable="false" remarks="A reference to the system generated unique key for an officer found outside of this schema." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="inspection_guid" nullable="false" remarks="The GUID for the inspection." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="inspection_guid" foreignKey="FK_officer_inspection_xref__inspection_guid" implied="false" onDeleteCascade="false" schema="inspection" table="inspection"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="officer_inspection_xref_code" nullable="false" remarks="A human readable code used to identify a relationship type between an officer and a inspection." size="10" type="varchar" typeCode="12">
-            <parent column="officer_inspection_xref_code" foreignKey="FK_officer_inspection_xref__officer_inspection_xref_code" implied="false" onDeleteCascade="false" schema="inspection" table="officer_inspection_xref_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the relationship between an officer and a inspection." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the relationship between an officer and a inspection  was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the relationship between an officer and a inspection ." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the relationship between an officer and a inspection  was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the relationship type between an officer and a inspection code is active." size="1" type="bool" typeCode="-7"/>
-         <primaryKey column="officer_inspection_xref_guid" sequenceNumberInPK="1"/>
-         <index name="PK_officer_inspection_xref_guid" unique="true">
-            <column ascending="true" name="officer_inspection_xref_guid"/>
-         </index>
-      </table>
-      <table name="officer_inspection_xref_code" numRows="1" remarks="Used to track the relationship type between officer and inspection.  For example: 'ASSIGNEE' = Assignee" schema="inspection" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="officer_inspection_xref_code" nullable="false" remarks="A human readable code used to identify a relationship type between an officer and a inspection." size="10" type="varchar" typeCode="12">
-            <child column="officer_inspection_xref_code" foreignKey="FK_officer_inspection_xref__officer_inspection_xref_code" implied="false" onDeleteCascade="false" schema="inspection" table="officer_inspection_xref"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the relationship type between an officer and a inspection." size="50" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the relationship type between an officer and a inspection." size="250" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the relationship type between an officer and a inspection code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="Boolean flag indicating if the relationship is active." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the relationship type between an officer and a inspection." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the relationship type between an officer and a inspection  was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the relationship type between an officer and a inspection ." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the relationship type between an officer and a inspection  was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="officer_inspection_xref_code" sequenceNumberInPK="1"/>
-         <index name="PK_officer_inspection_xref_code" unique="true">
-            <column ascending="true" name="officer_inspection_xref_code"/>
-         </index>
-      </table>
-      <table name="officer_inspection_xref_code_h" numRows="1" remarks="History table for officer_inspection_xref_code table" schema="inspection" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_officer_inspection_xref_code_guid" nullable="false" remarks="System generated unique key for officer_inspection_xref_code history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the officer_inspection_xref_code that has been created or modified." size="20" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
-         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the officer_inspection_xref_code table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the officer_inspection_xref_code table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
-         <primaryKey column="h_officer_inspection_xref_code_guid" sequenceNumberInPK="1"/>
-         <index name="PK_h_officer_inspection_xref_code" unique="true">
-            <column ascending="true" name="h_officer_inspection_xref_code_guid"/>
-         </index>
-      </table>
-      <table name="officer_inspection_xref_h" remarks="History table for officer_inspection_xref table" schema="inspection" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_officer_inspection_xref_guid" nullable="false" remarks="System generated unique key for officer_inspection_xref history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the officer_inspection_xref that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
-         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the officer_inspection_xref table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the officer_inspection_xref table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
-         <primaryKey column="h_officer_inspection_xref_guid" sequenceNumberInPK="1"/>
-         <index name="PK_h_officer_inspection_xref" unique="true">
-            <column ascending="true" name="h_officer_inspection_xref_guid"/>
          </index>
       </table>
    </tables>

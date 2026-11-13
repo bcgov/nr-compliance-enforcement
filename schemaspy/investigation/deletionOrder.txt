@@ -2,8 +2,6 @@ warning_h
 ticket_h
 task_h
 restorative_justice_h
-officer_investigation_xref_h
-officer_investigation_xref_code_h
 investigation_status_code_h
 investigation_person_h
 investigation_person_facial_hair_style_code_ref_h
@@ -26,7 +24,6 @@ ticket
 enforcement_order
 administrative_sanction
 activity_note
-officer_investigation_xref
 investigation_contact_method
 investigation_business_person_address_xref
 diary_date
@@ -62,7 +59,6 @@ sanction_type_code
 sanction_status_code
 order_type_code
 order_status_code
-officer_investigation_xref_code
 investigation_status_code
 investigation_source_code
 court_prosecution_status_code

@@ -1,8 +1,9 @@
 agency_code
+case_activity_type_code
 country_code
 event_entity_type_code
 park_area
-case_activity_type_code
+app_user_activity_xref_code
 approximate_age_code
 build_code
 business_identifier_code
@@ -48,10 +49,12 @@ legislation_configuration
 park_area_xref
 party_external_id
 person_facial_hair_style_code
+app_user_activity_xref
 contact_method
 geo_org_unit_structure
 event
 alias_h
+app_user_activity_xref_h
 app_user_h
 app_user_team_xref_h
 business_h

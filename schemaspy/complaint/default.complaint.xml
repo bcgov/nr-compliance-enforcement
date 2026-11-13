@@ -500,7 +500,7 @@
             <column ascending="true" name="entity_code"/>
          </index>
       </table>
-      <table name="feature_agency_xref" numRows="422" remarks="Maintains a mapping between FEATURES and AGENCIES that allow for features to be displayed or hidden as required." schema="complaint" type="TABLE">
+      <table name="feature_agency_xref" numRows="433" remarks="Maintains a mapping between FEATURES and AGENCIES that allow for features to be displayed or hidden as required." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="feature_agency_xref_guid" nullable="false" remarks="System generated unique key for a FEATURE_AGENCY_XREF ecord.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="feature_code" nullable="false" remarks="A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table." size="10" type="varchar" typeCode="12">
             <parent column="feature_code" foreignKey="FK_featurecd" implied="false" onDeleteCascade="false" schema="complaint" table="feature_code"/>

@@ -117,6 +117,7 @@
       </table>
       <table name="app_user" remarks="A user table for the NatSuite system with user details and other meta" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="app_user_guid" nullable="false" remarks="System generated unique key for a user. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="app_user_guid" foreignKey="app_user_activity_xref_app_user_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_activity_xref"/>
             <child column="app_user_guid" foreignKey="app_user_team_xref_user_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_team_xref"/>
             <child column="created_by_app_user_guid" foreignKey="case_file_created_by_app_user_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
             <child column="created_by_app_user_guid" foreignKey="fk_party__created_by_app_user_guid" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
@@ -148,6 +149,80 @@
             <column ascending="true" name="auth_user_guid"/>
          </index>
          <index name="idx_app_user_auth_user_guid_normalized" unique="false"/>
+      </table>
+      <table name="app_user_activity_xref" remarks="Associates a user to a case activity and defines the nature of the relationship between them." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="app_user_activity_xref_guid" nullable="false" remarks="The system-generated unique identifier for the user to activity relationship record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="app_user_guid" nullable="false" remarks="The unique identifier of the user participating in the relationship." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="app_user_guid" foreignKey="app_user_activity_xref_app_user_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="activity_type" nullable="false" remarks="Foreign Key: Human readable code representing a case activity." size="10" type="varchar" typeCode="12">
+            <parent column="case_activity_type_code" foreignKey="app_user_activity_xref_activity_type_fk" implied="false" onDeleteCascade="false" schema="shared" table="case_activity_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="activity_identifier_ref" nullable="false" remarks="Business key representing a case activity stored in another system or schema. For example an investigation: investigation.investigation.investigation_guid, or an inspection: inspection.inspection.inspection_guid" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="app_user_activity_xref_code" nullable="false" remarks="A human readable code that identifies the type of relationship between the user and the activity." size="16" type="varchar" typeCode="12">
+            <parent column="app_user_activity_xref_code" foreignKey="app_user_activity_xref_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_activity_xref_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="5" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the user to activity relationship is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the user to activity relationship." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the user to activity relationship was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the user to activity relationship." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the user to activity relationship was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="app_user_activity_xref_guid" sequenceNumberInPK="1"/>
+         <index name="app_user_activity_xref_pk" unique="true">
+            <column ascending="true" name="app_user_activity_xref_guid"/>
+         </index>
+         <index name="app_user_activity_xref_assignee_active_unique" unique="true">
+            <column ascending="true" name="activity_type"/>
+            <column ascending="true" name="activity_identifier_ref"/>
+         </index>
+         <index name="app_user_activity_xref_collaborat_active_unique" unique="true">
+            <column ascending="true" name="activity_type"/>
+            <column ascending="true" name="activity_identifier_ref"/>
+            <column ascending="true" name="app_user_guid"/>
+         </index>
+         <index name="app_user_activity_xref_filecoord_active_unique" unique="true">
+            <column ascending="true" name="activity_type"/>
+            <column ascending="true" name="activity_identifier_ref"/>
+         </index>
+         <index name="app_user_activity_xref_supervisor_active_unique" unique="true">
+            <column ascending="true" name="activity_type"/>
+            <column ascending="true" name="activity_identifier_ref"/>
+         </index>
+         <index name="idx_app_user_activity_xref_activity_identifier_ref" unique="false">
+            <column ascending="true" name="activity_identifier_ref"/>
+         </index>
+         <index name="idx_app_user_activity_xref_app_user_guid" unique="false">
+            <column ascending="true" name="app_user_guid"/>
+         </index>
+      </table>
+      <table name="app_user_activity_xref_code" remarks="Contains the list of user to activity associations. For example COLLABORAT = Collaborator" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="app_user_activity_xref_code" nullable="false" remarks="A human readable code used to identify a user to activity association type." size="16" type="varchar" typeCode="12">
+            <child column="app_user_activity_xref_code" foreignKey="app_user_activity_xref_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_activity_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the user to activity association type." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the user to activity association type." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the user to activity association type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a user to activity association type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the user to activity association type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the user to activity association type was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the user to activity association type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the user to activity association type was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="app_user_activity_xref_code" sequenceNumberInPK="1"/>
+         <index name="app_user_activity_xref_code_pk" unique="true">
+            <column ascending="true" name="app_user_activity_xref_code"/>
+         </index>
+      </table>
+      <table name="app_user_activity_xref_h" remarks="Stores the audit history for user to activity relationship records." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_app_user_activity_xref_guid" nullable="false" remarks="The system-generated unique identifier for the user to activity relationship history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique identifier of the user to activity relationship record affected by the operation." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The type of database operation executed on the user to activity relationship record. For example I = Insert, U = Update, D = Delete." size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that executed the operation." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the user to activity relationship record after the operation was executed." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_app_user_activity_xref_guid" sequenceNumberInPK="1"/>
+         <index name="pk_h_app_user_activity_xref" unique="true">
+            <column ascending="true" name="h_app_user_activity_xref_guid"/>
+         </index>
       </table>
       <table name="app_user_h" remarks="History table for app_user table" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_app_user_guid" nullable="false" remarks="System generated unique key for user history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
@@ -455,6 +530,7 @@
       </table>
       <table name="case_activity_type_code" numRows="3" remarks="A case file is made up of many case activities.  Examples of case activities include: COMP = &quot;Complaint&quot;, INV = &quot;Investigation" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="case_activity_type_code" nullable="false" remarks="Primary key: Human readable code representing a case activity." size="10" type="varchar" typeCode="12">
+            <child column="activity_type" foreignKey="app_user_activity_xref_activity_type_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_activity_xref"/>
             <child column="activity_type" foreignKey="fk_case_activity__case_activity_type_code" implied="false" onDeleteCascade="false" schema="shared" table="case_activity"/>
             <child column="case_activity_type_code" foreignKey="party_association_role_code__activity_type_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="party_association_role_code"/>
          </column>
