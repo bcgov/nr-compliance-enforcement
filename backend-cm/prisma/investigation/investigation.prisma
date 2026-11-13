@@ -276,9 +276,6 @@ model investigation {
   location_address                   String?                   @db.VarChar(120)
   location_description               String?                   @db.VarChar(4000)
   created_by_app_user_guid_ref       String?                   @db.Uuid
-  supervisor_guid_ref                String?                   @db.Uuid
-  primary_investigator_guid_ref      String?                   @db.Uuid
-  file_coordinator_guid_ref          String?                   @db.Uuid
   discovery_date_utc_date            DateTime?                 @db.Date
   discovery_date_utc_time            DateTime?                 @db.Time(6)
   geo_organization_unit_code_ref     String?                   @db.VarChar(10)

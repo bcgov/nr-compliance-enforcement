@@ -48,15 +48,6 @@ export class investigation {
   @ApiPropertyOptional({ type: String })
   created_by_app_user_guid_ref?: string;
 
-  @ApiPropertyOptional({ type: String })
-  supervisor_guid_ref?: string;
-
-  @ApiPropertyOptional({ type: String })
-  primary_investigator_guid_ref?: string;
-
-  @ApiPropertyOptional({ type: String })
-  file_coordinator_guid_ref?: string;
-
   @ApiPropertyOptional({ type: Date })
   discovery_date_utc_date?: Date;
 
