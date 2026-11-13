@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { AckPolicy, connect, JetStreamManager, JsMsg, NatsConnection, StringCodec } from "nats";
 import Cryptr = require("cryptr");
-import { CHEFS_STREAM_TOPICS } from "../common/constants";
+import { CHEFS_DURABLE_FORMS, STREAM_TOPICS, STREAMS } from "../common/constants";
 import { ChefsEventMessage } from "src/types/chefs/chefs-event-type";
 import { ComplaintsPublisherService } from "src/publishers/complaints-publisher.service";
 import { Complaint } from "src/types/complaint-type";
@@ -11,9 +11,6 @@ export class ChefsSubscriberService implements OnModuleInit {
   private readonly logger = new Logger(ChefsSubscriberService.name);
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null;
-  // Read at runtime because main.ts loads .env after the constants module is imported.
-  private readonly streamName = process.env.CHEFS_STREAM_NAME;
-  private readonly durableName = process.env.CHEFS_DURABLE_NAME;
 
   constructor(private readonly complaintsPublisherService: ComplaintsPublisherService) {}
 
@@ -34,16 +31,17 @@ export class ChefsSubscriberService implements OnModuleInit {
   }
 
   private async setupConsumer(): Promise<void> {
+    this.logger.debug(`setting up consumer`);
     if (!this.jsm) throw new Error("JetStream Management client is not initialized.");
 
-    this.logger.debug(`Using CHEFS stream "${this.streamName}" with durable "${this.durableName}"`);
+    this.logger.debug(`Using CHEFS stream "${STREAMS.CHEFS}" with durable "${CHEFS_DURABLE_FORMS}"`);
 
     // The CHEFS stream is owned by CHEFS, so only a durable consumer is created here.
     try {
-      await this.jsm.consumers.add(this.streamName, {
+      await this.jsm.consumers.add(STREAMS.CHEFS, {
         ack_policy: AckPolicy.Explicit,
-        durable_name: this.durableName,
-        filter_subject: CHEFS_STREAM_TOPICS.PRIVATE_FORMS,
+        durable_name: CHEFS_DURABLE_FORMS,
+        filter_subject: STREAM_TOPICS.CHEFS_PRIVATE_FORMS,
       });
       this.logger.debug("CHEFS consumer set up successfully");
     } catch (error) {
@@ -53,7 +51,7 @@ export class ChefsSubscriberService implements OnModuleInit {
 
   private async subscribeToTopics() {
     const sc = StringCodec();
-    const consumer = await this.natsConnection.jetstream().consumers.get(this.streamName, this.durableName);
+    const consumer = await this.natsConnection.jetstream().consumers.get(STREAMS.CHEFS, CHEFS_DURABLE_FORMS);
     const iter = await consumer.consume({ max_messages: 1 });
 
     for await (const message of iter) {
@@ -76,6 +74,7 @@ export class ChefsSubscriberService implements OnModuleInit {
     if (isNewSubmission && payload?.data) {
       const cryptr = new Cryptr(process.env.CHEFS_FORM_ENCRYPTION_KEY);
       const decrypted = JSON.parse(cryptr.decrypt(payload.data));
+      // TODO: Don't forget to remove this debug line - helpful for now, wasteful when live
       this.logger.debug(decrypted);
       const complaint: Complaint = decrypted.submission.data;
       await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
