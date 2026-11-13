@@ -281,7 +281,6 @@ export class InspectionService {
         mapper: this.mapper,
         whereClause: where,
         includeClause: {
-          officer_inspection_xref: true,
           inspection_status_code: true,
         },
         orderByClause: orderBy,

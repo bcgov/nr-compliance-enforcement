@@ -76,6 +76,38 @@ export class InvestigationResolver {
     }
   }
 
+  @Mutation("addCollaboratorToInvestigation")
+  @Roles(coreRoles)
+  async addCollaborator(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("appUserGuid") appUserGuid: string,
+  ) {
+    try {
+      return await this.investigationService.addCollaborator(investigationGuid, appUserGuid);
+    } catch (error) {
+      this.logger.error("Add collaborator error:", error);
+      throw new GraphQLError("Error adding collaborator to investigation", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Mutation("removeCollaboratorFromInvestigation")
+  @Roles(coreRoles)
+  async removeCollaborator(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("appUserActivityXrefGuid") appUserActivityXrefGuid: string,
+  ) {
+    try {
+      return await this.investigationService.removeCollaborator(investigationGuid, appUserActivityXrefGuid);
+    } catch (error) {
+      this.logger.error("Remove collaborator error:", error);
+      throw new GraphQLError("Error removing collaborator from investigation", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
   @Query("getInvestigations")
   @Roles(coreRoles)
   async findMany(@Args("ids", { type: () => [String] }) ids: string[]) {

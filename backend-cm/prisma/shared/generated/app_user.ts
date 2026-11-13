@@ -1,5 +1,6 @@
 import { agency_code } from "./agency_code";
 import { office } from "./office";
+import { app_user_activity_xref } from "./app_user_activity_xref";
 import { app_user_team_xref } from "./app_user_team_xref";
 import { case_file } from "./case_file";
 import { party } from "./party";
@@ -53,6 +54,9 @@ export class app_user {
 
   @ApiPropertyOptional({ type: () => office })
   office?: office;
+
+  @ApiProperty({ isArray: true, type: () => app_user_activity_xref })
+  app_user_activity_xref: app_user_activity_xref[];
 
   @ApiProperty({ isArray: true, type: () => app_user_team_xref })
   app_user_team_xref: app_user_team_xref[];

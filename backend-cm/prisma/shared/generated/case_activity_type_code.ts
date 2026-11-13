@@ -1,3 +1,4 @@
+import { app_user_activity_xref } from "./app_user_activity_xref";
 import { case_activity } from "./case_activity";
 import { party_association_role_code } from "./party_association_role_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -29,6 +30,9 @@ export class case_activity_type_code {
 
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
+
+  @ApiProperty({ isArray: true, type: () => app_user_activity_xref })
+  app_user_activity_xref: app_user_activity_xref[];
 
   @ApiProperty({ isArray: true, type: () => case_activity })
   case_activity: case_activity[];

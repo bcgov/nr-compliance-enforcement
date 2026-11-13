@@ -29,6 +29,7 @@ import { mapPrismaGeoOrganizationUnitCodeToGeoOrganizationUnitCode } from "../sh
 import { mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit } from "../shared/cos_geo_org_unit/dto/cos_geo_org_unit";
 import { mapPrismaAppUserToAppUser } from "../shared/app_user/dto/app_user";
 import { mapPrismaAppUserTeamXrefToAppUserTeamXref } from "../shared/app_user_team_xref/dto/app_user_team_xref";
+import { mapPrismaAppUserActivityXrefToAppUserActivityXref } from "../shared/app_user_activity_xref/dto/app_user_activity_xref";
 import { mapPrismaBusinessToInspectionBusiness } from "../inspection/inspection_business/dto/inspection_business";
 import { mapPrismaPersonToInspectionPerson } from "../inspection/inspection_person/dto/inspection_person";
 import { mapPrismaPartyToInspectionParty } from "../inspection/inspection_party/dto/inspection_party";
@@ -123,6 +124,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit(mapper);
   mapPrismaAppUserToAppUser(mapper);
   mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
+  mapPrismaAppUserActivityXrefToAppUserActivityXref(mapper);
   mapPrismaActivityNoteToActivityNote(mapper);
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
   mapPrismaCountryCodeToCountryCode(mapper);

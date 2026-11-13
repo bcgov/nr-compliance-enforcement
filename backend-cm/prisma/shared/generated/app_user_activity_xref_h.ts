@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class officer_investigation_xref_code_h {
+export class app_user_activity_xref_h {
   @ApiProperty({ type: String })
-  h_officer_investigation_xref_code_guid: string;
+  h_app_user_activity_xref_guid: string;
 
   @ApiProperty({ type: String })
   target_row_id: string;

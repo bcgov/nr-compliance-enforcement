@@ -198,7 +198,11 @@ FROM
       left join shared.geo_organization_unit_code goc on goc.geo_organization_unit_code = con.geo_organization_unit_code_ref
       left join shared.wildlife_management_unit_code wmu on wmu.wildlife_management_unit_code = con.wildlife_management_unit_code_ref
       left join shared.cos_geo_org_unit_flat_mvw gfv on gfv.area_code = inv.geo_organization_unit_code_ref
-      left join shared.app_user per on per.app_user_guid = inv.primary_investigator_guid_ref
+      left join shared.app_user_activity_xref asg on asg.activity_identifier_ref = inv.investigation_guid::text
+      and asg.activity_type = 'INVSTGTN'
+      and asg.app_user_activity_xref_code = 'ASSIGNEE'
+      and asg.active_ind = true
+      left join shared.app_user per on per.app_user_guid = asg.app_user_guid
       left join investigation.contravention_party_xref cpx on cpx.contravention_guid = con.contravention_guid
       and cpx.active_ind = true
       left join investigation.investigation_party ipa on ipa.investigation_party_guid = cpx.investigation_party_guid

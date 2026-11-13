@@ -170,6 +170,12 @@ export type AppUser = {
   userId?: Maybe<Scalars['String']['output']>;
 };
 
+export type AppUserActivityXref = {
+  __typename?: 'AppUserActivityXref';
+  appUserActivityXrefGuid: Scalars['String']['output'];
+  appUserGuid: Scalars['String']['output'];
+};
+
 export type AppUserTeamXref = {
   __typename?: 'AppUserTeamXref';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -1476,6 +1482,7 @@ export type InspectionStatusCode = {
 export type Investigation = {
   __typename?: 'Investigation';
   caseIdentifier?: Maybe<Scalars['String']['output']>;
+  collaborators?: Maybe<Array<Maybe<AppUserActivityXref>>>;
   community?: Maybe<Scalars['String']['output']>;
   contraventions?: Maybe<Array<Maybe<Contravention>>>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
@@ -1800,6 +1807,7 @@ export type LegislationVersion = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addCollaboratorToInvestigation: Investigation;
   addPartyToInspection: Inspection;
   addPartyToInvestigation: Array<InvestigationParty>;
   addPartyToInvestigationFromSharedParty: InvestigationParty;
@@ -1846,6 +1854,7 @@ export type Mutation = {
   deleteWildlife: ComplaintOutcome;
   editPartyRoleInInvestigation: Investigation;
   removeCaseActivity: CaseActivity;
+  removeCollaboratorFromInvestigation: Investigation;
   removeContravention: Investigation;
   removeEnforcementAction: EnforcementAction;
   removeExhibit: Exhibit;
@@ -1885,6 +1894,12 @@ export type Mutation = {
   updateReview: ComplaintOutcome;
   updateTask: Task;
   updateWildlife: ComplaintOutcome;
+};
+
+
+export type MutationaddCollaboratorToInvestigationArgs = {
+  appUserGuid: Scalars['String']['input'];
+  investigationGuid: Scalars['String']['input'];
 };
 
 
@@ -2123,6 +2138,12 @@ export type MutationeditPartyRoleInInvestigationArgs = {
 
 export type MutationremoveCaseActivityArgs = {
   input: CaseActivityRemoveInput;
+};
+
+
+export type MutationremoveCollaboratorFromInvestigationArgs = {
+  appUserActivityXrefGuid: Scalars['String']['input'];
+  investigationGuid: Scalars['String']['input'];
 };
 
 

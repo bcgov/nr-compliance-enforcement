@@ -9,6 +9,7 @@ import { GirTypeCodeModule } from "../../v1/gir_type_code/gir_type_code.module";
 import { CssModule } from "../../external_api/css/css.module";
 import { AppUserModule } from "../../v1/app_user/app_user.module";
 import { CodeTableModule } from "../../v1/code-table/code-table.module";
+import { FeatureFlagModule } from "../../v1/feature_flag/feature_flag.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CodeTableModule } from "../../v1/code-table/code-table.module";
     CssModule,
     AppUserModule,
     CodeTableModule,
+    FeatureFlagModule,
   ],
   controllers: [EmailController],
   providers: [EmailService],
