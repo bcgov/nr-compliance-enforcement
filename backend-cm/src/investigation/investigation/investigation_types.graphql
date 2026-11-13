@@ -24,6 +24,7 @@ type Investigation {
   parties: [InvestigationParty]
   contraventions: [Contravention]
   tasks: [Task]
+  collaborators: [AppUserActivityXref]
 }
 
 input CreateInvestigationInput {

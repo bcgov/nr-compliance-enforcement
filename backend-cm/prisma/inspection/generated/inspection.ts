@@ -1,6 +1,5 @@
 import { inspection_status_code } from "./inspection_status_code";
 import { inspection_party } from "./inspection_party";
-import { officer_inspection_xref } from "./officer_inspection_xref";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class inspection {
@@ -51,7 +50,4 @@ export class inspection {
 
   @ApiProperty({ isArray: true, type: () => inspection_party })
   inspection_party: inspection_party[];
-
-  @ApiProperty({ isArray: true, type: () => officer_inspection_xref })
-  officer_inspection_xref: officer_inspection_xref[];
 }

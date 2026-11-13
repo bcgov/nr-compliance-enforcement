@@ -11,6 +11,11 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ChangeStatusModal, StatusChangeAdvisory } from "@/app/components/common/change-status-modal";
 import { InvestigationAssignModal } from "@/app/components/containers/investigations/details/investigation-assign-modal";
 import { useForm } from "@tanstack/react-form";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { isFeatureActive, openModal } from "@/app/store/reducers/app";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { MANAGE_INVESTIGATION_COLLABORATORS } from "@/app/types/modal/modal-types";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 const UPDATE_INVESTIGATION = gql`
   mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
@@ -29,13 +34,18 @@ interface InvestigationHeaderProps {
   investigation?: Investigation;
   onStatusUpdated?: () => void;
   statusAdvisories?: Record<string, StatusChangeAdvisory>;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
   investigation,
   onStatusUpdated,
   statusAdvisories,
+  onDirtyChange,
 }) => {
+  const dispatch = useAppDispatch();
+  const showInvestigationCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATION_COLLABORATION));
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
   const isReadOnly = investigation?.investigationStatus?.investigationStatusCode === "CLOSED";
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
@@ -72,6 +82,21 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
 
   const handleOpenAssignModal = () => setShowAssignModal(true);
   const handleCloseAssignModal = () => setShowAssignModal(false);
+
+  const openManageCollaboratorsModal = () => {
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: MANAGE_INVESTIGATION_COLLABORATORS,
+        data: {
+          title: "Manage collaborators",
+          investigationGuid: investigation?.investigationGuid,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        hideCallback,
+      }),
+    );
+  };
 
   const defaultValues = useMemo(() => {
     if (investigation) {
@@ -180,13 +205,17 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
                       <i className="bi bi-arrow-repeat"></i>
                       <span>Update Status</span>
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      as="button"
-                      disabled={true}
-                    >
-                      <i className="bi bi-gear"></i>
-                      <span>Placeholder Action</span>
-                    </Dropdown.Item>
+                    {showInvestigationCollaboration && (
+                      <Dropdown.Item
+                        as="button"
+                        id="manage-collaborators-button"
+                        onClick={openManageCollaboratorsModal}
+                        disabled={isReadOnly}
+                      >
+                        <i className="bi bi-people"></i>
+                        <span>Manage collaborators</span>
+                      </Dropdown.Item>
+                    )}
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -211,26 +240,30 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
                   <span>Update status</span>
                 </Button>
 
-                <Dropdown className="comp-header-kebab-menu d-none">
-                  <Dropdown.Toggle
-                    aria-label="Actions Menu"
-                    variant="outline-light"
-                    className="kebab-btn"
-                    id="dropdown-basic"
-                  >
-                    <i className="bi bi-three-dots-vertical"></i>
-                    <span>More actions</span>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu align="end">
-                    <Dropdown.Item
-                      as="button"
-                      disabled={true}
+                {showInvestigationCollaboration && (
+                  <Dropdown className="comp-header-kebab-menu">
+                    <Dropdown.Toggle
+                      aria-label="Actions Menu"
+                      variant="outline-light"
+                      className="kebab-btn"
+                      id="dropdown-basic"
                     >
-                      <i className="bi bi-gear"></i>
-                      <span>Placeholder Action</span>
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                      <i className="bi bi-three-dots-vertical"></i>
+                      <span>More actions</span>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu align="end">
+                      <Dropdown.Item
+                        as="button"
+                        id="manage-collaborators-button"
+                        onClick={openManageCollaboratorsModal}
+                        disabled={isReadOnly}
+                      >
+                        <i className="bi bi-people"></i>
+                        <span>Manage collaborators</span>
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
               </div>
             </div>
           </div>
