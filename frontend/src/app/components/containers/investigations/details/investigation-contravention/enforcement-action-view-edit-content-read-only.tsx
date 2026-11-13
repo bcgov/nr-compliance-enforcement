@@ -160,10 +160,16 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
                   <Field label="Ticket number">{ticket.ticketNumber || "—"}</Field>
                 </div>
                 <div className="col-6">
-                  <Field label="Amount">{ticket.ticketAmount != null ? `${ticket.ticketAmount}` : "—"}</Field>
+                  <Field label="Fine Amount">{ticket.fineAmount != null ? `${ticket.fineAmount}` : "—"}</Field>
+                </div>
+                <div className="col-6">
+                  <Field label="Paid Amount">{ticket.paidAmount != null ? `${ticket.paidAmount}` : "—"}</Field>
                 </div>
                 <div className="col-6">
                   <Field label="Status">{ticketOutcomeLabel || "—"}</Field>
+                </div>
+                <div className="col-6">
+                  <Field label="Paid date">{formatDate(ticket.paidDate)}</Field>
                 </div>
                 <div className="col-6">
                   <Field label="Appeal hearing date">{formatDate(ticket.appealHearingDate)}</Field>

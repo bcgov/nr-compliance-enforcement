@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
-  const { searchValues, setValues, clearValues } = useCaseSearch();
+  const { searchValues, setValues, clearValues, resetFilters } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
 
   const removeFilter = useCallback(
@@ -116,6 +116,15 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
             clear={removeFilter}
           />
         )}
+
+        <Button
+          variant="link"
+          size="sm"
+          id="case-reset-filters-btn"
+          onClick={resetFilters}
+        >
+          Reset
+        </Button>
       </div>
     </div>
   );

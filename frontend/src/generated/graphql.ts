@@ -643,17 +643,18 @@ export type CreateEnforcementActionInput = {
   effectiveDate?: InputMaybe<Scalars['DateTime']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode: Scalars['String']['input'];
+  fineAmount?: InputMaybe<Scalars['Float']['input']>;
   hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
   issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
   noticeOfCancellationNumber?: InputMaybe<Scalars['String']['input']>;
   orderStatusCode?: InputMaybe<Scalars['String']['input']>;
   orderTypeCode?: InputMaybe<Scalars['String']['input']>;
+  paidAmount?: InputMaybe<Scalars['Float']['input']>;
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
   partyIdentifier?: InputMaybe<Scalars['String']['input']>;
   remediationRequired?: InputMaybe<Scalars['Boolean']['input']>;
   sanctionStatusCode?: InputMaybe<Scalars['String']['input']>;
   sanctionTypeCode?: InputMaybe<Scalars['String']['input']>;
-  ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
   ticketTypeCode?: InputMaybe<Scalars['String']['input']>;
@@ -1588,13 +1589,17 @@ export type InvestigationContactMethod = {
 };
 
 export type InvestigationFilters = {
+  act?: InputMaybe<Scalars['String']['input']>;
   community?: InputMaybe<Scalars['String']['input']>;
+  decision?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   fileCoordinator?: InputMaybe<Scalars['String']['input']>;
+  investigationSource?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
   primaryInvestigator?: InputMaybe<Scalars['String']['input']>;
   region?: InputMaybe<Scalars['String']['input']>;
+  regulation?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
@@ -3533,9 +3538,10 @@ export type Ticket = {
   activeIndicator: Scalars['Boolean']['output'];
   appealHearingDate?: Maybe<Scalars['Date']['output']>;
   enforcementActionIdentifier: Scalars['String']['output'];
+  fineAmount: Scalars['Float']['output'];
   noticeOfCancellationNumber?: Maybe<Scalars['String']['output']>;
+  paidAmount?: Maybe<Scalars['Float']['output']>;
   paidDate?: Maybe<Scalars['Date']['output']>;
-  ticketAmount: Scalars['Float']['output'];
   ticketIdentifier: Scalars['String']['output'];
   ticketNumber: Scalars['String']['output'];
   ticketOutcomeCode: Scalars['String']['output'];
@@ -3614,16 +3620,17 @@ export type UpdateEnforcementActionInput = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
   enforcementActionIdentifier: Scalars['String']['input'];
+  fineAmount?: InputMaybe<Scalars['Float']['input']>;
   hearingDate?: InputMaybe<Scalars['DateTime']['input']>;
   issuingOfficerIdentifier?: InputMaybe<Scalars['String']['input']>;
   noticeOfCancellationNumber?: InputMaybe<Scalars['String']['input']>;
   orderStatusCode?: InputMaybe<Scalars['String']['input']>;
   orderTypeCode?: InputMaybe<Scalars['String']['input']>;
+  paidAmount?: InputMaybe<Scalars['Float']['input']>;
   paidDate?: InputMaybe<Scalars['DateTime']['input']>;
   remediationRequired?: InputMaybe<Scalars['Boolean']['input']>;
   sanctionStatusCode?: InputMaybe<Scalars['String']['input']>;
   sanctionTypeCode?: InputMaybe<Scalars['String']['input']>;
-  ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
   ticketTypeCode?: InputMaybe<Scalars['String']['input']>;

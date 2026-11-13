@@ -47,7 +47,8 @@ type EnforcementActionDecisionFields = {
   dateIssued: Date;
   appUserIdentifier: string;
   ticketOutcomeCode?: string;
-  ticketAmount?: number;
+  fineAmount?: number;
+  paidAmount?: number;
   ticketNumber?: string;
   paidDate?: Date;
   comment?: string;

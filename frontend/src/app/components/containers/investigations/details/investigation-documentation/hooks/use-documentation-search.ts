@@ -115,11 +115,18 @@ export const useDocumentationSearch = () => {
     setSearchParams(new URLSearchParams(), { replace: true });
   }, [setSearchParams]);
 
+  // Resets filters to their defaults while preserving search and sort.
+  // Attachments have no role-based default filters, so all filters are cleared.
+  const resetFilters = useCallback(() => {
+    clearValues(["taskFilter", "fileTypeFilter"]);
+  }, [clearValues]);
+
   return {
     searchValues,
     setValues,
     setSort,
     clearValues,
     resetSearch,
+    resetFilters,
   };
 };
