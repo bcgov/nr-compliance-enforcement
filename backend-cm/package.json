@@ -59,7 +59,7 @@
     "class-validator": "0.14.3",
     "copyfiles": "2.4.1",
     "dotenv": "16.6.1",
-    "fast-xml-parser": "5.7.3",
+    "fast-xml-parser": "5.12.0",
     "geojson": "0.5.0",
     "graphql": "16.13.2",
     "graphql-type-json": "0.3.2",
@@ -186,5 +186,5 @@
       "@schematics/angular": "19.2.27"
     }
   },
-  "version": "3.0.28"
+  "version": "3.0.29"
 }
