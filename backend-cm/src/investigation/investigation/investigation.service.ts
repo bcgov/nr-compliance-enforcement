@@ -9,6 +9,7 @@ import {
   InvestigationFilters,
   InvestigationResult,
   InvestigationCloseEligibility,
+  InvestigationAssignees,
 } from "./dto/investigation";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
@@ -683,6 +684,34 @@ export class InvestigationService {
       this.logger.error(`Error mapping investigation with guid ${investigationGuid}:`, error);
       throw error;
     }
+  }
+
+  async findAssignees(leadAgency: string): Promise<InvestigationAssignees> {
+    const investigations = await this.prisma.investigation.findMany({
+      where: { owned_by_agency_ref: leadAgency },
+      select: { investigation_guid: true },
+    });
+
+    const assignees = await this.shared.app_user_activity_xref.groupBy({
+      by: ["app_user_guid", "app_user_activity_xref_code"],
+      where: {
+        activity_type: "INVSTGTN",
+        activity_identifier_ref: { in: investigations.map((investigation) => investigation.investigation_guid) },
+        app_user_activity_xref_code: { in: ["ASSIGNEE", "FILECOORD", "SUPERVISOR"] },
+        active_ind: true,
+      },
+    });
+
+    const assigneesWithCode = (code: string) =>
+      assignees
+        .filter((assignee) => assignee.app_user_activity_xref_code === code)
+        .map((assignee) => assignee.app_user_guid);
+
+    return {
+      primaryInvestigators: assigneesWithCode("ASSIGNEE"),
+      fileCoordinators: assigneesWithCode("FILECOORD"),
+      supervisors: assigneesWithCode("SUPERVISOR"),
+    };
   }
 
   /**

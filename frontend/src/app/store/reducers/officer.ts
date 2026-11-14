@@ -364,6 +364,12 @@ const mapAgencyToRole = (agency: string): string => {
   return role;
 };
 
+export const toOfficerOption = (officer: AppUser, value: string = officer.app_user_guid): Option => ({
+  value,
+  label: `${officer.last_name}, ${officer.first_name}`,
+  isActive: !officer.deactivate_ind,
+});
+
 export const filterOfficerByAgency = (agency: string, officers: AppUser[]): AppUser[] => {
   const role = mapAgencyToRole(agency);
   const result = officers.filter((officer) => {
@@ -373,26 +379,13 @@ export const filterOfficerByAgency = (agency: string, officers: AppUser[]): AppU
     const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? false; // Assume false if cos_geo_org_unit is null or undefined
     const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
 
-    //Deactivated officers has empty roles,
-    //so the only way to  determine agency is based on whether office_guid null/not null for now
-    let agencyCodeForDeactivatedOfficer;
     if (officer.deactivate_ind) {
-      if (officer.office_guid) {
-        agencyCodeForDeactivatedOfficer = "COS";
-      } else {
-        agencyCodeForDeactivatedOfficer = "EPO";
-      }
+      return officer.agency_code_ref === agency;
     }
 
     if (agency === "COS") {
-      if (officer.deactivate_ind) {
-        return agency === agencyCodeForDeactivatedOfficer;
-      } else return !fromAdminOffice && roleMatch;
-    } else if (agency === "EPO" || agency === "NROS" || agency === "MINES") {
-      let result = officer.deactivate_ind === true ? agency === agencyCodeForDeactivatedOfficer : roleMatch;
-      return result;
-    } else if (agency === "PARKS") {
-      //Cannot handle deactivated officers for parks... will be addressed once we understand if Parks users have offices
+      return !fromAdminOffice && roleMatch;
+    } else if (agency === "EPO" || agency === "NROS" || agency === "MINES" || agency === "PARKS") {
       return roleMatch;
     } else {
       return false;
@@ -436,11 +429,7 @@ export const selectOfficerListByAgency = createSelector(
   (officers, complaint): Array<Option> => {
     if (complaint?.ownedBy) {
       const officerList = filterOfficerByAgency(complaint.ownedBy, officers || []);
-      const officerDropdown = officerList.map((officer: AppUser) => ({
-        value: officer.auth_user_guid,
-        label: `${officer.last_name}, ${officer.first_name}`,
-      }));
-      return officerDropdown;
+      return officerList.map((officer: AppUser) => toOfficerOption(officer, officer.auth_user_guid));
     }
     return [];
   },
@@ -452,15 +441,13 @@ export const selectOfficerAndCollaboratorListByAgency = createSelector(
     if (complaint?.ownedBy) {
       const officerList = filterOfficerByAgency(complaint.ownedBy, officers ?? []);
 
-      const officerOptions = officerList.map((officer: AppUser) => ({
-        value: officer.auth_user_guid,
-        label: `${officer.last_name}, ${officer.first_name}`,
-      }));
+      const officerOptions = officerList.map((officer: AppUser) => toOfficerOption(officer, officer.auth_user_guid));
 
       const collaboratorOptions = collaborators.map((collaborator: Collaborator) => ({
         value: collaborator.authUserGuid,
         label: `${collaborator.lastName}, ${collaborator.firstName}`,
         labelElement: renderLabelElement(collaborator),
+        isActive: !officers?.find((officer) => officer.auth_user_guid === collaborator.authUserGuid)?.deactivate_ind,
       }));
 
       return [...collaboratorOptions, ...officerOptions].filter(
@@ -481,10 +468,7 @@ export const selectOfficersByAgencyDropdownUsingPersonGuid =
       .filter(
         (officer: AppUser) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
       ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
-      .map((officer: AppUser) => ({
-        value: officer.app_user_guid,
-        label: `${officer.last_name}, ${officer.first_name}`,
-      }));
+      .map((officer: AppUser) => toOfficerOption(officer));
 
     return officerDropdown;
   };
@@ -495,10 +479,7 @@ export const selectOfficersByAgencyDropdownUsingPersonGuid =
 export const selectOfficerListByAgencyCode = (agency: string) =>
   createSelector([selectOfficers], (officers): Array<Option> => {
     const officerList = filterOfficerByAgency(agency, officers || []);
-    return officerList.map((officer: AppUser) => ({
-      value: officer.app_user_guid,
-      label: `${officer.last_name}, ${officer.first_name}`,
-    }));
+    return officerList.map((officer: AppUser) => toOfficerOption(officer));
   });
 
 export const selectOfficersByReportedBy =

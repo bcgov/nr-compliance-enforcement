@@ -177,6 +177,16 @@ export class ExhibitService {
     };
   }
 
+  async findCollectors(investigationGuid: string): Promise<string[]> {
+    const exhibits = await this.prisma.exhibit.findMany({
+      where: { active_ind: true, investigation_guid: investigationGuid },
+      select: { collected_by_app_user_guid_ref: true },
+      distinct: ["collected_by_app_user_guid_ref"],
+    });
+
+    return exhibits.map((exhibit) => exhibit.collected_by_app_user_guid_ref);
+  }
+
   async findOne(exhibitGuid: string) {
     const prismaExhibit = await this.prisma.exhibit.findUnique({
       select: {

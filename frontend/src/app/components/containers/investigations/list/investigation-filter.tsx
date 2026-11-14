@@ -1,5 +1,6 @@
 import { FC, useMemo } from "react";
 import { GroupBase } from "react-select";
+import { gql } from "graphql-request";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
@@ -17,19 +18,50 @@ import { useInvestigationSearch, InvestigationSearchParams } from "../hooks/use-
 import { useInvestigationFilterOptions } from "../hooks/use-investigation-filter-options";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { InvestigationAssignees } from "@/generated/graphql";
+
+const INVESTIGATION_ASSIGNEES = gql`
+  query InvestigationAssignees($leadAgency: String!) {
+    investigationAssignees(leadAgency: $leadAgency) {
+      primaryInvestigators
+      fileCoordinators
+      supervisors
+    }
+  }
+`;
 
 export const InvestigationFilter: FC = () => {
   const { searchValues, setValues } = useInvestigationSearch();
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const userAgency = getUserAgency();
   const agencyOfficers = useAppSelector((state) => selectOfficersByAgency(state, userAgency));
-  const officerOptions: Option[] = useMemo(
-    () =>
-      (agencyOfficers ?? [])
-        .map((o: AppUser) => ({ value: o.app_user_guid, label: `${o.last_name}, ${o.first_name}` }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
-    [agencyOfficers],
+  const { data: assigneesData } = useGraphQLQuery<{ investigationAssignees: InvestigationAssignees }>(
+    INVESTIGATION_ASSIGNEES,
+    {
+      queryKey: ["investigationAssignees", userAgency],
+      variables: { leadAgency: userAgency },
+      enabled: !!userAgency,
+    },
   );
+  const assignees = assigneesData?.investigationAssignees;
+
+  // Deactivated officers are only offered for a role while they still hold it on one of the agency's investigations
+  const toRoleOptions = (assignedGuids: string[] | undefined): Option[] =>
+    (agencyOfficers ?? [])
+      .map((o: AppUser) => ({
+        value: o.app_user_guid,
+        label: `${o.last_name}, ${o.first_name}`,
+        isActive: !o.deactivate_ind || !!assignedGuids?.includes(o.app_user_guid),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+  const primaryInvestigatorOptions = useMemo(
+    () => toRoleOptions(assignees?.primaryInvestigators),
+    [agencyOfficers, assignees],
+  );
+  const fileCoordinatorOptions = useMemo(() => toRoleOptions(assignees?.fileCoordinators), [agencyOfficers, assignees]);
+  const supervisorOptions = useMemo(() => toRoleOptions(assignees?.supervisors), [agencyOfficers, assignees]);
 
   const regionOptions = useAppSelector(
     selectCascadedRegion(
@@ -147,27 +179,27 @@ export const InvestigationFilter: FC = () => {
       {renderSelectFilter(
         "primary-investigator",
         "Primary investigator",
-        officerOptions,
+        primaryInvestigatorOptions,
         "Select",
-        officerOptions.find((option) => option.value === searchValues.primaryInvestigator) || null,
+        primaryInvestigatorOptions.find((option) => option.value === searchValues.primaryInvestigator) || null,
         handleFieldChange("primaryInvestigator"),
       )}
 
       {renderSelectFilter(
         "file-coordinator",
         "File coordinator",
-        officerOptions,
+        fileCoordinatorOptions,
         "Select",
-        officerOptions.find((option) => option.value === searchValues.fileCoordinator) || null,
+        fileCoordinatorOptions.find((option) => option.value === searchValues.fileCoordinator) || null,
         handleFieldChange("fileCoordinator"),
       )}
 
       {renderSelectFilter(
         "supervisor",
         "Supervisor",
-        officerOptions,
+        supervisorOptions,
         "Select",
-        officerOptions.find((option) => option.value === searchValues.supervisor) || null,
+        supervisorOptions.find((option) => option.value === searchValues.supervisor) || null,
         handleFieldChange("supervisor"),
       )}
 

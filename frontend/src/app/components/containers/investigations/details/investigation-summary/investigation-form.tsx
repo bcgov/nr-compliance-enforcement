@@ -11,7 +11,7 @@ import {
   selectComplaintStatusCodeDropdown,
   selectInvestigationSourceCodeDropdown,
 } from "@/app/store/reducers/code-table";
-import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficersByAgency, toOfficerOption } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import Option from "@apptypes/app/option";
@@ -54,10 +54,7 @@ export const InvestigationForm = ({
   const investigationSourceOptions = useAppSelector(selectInvestigationSourceCodeDropdown);
   const assignableOfficers: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
-      ? officersInAgencyList.map((officer: AppUser) => ({
-          value: officer.app_user_guid,
-          label: `${officer.last_name}, ${officer.first_name}`,
-        }))
+      ? officersInAgencyList.map((officer: AppUser) => toOfficerOption(officer))
       : [];
 
   // The officers are filtered by agency/role, but a previously-assigned officer from a complaint for example

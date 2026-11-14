@@ -17,7 +17,7 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficersByAgency, toOfficerOption } from "@/app/store/reducers/officer";
 import {
   selectAdministrativePenaltyStatuses,
   selectCourtProsecutionStatuses,
@@ -239,10 +239,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           { options: enforcementActionSelectOptions.slice(dividerIndex) },
         ];
 
-  const officerOptions = [...(officersInAgency ?? [])].map((o) => ({
-    value: o.app_user_guid,
-    label: `${o.last_name}, ${o.first_name}`,
-  }));
+  const officerOptions = [...(officersInAgency ?? [])].map((o) => toOfficerOption(o));
 
   const [selectedCode, setSelectedCode] = useState(
     enforcementAction?.enforcementActionCode?.enforcementActionCode ?? "",

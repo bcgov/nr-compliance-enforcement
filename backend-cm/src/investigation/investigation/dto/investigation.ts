@@ -44,6 +44,12 @@ export class InvestigationCloseEligibility {
   openTaskCount: number;
 }
 
+export class InvestigationAssignees {
+  primaryInvestigators: string[];
+  fileCoordinators: string[];
+  supervisors: string[];
+}
+
 @InputType()
 export class InvestigationFilters {
   @Field(() => String, { nullable: true })

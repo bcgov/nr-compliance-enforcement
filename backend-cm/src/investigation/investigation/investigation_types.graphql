@@ -110,6 +110,12 @@ type InvestigationResult {
   pageInfo: PageInfo!
 }
 
+type InvestigationAssignees {
+  primaryInvestigators: [String!]!
+  fileCoordinators: [String!]!
+  supervisors: [String!]!
+}
+
 type InvestigationCloseEligibility {
   isEligible: Boolean!
   contraventionsWithoutDecisionCount: Int!

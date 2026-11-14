@@ -5,7 +5,7 @@ import { selectModalData } from "@store/reducers/app";
 import { AgencyBanner } from "@components/containers/layout/agency-banner";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { selectAgenciesWithFeature, selectCodeTable } from "@store/reducers/code-table";
-import { filterOfficerByAgency, selectOfficers } from "@store/reducers/officer";
+import { filterOfficerByAgency, selectOfficers, toOfficerOption } from "@store/reducers/officer";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { Roles } from "@/app/types/app/roles";
 import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
@@ -48,10 +48,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ su
         (officer: AppUser) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
       )
       .filter((officer) => !collaborators.some((c) => c.appUserGuid === officer.app_user_guid)) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
-      .map((officer: AppUser) => ({
-        value: officer.app_user_guid,
-        label: `${officer.last_name}, ${officer.first_name}`,
-      }));
+      .map((officer: AppUser) => toOfficerOption(officer));
 
   const agencyOptions = agencies
     .filter(
