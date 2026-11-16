@@ -11,6 +11,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import { FC } from "react";
 import { Button } from "react-bootstrap";
+import { SORT_TYPES } from "@constants/sort-direction";
 
 interface TaskAttachmentProps {
   investigationGuid: string;
@@ -39,8 +40,8 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
     search: searchValues.search,
     taskFilter: searchValues.taskFilter,
     fileTypeFilter: searchValues.fileTypeFilter,
-    sortBy: searchValues.sortBy,
-    sortOrder: searchValues.sortOrder,
+    sortBy: "date",
+    sortOrder: SORT_TYPES.DESC,
     page: searchValues.page,
     pageSize: searchValues.pageSize,
     enabled: !!investigationGuid,
