@@ -1,7 +1,10 @@
 import { FC, useCallback, useContext } from "react";
+import { useQuery } from "@tanstack/react-query";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
-import { useAppSelector } from "@hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { generateApiParameters, get } from "@common/api";
+import config from "@/config";
 import {
   selectHwcrNatureOfComplaintCodeDropdown,
   selectSpeciesCodeDropdown,
@@ -75,11 +78,30 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     dispatch,
   } = useContext(ComplaintFilterContext);
 
+  const appDispatch = useAppDispatch();
   const userAgency = UserService.getUserAgency();
-  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(userAgency, type));
-  if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
-    officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
-  }
+  const agencyOfficerOptions = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(userAgency, type));
+
+  const { data: assignees } = useQuery({
+    queryKey: ["complaintAssignees", userAgency],
+    queryFn: () =>
+      get<string[]>(
+        appDispatch,
+        generateApiParameters(`${config.API_BASE_URL}/v1/app-user-complaint-xref/assignees?agency=${userAgency}`),
+        {},
+        false,
+      ),
+    enabled: !!userAgency,
+  });
+
+  // Deactivated officers are shown if they still have complaints assigned to them
+  const officersByAgency: Option[] = [
+    { value: "Unassigned", label: "Unassigned", isActive: true },
+    ...agencyOfficerOptions.map((option) => ({
+      ...option,
+      isActive: option.isActive || !!assignees?.includes(option.value ?? ""),
+    })),
+  ];
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   // For the complaint search, inject a status type of REFERRED. This is a derived status used only on the search page.
@@ -634,7 +656,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div className="filter-select-padding">
                 <CompSelect
                   id="officer-select-id"
-                  showInactive={true}
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   onChange={(option) => {
                     setFilter("officer", option);

@@ -1526,6 +1526,13 @@ export type InvestigationAlias = {
   name: Scalars['String']['output'];
 };
 
+export type InvestigationAssignees = {
+  __typename?: 'InvestigationAssignees';
+  fileCoordinators: Array<Scalars['String']['output']>;
+  primaryInvestigators: Array<Scalars['String']['output']>;
+  supervisors: Array<Scalars['String']['output']>;
+};
+
 export type InvestigationAttachmentReference = {
   __typename?: 'InvestigationAttachmentReference';
   activeInd: Scalars['Boolean']['output'];
@@ -2881,6 +2888,7 @@ export type Query = {
   enforcementActions: Array<Maybe<EnforcementAction>>;
   equipmentCodes: Array<Maybe<EquipmentCode>>;
   equipmentStatusCodes: Array<Maybe<EquipmentStatusCode>>;
+  exhibitCollectors: Array<Scalars['String']['output']>;
   eyeColourCodes: Array<Maybe<EyeColourCode>>;
   facialHairStyleCodes: Array<Maybe<FacialHairStyleCode>>;
   genderCodes: Array<Maybe<GenderCode>>;
@@ -2911,6 +2919,7 @@ export type Query = {
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
+  investigationAssignees: InvestigationAssignees;
   investigationCloseEligibility: InvestigationCloseEligibility;
   investigationSourceCodes: Array<Maybe<InvestigationSourceCode>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
@@ -3085,6 +3094,11 @@ export type QueryenforcementActionsArgs = {
 };
 
 
+export type QueryexhibitCollectorsArgs = {
+  investigationGuid: Scalars['String']['input'];
+};
+
+
 export type QuerygetActivityNoteArgs = {
   activityNoteGuid: Scalars['String']['input'];
 };
@@ -3190,6 +3204,11 @@ export type QuerygetParksByAreaArgs = {
 
 export type QueryinactionJustificationCodesArgs = {
   outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryinvestigationAssigneesArgs = {
+  leadAgency: Scalars['String']['input'];
 };
 
 

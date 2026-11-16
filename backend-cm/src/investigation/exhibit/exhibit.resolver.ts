@@ -29,6 +29,12 @@ export class ExhibitResolver {
     return await this.exhibitService.search(page, pageSize, filters);
   }
 
+  @Query("exhibitCollectors")
+  @Roles(coreRoles)
+  async findCollectors(@Args("investigationGuid") investigationGuid: string) {
+    return await this.exhibitService.findCollectors(investigationGuid);
+  }
+
   @Query("getExhibit")
   @Roles(coreRoles)
   async findOne(@Args("exhibitGuid") exhibitGuid: string) {

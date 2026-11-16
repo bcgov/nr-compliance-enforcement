@@ -8,7 +8,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
-import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
+import { selectOfficersByAgency, selectOfficers, toOfficerOption } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { parseUTCDateToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
@@ -155,21 +155,12 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   // Component Data - assignable officers (include existing officer so value populates even if inactive/different agency)
   const assignableOfficersBase: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
-      ? officersInAgencyList.map((officer: AppUser) => ({
-          value: officer.app_user_guid,
-          label: `${officer.last_name}, ${officer.first_name}`,
-        }))
+      ? officersInAgencyList.map((officer: AppUser) => toOfficerOption(officer))
       : [];
 
   const assignableOfficers: Option[] =
     existingOfficer && !assignableOfficersBase.some((opt) => opt.value === existingOfficer.app_user_guid)
-      ? [
-          ...assignableOfficersBase,
-          {
-            value: existingOfficer.app_user_guid,
-            label: `${existingOfficer.last_name}, ${existingOfficer.first_name}`,
-          },
-        ]
+      ? [...assignableOfficersBase, toOfficerOption(existingOfficer)]
       : assignableOfficersBase;
 
   const assignableOfficersSorted = [...assignableOfficers].sort((a, b) => {
