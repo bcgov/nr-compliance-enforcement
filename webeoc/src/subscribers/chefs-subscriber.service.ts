@@ -1,5 +1,15 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AckPolicy, connect, JetStreamManager, JsMsg, NatsConnection, StringCodec } from "nats";
+import {
+  AckPolicy,
+  connect,
+  ConnectionOptions,
+  JetStreamManager,
+  JsMsg,
+  NatsConnection,
+  nkeyAuthenticator,
+  StringCodec,
+} from "nats";
+import { connect as connectWebSocket } from "nats.ws";
 import Cryptr = require("cryptr");
 import { CHEFS_DURABLE_FORMS, STREAM_TOPICS, STREAMS } from "../common/constants";
 import { ChefsEventMessage } from "src/types/chefs/chefs-event-type";
@@ -16,18 +26,36 @@ export class ChefsSubscriberService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      this.natsConnection = await connect({
-        servers: process.env.CHEFS_NATS_HOST,
-        user: process.env.CHEFS_NATS_USER,
-        pass: process.env.CHEFS_NATS_PASSWORD,
-        waitOnFirstConnect: true,
-      });
+      this.natsConnection = await this.connectToChefs();
+      // TODO: remove temp debugging
+      console.log("Attempting to connect to NATS");
       this.jsm = await this.natsConnection.jetstreamManager();
+      console.log("Connected to NATS");
       await this.setupConsumer();
       await this.subscribeToTopics();
     } catch (error) {
       this.logger.error("Failed to connect to CHEFS NATS or set up consumer:", error);
     }
+  }
+
+  // Hosted ESS only accepts websocket connections with nkey auth; local CHEFS uses NATS protocol with user/password.
+  private async connectToChefs(): Promise<NatsConnection> {
+    const options: ConnectionOptions = {
+      servers: process.env.CHEFS_NATS_HOST,
+      waitOnFirstConnect: true,
+    };
+
+    if (process.env.CHEFS_NATS_NKEY_SEED) {
+      options.authenticator = nkeyAuthenticator(new TextEncoder().encode(process.env.CHEFS_NATS_NKEY_SEED));
+    } else {
+      options.user = process.env.CHEFS_NATS_USER;
+      options.pass = process.env.CHEFS_NATS_PASSWORD;
+    }
+
+    if (process.env.CHEFS_NATS_WEBSOCKETS === "true") {
+      return connectWebSocket(options);
+    }
+    return connect(options);
   }
 
   private async setupConsumer(): Promise<void> {
