@@ -37,3 +37,5 @@ export const PROCESSING_APIS = {
   ACTION_TAKEN: "complaint/process/action-taken",
   UPDATE_ACTION_TAKEN: "complaint/process/action-taken-update",
 };
+
+export const CHEFS_MAX_DELIVER = 5; // stop redelivering a CHEFS message after this many attempts
