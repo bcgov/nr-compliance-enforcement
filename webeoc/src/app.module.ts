@@ -11,6 +11,7 @@ import { ActionsTakenPublisherService } from "./publishers/actions-taken-publish
 import { ActionsTakenSubscriberService } from "./subscribers/actions-taken-subscriber.service";
 import { ComplaintApiService } from "./complaint-api-service/complaint-api.service";
 import { ChefsSubscriberService } from "src/subscribers/chefs-subscriber.service";
+import { ChefsApiService } from "./chefs-api-service/chefs-api.service";
 
 @Module({
   imports: [HttpModule, ScheduleModule.forRoot()],
@@ -25,6 +26,7 @@ import { ChefsSubscriberService } from "src/subscribers/chefs-subscriber.service
     ActionsTakenSubscriberService,
     ComplaintApiService,
     ChefsSubscriberService,
+    ChefsApiService,
   ],
 })
 export class AppModule {}
