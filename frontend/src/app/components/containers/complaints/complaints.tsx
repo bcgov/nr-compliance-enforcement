@@ -7,7 +7,7 @@ import { ComplaintFilter } from "./complaint-filter";
 
 import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "@providers/complaint-filter-provider";
-import { resetFilters, ComplaintFilterPayload } from "@store/reducers/complaint-filters";
+import complaintFilterReducer, { resetFilters, ComplaintFilterPayload } from "@store/reducers/complaint-filters";
 
 import {
   isFeatureActive,
@@ -46,7 +46,7 @@ type Props = {
 };
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
-  const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
+  const { state: filterState, dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -117,6 +117,15 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const handleResetFilters = () => {
     filterDispatch(resetFilters(getDefaultFilterPayload()));
   };
+
+  // True when the current filters match what a reset would produce. Used to hide the inline reset button.
+  // The default state is built with the same reducer the reset uses, so the two can't drift apart.
+  const isDefaultFilters = (() => {
+    const defaultState = complaintFilterReducer(filterState, resetFilters(getDefaultFilterPayload()));
+    return Object.keys(filterState).every(
+      (key) => normalizeFilterValue((filterState as any)[key]) === normalizeFilterValue((defaultState as any)[key]),
+    );
+  })();
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -210,6 +219,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           searchQuery={search}
           applySearchQuery={setSearch}
           onResetFilters={handleResetFilters}
+          isDefaultFilters={isDefaultFilters}
         />
       </div>
 
@@ -229,7 +239,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
                 />
               </div>
               <div className="comp-data-filters-body">
-                <ComplaintFilter type={complaintType} />
+                <ComplaintFilter
+                  type={complaintType}
+                  onResetFilters={handleResetFilters}
+                />
               </div>
             </div>
           </div>
@@ -259,7 +272,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
           <Offcanvas.Title>Filters</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          <ComplaintFilter type={complaintType} />
+          <ComplaintFilter
+            type={complaintType}
+            onResetFilters={handleResetFilters}
+          />
         </Offcanvas.Body>
       </Offcanvas>
     </div>
@@ -325,6 +341,24 @@ const getComplaintTypes = (showSectorView: boolean) => {
   }
 
   return returnTypes;
+};
+
+// Reduces a filter value to something comparable with ===, so filter states can be compared.
+// Dropdown options compare by value, dates by timestamp, and empty arrays count as unset.
+const normalizeFilterValue = (value: any): any => {
+  if (value == null) {
+    return null;
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.map(normalizeFilterValue).join(",") : null;
+  }
+  if (value instanceof Date) {
+    return value.getTime();
+  }
+  if (typeof value === "object" && "value" in value) {
+    return value.value;
+  }
+  return value;
 };
 
 // Sets the default filters

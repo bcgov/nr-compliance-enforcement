@@ -13,6 +13,9 @@ const DEFAULT_SEARCH_VALUES: TaskSearchParams = {
   officerFilter: null,
 };
 
+// Keys that count as filters (as opposed to search, sort, paging or view type).
+const FILTER_KEYS: (keyof TaskSearchParams)[] = ["categoryFilter", "statusFilter", "officerFilter"];
+
 const serializeSearchValueToUrl = (key: keyof TaskSearchParams, value: any): string | undefined => {
   if (value == null) {
     return undefined;
@@ -77,13 +80,17 @@ export const useTaskSearch = () => {
 
   // Resets filters to their defaults. Tasks have no role-based default filters, so all filters are cleared.
   const resetFilters = useCallback(() => {
-    clearValues(["categoryFilter", "statusFilter", "officerFilter"]);
+    clearValues(FILTER_KEYS);
   }, [clearValues]);
+
+  // True when every filter is at its default (none applied). Used to hide the inline reset button.
+  const isDefaultFilters = useMemo(() => FILTER_KEYS.every((key) => searchValues[key] == null), [searchValues]);
 
   return {
     searchValues,
     setValues,
     clearValues,
     resetFilters,
+    isDefaultFilters,
   };
 };

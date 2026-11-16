@@ -17,9 +17,10 @@ import { useInvestigationSearch, InvestigationSearchParams } from "../hooks/use-
 import { useInvestigationFilterOptions } from "../hooks/use-investigation-filter-options";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { Button } from "react-bootstrap";
 
 export const InvestigationFilter: FC = () => {
-  const { searchValues, setValues } = useInvestigationSearch();
+  const { searchValues, setValues, resetFilters } = useInvestigationSearch();
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const userAgency = getUserAgency();
   const agencyOfficers = useAppSelector((state) => selectOfficersByAgency(state, userAgency));
@@ -113,6 +114,15 @@ export const InvestigationFilter: FC = () => {
 
   return (
     <div className="comp-filter-container">
+      <Button
+        variant="link"
+        size="sm"
+        className="link-primary"
+        id="investigation-panel-reset-filters-btn"
+        onClick={resetFilters}
+      >
+        Reset filters
+      </Button>
       <FeatureFlag feature={FEATURE_TYPES.REGION_FILTER}>
         {renderSelectFilter(
           "region",

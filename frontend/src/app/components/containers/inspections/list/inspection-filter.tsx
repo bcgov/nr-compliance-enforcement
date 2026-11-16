@@ -5,9 +5,10 @@ import { FilterDate } from "@components/common/filter-date";
 import { useAppSelector } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 import { useInspectionSearch, InspectionSearchParams } from "../hooks/use-inspection-search";
+import { Button } from "react-bootstrap";
 
 export const InspectionFilter: FC = () => {
-  const { searchValues, setValues } = useInspectionSearch();
+  const { searchValues, setValues, resetFilters } = useInspectionSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
@@ -62,6 +63,15 @@ export const InspectionFilter: FC = () => {
 
   return (
     <div className="comp-filter-container">
+      <Button
+        variant="link"
+        size="sm"
+        className="link-primary"
+        id="inspection-panel-reset-filters-btn"
+        onClick={resetFilters}
+      >
+        Reset filters
+      </Button>
       {renderSelectFilter(
         "inspectionStatus",
         "Status",

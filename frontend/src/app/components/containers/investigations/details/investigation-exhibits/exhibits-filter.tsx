@@ -9,13 +9,14 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { Button } from "react-bootstrap";
 
 type Props = {
   tasks?: Task[];
 };
 
 export const ExhibitsFilter: FC<Props> = ({ tasks = [] }) => {
-  const { searchValues, setValues } = useExhibitsSearch();
+  const { searchValues, setValues, resetFilters } = useExhibitsSearch();
 
   const userAgency = getUserAgency();
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(userAgency, COMPLAINT_TYPES.ERS));
@@ -58,6 +59,15 @@ export const ExhibitsFilter: FC<Props> = ({ tasks = [] }) => {
 
   return (
     <div className="comp-filter-container">
+      <Button
+        variant="link"
+        size="sm"
+        className="link-primary"
+        id="exhibits-panel-reset-filters-btn"
+        onClick={resetFilters}
+      >
+        Reset filters
+      </Button>
       <div id="exhibits-task-filter-id">
         <label htmlFor="exhibits-task-select-id">Task</label>
         <div className="filter-select-padding">
