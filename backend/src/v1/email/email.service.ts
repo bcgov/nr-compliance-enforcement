@@ -14,6 +14,13 @@ import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_em
 import { AppUserService } from "../../v1/app_user/app_user.service";
 import { CodeTableService } from "../code-table/code-table.service";
 import { getCosGeoOrgUnits } from "../../external_api/shared_data";
+import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
+import { SendInvestigationCollaboratorEmailDto } from "../../v1/email/dto/send_investigation_collaborator_email.dto";
+import { getInvestigationByGuid } from "../../external_api/investigation_data";
+import {
+  GenerateInvestigationCollaboratorEmailParams,
+  generateInvestigationCollaboratorEmailBody,
+} from "../../email_templates/investigation-collaborator";
 
 @Injectable()
 export class EmailService {
@@ -28,6 +35,7 @@ export class EmailService {
     private readonly _cssService: CssService,
     private readonly _appUserService: AppUserService,
     private readonly _codeTableService: CodeTableService,
+    private readonly _featureFlagService: FeatureFlagService,
   ) {}
 
   private async _buildRecipientList(referredToAgencyCode, complaint, additionalRecipients) {
@@ -298,6 +306,75 @@ export class EmailService {
       );
     } catch (error) {
       this.logger.error(`Failed to send collaborator email: ${error.message}`);
+      throw error;
+    }
+  };
+
+  sendInvestigationCollaboratorEmail = async (
+    sendInvestigationCollaboratorEmailDto: SendInvestigationCollaboratorEmailDto,
+    user,
+    token: string,
+  ) => {
+    try {
+      const { investigationGuid, appUserGuid, investigationUrl } = sendInvestigationCollaboratorEmailDto;
+      const investigation = await getInvestigationByGuid(token, investigationGuid);
+
+      // Only email users who are actually collaborators
+      if (!investigation?.collaborators?.some((collaborator) => collaborator.appUserGuid === appUserGuid)) {
+        return;
+      }
+
+      // Check if emailing collaborators is enabled for both agencies. This is done here because backend-cm currently has no access to see feature flags...
+      // Could be refactored later to pull this logic into backend-cm, if we move flags to shared, but for now this avoids a circular dependency between
+      // backend and backend-cm.
+      const invitingAppUser = await this._appUserService.findByUserId(user.idir_username, token);
+      const leadAgencyActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
+        invitingAppUser.agency_code_ref,
+        "COLEMAIL",
+      );
+      const collaboratorAppUser = await this._appUserService.findOne(appUserGuid, token);
+      const collaboratorAgencyActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
+        collaboratorAppUser.agency_code_ref,
+        "COLEMAIL",
+      );
+      if (!leadAgencyActive || !collaboratorAgencyActive) {
+        return;
+      }
+      const { name, leadAgency } = investigation;
+      const senderEmailAddress = user.email ?? process.env.CEDS_EMAIL;
+      const supportEmail = process.env.CEDS_EMAIL;
+      const { given_name, family_name } = user;
+      const senderName = `${family_name} ${given_name}`;
+      const collaboratorUserRes = await this._cssService.getUserByGuid(
+        collaboratorAppUser.auth_user_guid.replaceAll("-", ""),
+      );
+      const collaborator = collaboratorUserRes[0];
+      const { email, lastName, firstName } = collaborator;
+      const collaboratorName = `${firstName} ${lastName}`;
+      const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
+      const owningAgency = agencyTable?.find((agency: any) => agency.agency === leadAgency)?.shortDescription;
+      const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
+      const emailSubject = `${envFlag}Invitation to collaborate: NatSuite investigation #${name}`;
+      const generateInvestigationCollaboratorEmailParams: GenerateInvestigationCollaboratorEmailParams = {
+        name,
+        collaboratorName,
+        owningAgency,
+        senderName,
+        senderEmailAddress,
+        supportEmail,
+        investigationUrl,
+      };
+      const emailBody = generateInvestigationCollaboratorEmailBody(generateInvestigationCollaboratorEmailParams);
+      await this._chesService.sendEmail(
+        senderEmailAddress,
+        senderName,
+        emailSubject,
+        emailBody,
+        [email],
+        [senderEmailAddress],
+      );
+    } catch (error) {
+      this.logger.error(`Failed to send investigation collaborator email: ${error.message}`);
       throw error;
     }
   };

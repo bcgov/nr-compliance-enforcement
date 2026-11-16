@@ -238,6 +238,10 @@ export const GET_INVESTIGATION = gql`
       discoveryTime
       community
       investigationSourceCode
+      collaborators {
+        appUserActivityXrefGuid
+        appUserGuid
+      }
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
@@ -495,6 +499,7 @@ export const InvestigationDetails: FC = () => {
         investigation={investigationData}
         onStatusUpdated={refetch}
         statusAdvisories={statusAdvisories}
+        onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)}
       />
 
       <div className={detailsBodyClass}>{renderTabContent()}</div>

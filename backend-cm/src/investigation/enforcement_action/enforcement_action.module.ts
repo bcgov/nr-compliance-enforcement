@@ -11,10 +11,18 @@ import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
 import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
 import { CosGeoOrgUnitModule } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.module";
+import { AppUserActivityXrefModule } from "src/shared/app_user_activity_xref/app_user_activity_xref.module";
 import { LegislationModule } from "src/shared/legislation/legislation.module";
 
 @Module({
-  imports: [PrismaModuleInvestigation, AutomapperModule, UserModule, CosGeoOrgUnitModule, LegislationModule],
+  imports: [
+    PrismaModuleInvestigation,
+    AutomapperModule,
+    UserModule,
+    CosGeoOrgUnitModule,
+    AppUserActivityXrefModule,
+    LegislationModule,
+  ],
   providers: [
     EnforcementActionResolver,
     EnforcementActionService,

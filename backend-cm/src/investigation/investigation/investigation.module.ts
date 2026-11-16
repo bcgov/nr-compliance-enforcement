@@ -11,6 +11,7 @@ import { UserModule } from "src/common/user.module";
 import { EventPublisherModule } from "src/event_publisher/event_publisher.module";
 import { CaseActivityModule } from "src/shared/case_activity/case_activity.module";
 import { CosGeoOrgUnitModule } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.module";
+import { AppUserActivityXrefModule } from "src/shared/app_user_activity_xref/app_user_activity_xref.module";
 import { LegislationModule } from "src/shared/legislation/legislation.module";
 
 @Module({
@@ -24,6 +25,7 @@ import { LegislationModule } from "src/shared/legislation/legislation.module";
     EventPublisherModule,
     CaseActivityModule,
     CosGeoOrgUnitModule,
+    AppUserActivityXrefModule,
     LegislationModule,
   ],
   providers: [InvestigationResolver, InvestigationService, CaseFileService],

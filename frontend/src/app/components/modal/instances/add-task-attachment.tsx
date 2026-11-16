@@ -19,7 +19,11 @@ import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-he
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import format from "date-fns/format";
-import { selectOfficerByAppUserGuid, selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
+import {
+  selectOfficerByAppUserGuid,
+  selectOfficerListByAgencyCode,
+  toOfficerOption,
+} from "@/app/store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
 import { COMSObject } from "@/app/types/coms/object";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
@@ -79,13 +83,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
   const assignableOfficersExtended =
     takenByOfficer && !assignableOfficers.some((opt) => opt.value === takenByOfficer.app_user_guid)
-      ? [
-          ...assignableOfficers,
-          {
-            value: takenByOfficer.app_user_guid,
-            label: `${takenByOfficer.last_name}, ${takenByOfficer.first_name}`,
-          },
-        ]
+      ? [...assignableOfficers, toOfficerOption(takenByOfficer)]
       : assignableOfficers;
 
   const assignableOfficersExtendedSorted = [...assignableOfficersExtended].sort((a, b) => {

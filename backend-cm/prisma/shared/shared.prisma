@@ -69,25 +69,26 @@ model alias_h {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model app_user {
-  app_user_guid        String               @id(map: "PK_app_user") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  auth_user_guid       String?              @unique @db.Uuid
-  user_id              String?              @db.VarChar(32)
-  first_name           String?              @db.VarChar(32)
-  last_name            String?              @db.VarChar(32)
-  coms_enrolled_ind    Boolean?             @default(false)
-  deactivate_ind       Boolean?             @default(false)
-  agency_code_ref      String?              @db.VarChar(6)
-  office_guid          String?              @db.Uuid
-  park_area_guid       String?              @db.Uuid
-  create_user_id       String               @db.VarChar(32)
-  create_utc_timestamp DateTime             @db.Timestamp(6)
-  update_user_id       String               @db.VarChar(32)
-  update_utc_timestamp DateTime             @db.Timestamp(6)
-  agency_code          agency_code?         @relation(fields: [agency_code_ref], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "app_user_agency_code_fk")
-  office               office?              @relation(fields: [office_guid], references: [office_guid], onDelete: NoAction, onUpdate: NoAction, map: "app_user_office_fk")
-  app_user_team_xref   app_user_team_xref[]
-  case_file            case_file[]
-  party                party[]
+  app_user_guid          String                   @id(map: "PK_app_user") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  auth_user_guid         String?                  @unique @db.Uuid
+  user_id                String?                  @db.VarChar(32)
+  first_name             String?                  @db.VarChar(32)
+  last_name              String?                  @db.VarChar(32)
+  coms_enrolled_ind      Boolean?                 @default(false)
+  deactivate_ind         Boolean?                 @default(false)
+  agency_code_ref        String?                  @db.VarChar(6)
+  office_guid            String?                  @db.Uuid
+  park_area_guid         String?                  @db.Uuid
+  create_user_id         String                   @db.VarChar(32)
+  create_utc_timestamp   DateTime                 @db.Timestamp(6)
+  update_user_id         String                   @db.VarChar(32)
+  update_utc_timestamp   DateTime                 @db.Timestamp(6)
+  agency_code            agency_code?             @relation(fields: [agency_code_ref], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "app_user_agency_code_fk")
+  office                 office?                  @relation(fields: [office_guid], references: [office_guid], onDelete: NoAction, onUpdate: NoAction, map: "app_user_office_fk")
+  app_user_activity_xref app_user_activity_xref[]
+  app_user_team_xref     app_user_team_xref[]
+  case_file              case_file[]
+  party                  party[]
 
   @@schema("shared")
 }
@@ -302,6 +303,7 @@ model case_activity_type_code {
   create_utc_timestamp                                                                                     DateTime                      @default(now()) @db.Timestamp(6)
   update_user_id                                                                                           String?                       @db.VarChar(32)
   update_utc_timestamp                                                                                     DateTime?                     @db.Timestamp(6)
+  app_user_activity_xref                                                                                   app_user_activity_xref[]
   case_activity                                                                                            case_activity[]
   party_association_role_code_party_association_role_code_case_activity_type_codeTocase_activity_type_code party_association_role_code[] @relation("party_association_role_code_case_activity_type_codeTocase_activity_type_code")
 
@@ -1330,6 +1332,53 @@ model wildlife_management_unit_code {
   create_utc_timestamp          DateTime  @default(now()) @db.Timestamp(6)
   update_user_id                String?   @db.VarChar(32)
   update_utc_timestamp          DateTime? @db.Timestamp(6)
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model app_user_activity_xref {
+  app_user_activity_xref_guid                                                                                 String                      @id(map: "app_user_activity_xref_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  app_user_guid                                                                                               String                      @db.Uuid
+  activity_type                                                                                               String                      @db.VarChar(10)
+  activity_identifier_ref                                                                                     String                      @db.VarChar(50)
+  app_user_activity_xref_code                                                                                 String                      @db.VarChar(16)
+  active_ind                                                                                                  Boolean                     @default(true)
+  create_user_id                                                                                              String                      @db.VarChar(32)
+  create_utc_timestamp                                                                                        DateTime                    @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                              String?                     @db.VarChar(32)
+  update_utc_timestamp                                                                                        DateTime?                   @db.Timestamp(6)
+  case_activity_type_code                                                                                     case_activity_type_code     @relation(fields: [activity_type], references: [case_activity_type_code], onDelete: NoAction, onUpdate: NoAction, map: "app_user_activity_xref_activity_type_fk")
+  app_user                                                                                                    app_user                    @relation(fields: [app_user_guid], references: [app_user_guid], onDelete: NoAction, onUpdate: NoAction, map: "app_user_activity_xref_app_user_fk")
+  app_user_activity_xref_code_app_user_activity_xref_app_user_activity_xref_codeToapp_user_activity_xref_code app_user_activity_xref_code @relation("app_user_activity_xref_app_user_activity_xref_codeToapp_user_activity_xref_code", fields: [app_user_activity_xref_code], references: [app_user_activity_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "app_user_activity_xref_code_fk")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model app_user_activity_xref_code {
+  app_user_activity_xref_code                                                                            String                   @id(map: "app_user_activity_xref_code_pk") @db.VarChar(16)
+  short_description                                                                                      String                   @db.VarChar(64)
+  long_description                                                                                       String?                  @db.VarChar(256)
+  display_order                                                                                          Int
+  active_ind                                                                                             Boolean                  @default(true)
+  create_user_id                                                                                         String                   @db.VarChar(32)
+  create_utc_timestamp                                                                                   DateTime                 @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                         String?                  @db.VarChar(32)
+  update_utc_timestamp                                                                                   DateTime?                @db.Timestamp(6)
+  app_user_activity_xref_app_user_activity_xref_app_user_activity_xref_codeToapp_user_activity_xref_code app_user_activity_xref[] @relation("app_user_activity_xref_app_user_activity_xref_codeToapp_user_activity_xref_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model app_user_activity_xref_h {
+  h_app_user_activity_xref_guid String   @id(map: "pk_h_app_user_activity_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
 
   @@schema("shared")
 }

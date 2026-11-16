@@ -305,7 +305,8 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       const officerAssigned = officersInAgencyList
         .filter((appUser: any) => {
           const appUserGuid = appUser.app_user_guid ?? appUser.appUserGuid;
-          return appUserGuid === assigned;
+          // Don't default to an assignee who has since been deactivated
+          return appUserGuid === assigned && !appUser.deactivate_ind;
         })
         .map((item: any) => {
           const firstName = item.first_name ?? item.firstName;

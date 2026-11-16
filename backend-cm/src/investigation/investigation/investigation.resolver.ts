@@ -9,6 +9,7 @@ import {
   UpdateInvestigationInput,
   InvestigationFilters,
   InvestigationCloseEligibility,
+  InvestigationAssignees,
 } from "src/investigation/investigation/dto/investigation";
 import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 
@@ -70,6 +71,38 @@ export class InvestigationResolver {
     } catch (error) {
       this.logger.error("Update investigation timestamp error:", error);
       throw new GraphQLError("Error updating investigation timestamp", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Mutation("addCollaboratorToInvestigation")
+  @Roles(coreRoles)
+  async addCollaborator(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("appUserGuid") appUserGuid: string,
+  ) {
+    try {
+      return await this.investigationService.addCollaborator(investigationGuid, appUserGuid);
+    } catch (error) {
+      this.logger.error("Add collaborator error:", error);
+      throw new GraphQLError("Error adding collaborator to investigation", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Mutation("removeCollaboratorFromInvestigation")
+  @Roles(coreRoles)
+  async removeCollaborator(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("appUserActivityXrefGuid") appUserActivityXrefGuid: string,
+  ) {
+    try {
+      return await this.investigationService.removeCollaborator(investigationGuid, appUserActivityXrefGuid);
+    } catch (error) {
+      this.logger.error("Remove collaborator error:", error);
+      throw new GraphQLError("Error removing collaborator from investigation", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
     }
@@ -151,6 +184,21 @@ export class InvestigationResolver {
       this.logger.error("Check investigation name exists error:", error);
       throw new GraphQLError("Error checking investigation name", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Query("investigationAssignees")
+  @Roles(coreRoles)
+  async findAssignees(@Args("leadAgency") leadAgency: string): Promise<InvestigationAssignees> {
+    try {
+      return await this.investigationService.findAssignees(leadAgency);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching data from investigation schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
       });
     }
   }

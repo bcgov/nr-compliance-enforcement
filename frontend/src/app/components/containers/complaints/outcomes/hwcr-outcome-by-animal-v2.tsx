@@ -148,7 +148,10 @@ export const HWCROutcomeByAnimalv2: FC<props> = ({ onDirtyChange }) => {
         const appUserGuid = assigned.appUserGuid;
 
         if (officersInAgencyList) {
-          const officerAssigned: any = officersInAgencyList.filter((officer) => officer.app_user_guid === appUserGuid);
+          // Don't default new outcomes to an assignee who has since been deactivated
+          const officerAssigned: any = officersInAgencyList.filter(
+            (officer) => officer.app_user_guid === appUserGuid && !officer.deactivate_ind,
+          );
           if (officerAssigned.length === 1) {
             setAssignedOfficer(officerAssigned[0].auth_user_guid);
           }

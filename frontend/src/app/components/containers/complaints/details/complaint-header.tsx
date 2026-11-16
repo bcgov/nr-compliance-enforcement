@@ -12,7 +12,7 @@ import {
 } from "@store/reducers/complaints";
 import { applyStatusClass, getAvatarInitials, joinWithAnd } from "@common/methods";
 
-import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Badge, Button, Dropdown } from "react-bootstrap";
 
 import { isFeatureActive, openModal, appUserGuid } from "@store/reducers/app";
 import {
@@ -38,6 +38,7 @@ import { COMSObject } from "@/app/types/coms/object";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { CollaboratorsTooltip } from "@/app/components/common/collaborators-tooltip";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -325,42 +326,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       }
     }
   };
-
-  const collaboratorsTooltipOverlay = () => (
-    <OverlayTrigger
-      key={`${id}-collab-tooltip`}
-      placement="bottom"
-      trigger={["hover", "click"]}
-      overlay={
-        <Tooltip
-          id={`tt-${id}`}
-          className="comp-tooltip comp-tooltip-bottom collaborators-tooltip"
-        >
-          {collaborators.map((c) => {
-            return (
-              <div
-                className="d-flex justify-content-start"
-                key={`${c.appUserComplaintXrefGuid}`}
-              >
-                {c.lastName}, {c.firstName}
-                <span className="mx-1">|</span>
-                <span className="fw-bold">
-                  {agencyCodes?.find(({ agency }) => agency === c.collaboratorAgency)?.shortDescription}
-                </span>
-              </div>
-            );
-          })}
-        </Tooltip>
-      }
-    >
-      <span
-        id="comp-header-collaborator-count"
-        className="fw-bold"
-      >
-        +{collaborators.length}
-      </span>
-    </OverlayTrigger>
-  );
 
   const renderCommonDropdownItems = (showStartInvestigation = false, showQuickClose = false) => (
     <>
@@ -727,7 +692,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   >
                     <div>
                       <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
-                      {collaborators.length > 0 && collaboratorsTooltipOverlay()}
+                      {collaborators.length > 0 && (
+                        <CollaboratorsTooltip
+                          id={id}
+                          collaborators={collaborators}
+                        />
+                      )}
                     </div>
                   </div>
                 </dd>

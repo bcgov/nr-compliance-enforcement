@@ -23,6 +23,7 @@ import {
   MULTI_STEP_MODAL,
   ADD_EDIT_TASK_EXHIBIT,
   RELINK_IDIR,
+  MANAGE_INVESTIGATION_COLLABORATORS,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -51,6 +52,7 @@ import { AddEditActivityNoteModal } from "@/app/components/modal/instances/add-e
 import { MultiStepModal } from "@/app/components/modal/instances/multi-step-modal";
 import { AddEditTaskExhibitModal } from "@/app/components/modal/instances/add-task-exhibit";
 import RelinkIdirModal from "@/app/components/modal/instances/relink-idir-modal";
+import { ManageInvestigationCollaboratorsModal } from "@/app/components/modal/instances/manage-investigation-collaborators-modal";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -77,4 +79,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [MULTI_STEP_MODAL]: MultiStepModal,
   [ADD_EDIT_TASK_EXHIBIT]: AddEditTaskExhibitModal,
   [RELINK_IDIR]: RelinkIdirModal,
+  [MANAGE_INVESTIGATION_COLLABORATORS]: ManageInvestigationCollaboratorsModal,
 };

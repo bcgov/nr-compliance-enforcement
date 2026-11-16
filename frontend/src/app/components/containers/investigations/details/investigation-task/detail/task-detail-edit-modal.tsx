@@ -10,7 +10,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory } from "@/app/store/reducers/code-table-selectors";
-import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficersByAgency, toOfficerOption } from "@/app/store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
@@ -70,10 +70,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     return String(labelA).localeCompare(String(labelB), undefined, { sensitivity: "base" });
   });
 
-  const officerOptions = officerOptionsExtendedSorted.map((o) => ({
-    value: o.app_user_guid,
-    label: `${o.last_name}, ${o.first_name}`,
-  }));
+  const officerOptions = officerOptionsExtendedSorted.map((o) => toOfficerOption(o));
 
   const form = useForm({
     defaultValues: {

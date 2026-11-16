@@ -6,10 +6,13 @@ type Query {
   searchInvestigationsMap(model: InvestigationSearchMapParameters!): SearchMapResults!
   checkInvestigationNameExists(name: String!, leadAgency: String!, excludeInvestigationGuid: String): Boolean!
   investigationCloseEligibility(investigationGuid: ID!): InvestigationCloseEligibility!
+  investigationAssignees(leadAgency: String!): InvestigationAssignees!
 }
 
 type Mutation {
   createInvestigation(input: CreateInvestigationInput!): Investigation!
   updateInvestigation(investigationGuid: String!, input: UpdateInvestigationInput!): Investigation!
   updateInvestigationTimestamp(investigationGuid: String!): Investigation!
+  addCollaboratorToInvestigation(investigationGuid: String!, appUserGuid: String!): Investigation!
+  removeCollaboratorFromInvestigation(investigationGuid: String!, appUserActivityXrefGuid: String!): Investigation!
 }
