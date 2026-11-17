@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { CHEFS_APIS } from "../common/constants";
 import { Complaint } from "../types/complaint-type";
 import { ChefsSubmissionResponse } from "../types/chefs/chefs-submission-type";
@@ -8,11 +8,12 @@ import { ChefsSubmissionResponse } from "../types/chefs/chefs-submission-type";
 export class ChefsApiService {
   private readonly logger = new Logger(ChefsApiService.name);
   // CHEFS API keys use basic auth: the username is the form id and the password is the form's API key.
-  private readonly _apiConfig = {
+  private readonly _apiConfig: AxiosRequestConfig = {
     auth: {
       username: process.env.CHEFS_FORM_ID,
       password: process.env.CHEFS_API_KEY,
     },
+    proxy: false, // do not use the proxy
   };
 
   // fetch a submission's form data from CHEFS
