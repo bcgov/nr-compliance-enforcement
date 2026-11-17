@@ -28,10 +28,10 @@ export class ComplaintsPublisherService {
   private readonly codec = JSONCodec<Complaint>();
 
   /**
-   * Publish message to JetStream to indicate that a new complaint is available from webeoc
+   * Publish message to JetStream to indicate that a new complaint is available
    * @param complaint
    */
-  async publishComplaintsFromWebEOC(complaint: Complaint): Promise<void> {
+  async publishComplaintToNatsuite(complaint: Complaint): Promise<void> {
     try {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted

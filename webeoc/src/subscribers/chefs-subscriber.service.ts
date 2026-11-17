@@ -135,7 +135,7 @@ export class ChefsSubscriberService implements OnModuleInit {
       const complaint = transformChefsSubmission(submissionData);
       // TODO: remove temporary debugging
       console.log(complaint);
-      await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+      await this.complaintsPublisherService.publishComplaintToNatsuite(complaint);
     }
 
     await message.ackAck();
