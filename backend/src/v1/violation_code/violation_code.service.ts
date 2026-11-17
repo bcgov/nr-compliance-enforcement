@@ -22,6 +22,10 @@ export class ViolationCodeService {
     return this.violationCodeRepository.find();
   }
 
+  async findActive(): Promise<ViolationCode[]> {
+    return this.violationCodeRepository.find({ where: { active_ind: true }, order: { display_order: "ASC" } });
+  }
+
   async findOne(id: string): Promise<ViolationCode> {
     return this.violationCodeRepository.findOneByOrFail({ violation_code: id });
   }
