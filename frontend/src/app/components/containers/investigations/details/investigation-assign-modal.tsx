@@ -4,7 +4,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import Option from "@apptypes/app/option";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficersByAgency, toOfficerOption } from "@/app/store/reducers/officer";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { FormField } from "@/app/components/common/form-field";
 import z from "zod";
@@ -30,10 +30,7 @@ export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({
   );
   const assignableOfficers: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
-      ? officersInAgencyList.map((officer: AppUser) => ({
-          value: officer.app_user_guid,
-          label: `${officer.last_name}, ${officer.first_name}`,
-        }))
+      ? officersInAgencyList.map((officer: AppUser) => toOfficerOption(officer))
       : [];
 
   const isDirty = useStore(form.store, (state: any) => state.isDirty);

@@ -1,4 +1,4 @@
-import { Controller, Param, UseGuards, Post, Body, Get } from "@nestjs/common";
+import { Controller, Param, UseGuards, Post, Body, Get, Query } from "@nestjs/common";
 import { AppUserComplaintXrefService } from "./app_user_complaint_xref.service";
 import { ApiTags } from "@nestjs/swagger";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -35,6 +35,12 @@ export class AppUserComplaintXrefController {
       true,
       token,
     );
+  }
+
+  @Get("assignees")
+  @Roles(coreRoles)
+  findAssignees(@Query("agency") agency: string) {
+    return this.appUserComplaintXrefService.findAssigneesByAgency(agency);
   }
 
   @Get("/:app_user_guid/:complaint_id")
