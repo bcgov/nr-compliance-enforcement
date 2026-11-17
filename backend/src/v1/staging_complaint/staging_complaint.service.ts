@@ -12,6 +12,7 @@ import { WebEOCComplaintUpdate } from "../../types/webeoc-complaint-update";
 import { isEqual, omit } from "lodash";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
+import { format } from "date-fns-tz";
 
 @Injectable()
 export class StagingComplaintService {
@@ -32,6 +33,11 @@ export class StagingComplaintService {
 
   // Creates a new Complaint record in the staging table based on data retrieved from WebEOC.  The new complaint is created based off of the data in the staging table
   async stageNewComplaint(stagingComplaint: WebEOCComplaint): Promise<StagingComplaint> {
+    // CHEFS complaints arrive without an incident number, so generate one before looking for existing staged versions.
+    if (!stagingComplaint.incident_number) {
+      stagingComplaint.incident_number = await this._generateChefsComplaintIdentifier();
+    }
+
     // find the most recent staged complaint (if there is one).  We use this information to determine if the incoming
     // webeoc complaint is new, an edit, or something that already exists.  We get the most recently updated
     // one because there may be multiple edits, and we want to compare the incoming complaint against the most recent
@@ -75,6 +81,13 @@ export class StagingComplaintService {
       // if it's not an edit, that means the complaints are the same, so don't recreate in staging
       return;
     }
+  }
+
+  // Generates a CHEFS complaint identifier (yy-8xxxxx) from the CHEFS complaint sequence.
+  private async _generateChefsComplaintIdentifier(): Promise<string> {
+    const [{ nextval }] = await this.repository.manager.query("SELECT nextval('complaint.chefs_complaint_sequence')");
+    const prefix = format(new Date(), "yy");
+    return `${prefix}-${nextval}`;
   }
 
   // create a new staged record, using a staging activity code

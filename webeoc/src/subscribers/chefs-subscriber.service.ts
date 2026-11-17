@@ -30,10 +30,7 @@ export class ChefsSubscriberService implements OnModuleInit {
   async onModuleInit() {
     try {
       this.natsConnection = await this.connectToChefs();
-      // TODO: remove temp debugging
-      console.log("Attempting to connect to NATS");
       this.jsm = await this.natsConnection.jetstreamManager();
-      console.log("Connected to NATS");
       await this.setupConsumer();
       await this.subscribeToTopics();
     } catch (error) {
@@ -135,7 +132,7 @@ export class ChefsSubscriberService implements OnModuleInit {
       const complaint = transformChefsSubmission(submissionData);
       // TODO: remove temporary debugging
       console.log(complaint);
-      await this.complaintsPublisherService.publishComplaintToNatsuite(complaint);
+      await this.complaintsPublisherService.publishComplaintToNatsuite(complaint, meta.submissionId);
     }
 
     await message.ackAck();

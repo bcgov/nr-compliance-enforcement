@@ -83,9 +83,14 @@ export class ComplaintsSubscriberService implements OnModuleInit {
 
   private async handleNewComplaint(message, complaintMessage: Complaint) {
     this.logger.debug(`Staging complaint: ${complaintMessage?.incident_number}`);
-    await this.service.createNewComplaintInStaging(complaintMessage);
+    const stagedIdentifier = await this.service.createNewComplaintInStaging(complaintMessage);
     await message.ackAck(); //Message has been loaded into NatCom no need to retry.  If NATS is unavailable there will be 'PENDING' row to process manually.
-    this.complaintsPublisherService.publishStagingComplaintInsertedMessage(complaintMessage);
+    // CHEFS complaints get their incident number when staged; WebEOC complaints keep the one they arrived with.
+    const stagedComplaint = {
+      ...complaintMessage,
+      incident_number: stagedIdentifier ?? complaintMessage.incident_number,
+    };
+    this.complaintsPublisherService.publishStagingComplaintInsertedMessage(stagedComplaint);
   }
 
   private async handleUpdatedComplaint(message, complaintMessage: ComplaintUpdate) {
