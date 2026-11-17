@@ -13,7 +13,8 @@ import { connect as connectWebSocket } from "nats.ws";
 import { CHEFS_DURABLE_FORMS, CHEFS_MAX_DELIVER, STREAM_TOPICS, STREAMS } from "../common/constants";
 import { ChefsEventMessage } from "src/types/chefs/chefs-event-type";
 import { ComplaintsPublisherService } from "src/publishers/complaints-publisher.service";
-import { ChefsApiService } from "src/chefs-api-service/chefs-api.service";
+import { ChefsApiService } from "src/chefs/chefs-api.service";
+import { transformChefsSubmission } from "src/chefs/transforms";
 
 @Injectable()
 export class ChefsSubscriberService implements OnModuleInit {
@@ -130,7 +131,8 @@ export class ChefsSubscriberService implements OnModuleInit {
         return;
       }
       // Always fetch from the API so submissions are never limited by the event stream's message size.
-      const complaint = await this.chefsApiService.getSubmissionData(meta.submissionId);
+      const submissionData = await this.chefsApiService.getSubmissionData(meta.submissionId);
+      const complaint = transformChefsSubmission(submissionData);
       // TODO: remove temporary debugging
       console.log(complaint);
       await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
