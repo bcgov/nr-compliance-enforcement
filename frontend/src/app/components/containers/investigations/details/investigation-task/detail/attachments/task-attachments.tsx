@@ -4,6 +4,9 @@ import { Attachment } from "@/app/common/attachment-utils";
 import { TaskAttachmentList } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/attachment-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { useComsAccess } from "@/app/hooks/use-coms-access";
+import { ComsAccessWarning } from "@/app/components/common/coms-access-warning";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_TASK_ATTACHMENT } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty, Task } from "@/generated/graphql";
@@ -31,6 +34,8 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
   });
   const parties = (data?.getInvestigation?.parties ?? []).filter(Boolean) as InvestigationParty[];
 
+  const comsAccess = useComsAccess(AttachmentEnum.TASK_ATTACHMENT);
+
   const { pagedAttachments, allAttachments, isLoading } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
     taskId: task?.taskIdentifier,
@@ -43,7 +48,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
     sortOrder: searchValues.sortOrder,
     page: searchValues.page,
     pageSize: searchValues.pageSize,
-    enabled: !!investigationGuid,
+    enabled: !!investigationGuid && !comsAccess.isPending,
   });
 
   const handleAddAttachment = () => {
@@ -104,6 +109,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
           )}
         </div>
       </div>
+      {comsAccess.isError && <ComsAccessWarning />}
 
       {pagedAttachments.length === 0 ? (
         <div>

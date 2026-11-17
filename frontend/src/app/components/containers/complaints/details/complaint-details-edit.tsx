@@ -89,6 +89,8 @@ import { selectCanAccessCases, selectComplaintAssessmentApplies } from "@/app/ac
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { useComsAccess } from "@/app/hooks/use-coms-access";
+import { ComsAccessWarning } from "@/app/components/common/coms-access-warning";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -287,6 +289,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
+  const comsAccess = useComsAccess(AttachmentEnum.COMPLAINT_ATTACHMENT);
   const [mapElements, setMapElements] = useState<MapElement[]>([]);
 
   const handleSlideCountChange = useCallback(
@@ -989,16 +992,19 @@ export const ComplaintDetailsEdit: FC = () => {
           {readOnly && (
             <section id="complaint_attachments_div_id">
               <h3>Complainant attachments ({complaintAttachmentCount})</h3>
+              {comsAccess.isError && <ComsAccessWarning />}
               <Card>
                 <Card.Body>
                   <div className={complaintAttachmentCount > 0 ? "comp-details-attachments" : ""}>
-                    <Attachments
-                      attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-                      identifier={id}
-                      onSlideCountChange={handleSlideCountChange}
-                      refreshKey={attachmentRefreshKey}
-                      showPreview={true}
-                    />
+                    {!comsAccess.isPending && (
+                      <Attachments
+                        attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
+                        identifier={id}
+                        onSlideCountChange={handleSlideCountChange}
+                        refreshKey={attachmentRefreshKey}
+                        showPreview={true}
+                      />
+                    )}
                   </div>
                 </Card.Body>
               </Card>
@@ -1623,17 +1629,20 @@ export const ComplaintDetailsEdit: FC = () => {
             {/* Attachments */}
             <fieldset>
               <h3>Complainant attachments ({complaintAttachmentCount})</h3>
+              {comsAccess.isError && <ComsAccessWarning />}
               <div>
-                <Attachments
-                  attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-                  identifier={id}
-                  allowUpload={true}
-                  allowDelete={true}
-                  onFilesSelected={onHandleAddAttachments}
-                  onFileDeleted={onHandleDeleteAttachment}
-                  onSlideCountChange={handleSlideCountChange}
-                  showPreview={true}
-                />
+                {!comsAccess.isPending && (
+                  <Attachments
+                    attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
+                    identifier={id}
+                    allowUpload={true}
+                    allowDelete={true}
+                    onFilesSelected={onHandleAddAttachments}
+                    onFileDeleted={onHandleDeleteAttachment}
+                    onSlideCountChange={handleSlideCountChange}
+                    showPreview={true}
+                  />
+                )}
               </div>
             </fieldset>
 

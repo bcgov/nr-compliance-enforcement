@@ -15,6 +15,8 @@ import { createDownloadProgressHandler } from "@/app/common/attachment-download-
 import AttachmentEnum from "@constants/attachment-enum";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { useInvestigationAttachments } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { useComsAccess } from "@/app/hooks/use-coms-access";
+import { ComsAccessWarning } from "@/app/components/common/coms-access-warning";
 
 type Props = {
   investigationGuid: string;
@@ -35,6 +37,8 @@ export const InvestigationDocumentation: FC<Props> = ({
 
   const { searchValues } = useDocumentationSearch();
 
+  const comsAccess = useComsAccess(AttachmentEnum.TASK_ATTACHMENT);
+
   // Fetch and process attachments (with client-side filtering, sorting, pagination)
   const { pagedAttachments, filteredAttachments, totalCount, isLoading, error } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
@@ -47,7 +51,7 @@ export const InvestigationDocumentation: FC<Props> = ({
     sortOrder: searchValues.sortOrder,
     page: searchValues.page,
     pageSize: searchValues.pageSize,
-    enabled: !!investigationGuid,
+    enabled: !!investigationGuid && !comsAccess.isPending,
   });
 
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prev) => !prev), []);
@@ -164,6 +168,7 @@ export const InvestigationDocumentation: FC<Props> = ({
   return (
     <div className="comp-details-section--list-view">
       <h2>Attachments</h2>
+      {comsAccess.isError && <ComsAccessWarning />}
       <DocumentationFilterBar
         investigationId={investigationGuid}
         tasks={tasks}
