@@ -12,6 +12,7 @@ import { Role } from "../enum/role.enum";
 import { ROLES_KEY } from "./decorators/roles.decorator";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
+import { ApiKeyGuard } from "./apikey.guard";
 
 @Injectable()
 /**
@@ -20,6 +21,7 @@ import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
  */
 export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
   private readonly logger = new Logger(JwtRoleGuard.name);
+  private readonly apiKeyGuard = new ApiKeyGuard();
 
   constructor(private reflector: Reflector) {
     super();
@@ -34,6 +36,10 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
     ]);
 
     if (isPublic) {
+      return true;
+    }
+
+    if (this.apiKeyGuard.canActivate(context)) {
       return true;
     }
 

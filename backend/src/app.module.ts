@@ -55,6 +55,7 @@ import { ComplaintReferralEmailLogModule } from "./v1/complaint_referral_email_l
 import { OfficeModule } from "./v1/office/office.module";
 import { TeamModule } from "./v1/team/team.module";
 import { PgSessionModule } from "./pg-session/pg-session.module";
+import { PublicModule } from "./v1/public/public.module";
 
 logger.log(`Var check - COMPLAINT_POSTGRESQL_HOST: ${process.env.COMPLAINT_POSTGRESQL_HOST}`);
 logger.log(`Var check - COMPLAINT_POSTGRESQL_DATABASE: ${process.env.COMPLAINT_POSTGRESQL_DATABASE}`);
@@ -144,6 +145,7 @@ const pgSsl = () => {
     ComplaintReferralEmailLogModule,
     OfficeModule,
     TeamModule,
+    PublicModule,
   ],
   controllers: [AppController],
   providers: [AppService, SequenceResetScheduler],
