@@ -131,7 +131,7 @@ export class ChefsSubscriberService implements OnModuleInit {
       const submissionData = await this.chefsApiService.getSubmissionData(meta.submissionId);
       const complaint = transformChefsSubmission(submissionData);
       // TODO: remove temporary debugging
-      console.log(complaint);
+      console.dir(complaint, { depth: null });
       await this.complaintsPublisherService.publishComplaintToNatsuite(complaint, meta.submissionId);
     }
 

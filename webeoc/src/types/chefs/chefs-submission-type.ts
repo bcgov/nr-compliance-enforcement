@@ -27,5 +27,9 @@ export interface ChefsMap {
 
 // Raw form data from CHEFS: the Complaint fields plus CHEFS-only components that the transforms convert.
 export interface ChefsSubmissionData extends Complaint {
-  map?: ChefsMap;
+  incidentLocation?: ChefsMap;
+  cos_caller_name_first?: string;
+  cos_caller_name_last?: string;
+  witness_details?: string;
+  transportation_details?: string;
 }
