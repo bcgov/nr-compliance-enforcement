@@ -23,14 +23,4 @@ export class PublicController {
   getParks() {
     return this.service.getParks();
   }
-
-  @Get("/violation")
-  getViolations() {
-    return this.service.getViolations();
-  }
-
-  @Get("/species")
-  getSpecies() {
-    return this.service.getSpecies();
-  }
 }
