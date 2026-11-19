@@ -4,7 +4,6 @@ import request from "supertest";
 
 import { PublicController } from "./public.controller";
 import { PublicService } from "./public.service";
-import { ViolationCodeService } from "../violation_code/violation_code.service";
 import { getWithApiKey } from "../../external_api/shared_data";
 
 jest.mock("../../external_api/shared_data", () => ({
@@ -15,17 +14,13 @@ describe("Testing: Public Controller", () => {
   let app: INestApplication;
   const env = process.env;
 
-  const violationCodeService = {
-    findActive: jest.fn().mockResolvedValue([]),
-  };
-
   beforeEach(async () => {
     process.env = { ...env, PUBLIC_API_KEY: "test-key" };
-    (getWithApiKey as jest.Mock).mockResolvedValue({ data: { cosGeoOrgUnits: [], parks: [], speciesCodes: [] } });
+    (getWithApiKey as jest.Mock).mockResolvedValue({ data: { cosGeoOrgUnits: [], parks: [] } });
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PublicController],
-      providers: [PublicService, { provide: ViolationCodeService, useValue: violationCodeService }],
+      providers: [PublicService],
     }).compile();
 
     app = module.createNestApplication();
@@ -37,7 +32,7 @@ describe("Testing: Public Controller", () => {
     process.env = env;
   });
 
-  it.each(["community", "park", "violation", "species"])(
+  it.each(["community", "park"])(
     "should return 200 when GET %s is called with the api key",
     async (resource) => {
       const response = await request(app.getHttpServer()).get(`/public/${resource}`).set("x-api-key", "test-key");
@@ -45,7 +40,7 @@ describe("Testing: Public Controller", () => {
     },
   );
 
-  it.each(["community", "park", "violation", "species"])(
+  it.each(["community", "park"])(
     "should return 401 when GET %s is called without the api key",
     async (resource) => {
       const response = await request(app.getHttpServer()).get(`/public/${resource}`);
@@ -54,28 +49,28 @@ describe("Testing: Public Controller", () => {
   );
 
   it("should return 401 when the api key is invalid", async () => {
-    const response = await request(app.getHttpServer()).get("/public/species").set("x-api-key", "wrong-key");
+    const response = await request(app.getHttpServer()).get("/public/park").set("x-api-key", "wrong-key");
     expect(response.statusCode).toBe(401);
   });
 
   it("should return 401 when called with the complaints api key", async () => {
     process.env.COMPLAINTS_API_KEY = "complaints-key";
-    const response = await request(app.getHttpServer()).get("/public/species").set("x-api-key", "complaints-key");
+    const response = await request(app.getHttpServer()).get("/public/park").set("x-api-key", "complaints-key");
     expect(response.statusCode).toBe(401);
   });
 
   it("should return 401 when PUBLIC_API_KEY is not set", async () => {
     delete process.env.PUBLIC_API_KEY;
-    let response = await request(app.getHttpServer()).get("/public/species");
+    let response = await request(app.getHttpServer()).get("/public/park");
     expect(response.statusCode).toBe(401);
 
-    response = await request(app.getHttpServer()).get("/public/species").set("x-api-key", "undefined");
+    response = await request(app.getHttpServer()).get("/public/park").set("x-api-key", "undefined");
     expect(response.statusCode).toBe(401);
   });
 
   it("should not call the shared data api when the api key is invalid", async () => {
     (getWithApiKey as jest.Mock).mockClear();
-    await request(app.getHttpServer()).get("/public/species").set("x-api-key", "wrong-key");
+    await request(app.getHttpServer()).get("/public/park").set("x-api-key", "wrong-key");
     expect(getWithApiKey).not.toHaveBeenCalled();
   });
 
@@ -100,62 +95,6 @@ describe("Testing: Public Controller", () => {
     expect(response.body).toEqual([
       { code: "ALB", name: "Alberni", zone: "CI", region: "WST" },
       { code: "VIC", name: "Victoria", zone: "SI", region: "WST" },
-    ]);
-  });
-
-  it("should return active violation codes without audit columns", async () => {
-    violationCodeService.findActive.mockResolvedValueOnce([
-      {
-        violation_code: "WILDLIFE",
-        short_description: "WILDLIFE",
-        long_description: "Wildlife",
-        display_order: 130,
-        active_ind: true,
-        create_user_id: "IDIR\\user",
-        create_utc_timestamp: new Date(),
-        update_user_id: "IDIR\\user",
-        update_utc_timestamp: new Date(),
-      },
-    ]);
-    const response = await request(app.getHttpServer()).get("/public/violation").set("x-api-key", "test-key");
-    expect(response.body).toEqual([
-      {
-        violation: "WILDLIFE",
-        shortDescription: "WILDLIFE",
-        longDescription: "Wildlife",
-        displayOrder: 130,
-        isActive: true,
-      },
-    ]);
-  });
-
-  it("should return active species only", async () => {
-    const speciesCode = {
-      shortDescription: "Bear, Black",
-      longDescription: "Bear, Black",
-      displayOrder: 10,
-      largeCarnivoreIndicator: true,
-      displayOnComplaintIndicator: true,
-    };
-    (getWithApiKey as jest.Mock).mockResolvedValue({
-      data: {
-        speciesCodes: [
-          { ...speciesCode, speciesCode: "BLKBEAR", activeIndicator: true },
-          { ...speciesCode, speciesCode: "RETIRED", activeIndicator: false },
-        ],
-      },
-    });
-    const response = await request(app.getHttpServer()).get("/public/species").set("x-api-key", "test-key");
-    expect(response.body).toEqual([
-      {
-        species: "BLKBEAR",
-        shortDescription: "Bear, Black",
-        longDescription: "Bear, Black",
-        displayOrder: 10,
-        isActive: true,
-        isLargeCarnivore: true,
-        isDisplayedOnComplaint: true,
-      },
     ]);
   });
 });
