@@ -5,6 +5,7 @@ export interface ChefsSubmissionResponse {
   submission: {
     id: string;
     formVersionId: string;
+    confirmationId: string;
     draft: boolean;
     submission: {
       data: ChefsSubmissionData;
@@ -32,4 +33,7 @@ export interface ChefsSubmissionData extends Complaint {
   cos_caller_name_last?: string;
   witness_details?: string;
   transportation_details?: string;
+  previously_reported_ind?: boolean;
+  agency_reported_txt?: string;
+  chefs_confirmation_id?: string;
 }

@@ -132,7 +132,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
       ''
     END;
     _location_detailed_text := complaint_data ->> 'cos_location_description';
-    _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Vancouver';
+    -- incident_datetime is optional in CHEFS; treat an empty string as null so the timestamp cast doesn't fail
+    _incident_utc_datetime := NULLIF(complaint_data ->> 'incident_datetime', '')::timestamp AT TIME zone 'America/Vancouver';
     _incident_utc_date := _incident_utc_datetime::DATE;
     _incident_utc_time := _incident_utc_datetime::TIME;
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Vancouver';
