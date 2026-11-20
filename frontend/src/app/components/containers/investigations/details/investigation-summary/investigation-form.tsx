@@ -2,6 +2,7 @@ import { bcUtmZoneNumbers } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompSelect } from "@/app/components/common/comp-select";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { FormField } from "@/app/components/common/form-field";
 import { useAppSelector } from "@/app/hooks/hooks";
@@ -180,6 +181,29 @@ export const InvestigationForm = ({
                 showInactive={false}
                 enableValidation={true}
                 errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                isDisabled={isDisabled}
+              />
+            )}
+          />
+          <FormField
+            form={form}
+            name="adminSupports"
+            label="Admin support"
+            render={(field) => (
+              <ValidationMultiSelect
+                id="admin-support-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                options={assignableOfficers}
+                values={((field.state.value as string[]) ?? [])
+                  .map((guid) => resolveOfficerOption(guid))
+                  .filter((option): option is Option => !!option)}
+                onChange={(options: Option[] | null) =>
+                  field.handleChange((options ?? []).map((option) => option.value as string))
+                }
+                placeholder="Select admin support"
+                isClearable={true}
+                errMsg={field.state.meta.errors?.[0]?.message || ""}
                 isDisabled={isDisabled}
               />
             )}

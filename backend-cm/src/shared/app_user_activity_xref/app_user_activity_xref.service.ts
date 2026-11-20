@@ -126,12 +126,68 @@ export class AppUserActivityXrefService {
     }
   }
 
+  async assignMany(
+    activityType: string,
+    activityIdentifier: string,
+    code: string,
+    appUserGuids: string[],
+  ): Promise<void> {
+    const desired = new Set(appUserGuids.filter(Boolean));
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        const assigned = await tx.app_user_activity_xref.findMany({
+          where: {
+            activity_type: activityType,
+            activity_identifier_ref: activityIdentifier,
+            app_user_activity_xref_code: code,
+            active_ind: true,
+          },
+        });
+        const current = new Set(assigned.map((row) => row.app_user_guid));
+
+        const toRemove = assigned.filter((row) => !desired.has(row.app_user_guid));
+        if (toRemove.length > 0) {
+          await tx.app_user_activity_xref.updateMany({
+            where: {
+              app_user_activity_xref_guid: { in: toRemove.map((row) => row.app_user_activity_xref_guid) },
+            },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
+        }
+
+        const toAdd = [...desired].filter((appUserGuid) => !current.has(appUserGuid));
+        if (toAdd.length > 0) {
+          await tx.app_user_activity_xref.createMany({
+            data: toAdd.map((appUserGuid) => ({
+              activity_type: activityType,
+              activity_identifier_ref: activityIdentifier,
+              app_user_guid: appUserGuid,
+              app_user_activity_xref_code: code,
+              active_ind: true,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            })),
+          });
+        }
+      });
+    } catch (error) {
+      this.logger.error(`Error assigning ${code}:`, error);
+      throw error;
+    }
+  }
+
   findAssignees(activityType: string, activityIdentifiers: string[]) {
     return this.prisma.app_user_activity_xref.findMany({
       where: {
         activity_type: activityType,
         activity_identifier_ref: { in: activityIdentifiers },
-        app_user_activity_xref_code: { in: ["ASSIGNEE", "SUPERVISOR", "FILECOORD"] },
+        app_user_activity_xref_code: { in: ["ASSIGNEE", "SUPERVISOR", "FILECOORD", "ADMINSUPRT"] },
         active_ind: true,
       },
     });

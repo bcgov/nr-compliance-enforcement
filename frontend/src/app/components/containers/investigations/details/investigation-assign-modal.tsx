@@ -1,6 +1,7 @@
 import { FC, useEffect, useCallback } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { CompSelect } from "@/app/components/common/comp-select";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import Option from "@apptypes/app/option";
@@ -129,6 +130,28 @@ export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({
                   showInactive={false}
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="adminSupports"
+              label="Admin support"
+              render={(field) => (
+                <ValidationMultiSelect
+                  id="admin-support-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={assignableOfficers}
+                  values={assignableOfficers.filter((opt) =>
+                    ((field.state.value as string[]) ?? []).includes(opt.value as string),
+                  )}
+                  onChange={(options: Option[] | null) =>
+                    field.handleChange((options ?? []).map((option) => option.value as string))
+                  }
+                  placeholder="Select admin support"
+                  isClearable={true}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
                 />
               )}
             />

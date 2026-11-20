@@ -27,6 +27,7 @@ const INVESTIGATION_ASSIGNEES = gql`
       primaryInvestigators
       fileCoordinators
       supervisors
+      adminSupports
     }
   }
 `;
@@ -62,6 +63,7 @@ export const InvestigationFilter: FC = () => {
   );
   const fileCoordinatorOptions = useMemo(() => toRoleOptions(assignees?.fileCoordinators), [agencyOfficers, assignees]);
   const supervisorOptions = useMemo(() => toRoleOptions(assignees?.supervisors), [agencyOfficers, assignees]);
+  const adminSupportOptions = useMemo(() => toRoleOptions(assignees?.adminSupports), [agencyOfficers, assignees]);
 
   const regionOptions = useAppSelector(
     selectCascadedRegion(
@@ -192,6 +194,15 @@ export const InvestigationFilter: FC = () => {
         "Select",
         fileCoordinatorOptions.find((option) => option.value === searchValues.fileCoordinator) || null,
         handleFieldChange("fileCoordinator"),
+      )}
+
+      {renderSelectFilter(
+        "admin-support",
+        "Admin support",
+        adminSupportOptions,
+        "Select",
+        adminSupportOptions.find((option) => option.value === searchValues.adminSupport) || null,
+        handleFieldChange("adminSupport"),
       )}
 
       {renderSelectFilter(

@@ -234,6 +234,7 @@ export const GET_INVESTIGATION = gql`
       primaryInvestigatorGuid
       supervisorGuid
       fileCoordinatorGuid
+      adminSupportGuids
       discoveryDate
       discoveryTime
       community
