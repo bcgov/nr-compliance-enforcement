@@ -16,8 +16,8 @@ const DEFAULT_SEARCH_VALUES: DocumentationSearchParams = {
   search: "",
   taskFilter: null,
   fileTypeFilter: null,
-  sortBy: "createdAt",
-  sortOrder: SORT_TYPES.DESC,
+  sortBy: "fileType",
+  sortOrder: SORT_TYPES.ASC,
   page: 1,
   pageSize: 50,
 };
