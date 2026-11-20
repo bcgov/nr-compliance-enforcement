@@ -22,6 +22,9 @@ const DEFAULT_SEARCH_VALUES: DocumentationSearchParams = {
   pageSize: 50,
 };
 
+// Keys that count as filters (as opposed to search, sort, paging or view type).
+const FILTER_KEYS: (keyof DocumentationSearchParams)[] = ["taskFilter", "fileTypeFilter"];
+
 const serializeSearchValueToUrl = (key: keyof DocumentationSearchParams, value: any): string | undefined => {
   if (value == null) {
     return undefined;
@@ -118,8 +121,11 @@ export const useDocumentationSearch = () => {
   // Resets filters to their defaults while preserving search and sort.
   // Attachments have no role-based default filters, so all filters are cleared.
   const resetFilters = useCallback(() => {
-    clearValues(["taskFilter", "fileTypeFilter"]);
+    clearValues(FILTER_KEYS);
   }, [clearValues]);
+
+  // True when every filter is at its default (none applied). Used to hide the inline reset button.
+  const isDefaultFilters = useMemo(() => FILTER_KEYS.every((key) => searchValues[key] == null), [searchValues]);
 
   return {
     searchValues,
@@ -128,5 +134,6 @@ export const useDocumentationSearch = () => {
     clearValues,
     resetSearch,
     resetFilters,
+    isDefaultFilters,
   };
 };

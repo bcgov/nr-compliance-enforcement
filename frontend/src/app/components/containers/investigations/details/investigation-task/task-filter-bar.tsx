@@ -25,7 +25,7 @@ export const TaskFilterBar: FC<Props> = ({
   onAddTask,
   isAddTaskDisabled,
 }) => {
-  const { searchValues, clearValues, resetFilters } = useTaskSearch();
+  const { searchValues, clearValues, resetFilters, isDefaultFilters } = useTaskSearch();
 
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
@@ -103,14 +103,17 @@ export const TaskFilterBar: FC<Props> = ({
           />
         )}
 
-        <Button
-          variant="link"
-          size="sm"
-          id="task-reset-filters-btn"
-          onClick={resetFilters}
-        >
-          Reset
-        </Button>
+        {!isDefaultFilters && (
+          <Button
+            variant="link"
+            size="sm"
+            className="link-primary"
+            id="task-reset-filters-btn"
+            onClick={resetFilters}
+          >
+            Reset
+          </Button>
+        )}
 
         <Button
           id="export-tasks-button"

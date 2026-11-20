@@ -169,4 +169,30 @@ test.describe("Inspection Filters", () => {
     await expect(page).toHaveURL(/sortBy=openedTimestamp/);
     await expect(page).toHaveURL(/sortOrder=ASC/);
   });
+
+  test("it only shows the inline reset button when filters differ from the defaults", async ({ page }) => {
+    await page.goto("/inspections");
+    await waitForSpinner(page);
+    await expect(page.locator("#inspection-reset-filters-btn")).toBeHidden();
+
+    await page.goto("/inspections?startDate=2026-10-05&endDate=2026-10-08");
+    await waitForSpinner(page);
+    await expect(page.locator("#inspection-reset-filters-btn")).toBeVisible();
+
+    await page.locator("#inspection-reset-filters-btn").click();
+    await waitForSpinner(page);
+    await expect(page.locator("#inspection-reset-filters-btn")).toBeHidden();
+  });
+
+  test("it resets filters from the filter panel", async ({ page }) => {
+    await page.goto("/inspections?startDate=2026-10-05&endDate=2026-10-08");
+    await waitForSpinner(page);
+
+    await page.locator("#inspection-filter-btn:visible, #inspection-filter-btn-mobile:visible").click();
+    await page.locator("#inspection-panel-reset-filters-btn:visible").click();
+    await waitForSpinner(page);
+
+    await expect(page.locator("#inspection-date-range-filter-pill")).toBeHidden();
+    await expect(page).not.toHaveURL(/startDate=|endDate=/);
+  });
 });

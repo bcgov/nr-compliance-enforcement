@@ -160,6 +160,12 @@
     margin-top: 8px;
   }
 
+  // Reset filters link: without this the column layout stretches it to full width with centred text
+  > .btn-link {
+    align-self: flex-end;
+    padding: 0;
+  }
+
   label {
     margin-bottom: 6px;
     font-size: 0.875rem;
