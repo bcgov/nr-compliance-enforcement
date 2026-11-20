@@ -73,7 +73,7 @@ export const Attachments: FC<Props> = ({
 
   // get the attachments when the Carousel loads
   useEffect(() => {
-    if (!identifier || comsAccess.isPending) {
+    if (!identifier || !comsAccess.isSuccess) {
       return;
     }
 
@@ -106,7 +106,7 @@ export const Attachments: FC<Props> = ({
     return () => {
       isMounted = false;
     };
-  }, [dispatch, identifier, subIdentifier, attachmentType, refreshKey, attachmentReferencesKey, comsAccess.isPending]);
+  }, [dispatch, identifier, subIdentifier, attachmentType, refreshKey, attachmentReferencesKey, comsAccess.isSuccess]);
 
   // Update the slide count when the slides state changes
   useEffect(() => {

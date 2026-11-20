@@ -54,7 +54,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   const attachmentsQuery = useQuery({
     queryKey: ["enforcement-action-attachments", investigationGuid, eaId],
     queryFn: () => fetchAttachmentsWithMetadata(investigationGuid, undefined, eaId, true),
-    enabled: !!eaId && !comsAccess.isPending,
+    enabled: !!eaId && comsAccess.isSuccess,
   });
 
   const existingAttachments = attachmentsQuery.data ?? [];

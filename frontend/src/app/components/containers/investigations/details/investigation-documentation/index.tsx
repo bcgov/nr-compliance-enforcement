@@ -51,7 +51,7 @@ export const InvestigationDocumentation: FC<Props> = ({
     sortOrder: searchValues.sortOrder,
     page: searchValues.page,
     pageSize: searchValues.pageSize,
-    enabled: !!investigationGuid && !comsAccess.isPending,
+    enabled: !!investigationGuid && comsAccess.isSuccess,
   });
 
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prev) => !prev), []);

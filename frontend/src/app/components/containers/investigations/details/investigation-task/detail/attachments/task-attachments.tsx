@@ -49,7 +49,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
     sortOrder: SORT_TYPES.DESC,
     page: searchValues.page,
     pageSize: searchValues.pageSize,
-    enabled: !!investigationGuid && !comsAccess.isPending,
+    enabled: !!investigationGuid && comsAccess.isSuccess,
   });
 
   const handleAddAttachment = () => {
