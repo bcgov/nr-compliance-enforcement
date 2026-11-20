@@ -7,9 +7,10 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectAgencyDropdown } from "@store/reducers/code-table";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { Button } from "react-bootstrap";
 
 export const CaseFilter: FC = () => {
-  const { searchValues, setValues } = useCaseSearch();
+  const { searchValues, setValues, resetFilters } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
 
   const handleFieldChange = (fieldName: keyof CaseSearchParams) => (option: Option | null) => {
@@ -63,6 +64,15 @@ export const CaseFilter: FC = () => {
 
   return (
     <div className="comp-filter-container">
+      <Button
+        variant="link"
+        size="sm"
+        className="link-primary"
+        id="case-panel-reset-filters-btn"
+        onClick={resetFilters}
+      >
+        Reset filters
+      </Button>
       <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
         {renderSelectFilter(
           "lead-agency",
@@ -73,7 +83,6 @@ export const CaseFilter: FC = () => {
           handleFieldChange("leadAgency"),
         )}
       </FeatureFlag>
-
       <FilterDate
         id="case-date-range-filter"
         label="Date opened"

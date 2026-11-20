@@ -7,13 +7,14 @@ import { selectTaskCategory, selectTaskStatus } from "@/app/store/reducers/code-
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { COMMON_TASK_CATEGORY_CODES } from "./detail/task-detail-edit-modal";
+import { Button } from "react-bootstrap";
 
 type Props = {
   assignedOfficerIds: string[];
 };
 
 export const TaskFilter: FC<Props> = ({ assignedOfficerIds }) => {
-  const { searchValues, setValues } = useTaskSearch();
+  const { searchValues, setValues, resetFilters } = useTaskSearch();
 
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
@@ -68,6 +69,15 @@ export const TaskFilter: FC<Props> = ({ assignedOfficerIds }) => {
 
   return (
     <div className="comp-filter-container">
+      <Button
+        variant="link"
+        size="sm"
+        className="link-primary"
+        id="task-panel-reset-filters-btn"
+        onClick={resetFilters}
+      >
+        Reset filters
+      </Button>
       <div id="task-category-filter-id">
         <label htmlFor="task-category-select-id">Category</label>
         <div className="filter-select-padding">
