@@ -14,12 +14,13 @@ export class StagingComplaintsApiService {
   };
 
   // add complaint data to staging table
-  async createNewComplaintInStaging(complaintData: Complaint): Promise<void> {
+  async createNewComplaintInStaging(complaintData: Complaint): Promise<string | undefined> {
     try {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_API_ENDPOINT_CREATES}`;
       this.logger.debug(`Posting new complaint ${complaintData.incident_number} to staging. API URL: ${apiUrl}`);
 
-      await axios.post(apiUrl, complaintData, this._apiConfig);
+      const response = await axios.post(apiUrl, complaintData, this._apiConfig);
+      return response.data?.complaintIdentifer;
     } catch (error) {
       this.logger.error("Error calling Staging Complaint API:", error);
       throw error;

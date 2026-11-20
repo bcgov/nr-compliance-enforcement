@@ -13,12 +13,18 @@ export class SequenceResetScheduler {
   private cronJob: CronJob;
   private readonly logger = new Logger(SequenceResetScheduler.name);
 
-  constructor(private readonly schedulerRegistry: SchedulerRegistry, private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly dataSource: DataSource,
+  ) {}
 
   private getSequenceConfigs(): SequenceResetConfig[] {
     const complaintResetValue = process.env.SEQ_RESET_VALUE || "900000";
+    const chefsResetValue = process.env.CHEFS_SEQ_RESET_VALUE || "800000";
+
     return [
       { name: "complaint.complaint_sequence", resetValue: complaintResetValue },
+      { name: "complaint.chefs_complaint_sequence", resetValue: chefsResetValue },
       { name: "shared.case_sequence", resetValue: "1" },
       { name: "investigation.investigation_sequence", resetValue: "1" },
       { name: "inspection.inspection_sequence", resetValue: "1" },

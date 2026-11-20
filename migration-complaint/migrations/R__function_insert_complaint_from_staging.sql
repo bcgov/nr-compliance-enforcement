@@ -40,6 +40,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     _location_geometry_point GEOMETRY;
     _complaint_status_code VARCHAR(10);
     _webeoc_identifier VARCHAR(20);
+    _park_guid uuid;
 
     -- Variables for 'hwcr_complaint' table
     _webeoc_species                    VARCHAR(200);
@@ -82,6 +83,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     _report_type := complaint_data ->> 'report_type';
     -- to link actions-taken to a complaint the dataid needs to be used
     _webeoc_identifier := complaint_data ->> 'dataid'; 
+    _park_guid := NULLIF(complaint_data ->> 'park_guid', '')::uuid;
 
     -- Extract and prepare data for 'complaint' table
     _detail_text := complaint_data ->> 'cos_call_details';
@@ -130,7 +132,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
       ''
     END;
     _location_detailed_text := complaint_data ->> 'cos_location_description';
-    _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Vancouver';
+    -- incident_datetime is optional in CHEFS; treat an empty string as null so the timestamp cast doesn't fail
+    _incident_utc_datetime := NULLIF(complaint_data ->> 'incident_datetime', '')::timestamp AT TIME zone 'America/Vancouver';
     _incident_utc_date := _incident_utc_datetime::DATE;
     _incident_utc_time := _incident_utc_datetime::TIME;
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Vancouver';
@@ -197,7 +200,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                             location_geometry_point,
                             reported_by_code,
                             reported_by_other_text,
-                            webeoc_identifier
+                            webeoc_identifier,
+                            park_guid
                 )
                 VALUES
                 (
@@ -225,7 +229,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                             _location_geometry_point,
                             _cos_reffered_by_lst,
                             _cos_reffered_by_txt,
-                            _webeoc_identifier
+                            _webeoc_identifier,
+                            _park_guid
                 );
     
     IF _report_type = 'HWCR' then

@@ -383,7 +383,7 @@ export class WebEocScheduler {
   }
 
   private async publishComplaint(complaint: Complaint) {
-    await this.complaintsPublisherService.publishComplaintsFromWebEOC(complaint);
+    await this.complaintsPublisherService.publishComplaintToNatsuite(complaint);
   }
 
   private async publishComplaintUpdate(complaintUpdate: ComplaintUpdate) {

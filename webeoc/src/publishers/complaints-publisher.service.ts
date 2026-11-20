@@ -28,14 +28,15 @@ export class ComplaintsPublisherService {
   private readonly codec = JSONCodec<Complaint>();
 
   /**
-   * Publish message to JetStream to indicate that a new complaint is available from webeoc
+   * Publish message to JetStream to indicate that a new complaint is available
    * @param complaint
+   * @param messageId optional de-duplication id, used when the complaint has no incident number yet (CHEFS)
    */
-  async publishComplaintsFromWebEOC(complaint: Complaint): Promise<void> {
+  async publishComplaintToNatsuite(complaint: Complaint, messageId?: string): Promise<void> {
     try {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}-${complaint.entrydate}`);
+      natsHeaders.set("Nats-Msg-Id", messageId ?? `staged-${complaint.incident_number}-${complaint.entrydate}`);
       const ack = await this.jsClient.publish(STREAM_TOPICS.COMPLAINTS, msg, { headers: natsHeaders });
       if (ack.duplicate) {
         this.logger.debug(`Complaint already published: ${complaint.incident_number}`);
