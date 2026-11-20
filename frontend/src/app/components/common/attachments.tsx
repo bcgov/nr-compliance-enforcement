@@ -8,6 +8,8 @@ import { getDisplayFilename } from "@/app/common/attachment-utils";
 import { InvestigationAttachmentReference } from "@/generated/graphql";
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
 import { useAttachmentStaging } from "@/app/hooks/use-attachment-staging";
+import { useComsAccess } from "@/app/hooks/use-coms-access";
+import { ComsAccessWarning } from "@/app/components/common/coms-access-warning";
 
 type Props = {
   attachmentType: AttachmentEnum;
@@ -45,6 +47,7 @@ export const Attachments: FC<Props> = ({
   attachmentReferences,
 }) => {
   const dispatch = useAppDispatch();
+  const comsAccess = useComsAccess(attachmentType);
 
   const { slides, setSlides, onFileSelect, onFileRemove } = useAttachmentStaging({
     attachmentType,
@@ -70,7 +73,7 @@ export const Attachments: FC<Props> = ({
 
   // get the attachments when the Carousel loads
   useEffect(() => {
-    if (!identifier) {
+    if (!identifier || comsAccess.isPending) {
       return;
     }
 
@@ -103,7 +106,7 @@ export const Attachments: FC<Props> = ({
     return () => {
       isMounted = false;
     };
-  }, [dispatch, identifier, subIdentifier, attachmentType, refreshKey, attachmentReferencesKey]);
+  }, [dispatch, identifier, subIdentifier, attachmentType, refreshKey, attachmentReferencesKey, comsAccess.isPending]);
 
   // Update the slide count when the slides state changes
   useEffect(() => {
@@ -132,14 +135,17 @@ export const Attachments: FC<Props> = ({
   }
 
   return (
-    <AttachmentCarousel
-      slides={slides}
-      showPreview={showPreview}
-      onFileSelect={onFileSelect}
-      onFileRemove={onFileRemove}
-      allowUpload={allowUpload}
-      allowDelete={allowDelete}
-      disabled={disabled}
-    />
+    <>
+      {comsAccess.isError && <ComsAccessWarning />}
+      <AttachmentCarousel
+        slides={slides}
+        showPreview={showPreview}
+        onFileSelect={onFileSelect}
+        onFileRemove={onFileRemove}
+        allowUpload={allowUpload}
+        allowDelete={allowDelete}
+        disabled={disabled}
+      />
+    </>
   );
 };
