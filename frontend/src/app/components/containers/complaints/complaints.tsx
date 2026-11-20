@@ -8,6 +8,7 @@ import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "@providers/complaint-filter-provider";
 import complaintFilterReducer, { resetFilters, ComplaintFilterPayload } from "@store/reducers/complaint-filters";
+import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
 
 import {
   isFeatureActive,
@@ -123,7 +124,9 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const isDefaultFilters = (() => {
     const defaultState = complaintFilterReducer(filterState, resetFilters(getDefaultFilterPayload()));
     return Object.keys(filterState).every(
-      (key) => normalizeFilterValue((filterState as any)[key]) === normalizeFilterValue((defaultState as any)[key]),
+      (key) =>
+        normalizeFilterValue(filterState[key as keyof ComplaintFilters]) ===
+        normalizeFilterValue(defaultState[key as keyof ComplaintFilters]),
     );
   })();
 
