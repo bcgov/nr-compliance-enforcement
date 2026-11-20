@@ -142,4 +142,30 @@ test.describe("Case Filter Logic", () => {
     await expect(page).toHaveURL(/sortBy=name/);
     await expect(page).toHaveURL(/sortOrder=ASC/);
   });
+
+  test("it only shows the inline reset button when filters differ from the defaults", async ({ page }) => {
+    await page.goto("/cases");
+    await waitForSpinner(page);
+    await expect(page.locator("#case-reset-filters-btn")).toBeHidden();
+
+    await page.goto("/cases?startDate=2026-10-05&endDate=2026-10-08");
+    await waitForSpinner(page);
+    await expect(page.locator("#case-reset-filters-btn")).toBeVisible();
+
+    await page.locator("#case-reset-filters-btn").click();
+    await waitForSpinner(page);
+    await expect(page.locator("#case-reset-filters-btn")).toBeHidden();
+  });
+
+  test("it resets filters from the filter panel", async ({ page }) => {
+    await page.goto("/cases?startDate=2026-10-05&endDate=2026-10-08");
+    await waitForSpinner(page);
+
+    await page.locator("#case-filter-btn:visible, #case-filter-btn-mobile:visible").click();
+    await page.locator("#case-panel-reset-filters-btn:visible").click();
+    await waitForSpinner(page);
+
+    await expect(page.locator("#case-date-range-filter-pill")).toBeHidden();
+    await expect(page).not.toHaveURL(/startDate=|endDate=/);
+  });
 });

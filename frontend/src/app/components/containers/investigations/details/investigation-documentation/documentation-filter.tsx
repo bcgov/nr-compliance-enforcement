@@ -4,13 +4,14 @@ import Option from "@apptypes/app/option";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { Task } from "@/generated/graphql";
 import { fileTypeOptions } from "@/app/components/common/file-type-options";
+import { Button } from "react-bootstrap";
 
 type Props = {
   tasks?: Task[];
 };
 
 export const DocumentationFilter: FC<Props> = ({ tasks = [] }) => {
-  const { searchValues, setValues } = useDocumentationSearch();
+  const { searchValues, setValues, resetFilters } = useDocumentationSearch();
 
   const taskOptions: Option[] = tasks
     .filter((task) => task.activeIndicator)
@@ -33,6 +34,15 @@ export const DocumentationFilter: FC<Props> = ({ tasks = [] }) => {
 
   return (
     <div className="comp-filter-container">
+      <Button
+        variant="link"
+        size="sm"
+        className="link-primary"
+        id="documentation-panel-reset-filters-btn"
+        onClick={resetFilters}
+      >
+        Reset filters
+      </Button>
       <div id="documentation-task-filter-id">
         <label htmlFor="documentation-task-select-id">Task</label>
         <div className="filter-select-padding">
