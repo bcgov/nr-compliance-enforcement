@@ -25,7 +25,7 @@ export const ExhibitsFilterBar: FC<Props> = ({
   isExportDisabled,
   isExportInProgress,
 }) => {
-  const { searchValues, setValues, clearValues, resetFilters } = useExhibitsSearch();
+  const { searchValues, setValues, clearValues, resetFilters, isDefaultFilters } = useExhibitsSearch();
   const [searchInput, setSearchInput] = useState<string>(searchValues.search || "");
   const officers = useAppSelector(selectOfficers);
 
@@ -220,14 +220,17 @@ export const ExhibitsFilterBar: FC<Props> = ({
           />
         )}
 
-        <Button
-          variant="link"
-          size="sm"
-          id="exhibits-reset-filters-btn"
-          onClick={resetFilters}
-        >
-          Reset
-        </Button>
+        {!isDefaultFilters && (
+          <Button
+            variant="link"
+            size="sm"
+            className="link-primary"
+            id="exhibits-reset-filters-btn"
+            onClick={resetFilters}
+          >
+            Reset
+          </Button>
+        )}
 
         <Button
           id="exhibits-export-btn"

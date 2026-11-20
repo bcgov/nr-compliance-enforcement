@@ -28,6 +28,15 @@ const DEFAULT_SEARCH_VALUES: ExhibitsSearchParams = {
   pageSize: 25,
 };
 
+// Keys that count as filters (as opposed to search, sort, paging or view type).
+const FILTER_KEYS: (keyof ExhibitsSearchParams)[] = [
+  "taskFilter",
+  "propertyTypeFilter",
+  "officerFilter",
+  "intakeStartDate",
+  "intakeEndDate",
+];
+
 const serializeSearchValueToUrl = (key: keyof ExhibitsSearchParams, value: any): string | undefined => {
   if (value == null) {
     return undefined;
@@ -126,8 +135,11 @@ export const useExhibitsSearch = () => {
   // Resets filters to their defaults while preserving search and sort.
   // Exhibits have no role-based default filters, so all filters are cleared.
   const resetFilters = useCallback(() => {
-    clearValues(["taskFilter", "propertyTypeFilter", "officerFilter", "intakeStartDate", "intakeEndDate"]);
+    clearValues(FILTER_KEYS);
   }, [clearValues]);
+
+  // True when every filter is at its default (none applied). Used to hide the inline reset button.
+  const isDefaultFilters = useMemo(() => FILTER_KEYS.every((key) => searchValues[key] == null), [searchValues]);
 
   return {
     searchValues,
@@ -136,5 +148,6 @@ export const useExhibitsSearch = () => {
     clearValues,
     resetSearch,
     resetFilters,
+    isDefaultFilters,
   };
 };

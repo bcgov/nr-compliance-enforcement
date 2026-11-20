@@ -106,5 +106,39 @@ test.describe("COS Filter Logic", () => {
       await expect(page.locator("#comp-zone-filter").getByText("Cariboo Thompson").first()).toBeVisible(); //assumes e2e user's office roles up to Cariboo Thompson zone
       await expect(page.locator("#complaint-search")).toHaveValue("sibling");
     });
+
+    test(`Only shows the inline ${type} reset button when filters differ from the defaults`, async ({ page }) => {
+      await page.goto("/");
+      await waitForSpinner(page);
+      await page.locator(type).click();
+      await waitForSpinner(page);
+      await expect(page.locator("#comp-reset-filters-btn")).toBeHidden();
+
+      await page.locator("#comp-status-filter:visible").click();
+      await waitForSpinner(page);
+      await expect(page.locator("#comp-reset-filters-btn")).toBeVisible();
+
+      await page.locator("#comp-reset-filters-btn").click();
+      await waitForSpinner(page);
+      await expect(page.locator("#comp-status-filter:visible").getByText("Open").first()).toBeVisible();
+      await expect(page.locator("#comp-reset-filters-btn")).toBeHidden();
+    });
+
+    test(`Resets ${type} filters from the filter panel`, async ({ page }) => {
+      await page.goto("/");
+      await waitForSpinner(page);
+      await page.locator(type).click();
+      await waitForSpinner(page);
+
+      await page.locator("#comp-status-filter:visible").click();
+      await waitForSpinner(page);
+      await expect(page.locator("#comp-status-filter")).not.toBeVisible();
+
+      await page.locator("#comp-filter-btn:visible, #comp-filter-btn-mobile:visible").click();
+      await page.locator("#comp-panel-reset-filters-btn:visible").click();
+      await waitForSpinner(page);
+
+      await expect(page.locator("#comp-status-filter:visible").getByText("Open").first()).toBeVisible();
+    });
   }
 });

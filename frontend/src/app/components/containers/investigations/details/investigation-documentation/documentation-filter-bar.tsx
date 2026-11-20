@@ -26,7 +26,7 @@ export const DocumentationFilterBar: FC<Props> = ({
 }) => {
   const currentDownload = useSelector(selectCurrentDownload);
   const isDownloadInProgress = currentDownload?.downloadId === investigationId;
-  const { searchValues, setValues, clearValues, resetFilters } = useDocumentationSearch();
+  const { searchValues, setValues, clearValues, resetFilters, isDefaultFilters } = useDocumentationSearch();
 
   const handleSearchChange = (query: string) => {
     if (query) {
@@ -105,14 +105,17 @@ export const DocumentationFilterBar: FC<Props> = ({
           />
         )}
 
-        <Button
-          variant="link"
-          size="sm"
-          id="documentation-reset-filters-btn"
-          onClick={resetFilters}
-        >
-          Reset
-        </Button>
+        {!isDefaultFilters && (
+          <Button
+            variant="link"
+            size="sm"
+            className="link-primary"
+            id="documentation-reset-filters-btn"
+            onClick={resetFilters}
+          >
+            Reset
+          </Button>
+        )}
 
         <Button
           id="documentation-export-btn"
