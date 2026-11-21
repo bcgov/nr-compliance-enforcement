@@ -237,18 +237,18 @@
         "comments": "<p>The unique key for the equipment that has been created or modified.<\/p>"
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "short_description",
-        "type": "varchar",
-        "length": 50,
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>complaint_outcome_guid",
+        "type": "uuid",
+        "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The short description of a case management non_compliance_decision_matrix_code.<\/p>"
+        "comments": "<p>Foreign key to the case that these actions are for.<\/p>"
     },
     {
         "tableName": "equipment_code",
@@ -1161,18 +1161,18 @@
         "comments": "<p>The timestamp when the age type was created.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_utc_timestamp",
-        "type": "timestamp",
-        "length": 29,
-        "nullable": "",
+        "name": "update_user_id",
+        "type": "varchar",
+        "length": 32,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp when the case management non_compliance_decision_matrix_code was created.  The timestamp is stored in UTC with no Offset.<\/p>"
+        "comments": "<p>The identifier (e.g., username) of the user who last updated the entry.<\/p>"
     },
     {
         "tableName": "equipment_status_code",
@@ -1441,18 +1441,18 @@
         "comments": "<p>The timestamp when the reason why no action on the case was taken was updated. The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_user_id",
-        "type": "varchar",
-        "length": 32,
+        "name": "active_ind",
+        "type": "bool",
+        "length": 1,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The identifier (e.g., username) of the user who created the entry.<\/p>"
+        "comments": "<p>A boolean indicator to determine if the case management non_compliance_decision_matrix_code is active.<\/p>"
     },
     {
         "tableName": "drug_administered_h",
@@ -1679,18 +1679,18 @@
         "comments": "<p>The timestamp when the equipment type was created.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "update_utc_timestamp",
-        "type": "timestamp",
-        "length": 29,
-        "nullable": "√",
+        "name": "update_user_id",
+        "type": "varchar",
+        "length": 32,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The date and time (UTC) when the entry was last updated.<\/p>"
+        "comments": "<p>The id of the user that updated the case management non_compliance_decision_matrix_code.<\/p>"
     },
     {
         "tableName": "equipment_h",
@@ -1945,18 +1945,18 @@
         "comments": "<p>The timestamp when the equipment status was updated. The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "long_description",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>outcome_agency_code",
         "type": "varchar",
-        "length": 250,
-        "nullable": "√",
+        "length": 10,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The long description of a case management non_compliance_decision_matrix_code.<\/p>"
+        "comments": "<p>The agency that recorded these actions.<\/p>"
     },
     {
         "tableName": "outcome_agency_code",
@@ -1973,18 +1973,18 @@
         "comments": "<p>A human readable code used to identify an agency.<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>outcome_agency_code",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "long_description",
         "type": "varchar",
-        "length": 10,
-        "nullable": "",
+        "length": 250,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The agency that recorded these actions.<\/p>"
+        "comments": "<p>The long description of a case management non_compliance_decision_matrix_code.<\/p>"
     },
     {
         "tableName": "drug_method_code",
@@ -2099,18 +2099,18 @@
         "comments": "<p>The amount of drug used<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_utc_timestamp",
-        "type": "timestamp",
-        "length": 29,
+        "name": "create_user_id",
+        "type": "varchar",
+        "length": 32,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The date and time (UTC) when the entry was created.<\/p>"
+        "comments": "<p>The id of the user that created the case management non_compliance_decision_matrix_code.<\/p>"
     },
     {
         "tableName": "inaction_reason_code",
@@ -2757,18 +2757,18 @@
         "comments": "<p>The id of the user that updated the drug type.<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>complaint_outcome_guid",
-        "type": "uuid",
-        "length": 2147483647,
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "short_description",
+        "type": "varchar",
+        "length": 50,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Foreign key to the case that these actions are for.<\/p>"
+        "comments": "<p>The short description of a case management non_compliance_decision_matrix_code.<\/p>"
     },
     {
         "tableName": "decision_h",
@@ -2799,32 +2799,32 @@
         "comments": "<p>System generated unique key for an ear tag.  This key should never be exposed to users via any system utilizing the tables.<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>prevention_education_guid",
-        "type": "uuid",
-        "length": 2147483647,
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>non_compliance_decision_matrix_code",
+        "type": "varchar",
+        "length": 10,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "uuid_generate_v4()",
-        "comments": "<p>System generated unique key prevention education record.<\/p>"
+        "defaultValue": "null",
+        "comments": "<p>A human readable code used to identify a non_compliance_decision_matrix_code code.<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "active_ind",
-        "type": "bool",
-        "length": 1,
+        "name": "display_order",
+        "type": "int4",
+        "length": 10,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "true",
-        "comments": "<p>Indicates whether the note is active (true) or inactive (false).<\/p>"
+        "defaultValue": "null",
+        "comments": ""
     },
     {
         "tableName": "drug_remaining_outcome_code",
@@ -2869,18 +2869,18 @@
         "comments": "<p>The id of the user that created the equipment type.<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "wacn_amount",
-        "type": "int2",
-        "length": 5,
-        "nullable": "√",
+        "name": "update_utc_timestamp",
+        "type": "timestamp",
+        "length": 29,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The amount of Wildlife Attractant Compliance Notices are issued.<\/p>"
+        "comments": "<p>The timestamp when the case management non_compliance_decision_matrix_code was updated.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
         "tableName": "threat_level_code",
@@ -3023,18 +3023,18 @@
         "comments": "<p>System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables.<\/p>"
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_user_id",
-        "type": "varchar",
-        "length": 32,
+        "name": "create_utc_timestamp",
+        "type": "timestamp",
+        "length": 29,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The id of the user that created the case management non_compliance_decision_matrix_code.<\/p>"
+        "comments": "<p>The date and time (UTC) when the entry was created.<\/p>"
     },
     {
         "tableName": "action_h",
@@ -3205,18 +3205,18 @@
         "comments": "<p>The timestamp when the wildlife record was updated.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "prevention_education",
-        "tableFileName": "prevention_education",
+        "tableName": "non_compliance_decision_matrix_code",
+        "tableFileName": "non_compliance_decision_matrix_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "update_user_id",
-        "type": "varchar",
-        "length": 32,
-        "nullable": "√",
+        "name": "create_utc_timestamp",
+        "type": "timestamp",
+        "length": 29,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The identifier (e.g., username) of the user who last updated the entry.<\/p>"
+        "comments": "<p>The timestamp when the case management non_compliance_decision_matrix_code was created.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
         "tableName": "sector_code",
@@ -3597,18 +3597,18 @@
         "comments": "<p>A human readable code used to identify an age type.<\/p>"
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "active_ind",
-        "type": "bool",
-        "length": 1,
+        "name": "create_user_id",
+        "type": "varchar",
+        "length": 32,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A boolean indicator to determine if the case management non_compliance_decision_matrix_code is active.<\/p>"
+        "comments": "<p>The identifier (e.g., username) of the user who created the entry.<\/p>"
     },
     {
         "tableName": "drug_administered",
@@ -4311,18 +4311,18 @@
         "comments": "<p>The timestamp when the ear type was created.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "update_utc_timestamp",
-        "type": "timestamp",
-        "length": 29,
-        "nullable": "",
+        "name": "wacn_amount",
+        "type": "int2",
+        "length": 5,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp when the case management non_compliance_decision_matrix_code was updated.  The timestamp is stored in UTC with no Offset.<\/p>"
+        "comments": "<p>The amount of Wildlife Attractant Compliance Notices are issued.<\/p>"
     },
     {
         "tableName": "drug_code",
@@ -4563,18 +4563,18 @@
         "comments": ""
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "display_order",
-        "type": "int4",
-        "length": 10,
+        "name": "active_ind",
+        "type": "bool",
+        "length": 1,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": ""
+        "defaultValue": "true",
+        "comments": "<p>Indicates whether the note is active (true) or inactive (false).<\/p>"
     },
     {
         "tableName": "action_h",
@@ -4955,18 +4955,18 @@
         "comments": "<p>The long description of an HWCR outcome type.<\/p>"
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "update_user_id",
-        "type": "varchar",
-        "length": 32,
-        "nullable": "",
+        "name": "update_utc_timestamp",
+        "type": "timestamp",
+        "length": 29,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The id of the user that updated the case management non_compliance_decision_matrix_code.<\/p>"
+        "comments": "<p>The date and time (UTC) when the entry was last updated.<\/p>"
     },
     {
         "tableName": "action",
@@ -5249,18 +5249,18 @@
         "comments": ""
     },
     {
-        "tableName": "non_compliance_decision_matrix_code",
-        "tableFileName": "non_compliance_decision_matrix_code",
+        "tableName": "prevention_education",
+        "tableFileName": "prevention_education",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>non_compliance_decision_matrix_code",
-        "type": "varchar",
-        "length": 10,
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>prevention_education_guid",
+        "type": "uuid",
+        "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>A human readable code used to identify a non_compliance_decision_matrix_code code.<\/p>"
+        "defaultValue": "uuid_generate_v4()",
+        "comments": "<p>System generated unique key prevention education record.<\/p>"
     },
     {
         "tableName": "equipment_code",
