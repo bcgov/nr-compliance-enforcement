@@ -45,17 +45,9 @@ export class ChefsSubscriberService implements OnModuleInit {
       waitOnFirstConnect: true,
     };
 
-    if (process.env.CHEFS_NATS_NKEY_SEED) {
-      options.authenticator = nkeyAuthenticator(new TextEncoder().encode(process.env.CHEFS_NATS_NKEY_SEED));
-    } else {
-      options.user = process.env.CHEFS_NATS_USER;
-      options.pass = process.env.CHEFS_NATS_PASSWORD;
-    }
+    options.authenticator = nkeyAuthenticator(new TextEncoder().encode(process.env.CHEFS_NATS_NKEY_SEED));
 
-    if (process.env.CHEFS_NATS_WEBSOCKETS === "true") {
-      return connectWebSocket(options);
-    }
-    return connect(options);
+    return connectWebSocket(options);
   }
 
   private async setupConsumer(): Promise<void> {
