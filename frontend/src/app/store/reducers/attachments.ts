@@ -443,12 +443,18 @@ const saveSingleAttachment = async ({
     }
 
     // An upload on a complaint replaces any CHEFS attachment of the same name
-    for (const reference of attachmentReferences.filter((item) => item.filename_text === attachment.name)) {
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint-attachment-reference/${reference.complaint_attachment_reference_guid}`,
-      );
-      await deleteMethod<ComplaintAttachmentReference>(dispatch, parameters);
-    }
+    await Promise.all(
+      attachmentReferences
+        .filter((item) => item.filename_text === attachment.name)
+        .map((reference) =>
+          deleteMethod<ComplaintAttachmentReference>(
+            dispatch,
+            generateApiParameters(
+              `${config.API_BASE_URL}/v1/complaint-attachment-reference/${reference.complaint_attachment_reference_guid}`,
+            ),
+          ),
+        ),
+    );
     ToggleSuccess(`Attachment "${attachment.name}" saved`);
   }
 };

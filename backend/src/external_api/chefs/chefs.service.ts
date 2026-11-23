@@ -4,7 +4,7 @@ import { UUID } from "node:crypto";
 
 @Injectable()
 export class ChefsService {
-  getFile = async (fileId: UUID): Promise<AxiosResponse<Buffer>> => {
+  getFile = (fileId: UUID): Promise<AxiosResponse<Buffer>> => {
     const url = `${process.env.CHEFS_API_URL}/files/${fileId}`;
     // CHEFS API keys use basic auth: the username is the form id and the password is the form's API key.
     const config: AxiosRequestConfig = {
