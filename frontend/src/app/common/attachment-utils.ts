@@ -10,6 +10,7 @@ import { getThumbnailDataURL, isImage } from "@/app/common/methods";
 import { parseUTCDateToLocal } from "@/app/common/date-utils";
 import { Dispatch } from "@reduxjs/toolkit";
 import { format } from "date-fns";
+import { ToggleError } from "@common/toast";
 
 export interface Attachment extends COMSObject {
   taskId: string | null;
@@ -411,8 +412,28 @@ export const fileListToCOMSObjects = (files: FileList | null): COMSObject[] => {
   }));
 };
 
-/** Requests a download URL for the attachment from COMS and triggers the browser download. */
+/** Requests a download URL for the attachment from COMS, or a CHEFS attachment from the backend, and triggers the browser download. */
 export const downloadAttachment = async (dispatch: Dispatch, attachment: COMSObject): Promise<void> => {
+  if (attachment.isChefsAttachment) {
+    const fileName = decodeURIComponent(attachment.name);
+    try {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+      const response = await axios.get<Blob>(
+        `${config.API_BASE_URL}/v1/complaint-attachment-reference/file/${attachment.id}`,
+        { responseType: "blob" },
+      );
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(response.data);
+      a.download = fileName;
+      a.click();
+    } catch (error) {
+      console.error(error);
+      ToggleError(`Attachment ${fileName} could not be downloaded`);
+    }
+    return;
+  }
+
   const versionQuery = attachment.s3VersionId ? `&s3VersionId=${attachment.s3VersionId}` : "";
   const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}?download=url${versionQuery}`);
   const response = await get<string>(dispatch, parameters);

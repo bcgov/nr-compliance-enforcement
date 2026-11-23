@@ -67,6 +67,7 @@ export interface FileWithPresignedUrl {
   size: number;
   url: string;
   folder?: string;
+  isChefsAttachment?: boolean;
 }
 
 export interface BulkDownloadProgressEvent {
@@ -178,6 +179,17 @@ async function bulkDownloadWithZipJs(
 ): Promise<void> {
   // Get presigned URLs for all files concurrently
   const urlPromises = attachments.map(async (attachment, index) => {
+    if (attachment.isChefsAttachment) {
+      return {
+        id: attachment.id,
+        name: decodeURIComponent(attachment.name),
+        size: attachment.size || 0,
+        url: `${config.API_BASE_URL}/v1/complaint-attachment-reference/file/${attachment.id}`,
+        folder: attachment.folder,
+        isChefsAttachment: true,
+      };
+    }
+
     try {
       const url = `${config.COMS_URL}/object/${attachment.id}?download=url&expiresIn=${CONFIG.PRESIGNED_URL_EXPIRY_SECONDS}`;
       const params = generateApiParameters(url);
@@ -436,7 +448,11 @@ async function downloadFileWithRetry(
       }
 
       // Download file
-      const response = await fetch(file.url, { method: "GET" });
+      // Files uploaded directly to Natsuite are fetched without auth, files from CHEFs require the user's token
+      const response = await fetch(file.url, {
+        method: "GET",
+        headers: file.isChefsAttachment ? { Authorization: `Bearer ${localStorage.getItem(AUTH_TOKEN)}` } : undefined,
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

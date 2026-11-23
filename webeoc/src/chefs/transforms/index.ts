@@ -7,6 +7,7 @@ import { datetimePickerTransform } from "src/chefs/transforms/datetime-picker.tr
 import { suspectDetailsTransform } from "src/chefs/transforms/suspect-details.transform";
 import { callDetailsTransform } from "src/chefs/transforms/call-details.transform";
 import { violationTypeTransform } from "src/chefs/transforms/violation-type.transform";
+import { attachmentsTransform } from "src/chefs/transforms/attachments.transform";
 
 // Transforms run in this order before a CHEFS submission is published as a complaint.
 // To add a transform, create a new *.transform.ts file and add it to this list.
@@ -17,6 +18,7 @@ const CHEFS_TRANSFORMS: ChefsTransform[] = [
   suspectDetailsTransform,
   callDetailsTransform,
   violationTypeTransform,
+  attachmentsTransform,
 ];
 
 export const transformChefsSubmission = (data: ChefsSubmissionData): Complaint =>
