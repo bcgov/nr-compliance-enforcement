@@ -154,7 +154,6 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 35px;
 
   + .comp-filter-container {
     margin-top: 8px;
@@ -164,6 +163,7 @@
   > .btn-link {
     align-self: flex-end;
     padding: 0;
+    margin-bottom: -12px;
   }
 
   label {
@@ -189,10 +189,6 @@
     display: flex;
     flex-direction: column;
     flex: 0 0 auto;
-  }
-
-  .comp-filter-container {
-    margin-top: 0;
   }
 }
 
