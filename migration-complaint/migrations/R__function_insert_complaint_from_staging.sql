@@ -232,6 +232,28 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                             _webeoc_identifier,
                             _park_guid
                 );
+
+    -- Insert data into 'complaint_attachment_reference' table
+    INSERT INTO complaint.complaint_attachment_reference
+                (
+                            complaint_identifier,
+                            chefs_file_guid_ref,
+                            filename_text,
+                            file_size,
+                            create_user_id,
+                            create_utc_timestamp,
+                            update_user_id,
+                            update_utc_timestamp
+                )
+    SELECT      _complaint_identifier,
+                (attachment ->> 'id')::uuid,
+                attachment ->> 'name',
+                (attachment ->> 'size')::integer,
+                _create_userid,
+                _create_utc_timestamp,
+                _update_userid,
+                _update_utc_timestamp
+    FROM        jsonb_array_elements(complaint_data -> 'attachments') AS attachment;
     
     IF _report_type = 'HWCR' then
     

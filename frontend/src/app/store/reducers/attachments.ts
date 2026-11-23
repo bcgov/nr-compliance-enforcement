@@ -14,6 +14,7 @@ import { ToggleError, ToggleSuccess } from "@common/toast";
 import AttachmentEnum from "@constants/attachment-enum";
 import { AttachmentTypeConfig, getAttachmentConfig, isSecureAttachmentType } from "@/app/types/app/attachment-config";
 import { InvestigationAttachmentReference } from "@/generated/graphql";
+import { ComplaintAttachmentReference } from "@apptypes/app/complaints/complaint-attachment-reference";
 
 interface SaveAttachmentParams {
   dispatch: any;
@@ -23,6 +24,7 @@ interface SaveAttachmentParams {
   attachmentType: AttachmentEnum;
   isSynchronous: boolean;
   historicalAttachments: Array<COMSObject>;
+  attachmentReferences: Array<ComplaintAttachmentReference>;
   isComplaintAttachment: boolean;
   attachmentConfig: AttachmentTypeConfig;
   extendedMeta?: Record<string, string>;
@@ -158,7 +160,29 @@ export const getAttachments =
         }
 
         attachmentList.push(...response);
-        return attachmentList;
+      }
+
+      if (attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT) {
+        const referenceParameters = generateApiParameters(
+          `${config.API_BASE_URL}/v1/complaint-attachment-reference/${identifier}`,
+        );
+        const references = await get<Array<ComplaintAttachmentReference>>(dispatch, referenceParameters);
+        attachmentList.push(
+          ...references.map((reference) => ({
+            id: reference.complaint_attachment_reference_guid,
+            // callers decode attachment names
+            name: encodeURIComponent(reference.filename_text),
+            size: reference.file_size,
+            createdAt: reference.create_utc_timestamp,
+            path: "",
+            public: false,
+            active: true,
+            bucketId: "",
+            createdBy: "",
+            updatedBy: "",
+            isChefsAttachment: true,
+          })),
+        );
       }
       return attachmentList;
     } catch (error) {
@@ -271,12 +295,14 @@ const deleteSingleAttachment = async ({
   attachmentType,
   isSilent = false,
 }: DeleteAttachmentParams) => {
-  const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
+  const parameters = attachment.isChefsAttachment
+    ? generateApiParameters(`${config.API_BASE_URL}/v1/complaint-attachment-reference/${attachment.id}`)
+    : generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
   const response = await deleteMethod<string>(dispatch, parameters);
 
   if (response) {
-    if (isImage(attachment.name)) {
+    if (isImage(attachment.name) && !attachment.isChefsAttachment) {
       const thumbId = await findThumbnailId(dispatch, attachment, identifier, subIdentifier, attachmentType);
       if (thumbId) {
         const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${thumbId}`);
@@ -335,6 +361,7 @@ const saveSingleAttachment = async ({
   attachmentType,
   isSynchronous,
   historicalAttachments,
+  attachmentReferences,
   isComplaintAttachment,
   attachmentConfig,
   extendedMeta,
@@ -414,6 +441,20 @@ const saveSingleAttachment = async ({
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
       await patch<boolean>(dispatch, parameters, false);
     }
+
+    // An upload on a complaint replaces any CHEFS attachment of the same name
+    await Promise.all(
+      attachmentReferences
+        .filter((item) => item.filename_text === attachment.name)
+        .map((reference) =>
+          deleteMethod<ComplaintAttachmentReference>(
+            dispatch,
+            generateApiParameters(
+              `${config.API_BASE_URL}/v1/complaint-attachment-reference/${reference.complaint_attachment_reference_guid}`,
+            ),
+          ),
+        ),
+    );
     ToggleSuccess(`Attachment "${attachment.name}" saved`);
   }
 };
@@ -463,6 +504,16 @@ export const saveAttachments =
 
     let historicalAttachments = await get<Array<COMSObject>>(dispatch, params, historicalHeader, isSynchronous);
 
+    const attachmentReferences =
+      attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT
+        ? await get<Array<ComplaintAttachmentReference>>(
+            dispatch,
+            generateApiParameters(`${config.API_BASE_URL}/v1/complaint-attachment-reference/${identifier}`),
+            undefined,
+            isSynchronous,
+          )
+        : [];
+
     for (const attachment of attachments) {
       try {
         await saveSingleAttachment({
@@ -473,6 +524,7 @@ export const saveAttachments =
           attachmentType,
           isSynchronous,
           historicalAttachments,
+          attachmentReferences,
           isComplaintAttachment,
           attachmentConfig,
           extendedMeta,

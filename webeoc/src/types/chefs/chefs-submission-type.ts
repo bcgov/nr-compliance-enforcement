@@ -26,6 +26,21 @@ export interface ChefsMap {
   selectedBaseLayer?: string;
 }
 
+export interface ChefsFile {
+  storage: string;
+  size: number;
+  originalName: string;
+  data: {
+    id: string;
+  };
+}
+
+export interface ChefsAttachment {
+  id: string;
+  name: string;
+  size: number;
+}
+
 // Raw form data from CHEFS: the Complaint fields plus CHEFS-only components that the transforms convert.
 export interface ChefsSubmissionData extends Complaint {
   incidentLocation?: ChefsMap;
@@ -36,4 +51,5 @@ export interface ChefsSubmissionData extends Complaint {
   previously_reported_ind?: boolean;
   agency_reported_txt?: string;
   chefs_confirmation_id?: string;
+  attachments?: ChefsAttachment[];
 }
