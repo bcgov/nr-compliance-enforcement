@@ -171,6 +171,11 @@
          <index name="app_user_activity_xref_pk" unique="true">
             <column ascending="true" name="app_user_activity_xref_guid"/>
          </index>
+         <index name="app_user_activity_xref_adminsup_active_unique" unique="true">
+            <column ascending="true" name="activity_type"/>
+            <column ascending="true" name="activity_identifier_ref"/>
+            <column ascending="true" name="app_user_guid"/>
+         </index>
          <index name="app_user_activity_xref_assignee_active_unique" unique="true">
             <column ascending="true" name="activity_type"/>
             <column ascending="true" name="activity_identifier_ref"/>

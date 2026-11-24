@@ -139,18 +139,18 @@
         "comments": "<p>The timestamp when the data in the business table was created or modified.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "inspection_business",
-        "tableFileName": "inspection_business",
+        "tableName": "inspection_h",
+        "tableFileName": "inspection_h",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>inspection_party_guid",
-        "type": "uuid",
-        "length": 2147483647,
-        "nullable": "√",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "operation_type",
+        "type": "bpchar",
+        "length": 1,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Foreign key: System generated unique identifier for a party.<\/p>"
+        "comments": "<p>The operation performed: I = Insert, U = Update, D = Delete<\/p>"
     },
     {
         "tableName": "inspection_person_h",
@@ -279,18 +279,18 @@
         "comments": "<p>Foreign key: System generated unique identifier for a party.<\/p>"
     },
     {
-        "tableName": "inspection_h",
-        "tableFileName": "inspection_h",
+        "tableName": "inspection_business",
+        "tableFileName": "inspection_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "target_row_id",
-        "type": "uuid",
-        "length": 2147483647,
+        "name": "active_ind",
+        "type": "bool",
+        "length": 1,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>The unique key for the inspection that has been created or modified.<\/p>"
+        "defaultValue": "true",
+        "comments": "<p>A value of true indicates this is the latest version of the record.   A value of false indicates that a newer version of the record is available.<\/p>"
     },
     {
         "tableName": "inspection_status_code",
@@ -307,18 +307,18 @@
         "comments": "<p>The short description of the inspection status code.<\/p>"
     },
     {
-        "tableName": "inspection_business",
-        "tableFileName": "inspection_business",
+        "tableName": "inspection_h",
+        "tableFileName": "inspection_h",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "active_ind",
-        "type": "bool",
-        "length": 1,
+        "name": "operation_executed_at",
+        "type": "timestamp",
+        "length": 29,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "true",
-        "comments": "<p>A value of true indicates this is the latest version of the record.   A value of false indicates that a newer version of the record is available.<\/p>"
+        "defaultValue": "now()",
+        "comments": "<p>The timestamp when the data in the inspection table was created or modified.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
         "tableName": "inspection_party",
@@ -447,32 +447,32 @@
         "comments": ""
     },
     {
-        "tableName": "inspection_h",
-        "tableFileName": "inspection_h",
+        "tableName": "inspection_business",
+        "tableFileName": "inspection_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "operation_user_id",
-        "type": "varchar",
-        "length": 32,
-        "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "CURRENT_USER",
-        "comments": "<p>The id of the user that created or modified the data in the inspection table.  Defaults to the logged in user if not passed in by the application.<\/p>"
-    },
-    {
-        "tableName": "inspection_h",
-        "tableFileName": "inspection_h",
-        "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "operation_executed_at",
+        "name": "create_utc_timestamp",
         "type": "timestamp",
         "length": 29,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "now()",
-        "comments": "<p>The timestamp when the data in the inspection table was created or modified.  The timestamp is stored in UTC with no Offset.<\/p>"
+        "comments": "<p>The timestamp when the business was created. The timestamp is stored in UTC with no offset.<\/p>"
+    },
+    {
+        "tableName": "inspection_business",
+        "tableFileName": "inspection_business",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "update_user_id",
+        "type": "varchar",
+        "length": 32,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The id of the user that updated the business.<\/p>"
     },
     {
         "tableName": "inspection",
@@ -590,15 +590,15 @@
         "tableName": "inspection_business",
         "tableFileName": "inspection_business",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "update_utc_timestamp",
-        "type": "timestamp",
-        "length": 29,
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>inspection_party_guid",
+        "type": "uuid",
+        "length": 2147483647,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp when the business was updated. The timestamp is stored in UTC with no offset.<\/p>"
+        "comments": "<p>Foreign key: System generated unique identifier for a party.<\/p>"
     },
     {
         "tableName": "inspection_person_h",
@@ -755,18 +755,18 @@
         "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.<\/p>"
     },
     {
-        "tableName": "inspection_h",
-        "tableFileName": "inspection_h",
+        "tableName": "inspection_business",
+        "tableFileName": "inspection_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "data_after_executed_operation",
-        "type": "jsonb",
-        "length": 2147483647,
+        "name": "update_utc_timestamp",
+        "type": "timestamp",
+        "length": 29,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.<\/p>"
+        "comments": "<p>The timestamp when the business was updated. The timestamp is stored in UTC with no offset.<\/p>"
     },
     {
         "tableName": "inspection_person_h",
@@ -811,18 +811,18 @@
         "comments": "<p>The id of the user that updated the case.<\/p>"
     },
     {
-        "tableName": "inspection_h",
-        "tableFileName": "inspection_h",
+        "tableName": "inspection_business",
+        "tableFileName": "inspection_business",
         "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>h_inspection_guid",
-        "type": "uuid",
-        "length": 2147483647,
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "name",
+        "type": "varchar",
+        "length": 128,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "uuid_generate_v4()",
-        "comments": "<p>System generated unique key for inspection history. This key should never be exposed to users via any system utilizing the tables.<\/p>"
+        "defaultValue": "null",
+        "comments": "<p>Name of the business.<\/p>"
     },
     {
         "tableName": "inspection",
@@ -951,18 +951,18 @@
         "comments": ""
     },
     {
-        "tableName": "inspection_business",
-        "tableFileName": "inspection_business",
+        "tableName": "inspection_h",
+        "tableFileName": "inspection_h",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_user_id",
-        "type": "varchar",
-        "length": 32,
-        "nullable": "",
+        "name": "data_after_executed_operation",
+        "type": "jsonb",
+        "length": 2147483647,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The id of the user that created the business.<\/p>"
+        "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -993,18 +993,18 @@
         "comments": "<p>The unique key for the party that has been created or modified.<\/p>"
     },
     {
-        "tableName": "inspection_business",
-        "tableFileName": "inspection_business",
+        "tableName": "inspection_h",
+        "tableFileName": "inspection_h",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "name",
+        "name": "operation_user_id",
         "type": "varchar",
-        "length": 128,
+        "length": 32,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>Name of the business.<\/p>"
+        "defaultValue": "CURRENT_USER",
+        "comments": "<p>The id of the user that created or modified the data in the inspection table.  Defaults to the logged in user if not passed in by the application.<\/p>"
     },
     {
         "tableName": "inspection_person",
@@ -1091,18 +1091,18 @@
         "comments": ""
     },
     {
-        "tableName": "inspection_business",
-        "tableFileName": "inspection_business",
+        "tableName": "inspection_h",
+        "tableFileName": "inspection_h",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>inspection_business_guid",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>h_inspection_guid",
         "type": "uuid",
         "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "uuid_generate_v4()",
-        "comments": "<p>Primary key: System generated unique identifier for a business.<\/p>"
+        "comments": "<p>System generated unique key for inspection history. This key should never be exposed to users via any system utilizing the tables.<\/p>"
     },
     {
         "tableName": "inspection",
@@ -1136,15 +1136,15 @@
         "tableName": "inspection_business",
         "tableFileName": "inspection_business",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "create_utc_timestamp",
-        "type": "timestamp",
-        "length": 29,
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>inspection_business_guid",
+        "type": "uuid",
+        "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "now()",
-        "comments": "<p>The timestamp when the business was created. The timestamp is stored in UTC with no offset.<\/p>"
+        "defaultValue": "uuid_generate_v4()",
+        "comments": "<p>Primary key: System generated unique identifier for a business.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -1231,18 +1231,18 @@
         "comments": "<p>The id of the user that created the inspection status code.<\/p>"
     },
     {
-        "tableName": "inspection_h",
-        "tableFileName": "inspection_h",
+        "tableName": "inspection_business",
+        "tableFileName": "inspection_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "operation_type",
-        "type": "bpchar",
-        "length": 1,
+        "name": "create_user_id",
+        "type": "varchar",
+        "length": 32,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The operation performed: I = Insert, U = Update, D = Delete<\/p>"
+        "comments": "<p>The id of the user that created the business.<\/p>"
     },
     {
         "tableName": "inspection_business_h",
@@ -1371,18 +1371,18 @@
         "comments": "<p>Address of the inspection.<\/p>"
     },
     {
-        "tableName": "inspection_business",
-        "tableFileName": "inspection_business",
+        "tableName": "inspection_h",
+        "tableFileName": "inspection_h",
         "tableType": "Table",
-        "keyClass": "indexedColumn",
-        "keyTitle": "Indexed",
-        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>business_guid_ref",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "target_row_id",
         "type": "uuid",
         "length": 2147483647,
-        "nullable": "√",
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Cross schema foreign key (unenforced) to shared.business table to indicate the shared business record this party was created from or currently linked to.<\/p>"
+        "comments": "<p>The unique key for the inspection that has been created or modified.<\/p>"
     },
     {
         "tableName": "inspection",
@@ -1402,15 +1402,15 @@
         "tableName": "inspection_business",
         "tableFileName": "inspection_business",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "update_user_id",
-        "type": "varchar",
-        "length": 32,
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>business_guid_ref",
+        "type": "uuid",
+        "length": 2147483647,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The id of the user that updated the business.<\/p>"
+        "comments": "<p>Cross schema foreign key (unenforced) to shared.business table to indicate the shared business record this party was created from or currently linked to.<\/p>"
     },
     {
         "tableName": "inspection_party",
