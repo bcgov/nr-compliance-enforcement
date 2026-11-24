@@ -90,7 +90,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       ...complaintMessage,
       incident_number: stagedIdentifier ?? complaintMessage.incident_number,
     };
-    this.complaintsPublisherService.publishStagingComplaintInsertedMessage(stagedComplaint);
+    void this.complaintsPublisherService.publishStagingComplaintInsertedMessage(stagedComplaint);
   }
 
   private async handleUpdatedComplaint(message, complaintMessage: ComplaintUpdate) {

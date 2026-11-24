@@ -124,8 +124,6 @@ export class ChefsSubscriberService implements OnModuleInit {
       }
       // Always fetch from the API so submissions are never limited by the event stream's message size.
       const submissionData = await this.chefsApiService.getSubmissionData(meta.submissionId);
-      //TODO: Remove temp debugging
-      console.dir(submissionData, { depth: null });
       const complaint = transformChefsSubmission(submissionData);
       console.dir(complaint, { depth: null });
       await this.complaintsPublisherService.publishComplaintToNatsuite(complaint, meta.submissionId);
