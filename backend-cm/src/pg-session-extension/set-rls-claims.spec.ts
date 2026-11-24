@@ -23,6 +23,17 @@ describe("setRlsClaims", () => {
     expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.exp = '1700000000'");
   });
 
+  it("sets collaborator_activity_identifiers as a comma separated list", async () => {
+    const tx = makeTx();
+    await setRlsClaims(tx, {
+      idir_user_guid: "g",
+      client_roles: ["PARKS"],
+      exp: 1,
+      collaborator_activity_identifiers: ["a", "b"],
+    });
+    expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.collaborator_activity_identifiers = 'a,b'");
+  });
+
   it("maps CEEB role -> EPO agency_code", async () => {
     const tx = makeTx();
     await setRlsClaims(tx, { idir_user_guid: "g", client_roles: ["CEEB"], exp: 1 });

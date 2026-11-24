@@ -3,8 +3,9 @@ import { PassportModule } from "@nestjs/passport";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtOrApiKeyGuard } from "./jwt-or-apikey.guard";
 import { JwtAuthStrategy } from "./jwtauth.strategy";
+import { PrismaModuleShared } from "../prisma/shared/prisma.shared.module";
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: "jwt" })],
+  imports: [PassportModule.register({ defaultStrategy: "jwt" }), PrismaModuleShared],
   providers: [
     JwtAuthStrategy,
     {

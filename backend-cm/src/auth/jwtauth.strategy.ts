@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { passportJwtSecret } from "jwks-rsa";
+import { SharedPrismaService } from "../prisma/shared/prisma.shared.service";
 @Injectable()
 
 /**
@@ -10,7 +11,7 @@ import { passportJwtSecret } from "jwks-rsa";
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtAuthStrategy.name);
 
-  constructor() {
+  constructor(private readonly prisma: SharedPrismaService) {
     super({
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
@@ -27,7 +28,22 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     this.logger.debug(`KEYCLOCK_CLIENT_ID: ${process.env.KEYCLOCK_CLIENT_ID}`);
     this.logger.debug(`JWT_ISSUER: ${process.env.JWT_ISSUER}`);
   }
-  validate(payload: unknown): unknown {
-    return payload;
+  // Adds the activities the user collaborates on, which the RLS policies can't look up across schemas
+  async validate(payload: any): Promise<any> {
+    if (!payload?.idir_user_guid) {
+      return payload;
+    }
+    const collaborators = await this.prisma.app_user_activity_xref.findMany({
+      where: {
+        app_user_activity_xref_code: "COLLABORAT",
+        active_ind: true,
+        app_user: { auth_user_guid: payload.idir_user_guid },
+      },
+      select: { activity_identifier_ref: true },
+    });
+    return {
+      ...payload,
+      collaborator_activity_identifiers: collaborators.map((collaborator) => collaborator.activity_identifier_ref),
+    };
   }
 }
