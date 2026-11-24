@@ -13,7 +13,15 @@ import { CssService } from "../../external_api/css/css.service";
 import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
 import { AppUserService } from "../../v1/app_user/app_user.service";
 import { CodeTableService } from "../code-table/code-table.service";
-import { getCosGeoOrgUnits } from "../../external_api/shared_data";
+import { getCosCommunityWithApiKey, getCosGeoOrgUnits, getParkNameWithApiKey } from "../../external_api/shared_data";
+import { generateNewComplaintEmailBody } from "../../email_templates/new_chefs_complaint";
+import {
+  buildComplaintUrl,
+  buildNewComplaintDetails,
+  COMPLAINT_TYPE_DESCRIPTIONS,
+  NewComplaintNotification,
+  selectNewComplaintRecipients,
+} from "./new-complaint-notification";
 
 @Injectable()
 export class EmailService {
@@ -300,5 +308,69 @@ export class EmailService {
       this.logger.error(`Failed to send collaborator email: ${error.message}`);
       throw error;
     }
+  };
+
+  // Notifies the business that a complaint submitted through CHEFS has been created in NatSuite.
+  // Recipients come from email_reference, matched on the complaint's agency and zone.
+  // Returns the addresses the email was sent to (empty if nobody is set up to receive it).
+  sendNewComplaintNotification = async (notification: NewComplaintNotification): Promise<string[]> => {
+    const { complaintId, complaintType, agencyCode, communityCode, parkGuid } = notification;
+
+    let zoneCode: string | undefined;
+    let communityName: string | undefined;
+    if (communityCode) {
+      try {
+        const community = await getCosCommunityWithApiKey(communityCode);
+        zoneCode = community?.zoneCode;
+        communityName = community?.areaName;
+      } catch (error) {
+        this.logger.error(`Unable to look up community ${communityCode} for complaint ${complaintId}: ${error}`);
+      }
+    }
+
+    let parkName: string | undefined;
+    if (parkGuid) {
+      try {
+        parkName = await getParkNameWithApiKey(parkGuid);
+      } catch (error) {
+        this.logger.error(`Unable to look up park ${parkGuid} for complaint ${complaintId}: ${error}`);
+      }
+    }
+
+    const emailReferences = await this._emailReferenceService.findActiveByAgency(agencyCode);
+    const recipientList = selectNewComplaintRecipients(emailReferences, zoneCode);
+    if (recipientList.length === 0) {
+      this.logger.warn(`No email recipients for new complaint ${complaintId} (agency ${agencyCode}, zone ${zoneCode})`);
+      return [];
+    }
+
+    const complaintTypeDescription = COMPLAINT_TYPE_DESCRIPTIONS[complaintType] ?? complaintType;
+    const location = parkName ?? communityName ?? notification.submission?.cos_area_community;
+    const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
+    const emailSubject = `${envFlag}New ${complaintTypeDescription} complaint #${complaintId}${
+      location ? ` (${location})` : ""
+    }`;
+
+    const emailBody = generateNewComplaintEmailBody({
+      complaintId,
+      complaintTypeDescription,
+      complaintUrl: buildComplaintUrl(complaintType, complaintId),
+      details: buildNewComplaintDetails(notification, communityName, parkName),
+      supportEmail: process.env.CEDS_EMAIL,
+    });
+
+    await this._chesService.sendEmail(
+      process.env.CEDS_EMAIL,
+      "NatSuite",
+      emailSubject,
+      emailBody,
+      recipientList,
+      [],
+      [],
+      "new_complaint",
+    );
+
+    this.logger.debug(`Sent new complaint notification for ${complaintId} to ${recipientList.join(", ")}`);
+    return recipientList;
   };
 }

@@ -291,6 +291,8 @@ export const mockDeleteAppUserTeamXref = jest.fn().mockResolvedValue(null);
 export const mockGetCosGeoOrgUnitRegions = jest.fn().mockResolvedValue(mockRegionsData);
 export const mockGetCosGeoOrgUnitZones = jest.fn().mockResolvedValue(mockZonesData);
 export const mockGetCosGeoOrgUnitCommunities = jest.fn().mockResolvedValue(mockCommunitiesData);
+export const mockGetCosCommunityWithApiKey = jest.fn().mockResolvedValue(undefined);
+export const mockGetParkNameWithApiKey = jest.fn().mockResolvedValue(undefined);
 
 export const createSharedDataMocks = () => ({
   getAppUsers: mockGetAppUsers,
@@ -318,6 +320,8 @@ export const createSharedDataMocks = () => ({
   getCosGeoOrgUnitRegions: mockGetCosGeoOrgUnitRegions,
   getCosGeoOrgUnitZones: mockGetCosGeoOrgUnitZones,
   getCosGeoOrgUnitCommunities: mockGetCosGeoOrgUnitCommunities,
+  getCosCommunityWithApiKey: mockGetCosCommunityWithApiKey,
+  getParkNameWithApiKey: mockGetParkNameWithApiKey,
 });
 
 export const resetSharedDataMocks = () => {
@@ -346,4 +350,6 @@ export const resetSharedDataMocks = () => {
   mockGetCosGeoOrgUnitRegions.mockReset().mockResolvedValue(mockRegionsData);
   mockGetCosGeoOrgUnitZones.mockReset().mockResolvedValue(mockZonesData);
   mockGetCosGeoOrgUnitCommunities.mockReset().mockResolvedValue(mockCommunitiesData);
+  mockGetCosCommunityWithApiKey.mockReset().mockResolvedValue(undefined);
+  mockGetParkNameWithApiKey.mockReset().mockResolvedValue(undefined);
 };

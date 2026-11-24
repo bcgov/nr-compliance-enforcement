@@ -54,6 +54,7 @@ export class ChesService implements ExternalApiService {
     recipientList: string[],
     ccList?: string[],
     attachments?: any[],
+    tag: string = "complaint_referral",
   ) => {
     try {
       const apiToken = await this.authenticate();
@@ -79,7 +80,7 @@ export class ChesService implements ExternalApiService {
         priority: "normal",
         subject: emailSubject,
         to: recipientList,
-        tag: "complaint_referral",
+        tag,
       };
 
       const response = await axios.post(url, payload, config);
