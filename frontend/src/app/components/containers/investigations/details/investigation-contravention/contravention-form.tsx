@@ -119,11 +119,6 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
   });
 
   const deleteContraventionMutation = useGraphQLMutation(REMOVE_CONTRAVENTION, {
-    onSuccess: () => {
-      onIsSavingChange?.(false);
-      ToggleSuccess("Contravention deleted successfully");
-      onClose();
-    },
     onError: (error: any) => {
       onIsSavingChange?.(false);
       console.error("Error deleting contravention:", error);
@@ -175,6 +170,9 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
         partyGuid: partyGuid ?? null,
       });
       await deletePartyDecisionAttachments();
+      onIsSavingChange?.(false);
+      ToggleSuccess("Contravention deleted successfully");
+      onClose();
     });
   }, [onRequestDelete, contravention, activityGuid, isEditMode, partyGuid]);
 
