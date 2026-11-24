@@ -51,5 +51,6 @@ export interface ChefsSubmissionData extends Complaint {
   previously_reported_ind?: boolean;
   agency_reported_txt?: string;
   chefs_confirmation_id?: string;
+  chefs_submission_id?: string;
   attachments?: ChefsAttachment[];
 }
