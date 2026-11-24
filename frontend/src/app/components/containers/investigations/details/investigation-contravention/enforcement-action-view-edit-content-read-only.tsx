@@ -14,6 +14,7 @@ import {
   COMMENT_DECISION_CODES,
 } from "./enforcement-action-constants";
 import AttachmentCarousel from "@/app/components/common/attachment-carousel";
+import { ComsAccessWarning } from "@/app/components/common/coms-access-warning";
 import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
 
 const formatDate = (value?: string | Date | null): string =>
@@ -44,6 +45,7 @@ interface EnforcementActionViewEditContentReadOnlyProps {
   decisionDetailLabels: DecisionDetailLabels;
   attachments: Attachment[];
   isLoadingAttachments: boolean;
+  hasComsAccess: boolean;
   contravention: Contravention;
   showNoticeOfCancellation: boolean;
 }
@@ -66,6 +68,7 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
   decisionDetailLabels,
   attachments,
   isLoadingAttachments,
+  hasComsAccess,
   contravention,
   showNoticeOfCancellation,
 }) => {
@@ -262,6 +265,7 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
           </div>
 
           <Field label="Attachments">
+            {!hasComsAccess && <ComsAccessWarning />}
             {isLoadingAttachments ? <span className="text-muted">Loading…</span> : attachmentContent}
           </Field>
         </>

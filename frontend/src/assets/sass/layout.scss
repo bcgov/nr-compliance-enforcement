@@ -941,12 +941,17 @@ td.actions-col {
 }
 
 .offcanvas-header {
+  padding: 0.75rem 1rem;
   margin-top: 108px;
 }
 
 .offcanvas-title {
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+.offcanvas-body {
+  padding-top: 0px;
 }
 
 .environment-banner {

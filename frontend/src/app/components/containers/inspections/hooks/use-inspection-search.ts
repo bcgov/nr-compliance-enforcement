@@ -31,6 +31,9 @@ const DEFAULT_SEARCH_VALUES: InspectionSearchParams = {
   viewType: "list",
 };
 
+// Keys that count as filters (as opposed to search, sort, paging or view type).
+const FILTER_KEYS: (keyof InspectionSearchParams)[] = ["inspectionStatus", "leadAgency", "startDate", "endDate"];
+
 const serializeDate = (date: Date | null): string | undefined =>
   date ? formatDateObjectAsString(date, { format: "date" }) : undefined;
 
@@ -141,8 +144,11 @@ export const useInspectionSearch = () => {
   // Resets filters to their defaults while preserving search, sort and view type.
   // Inspections have no role-based default filters, so all filters are cleared.
   const resetFilters = useCallback(() => {
-    clearValues(["inspectionStatus", "leadAgency", "startDate", "endDate"]);
+    clearValues(FILTER_KEYS);
   }, [clearValues]);
+
+  // True when every filter is at its default (none applied). Used to hide the inline reset button.
+  const isDefaultFilters = useMemo(() => FILTER_KEYS.every((key) => searchValues[key] == null), [searchValues]);
 
   const getFilters = useCallback(() => {
     const { viewType, page, pageSize, ...filters } = searchValues;
@@ -156,6 +162,7 @@ export const useInspectionSearch = () => {
     clearValues,
     resetSearch,
     resetFilters,
+    isDefaultFilters,
     getFilters,
     searchURL: useAppSelector(selectInspectionListUrl),
   };

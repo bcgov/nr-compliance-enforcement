@@ -24,7 +24,7 @@ type Props = {
 };
 
 export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
-  const { searchValues, setValues, clearValues, resetFilters } = useInvestigationSearch();
+  const { searchValues, setValues, clearValues, resetFilters, isDefaultFilters } = useInvestigationSearch();
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const regionOptions = useAppSelector(selectCascadedRegion(searchValues.region ?? undefined));
   const zoneOptions = useAppSelector(selectCascadedZone(undefined, searchValues.zone ?? undefined));
@@ -264,14 +264,17 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
           />
         )}
 
-        <Button
-          variant="link"
-          size="sm"
-          id="investigation-reset-filters-btn"
-          onClick={resetFilters}
-        >
-          Reset
-        </Button>
+        {!isDefaultFilters && (
+          <Button
+            variant="link"
+            size="sm"
+            className="link-primary"
+            id="investigation-reset-filters-btn"
+            onClick={resetFilters}
+          >
+            Reset
+          </Button>
+        )}
       </div>
     </div>
   );

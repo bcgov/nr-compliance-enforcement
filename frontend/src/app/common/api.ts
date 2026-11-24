@@ -93,7 +93,7 @@ axios.interceptors.response.use(
     }
 
     if (response?.status === STATUS_CODES.Forbiden) {
-      ToggleError("User is not authorized to perform this action");
+      ToggleError("User is not authorized to perform this action", { toastId: "not-authorized" }); // Assign toastId to prevent duplicate toasts for the same error
     }
 
     if (response?.status === STATUS_CODES.Conflict) {

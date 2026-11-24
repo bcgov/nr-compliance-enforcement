@@ -36,6 +36,7 @@ import { FilterDate } from "@components/common/filter-date";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import { ParkSelect } from "@/app/components/common/park-select";
 import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
+import { Button } from "react-bootstrap";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
 
 const LINKED_TO_CASE_OPTIONS = [
@@ -45,9 +46,10 @@ const LINKED_TO_CASE_OPTIONS = [
 
 type Props = {
   type: string;
+  onResetFilters: () => void;
 };
 
-export const ComplaintFilter: FC<Props> = ({ type }) => {
+export const ComplaintFilter: FC<Props> = ({ type, onResetFilters }) => {
   const {
     state: {
       agency,
@@ -539,6 +541,15 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       <div>
         {/* props */}
         <div className="comp-filter-container">
+          <Button
+            variant="link"
+            size="sm"
+            className="link-primary"
+            id="comp-panel-reset-filters-btn"
+            onClick={onResetFilters}
+          >
+            Reset filters
+          </Button>
           {/* <!-- tombstone --> */}
           {activeFilters.showRegionFilter && (
             <div id="comp-filter-region-id">

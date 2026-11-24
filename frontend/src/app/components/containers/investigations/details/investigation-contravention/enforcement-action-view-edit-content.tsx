@@ -11,6 +11,8 @@ import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { CONTRAVENTION_MAX_LINES, LegislationDisplay } from "@/app/common/legislation-display";
 import { ExpandableContent } from "@/app/common/expandable-content";
+import { useComsAccess } from "@/app/hooks/use-coms-access";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 
 interface EnforcementActionViewEditContentProps {
   currentStep: number;
@@ -47,10 +49,12 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
 }) => {
   const eaId = enforcementAction?.enforcementActionIdentifier;
 
+  const comsAccess = useComsAccess(AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT);
+
   const attachmentsQuery = useQuery({
     queryKey: ["enforcement-action-attachments", investigationGuid, eaId],
     queryFn: () => fetchAttachmentsWithMetadata(investigationGuid, undefined, eaId, true),
-    enabled: !!eaId,
+    enabled: !!eaId && comsAccess.isSuccess,
   });
 
   const existingAttachments = attachmentsQuery.data ?? [];
@@ -138,6 +142,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
             decisionDetailLabels={decisionDetailLabels}
             attachments={existingAttachments}
             isLoadingAttachments={attachmentsQuery.isLoading}
+            hasComsAccess={!comsAccess.isError}
             contravention={contravention}
             showNoticeOfCancellation={showNoticeOfCancellation}
           />

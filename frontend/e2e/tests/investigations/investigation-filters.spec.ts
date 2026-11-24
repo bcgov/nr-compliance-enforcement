@@ -101,4 +101,31 @@ test.describe("Investigation Filters", () => {
     await expect(page).toHaveURL(/sortBy=openedTimestamp/);
     await expect(page).toHaveURL(/sortOrder=ASC/);
   });
+
+  test("it only shows the inline reset button when filters differ from the defaults", async ({ page }) => {
+    // beforeEach lands on the COS defaults (Open + primary investigator)
+    await expect(page.locator("#investigation-status-filter-pill")).toContainText("Open");
+    await expect(page.locator("#investigation-reset-filters-btn")).toBeHidden();
+
+    await page.locator("#investigation-status-filter-pill").click();
+    await waitForSpinner(page);
+    await expect(page.locator("#investigation-reset-filters-btn")).toBeVisible();
+
+    await page.locator("#investigation-reset-filters-btn").click();
+    await waitForSpinner(page);
+    await expect(page.locator("#investigation-status-filter-pill")).toContainText("Open");
+    await expect(page.locator("#investigation-reset-filters-btn")).toBeHidden();
+  });
+
+  test("it resets filters from the filter panel", async ({ page }) => {
+    await page.locator("#investigation-status-filter-pill").click();
+    await waitForSpinner(page);
+    await expect(page.locator("#investigation-status-filter-pill")).toBeHidden();
+
+    await page.locator("#investigation-filter-btn:visible, #investigation-filter-btn-mobile:visible").click();
+    await page.locator("#investigation-panel-reset-filters-btn:visible").click();
+    await waitForSpinner(page);
+
+    await expect(page.locator("#investigation-status-filter-pill")).toContainText("Open");
+  });
 });

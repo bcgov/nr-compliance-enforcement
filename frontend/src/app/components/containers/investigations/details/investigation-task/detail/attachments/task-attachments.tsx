@@ -4,6 +4,9 @@ import { Attachment } from "@/app/common/attachment-utils";
 import { TaskAttachmentList } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/attachment-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { useComsAccess } from "@/app/hooks/use-coms-access";
+import { ComsAccessWarning } from "@/app/components/common/coms-access-warning";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_TASK_ATTACHMENT } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty, Task } from "@/generated/graphql";
@@ -11,6 +14,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import { FC } from "react";
 import { Button } from "react-bootstrap";
+import { SORT_TYPES } from "@constants/sort-direction";
 
 interface TaskAttachmentProps {
   investigationGuid: string;
@@ -31,6 +35,8 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
   });
   const parties = (data?.getInvestigation?.parties ?? []).filter(Boolean) as InvestigationParty[];
 
+  const comsAccess = useComsAccess(AttachmentEnum.TASK_ATTACHMENT);
+
   const { pagedAttachments, allAttachments, isLoading } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
     taskId: task?.taskIdentifier,
@@ -39,11 +45,11 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
     search: searchValues.search,
     taskFilter: searchValues.taskFilter,
     fileTypeFilter: searchValues.fileTypeFilter,
-    sortBy: searchValues.sortBy,
-    sortOrder: searchValues.sortOrder,
+    sortBy: "date",
+    sortOrder: SORT_TYPES.DESC,
     page: searchValues.page,
     pageSize: searchValues.pageSize,
-    enabled: !!investigationGuid,
+    enabled: !!investigationGuid && comsAccess.isSuccess,
   });
 
   const handleAddAttachment = () => {
@@ -104,6 +110,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
           )}
         </div>
       </div>
+      {comsAccess.isError && <ComsAccessWarning />}
 
       {pagedAttachments.length === 0 ? (
         <div>
