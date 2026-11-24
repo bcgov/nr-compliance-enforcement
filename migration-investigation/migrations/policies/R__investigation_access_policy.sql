@@ -19,7 +19,7 @@ CREATE POLICY policy_investigation_access ON investigation.investigation
       -- Allow access when the row's owned_by_agency_ref matches the user's agency.
       WHEN owned_by_agency_ref = COALESCE(current_setting('jwt.claims.agency_code', true), '') THEN true
       -- Allow access when the user is a collaborator on the investigation.
-      -- The collaborators are in the shared schema, so the application passes them in as a comma separated list.
+      -- Collaborators are in the shared schema so they are passed in
       WHEN investigation_guid::text = ANY(string_to_array(COALESCE(current_setting('jwt.claims.collaborator_activity_identifiers', true), ''), ',')) THEN true
       -- Default: deny access
       ELSE false

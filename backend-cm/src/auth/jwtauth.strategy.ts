@@ -28,7 +28,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     this.logger.debug(`KEYCLOCK_CLIENT_ID: ${process.env.KEYCLOCK_CLIENT_ID}`);
     this.logger.debug(`JWT_ISSUER: ${process.env.JWT_ISSUER}`);
   }
-  // Adds the activities the user collaborates on, which the RLS policies can't look up across schemas
+  // Collaborators are in the shared schema so they need to be passed in the JWT to the query as RLS can't access the shared shchema
   async validate(payload: any): Promise<any> {
     if (!payload?.idir_user_guid) {
       return payload;

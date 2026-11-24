@@ -7,9 +7,12 @@ import { GET_INVESTIGATION } from "../details/investigation-details";
 // only users with a role on the investigation or added as a collaborator can edit it
 export const hasInvestigationAccess = (investigation: Investigation | undefined, userGuid: string) =>
   !!investigation &&
-  ([investigation.primaryInvestigatorGuid, investigation.supervisorGuid, investigation.fileCoordinatorGuid].includes(
-    userGuid,
-  ) ||
+  ([
+    investigation.primaryInvestigatorGuid,
+    investigation.supervisorGuid,
+    investigation.fileCoordinatorGuid,
+    ...(investigation.adminSupportGuids ?? []),
+  ].includes(userGuid) ||
     !!investigation.collaborators?.some((collaborator) => collaborator?.appUserGuid === userGuid));
 
 // used cached get to check if investigation is closed or the user has no access
