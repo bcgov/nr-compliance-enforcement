@@ -12,7 +12,8 @@ import { ChangeStatusModal, StatusChangeAdvisory } from "@/app/components/common
 import { InvestigationAssignModal } from "@/app/components/containers/investigations/details/investigation-assign-modal";
 import { useForm } from "@tanstack/react-form";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import { isFeatureActive, openModal } from "@/app/store/reducers/app";
+import { appUserGuid, isFeatureActive, openModal } from "@/app/store/reducers/app";
+import { hasInvestigationAccess } from "@/app/components/containers/investigations/hooks/use-investigation-read-only";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { MANAGE_INVESTIGATION_COLLABORATORS } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
@@ -46,7 +47,9 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
   const dispatch = useAppDispatch();
   const showInvestigationCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATION_COLLABORATION));
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
-  const isReadOnly = investigation?.investigationStatus?.investigationStatusCode === "CLOSED";
+  const userGuid = useAppSelector(appUserGuid);
+  const hasAccess = hasInvestigationAccess(investigation, userGuid);
+  const isReadOnly = investigation?.investigationStatus?.investigationStatusCode === "CLOSED" || !hasAccess;
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
@@ -201,6 +204,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
                       as="button"
                       id="update-status-button"
                       onClick={handleOpenStatusModal}
+                      disabled={!hasAccess}
                     >
                       <i className="bi bi-arrow-repeat"></i>
                       <span>Update Status</span>
@@ -235,6 +239,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
                   title="Update investigation status"
                   variant="outline-light"
                   onClick={handleOpenStatusModal}
+                  disabled={!hasAccess}
                 >
                   <i className="bi bi-arrow-repeat"></i>
                   <span>Update status</span>
