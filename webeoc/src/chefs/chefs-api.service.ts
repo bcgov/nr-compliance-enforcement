@@ -24,7 +24,7 @@ export class ChefsApiService {
       const response = await axios.get<ChefsSubmissionResponse>(apiUrl, this._apiConfig);
       const { confirmationId, submission } = response.data.submission;
 
-      return { ...submission.data, chefs_confirmation_id: confirmationId };
+      return { ...submission.data, chefs_confirmation_id: confirmationId, chefs_submission_id: submissionId };
     } catch (error) {
       this.logger.error("Error calling CHEFS Submission API:", error);
       throw error;

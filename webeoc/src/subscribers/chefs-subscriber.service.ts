@@ -29,11 +29,15 @@ export class ChefsSubscriberService implements OnModuleInit {
   async onModuleInit() {
     try {
       this.natsConnection = await this.connectToChefs();
+      // If reconnect attempts run out log an error
+      this.natsConnection
+        .closed()
+        .then((error) => this.logger.error("CHEFS_INTAKE_ERROR CHEFS NATS connection closed", error));
       this.jsm = await this.natsConnection.jetstreamManager();
       await this.setupConsumer();
       await this.subscribeToTopics();
     } catch (error) {
-      this.logger.error("Failed to connect to CHEFS NATS or set up consumer:", error);
+      this.logger.error("CHEFS_INTAKE_ERROR Failed to connect to CHEFS NATS or set up consumer:", error);
     }
   }
 
@@ -90,7 +94,7 @@ export class ChefsSubscriberService implements OnModuleInit {
         eventMessage = JSON.parse(sc.decode(message.data));
       } catch (error) {
         // Unreadable messages will never succeed, so stop redelivery.
-        this.logger.error(`Unreadable message from ${message.subject}, not retrying`, error);
+        this.logger.error(`CHEFS_INTAKE_ERROR Unreadable message from ${message.subject}, not retrying`, error);
         message.term();
         continue;
       }
@@ -98,7 +102,7 @@ export class ChefsSubscriberService implements OnModuleInit {
       try {
         await this.handleFormEvent(message, eventMessage);
       } catch (error) {
-        this.logger.error(`Error processing message from ${message.subject}`, error);
+        this.logger.error(`CHEFS_INTAKE_ERROR Submission ${eventMessage?.meta?.submissionId}: ${error.message}`, error);
         message.nak(60_000); // retry in 60 seconds, up to CHEFS_MAX_DELIVER attempts
       }
     }
@@ -114,7 +118,7 @@ export class ChefsSubscriberService implements OnModuleInit {
     if (isNewSubmission) {
       if (!meta.submissionId) {
         // Without a submission id there is nothing to fetch, and retrying won't change that.
-        this.logger.error(`No submission id in message from ${message.subject}, not retrying`);
+        this.logger.error(`CHEFS_INTAKE_ERROR No submission id in message from ${message.subject}, not retrying`);
         message.term();
         return;
       }
