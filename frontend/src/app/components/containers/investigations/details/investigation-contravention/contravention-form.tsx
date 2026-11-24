@@ -5,6 +5,8 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ContraventionDetailsForm, ContraventionDetailsFormValues } from "./contravention-details-form";
 import { useMultiStepForm } from "@/app/hooks/multi-step-form";
+import { useAppDispatch } from "@/app/hooks/hooks";
+import { deleteEnforcementActionAttachments } from "@/app/common/enforcement-action-attachment-utils";
 
 interface ContraventionFormProps {
   activityGuid: string;
@@ -64,6 +66,26 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
   onClose,
 }) => {
   const isEditMode = !!contravention;
+
+  const dispatch = useAppDispatch();
+
+  // Removes the COMS attachments on this party's decisions for the contravention being deleted
+  const deletePartyDecisionAttachments = async () => {
+    const contraventionParty = contravention?.investigationParty?.find((p) =>
+      partyGuid ? p?.partyIdentifier === partyGuid : !p?.partyIdentifier,
+    );
+    const enforcementActionIds = (contraventionParty?.enforcementActions ?? [])
+      .map((ea) => ea?.enforcementActionIdentifier)
+      .filter((id): id is string => !!id);
+
+    try {
+      for (const enforcementActionId of enforcementActionIds) {
+        await deleteEnforcementActionAttachments(dispatch, activityGuid, enforcementActionId);
+      }
+    } catch (attachmentError) {
+      console.error("Contravention deleted, but its decision attachments could not be removed", attachmentError);
+    }
+  };
 
   const { registerStepValidate, registerStepValues, getStepValues, validateStep } = useMultiStepForm(
     onRequestValidate,
@@ -152,6 +174,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
         contraventionGuid: contravention.contraventionIdentifier,
         partyGuid: partyGuid ?? null,
       });
+      await deletePartyDecisionAttachments();
     });
   }, [onRequestDelete, contravention, activityGuid, isEditMode, partyGuid]);
 

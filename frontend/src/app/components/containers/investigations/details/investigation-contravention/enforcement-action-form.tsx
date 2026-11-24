@@ -457,6 +457,14 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     ToggleSuccess(isEdit ? "Decision updated successfully" : "Decision saved successfully");
   };
 
+  const deleteDecisionAttachments = async (enforcementActionId: string) => {
+    try {
+      await attachmentsRef.current?.deleteAll(enforcementActionId);
+    } catch (attachmentError) {
+      console.error("Enforcement action deleted, but its attachments could not be removed", attachmentError);
+    }
+  };
+
   // Expose save to modal
   useEffect(() => {
     onRequestSave(async () => {
@@ -533,6 +541,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         await deleteMutation.mutateAsync({
           enforcementActionId: enforcementAction.enforcementActionIdentifier,
         });
+        await deleteDecisionAttachments(enforcementAction.enforcementActionIdentifier);
         await updateTimestampMutation.mutateAsync({ investigationGuid });
         ToggleSuccess("Decision deleted successfully");
         onDirtyChange?.(0, false);
