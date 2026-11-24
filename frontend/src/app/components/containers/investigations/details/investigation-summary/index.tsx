@@ -62,6 +62,18 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const supervisor = supervisorObj ? `${supervisorObj?.last_name}, ${supervisorObj?.first_name}` : "Not Assigned";
 
   const officers = useAppSelector(selectOfficers);
+  const adminSupports = (investigationData?.adminSupportGuids ?? [])
+    .map((guid) => officers?.find((o) => o.app_user_guid === guid))
+    .filter((officer) => !!officer)
+    .map((officer) => ({
+      appUserGuid: officer!.app_user_guid,
+      firstName: officer!.first_name,
+      lastName: officer!.last_name,
+    }));
+  const [firstAdminSupport, ...otherAdminSupports] = adminSupports;
+  const adminSupport = firstAdminSupport
+    ? `${firstAdminSupport.lastName}, ${firstAdminSupport.firstName}`
+    : "Not Assigned";
   const collaborators = ((investigationData?.collaborators as AppUserActivityXref[]) ?? []).map((collaborator) => {
     const officer = officers?.find((o) => o.app_user_guid === collaborator.appUserGuid);
     return {
@@ -177,6 +189,27 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               >
                 <div>
                   <span id="comp-details-assigned-officer-name-text-id">{fileCoordinator}</span>
+                </div>
+              </div>
+            </dd>
+          </dl>
+
+          <dl>
+            <dt>Admin support</dt>
+            <dd>
+              <div
+                data-initials-sm={getAvatarInitials(adminSupport)}
+                className="comp-avatar comp-avatar-sm comp-avatar-orange"
+              >
+                <div>
+                  <span id="comp-details-admin-support-name-text-id">{adminSupport}</span>
+                  {otherAdminSupports.length > 0 && (
+                    <CollaboratorsTooltip
+                      id={`${investigationGuid}-admin-support`}
+                      countId="comp-header-admin-support-count"
+                      collaborators={otherAdminSupports}
+                    />
+                  )}
                 </div>
               </div>
             </dd>

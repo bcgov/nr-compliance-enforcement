@@ -104,12 +104,14 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
         supervisor: investigation.supervisorGuid || "",
         primaryInvestigator: investigation.primaryInvestigatorGuid || "",
         fileCoordinator: investigation.fileCoordinatorGuid || "",
+        adminSupports: investigation.adminSupportGuids ?? [],
       };
     }
     return {
       supervisor: "",
       primaryInvestigator: "",
       fileCoordinator: "",
+      adminSupports: [] as string[],
     };
   }, [investigation]);
 
@@ -120,6 +122,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
         supervisorGuid: value.supervisor,
         primaryInvestigatorGuid: value.primaryInvestigator,
         fileCoordinatorGuid: value.fileCoordinator || "",
+        adminSupportGuids: value.adminSupports ?? [],
       };
       await updateAssignMutation.mutateAsync({
         investigationGuid: investigation?.investigationGuid || "",

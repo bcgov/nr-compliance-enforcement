@@ -16,6 +16,7 @@ export interface InvestigationSearchParams {
   community: string | null;
   primaryInvestigator: string | null;
   fileCoordinator: string | null;
+  adminSupport: string | null;
   supervisor: string | null;
   startDate: Date | null;
   endDate: Date | null;
@@ -38,6 +39,7 @@ const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   community: null,
   primaryInvestigator: null,
   fileCoordinator: null,
+  adminSupport: null,
   supervisor: null,
   startDate: null,
   endDate: null,
@@ -60,6 +62,7 @@ const FILTER_KEYS: (keyof InvestigationSearchParams)[] = [
   "community",
   "primaryInvestigator",
   "fileCoordinator",
+  "adminSupport",
   "supervisor",
   "startDate",
   "endDate",
@@ -114,6 +117,7 @@ export const useInvestigationSearch = () => {
       community: searchParams.get("community"),
       primaryInvestigator: searchParams.get("primaryInvestigator"),
       fileCoordinator: searchParams.get("fileCoordinator"),
+      adminSupport: searchParams.get("adminSupport"),
       supervisor: searchParams.get("supervisor"),
       startDate: deserializeDate(searchParams.get("startDate")),
       endDate: deserializeDate(searchParams.get("endDate")),

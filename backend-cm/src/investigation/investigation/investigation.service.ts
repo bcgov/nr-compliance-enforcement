@@ -697,7 +697,7 @@ export class InvestigationService {
       where: {
         activity_type: "INVSTGTN",
         activity_identifier_ref: { in: investigations.map((investigation) => investigation.investigation_guid) },
-        app_user_activity_xref_code: { in: ["ASSIGNEE", "FILECOORD", "SUPERVISOR"] },
+        app_user_activity_xref_code: { in: ["ASSIGNEE", "FILECOORD", "SUPERVISOR", "ADMINSUPRT"] },
         active_ind: true,
       },
     });
@@ -711,6 +711,7 @@ export class InvestigationService {
       primaryInvestigators: assigneesWithCode("ASSIGNEE"),
       fileCoordinators: assigneesWithCode("FILECOORD"),
       supervisors: assigneesWithCode("SUPERVISOR"),
+      adminSupports: assigneesWithCode("ADMINSUPRT"),
     };
   }
 
@@ -869,6 +870,7 @@ export class InvestigationService {
       { code: "ASSIGNEE", appUserGuid: filters?.primaryInvestigator },
       { code: "FILECOORD", appUserGuid: filters?.fileCoordinator },
       { code: "SUPERVISOR", appUserGuid: filters?.supervisor },
+      { code: "ADMINSUPRT", appUserGuid: filters?.adminSupport },
     ].filter((assigneeFilter) => assigneeFilter.appUserGuid);
 
     if (assigneeFilters.length > 0) {
@@ -1115,6 +1117,13 @@ export class InvestigationService {
       investigation.primaryInvestigatorGuid = findAssignee("ASSIGNEE");
       investigation.supervisorGuid = findAssignee("SUPERVISOR");
       investigation.fileCoordinatorGuid = findAssignee("FILECOORD");
+      investigation.adminSupportGuids = assignees
+        .filter(
+          (assignee) =>
+            assignee.activity_identifier_ref === investigation.investigationGuid &&
+            assignee.app_user_activity_xref_code === "ADMINSUPRT",
+        )
+        .map((assignee) => assignee.app_user_guid);
     }
   }
 
@@ -1130,6 +1139,14 @@ export class InvestigationService {
       .filter(({ appUserGuid }) => appUserGuid !== undefined)
       .map(({ code, appUserGuid }) => ({ code, appUserGuid: appUserGuid || null }));
     await this.appUserActivityXrefService.assign("INVSTGTN", investigationGuid, assignments);
+    if (input.adminSupportGuids !== undefined) {
+      await this.appUserActivityXrefService.assignMany(
+        "INVSTGTN",
+        investigationGuid,
+        "ADMINSUPRT",
+        input.adminSupportGuids ?? [],
+      );
+    }
   }
 
   async updateLocationGeometryPoint(tx: any, investigationGuid: string, point: Point): Promise<void> {

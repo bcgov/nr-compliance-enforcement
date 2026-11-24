@@ -193,6 +193,19 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
           />
         )}
 
+        {hasFilter("adminSupport") && (
+          <FilterButton
+            id="investigation-admin-support-filter-pill"
+            label={`Admin support${
+              officerLabelByGuid.has(searchValues.adminSupport ?? "")
+                ? `: ${officerLabelByGuid.get(searchValues.adminSupport ?? "")}`
+                : ""
+            }`}
+            name="adminSupport"
+            clear={removeFilter}
+          />
+        )}
+
         {hasFilter("supervisor") && (
           <FilterButton
             id="investigation-supervisor-filter-pill"

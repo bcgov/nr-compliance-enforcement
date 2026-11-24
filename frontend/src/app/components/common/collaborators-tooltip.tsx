@@ -7,9 +7,16 @@ import { selectCodeTable } from "@store/reducers/code-table";
 type CollaboratorsTooltipProps = {
   id: string;
   collaborators: { appUserGuid: string; firstName?: string; lastName?: string; collaboratorAgency?: string }[];
+  // Defaults to the collaborator count id; pass a different one when reusing for another role (e.g. admin support)
+  countId?: string;
 };
 
-export const CollaboratorsTooltip: FC<CollaboratorsTooltipProps> = ({ id, collaborators }) => {
+// Renders "+N" with a hover/click tooltip listing the users. Used for collaborators and other multi-user roles.
+export const CollaboratorsTooltip: FC<CollaboratorsTooltipProps> = ({
+  id,
+  collaborators,
+  countId = "comp-header-collaborator-count",
+}) => {
   const agencyCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
 
   return (
@@ -23,16 +30,19 @@ export const CollaboratorsTooltip: FC<CollaboratorsTooltipProps> = ({ id, collab
           className="comp-tooltip comp-tooltip-bottom collaborators-tooltip"
         >
           {collaborators.map((c) => {
+            const agency = agencyCodes?.find(({ agency }) => agency === c.collaboratorAgency)?.shortDescription;
             return (
               <div
                 className="d-flex justify-content-start"
                 key={`${c.appUserGuid}`}
               >
                 {c.lastName}, {c.firstName}
-                <span className="mx-1">|</span>
-                <span className="fw-bold">
-                  {agencyCodes?.find(({ agency }) => agency === c.collaboratorAgency)?.shortDescription}
-                </span>
+                {agency && (
+                  <>
+                    <span className="mx-1">|</span>
+                    <span className="fw-bold">{agency}</span>
+                  </>
+                )}
               </div>
             );
           })}
@@ -40,8 +50,8 @@ export const CollaboratorsTooltip: FC<CollaboratorsTooltipProps> = ({ id, collab
       }
     >
       <span
-        id="comp-header-collaborator-count"
-        className="fw-bold"
+        id={countId}
+        className="comp-header-assignee-count fw-bold"
       >
         +{collaborators.length}
       </span>
