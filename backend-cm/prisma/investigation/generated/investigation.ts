@@ -5,7 +5,6 @@ import { exhibit } from "./exhibit";
 import { investigation_status_code } from "./investigation_status_code";
 import { investigation_source_code } from "./investigation_source_code";
 import { investigation_party } from "./investigation_party";
-import { officer_investigation_xref } from "./officer_investigation_xref";
 import { task } from "./task";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -49,15 +48,6 @@ export class investigation {
   @ApiPropertyOptional({ type: String })
   created_by_app_user_guid_ref?: string;
 
-  @ApiPropertyOptional({ type: String })
-  supervisor_guid_ref?: string;
-
-  @ApiPropertyOptional({ type: String })
-  primary_investigator_guid_ref?: string;
-
-  @ApiPropertyOptional({ type: String })
-  file_coordinator_guid_ref?: string;
-
   @ApiPropertyOptional({ type: Date })
   discovery_date_utc_date?: Date;
 
@@ -90,9 +80,6 @@ export class investigation {
 
   @ApiProperty({ isArray: true, type: () => investigation_party })
   investigation_party: investigation_party[];
-
-  @ApiProperty({ isArray: true, type: () => officer_investigation_xref })
-  officer_investigation_xref: officer_investigation_xref[];
 
   @ApiProperty({ isArray: true, type: () => task })
   task: task[];

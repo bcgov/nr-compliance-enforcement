@@ -1,10 +1,11 @@
 import { FC, useEffect, useCallback } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { CompSelect } from "@/app/components/common/comp-select";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import Option from "@apptypes/app/option";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficersByAgency, toOfficerOption } from "@/app/store/reducers/officer";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { FormField } from "@/app/components/common/form-field";
 import z from "zod";
@@ -30,10 +31,7 @@ export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({
   );
   const assignableOfficers: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
-      ? officersInAgencyList.map((officer: AppUser) => ({
-          value: officer.app_user_guid,
-          label: `${officer.last_name}, ${officer.first_name}`,
-        }))
+      ? officersInAgencyList.map((officer: AppUser) => toOfficerOption(officer))
       : [];
 
   const isDirty = useStore(form.store, (state: any) => state.isDirty);
@@ -132,6 +130,29 @@ export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({
                   showInactive={false}
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="adminSupports"
+              label="Admin support"
+              render={(field) => (
+                <ValidationMultiSelect
+                  id="admin-support-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  showInactive={false}
+                  options={assignableOfficers}
+                  values={assignableOfficers.filter((opt) =>
+                    ((field.state.value as string[]) ?? []).includes(opt.value as string),
+                  )}
+                  onChange={(options: Option[] | null) =>
+                    field.handleChange((options ?? []).map((option) => option.value as string))
+                  }
+                  placeholder="Select admin support"
+                  isClearable={true}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
                 />
               )}
             />

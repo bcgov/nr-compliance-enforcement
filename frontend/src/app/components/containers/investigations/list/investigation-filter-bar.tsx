@@ -24,7 +24,7 @@ type Props = {
 };
 
 export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
-  const { searchValues, setValues, clearValues, resetFilters } = useInvestigationSearch();
+  const { searchValues, setValues, clearValues, resetFilters, isDefaultFilters } = useInvestigationSearch();
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const regionOptions = useAppSelector(selectCascadedRegion(searchValues.region ?? undefined));
   const zoneOptions = useAppSelector(selectCascadedZone(undefined, searchValues.zone ?? undefined));
@@ -193,6 +193,19 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
           />
         )}
 
+        {hasFilter("adminSupport") && (
+          <FilterButton
+            id="investigation-admin-support-filter-pill"
+            label={`Admin support${
+              officerLabelByGuid.has(searchValues.adminSupport ?? "")
+                ? `: ${officerLabelByGuid.get(searchValues.adminSupport ?? "")}`
+                : ""
+            }`}
+            name="adminSupport"
+            clear={removeFilter}
+          />
+        )}
+
         {hasFilter("supervisor") && (
           <FilterButton
             id="investigation-supervisor-filter-pill"
@@ -214,7 +227,7 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
             clear={removeFilter}
           />
         )}
-        
+
         {hasFilter("investigationSource") && (
           <FilterButton
             id="investigation-source-filter-pill"
@@ -250,15 +263,18 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
             clear={removeFilter}
           />
         )}
-        
-         <Button
-          variant="link"
-          size="sm"
-          id="investigation-reset-filters-btn"
-          onClick={resetFilters}
-        >
-          Reset
-        </Button>
+
+        {!isDefaultFilters && (
+          <Button
+            variant="link"
+            size="sm"
+            className="link-primary"
+            id="investigation-reset-filters-btn"
+            onClick={resetFilters}
+          >
+            Reset
+          </Button>
+        )}
       </div>
     </div>
   );

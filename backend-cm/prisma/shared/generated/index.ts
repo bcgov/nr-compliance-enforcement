@@ -75,6 +75,9 @@ import { legislation_version_h as _legislation_version_h } from "./legislation_v
 import { nickname as _nickname } from "./nickname";
 import { species_code as _species_code } from "./species_code";
 import { wildlife_management_unit_code as _wildlife_management_unit_code } from "./wildlife_management_unit_code";
+import { app_user_activity_xref as _app_user_activity_xref } from "./app_user_activity_xref";
+import { app_user_activity_xref_code as _app_user_activity_xref_code } from "./app_user_activity_xref_code";
+import { app_user_activity_xref_h as _app_user_activity_xref_h } from "./app_user_activity_xref_h";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -154,6 +157,9 @@ export namespace PrismaModel {
   export class nickname extends _nickname {}
   export class species_code extends _species_code {}
   export class wildlife_management_unit_code extends _wildlife_management_unit_code {}
+  export class app_user_activity_xref extends _app_user_activity_xref {}
+  export class app_user_activity_xref_code extends _app_user_activity_xref_code {}
+  export class app_user_activity_xref_h extends _app_user_activity_xref_h {}
 
   export const extraModels = [
     agency_code,
@@ -233,5 +239,8 @@ export namespace PrismaModel {
     nickname,
     species_code,
     wildlife_management_unit_code,
+    app_user_activity_xref,
+    app_user_activity_xref_code,
+    app_user_activity_xref_h,
   ];
 }

@@ -258,11 +258,12 @@ export class AppUserService {
         secretAccessKey: process.env.OBJECTSTORE_SECRET_KEY,
         permCodes: permissions,
       };
+      let isEnrolled = true;
       try {
         await put(token, comsUrl, comsPayload, undefined, { suppressErrorLog: true });
       } catch (error) {
         this.logger.error(`Error requesting COMS access: ${(error as Error).message}`);
-        return;
+        isEnrolled = false;
       }
 
       const secureComsPayload = {
@@ -278,6 +279,10 @@ export class AppUserService {
         await put(token, comsUrl, secureComsPayload, undefined, { suppressErrorLog: true });
       } catch (error) {
         this.logger.error(`Error requesting secure COMS access: ${(error as Error).message}`);
+        isEnrolled = false;
+      }
+
+      if (!isEnrolled) {
         return;
       }
 

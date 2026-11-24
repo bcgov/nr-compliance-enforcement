@@ -1,4 +1,4 @@
-import { Investigation } from "@/generated/graphql";
+import { Investigation, AppUserActivityXref } from "@/generated/graphql";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
@@ -6,7 +6,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { getAvatarInitials } from "@common/methods";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
-import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
+import { selectOfficerByAppUserGuid, selectOfficers } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
 import { selectCodeTable } from "@/app/store/reducers/code-table";
@@ -17,6 +17,7 @@ import { getMapZoom } from "@/app/common/geocoder";
 import { CaseActivities } from "@/app/components/containers/cases/case-activities/case-activities";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { CollaboratorsTooltip } from "@/app/components/common/collaborators-tooltip";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -59,6 +60,29 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
 
   const supervisorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.supervisorGuid));
   const supervisor = supervisorObj ? `${supervisorObj?.last_name}, ${supervisorObj?.first_name}` : "Not Assigned";
+
+  const officers = useAppSelector(selectOfficers);
+  const adminSupports = (investigationData?.adminSupportGuids ?? [])
+    .map((guid) => officers?.find((o) => o.app_user_guid === guid))
+    .filter((officer) => !!officer)
+    .map((officer) => ({
+      appUserGuid: officer!.app_user_guid,
+      firstName: officer!.first_name,
+      lastName: officer!.last_name,
+    }));
+  const [firstAdminSupport, ...otherAdminSupports] = adminSupports;
+  const adminSupport = firstAdminSupport
+    ? `${firstAdminSupport.lastName}, ${firstAdminSupport.firstName}`
+    : "Not Assigned";
+  const collaborators = ((investigationData?.collaborators as AppUserActivityXref[]) ?? []).map((collaborator) => {
+    const officer = officers?.find((o) => o.app_user_guid === collaborator.appUserGuid);
+    return {
+      appUserGuid: collaborator.appUserGuid,
+      firstName: officer?.first_name,
+      lastName: officer?.last_name,
+      collaboratorAgency: officer?.agency_code_ref,
+    };
+  });
 
   const { handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
@@ -133,6 +157,12 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               >
                 <div>
                   <span id="comp-details-assigned-officer-name-text-id">{primaryInvestigator}</span>
+                  {collaborators.length > 0 && (
+                    <CollaboratorsTooltip
+                      id={investigationGuid}
+                      collaborators={collaborators}
+                    />
+                  )}
                 </div>
               </div>
             </dd>
@@ -159,6 +189,27 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               >
                 <div>
                   <span id="comp-details-assigned-officer-name-text-id">{fileCoordinator}</span>
+                </div>
+              </div>
+            </dd>
+          </dl>
+
+          <dl>
+            <dt>Admin support</dt>
+            <dd>
+              <div
+                data-initials-sm={getAvatarInitials(adminSupport)}
+                className="comp-avatar comp-avatar-sm comp-avatar-orange"
+              >
+                <div>
+                  <span id="comp-details-admin-support-name-text-id">{adminSupport}</span>
+                  {otherAdminSupports.length > 0 && (
+                    <CollaboratorsTooltip
+                      id={`${investigationGuid}-admin-support`}
+                      countId="comp-header-admin-support-count"
+                      collaborators={otherAdminSupports}
+                    />
+                  )}
                 </div>
               </div>
             </dd>

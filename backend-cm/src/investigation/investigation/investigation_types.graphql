@@ -17,6 +17,7 @@ type Investigation {
   supervisorGuid: String
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
+  adminSupportGuids: [String!]
   discoveryDate: DateTime
   discoveryTime: DateTime
   community: String
@@ -24,6 +25,7 @@ type Investigation {
   parties: [InvestigationParty]
   contraventions: [Contravention]
   tasks: [Task]
+  collaborators: [AppUserActivityXref]
 }
 
 input CreateInvestigationInput {
@@ -39,6 +41,7 @@ input CreateInvestigationInput {
   supervisorGuid: String
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
+  adminSupportGuids: [String!]
   discoveryDate: DateTime
   discoveryTime: DateTime
   community: String
@@ -55,6 +58,7 @@ input UpdateInvestigationInput {
   supervisorGuid: String
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
+  adminSupportGuids: [String!]
   discoveryDate: DateTime
   discoveryTime: DateTime
   community: String
@@ -70,6 +74,7 @@ input InvestigationFilters {
   community: String
   primaryInvestigator: String
   fileCoordinator: String
+  adminSupport: String
   supervisor: String
   startDate: DateTime
   endDate: DateTime
@@ -107,6 +112,13 @@ type PageInfo {
 type InvestigationResult {
   items: [Investigation!]!
   pageInfo: PageInfo!
+}
+
+type InvestigationAssignees {
+  primaryInvestigators: [String!]!
+  fileCoordinators: [String!]!
+  adminSupports: [String!]!
+  supervisors: [String!]!
 }
 
 type InvestigationCloseEligibility {

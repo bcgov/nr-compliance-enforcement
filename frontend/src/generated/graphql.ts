@@ -170,6 +170,12 @@ export type AppUser = {
   userId?: Maybe<Scalars['String']['output']>;
 };
 
+export type AppUserActivityXref = {
+  __typename?: 'AppUserActivityXref';
+  appUserActivityXrefGuid: Scalars['String']['output'];
+  appUserGuid: Scalars['String']['output'];
+};
+
 export type AppUserTeamXref = {
   __typename?: 'AppUserTeamXref';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -757,6 +763,7 @@ export type CreateInvestigationContactMethodInput = {
 };
 
 export type CreateInvestigationInput = {
+  adminSupportGuids?: InputMaybe<Array<Scalars['String']['input']>>;
   caseIdentifier?: InputMaybe<Scalars['String']['input']>;
   community?: InputMaybe<Scalars['String']['input']>;
   complaintIdentifier?: InputMaybe<Scalars['String']['input']>;
@@ -1475,7 +1482,9 @@ export type InspectionStatusCode = {
 
 export type Investigation = {
   __typename?: 'Investigation';
+  adminSupportGuids?: Maybe<Array<Scalars['String']['output']>>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
+  collaborators?: Maybe<Array<Maybe<AppUserActivityXref>>>;
   community?: Maybe<Scalars['String']['output']>;
   contraventions?: Maybe<Array<Maybe<Contravention>>>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
@@ -1517,6 +1526,14 @@ export type InvestigationAlias = {
   __typename?: 'InvestigationAlias';
   aliasGuid: Scalars['String']['output'];
   name: Scalars['String']['output'];
+};
+
+export type InvestigationAssignees = {
+  __typename?: 'InvestigationAssignees';
+  adminSupports: Array<Scalars['String']['output']>;
+  fileCoordinators: Array<Scalars['String']['output']>;
+  primaryInvestigators: Array<Scalars['String']['output']>;
+  supervisors: Array<Scalars['String']['output']>;
 };
 
 export type InvestigationAttachmentReference = {
@@ -1590,6 +1607,7 @@ export type InvestigationContactMethod = {
 
 export type InvestigationFilters = {
   act?: InputMaybe<Scalars['String']['input']>;
+  adminSupport?: InputMaybe<Scalars['String']['input']>;
   community?: InputMaybe<Scalars['String']['input']>;
   decision?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1793,6 +1811,7 @@ export type LegislationVersion = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addCollaboratorToInvestigation: Investigation;
   addPartyToInspection: Inspection;
   addPartyToInvestigation: Array<InvestigationParty>;
   addPartyToInvestigationFromSharedParty: InvestigationParty;
@@ -1839,6 +1858,7 @@ export type Mutation = {
   deleteWildlife: ComplaintOutcome;
   editPartyRoleInInvestigation: Investigation;
   removeCaseActivity: CaseActivity;
+  removeCollaboratorFromInvestigation: Investigation;
   removeContravention: Investigation;
   removeEnforcementAction: EnforcementAction;
   removeExhibit: Exhibit;
@@ -1878,6 +1898,12 @@ export type Mutation = {
   updateReview: ComplaintOutcome;
   updateTask: Task;
   updateWildlife: ComplaintOutcome;
+};
+
+
+export type MutationaddCollaboratorToInvestigationArgs = {
+  appUserGuid: Scalars['String']['input'];
+  investigationGuid: Scalars['String']['input'];
 };
 
 
@@ -2116,6 +2142,12 @@ export type MutationeditPartyRoleInInvestigationArgs = {
 
 export type MutationremoveCaseActivityArgs = {
   input: CaseActivityRemoveInput;
+};
+
+
+export type MutationremoveCollaboratorFromInvestigationArgs = {
+  appUserActivityXrefGuid: Scalars['String']['input'];
+  investigationGuid: Scalars['String']['input'];
 };
 
 
@@ -2860,6 +2892,7 @@ export type Query = {
   enforcementActions: Array<Maybe<EnforcementAction>>;
   equipmentCodes: Array<Maybe<EquipmentCode>>;
   equipmentStatusCodes: Array<Maybe<EquipmentStatusCode>>;
+  exhibitCollectors: Array<Scalars['String']['output']>;
   eyeColourCodes: Array<Maybe<EyeColourCode>>;
   facialHairStyleCodes: Array<Maybe<FacialHairStyleCode>>;
   genderCodes: Array<Maybe<GenderCode>>;
@@ -2890,6 +2923,7 @@ export type Query = {
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
+  investigationAssignees: InvestigationAssignees;
   investigationCloseEligibility: InvestigationCloseEligibility;
   investigationSourceCodes: Array<Maybe<InvestigationSourceCode>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
@@ -3064,6 +3098,11 @@ export type QueryenforcementActionsArgs = {
 };
 
 
+export type QueryexhibitCollectorsArgs = {
+  investigationGuid: Scalars['String']['input'];
+};
+
+
 export type QuerygetActivityNoteArgs = {
   activityNoteGuid: Scalars['String']['input'];
 };
@@ -3169,6 +3208,11 @@ export type QuerygetParksByAreaArgs = {
 
 export type QueryinactionJustificationCodesArgs = {
   outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryinvestigationAssigneesArgs = {
+  leadAgency: Scalars['String']['input'];
 };
 
 
@@ -3708,6 +3752,7 @@ export type UpdateInvestigationContactMethodInput = {
 };
 
 export type UpdateInvestigationInput = {
+  adminSupportGuids?: InputMaybe<Array<Scalars['String']['input']>>;
   community?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;

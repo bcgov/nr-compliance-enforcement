@@ -27,7 +27,7 @@ import {
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
 } from "@store/reducers/code-table";
-import { selectOfficersByAgency } from "@store/reducers/officer";
+import { selectOfficersByAgency, toOfficerOption } from "@store/reducers/officer";
 import { AppUser, Delegate } from "@apptypes/app/app_user/app_user";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -164,10 +164,7 @@ export const CreateComplaint: FC = () => {
         .filter(
           (officer: AppUser) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
         ) // Filter out officers with the specified role
-        .map((officer: AppUser) => ({
-          value: officer.app_user_guid,
-          label: `${officer.last_name}, ${officer.first_name}`,
-        }));
+        .map((officer: AppUser) => toOfficerOption(officer));
 
       setAssignableOfficers(initialAssignableOfficers);
     }

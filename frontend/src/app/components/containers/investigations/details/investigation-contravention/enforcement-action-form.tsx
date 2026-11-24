@@ -17,7 +17,7 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficersByAgency, toOfficerOption } from "@/app/store/reducers/officer";
 import {
   selectAdministrativePenaltyStatuses,
   selectCourtProsecutionStatuses,
@@ -55,8 +55,8 @@ import {
 import { Attachment } from "@/app/common/attachment-utils";
 import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
 
-// RSBC 1996 chapter numbers: Firearm Act (c. 145) and Wildlife Act (c. 488)
-export const NOTICE_OF_CANCELLATION_ACT_CITATIONS = new Set(["Chapter 145", "Chapter 488"]);
+// Chapter numbers that enable NOC on violation tickets: Firearm Act (RSBC 1996 c. 145), Wildlife Act (RSBC 1996 c. 488) and Firearm Violence Prevention Act (SBC 2021 c. 7)
+export const NOTICE_OF_CANCELLATION_ACT_CITATIONS = new Set(["Chapter 145", "Chapter 488", "Chapter 7"]);
 
 const YES_NO_OPTIONS = [
   { value: "true", label: "Yes" },
@@ -80,15 +80,13 @@ const fineAmountValidator = z
     },
     { message: "Ticket fine amount must be less than 100,000,000" },
   );
-const paidAmountValidator = z
-  .string()
-  .refine(
-    (val) => {
-      const amount = Number.parseFloat(val);
-      return Number.isNaN(amount) || amount < 100_000_000;
-    },
-    { message: "Ticket paid amount must be less than 100,000,000" },
-  );
+const paidAmountValidator = z.string().refine(
+  (val) => {
+    const amount = Number.parseFloat(val);
+    return Number.isNaN(amount) || amount < 100_000_000;
+  },
+  { message: "Ticket paid amount must be less than 100,000,000" },
+);
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
     updateInvestigationTimestamp(investigationGuid: $investigationGuid) {
@@ -239,10 +237,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           { options: enforcementActionSelectOptions.slice(dividerIndex) },
         ];
 
-  const officerOptions = [...(officersInAgency ?? [])].map((o) => ({
-    value: o.app_user_guid,
-    label: `${o.last_name}, ${o.first_name}`,
-  }));
+  const officerOptions = [...(officersInAgency ?? [])].map((o) => toOfficerOption(o));
 
   const [selectedCode, setSelectedCode] = useState(
     enforcementAction?.enforcementActionCode?.enforcementActionCode ?? "",
@@ -891,12 +886,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                   />
                 </div>
                 <div className="col-6">
-                  {renderDateField(
-                    "paidDate",
-                    "Paid date",
-                    "enforcement-action-ticket-paid-date",
-                    undefined,
-                  )}
+                  {renderDateField("paidDate", "Paid date", "enforcement-action-ticket-paid-date", undefined)}
                 </div>
               </div>
               <div className="row mb-3">

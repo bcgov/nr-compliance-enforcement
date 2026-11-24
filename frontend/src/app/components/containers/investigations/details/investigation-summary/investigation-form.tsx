@@ -2,6 +2,7 @@ import { bcUtmZoneNumbers } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompSelect } from "@/app/components/common/comp-select";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { FormField } from "@/app/components/common/form-field";
 import { useAppSelector } from "@/app/hooks/hooks";
@@ -11,7 +12,7 @@ import {
   selectComplaintStatusCodeDropdown,
   selectInvestigationSourceCodeDropdown,
 } from "@/app/store/reducers/code-table";
-import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficersByAgency, toOfficerOption } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import Option from "@apptypes/app/option";
@@ -54,10 +55,7 @@ export const InvestigationForm = ({
   const investigationSourceOptions = useAppSelector(selectInvestigationSourceCodeDropdown);
   const assignableOfficers: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
-      ? officersInAgencyList.map((officer: AppUser) => ({
-          value: officer.app_user_guid,
-          label: `${officer.last_name}, ${officer.first_name}`,
-        }))
+      ? officersInAgencyList.map((officer: AppUser) => toOfficerOption(officer))
       : [];
 
   // The officers are filtered by agency/role, but a previously-assigned officer from a complaint for example
@@ -183,6 +181,30 @@ export const InvestigationForm = ({
                 showInactive={false}
                 enableValidation={true}
                 errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                isDisabled={isDisabled}
+              />
+            )}
+          />
+          <FormField
+            form={form}
+            name="adminSupports"
+            label="Admin support"
+            render={(field) => (
+              <ValidationMultiSelect
+                id="admin-support-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                options={assignableOfficers}
+                values={((field.state.value as string[]) ?? [])
+                  .map((guid) => resolveOfficerOption(guid))
+                  .filter((option): option is Option => !!option)}
+                onChange={(options: Option[] | null) =>
+                  field.handleChange((options ?? []).map((option) => option.value as string))
+                }
+                placeholder="Select admin support"
+                isClearable={true}
+                showInactive={false}
+                errMsg={field.state.meta.errors?.[0]?.message || ""}
                 isDisabled={isDisabled}
               />
             )}

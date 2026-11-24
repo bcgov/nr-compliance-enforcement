@@ -10,6 +10,7 @@ import { Point, PointScalar } from "src/common/custom_scalars";
 import { InvestigationParty } from "src/investigation/investigation_party/dto/investigation_party";
 import { Contravention } from "../../../investigation/contravention/dto/contravention";
 import { Task } from "src/investigation/task/dto/task";
+import { AppUserActivityXref } from "src/shared/app_user_activity_xref/dto/app_user_activity_xref";
 
 export class Investigation {
   investigationGuid: string;
@@ -27,6 +28,7 @@ export class Investigation {
   supervisorGuid: string;
   primaryInvestigatorGuid: string;
   fileCoordinatorGuid?: string;
+  adminSupportGuids?: string[];
   discoveryDate: Date;
   discoveryTime?: Date;
   community?: string;
@@ -34,12 +36,20 @@ export class Investigation {
   parties: [InvestigationParty];
   contraventions: [Contravention];
   tasks: [Task];
+  collaborators: AppUserActivityXref[];
 }
 
 export class InvestigationCloseEligibility {
   isEligible: boolean;
   contraventionsWithoutDecisionCount: number;
   openTaskCount: number;
+}
+
+export class InvestigationAssignees {
+  primaryInvestigators: string[];
+  fileCoordinators: string[];
+  adminSupports: string[];
+  supervisors: string[];
 }
 
 @InputType()
@@ -75,6 +85,10 @@ export class InvestigationFilters {
   @Field(() => String, { nullable: true })
   @IsOptional()
   fileCoordinator?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  adminSupport?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
@@ -162,6 +176,10 @@ export class CreateInvestigationInput {
   @IsOptional()
   fileCoordinatorGuid: string;
 
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  adminSupportGuids?: string[];
+
   @Field(() => Date)
   discoveryDate: Date;
 
@@ -214,6 +232,10 @@ export class UpdateInvestigationInput {
   @Field(() => String)
   @IsOptional()
   fileCoordinatorGuid?: string;
+
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  adminSupportGuids?: string[];
 
   @Field(() => Date)
   discoveryDate: Date;
@@ -281,18 +303,6 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.createdByAppUserGuid,
       mapFrom((src) => src.created_by_app_user_guid_ref),
-    ),
-    forMember(
-      (dest) => dest.supervisorGuid,
-      mapFrom((src) => src.supervisor_guid_ref),
-    ),
-    forMember(
-      (dest) => dest.primaryInvestigatorGuid,
-      mapFrom((src) => src.primary_investigator_guid_ref),
-    ),
-    forMember(
-      (dest) => dest.fileCoordinatorGuid,
-      mapFrom((src) => src.file_coordinator_guid_ref),
     ),
     forMember(
       (dest) => dest.discoveryDate,

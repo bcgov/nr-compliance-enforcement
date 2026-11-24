@@ -16,8 +16,7 @@
     "prisma-all": "npm run prisma-pull-all && npm run prisma-generate-all",
     "prisma-pull-all": "npm run prisma-pull-complaint-outcome && npm run prisma-pull-shared && npm run prisma-pull-investigation && npm run prisma-pull-inspection",
     "prisma-generate-all": "npm run prisma-generate-complaint-outcome && npm run prisma-generate-shared && npm run prisma-generate-investigation && npm run prisma-generate-inspection",
-    "build": "nest build && copyfiles -u 1 \"src/**/*.graphql\" dist",
-    "build:cli": "nest build --entryFile=./src/cli.js && copyfiles -u 1 \"src/**/*.graphql\" dist/cli",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -57,9 +56,8 @@
     "@prisma/client": "6.6.0",
     "axios": "1.20.0",
     "class-validator": "0.14.3",
-    "copyfiles": "2.4.1",
     "dotenv": "16.6.1",
-    "fast-xml-parser": "5.7.3",
+    "fast-xml-parser": "5.12.0",
     "geojson": "0.5.0",
     "graphql": "16.13.2",
     "graphql-type-json": "0.3.2",
@@ -173,10 +171,6 @@
     "glob": ">=10.5.0",
     "path-to-regexp": "^8.4.0",
     "picomatch": "^4.0.4",
-    "copyfiles": {
-      "glob": "^7.2.3",
-      "minimatch": "^10.2.3"
-    },
     "@nestjs/graphql": {
       "@graphql-tools/utils": "12.0.4"
     },
@@ -186,5 +180,5 @@
       "@schematics/angular": "19.2.27"
     }
   },
-  "version": "3.0.26"
+  "version": "3.0.40"
 }

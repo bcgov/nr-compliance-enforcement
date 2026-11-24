@@ -1,7 +1,7 @@
 -- Test-only seed data of 51 investigations
 -- The investigations are added to cases in the R__data_cases script
--- primary_investigator_guid_ref and supervisor_guid_ref are set to the app_user_guid for
--- the test user ENCETST1 which is defined in R__test_user_guids.sql
+-- The investigations are assigned to the test user ENCETST1, defined in R__test_user_guids.sql,
+-- by the role rows at the end of this file
 
 INSERT INTO investigation.investigation (
   investigation_guid,
@@ -14,8 +14,6 @@ INSERT INTO investigation.investigation (
   name,
   location_geometry_point,
   geo_organization_unit_code_ref,
-  primary_investigator_guid_ref,
-  supervisor_guid_ref,
   discovery_date_utc_date,
   discovery_date_utc_time,
   investigation_source
@@ -32,8 +30,6 @@ VALUES
     'INV26-000001',
     ST_GeomFromText ('POINT(-123.1207 49.2827)'),
     '100MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -49,8 +45,6 @@ VALUES
     'INV26-000002',
     ST_GeomFromText ('POINT(-119.4960 49.8880)'),
     '70MLHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -66,8 +60,6 @@ VALUES
     'INV26-000003',
     ST_GeomFromText ('POINT(-125.8767 49.2144)'),
     'ABTFRD',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -83,8 +75,6 @@ VALUES
     'INV26-000004',
     ST_GeomFromText ('POINT(-120.8451 56.2465)'),
     '108MLRNH',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -100,8 +90,6 @@ VALUES
     'INV26-000005',
     NULL,
     '140MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -117,8 +105,6 @@ VALUES
     'INV26-000006',
     NULL,
     '150MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -134,8 +120,6 @@ VALUES
     'INV26-000007',
     NULL,
     '40MLFLTZ',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -151,8 +135,6 @@ VALUES
     'INV26-000008',
     NULL,
     'ANHMLK',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -168,8 +150,6 @@ VALUES
     'INV26-000009',
     NULL,
     '16MIL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -185,8 +165,6 @@ VALUES
     'INV26-000010',
     NULL,
     'BLLACOOL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -202,8 +180,6 @@ VALUES
     'INV26-000011',
     NULL,
     '100MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -219,8 +195,6 @@ VALUES
     'INV26-000012',
     NULL,
     '70MLHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -236,8 +210,6 @@ VALUES
     'INV26-000013',
     NULL,
     'ABTFRD',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -253,8 +225,6 @@ VALUES
     'INV26-000014',
     NULL,
     '108MLRNH',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -270,8 +240,6 @@ VALUES
     'INV26-000015',
     NULL,
     '140MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -287,8 +255,6 @@ VALUES
     'INV26-000016',
     NULL,
     '150MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -304,8 +270,6 @@ VALUES
     'INV26-000017',
     NULL,
     '40MLFLTZ',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -321,8 +285,6 @@ VALUES
     'INV26-000018',
     NULL,
     'ANHMLK',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -338,8 +300,6 @@ VALUES
     'INV26-000019',
     NULL,
     '16MIL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -355,8 +315,6 @@ VALUES
     'INV26-000020',
     NULL,
     'BLLACOOL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -372,8 +330,6 @@ VALUES
     'INV26-000021',
     NULL,
     '100MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -389,8 +345,6 @@ VALUES
     'INV26-000022',
     NULL,
     '70MLHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -406,8 +360,6 @@ VALUES
     'INV26-000023',
     NULL,
     'ABTFRD',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -423,8 +375,6 @@ VALUES
     'INV26-000024',
     NULL,
     '108MLRNH',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -440,8 +390,6 @@ VALUES
     'INV26-000025',
     NULL,
     '140MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -457,8 +405,6 @@ VALUES
     'INV26-000026',
     NULL,
     '150MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -474,8 +420,6 @@ VALUES
     'INV26-000027',
     NULL,
     '40MLFLTZ',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -491,8 +435,6 @@ VALUES
     'INV26-000028',
     NULL,
     'ANHMLK',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -508,8 +450,6 @@ VALUES
     'INV26-000029',
     NULL,
     '16MIL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -525,8 +465,6 @@ VALUES
     'INV26-000030',
     NULL,
     'BLLACOOL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -542,8 +480,6 @@ VALUES
     'INV26-000031',
     NULL,
     '100MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -559,8 +495,6 @@ VALUES
     'INV26-000032',
     NULL,
     '70MLHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -576,8 +510,6 @@ VALUES
     'INV26-000033',
     NULL,
     'ABTFRD',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -593,8 +525,6 @@ VALUES
     'INV26-000034',
     NULL,
     '108MLRNH',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -610,8 +540,6 @@ VALUES
     'INV26-000035',
     NULL,
     '140MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -627,8 +555,6 @@ VALUES
     'INV26-000036',
     NULL,
     '150MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -644,8 +570,6 @@ VALUES
     'INV26-000037',
     NULL,
     '40MLFLTZ',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -661,8 +585,6 @@ VALUES
     'INV26-000038',
     NULL,
     'ANHMLK',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -678,8 +600,6 @@ VALUES
     'INV26-000039',
     NULL,
     '16MIL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -695,8 +615,6 @@ VALUES
     'INV26-000040',
     NULL,
     'BLLACOOL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -712,8 +630,6 @@ VALUES
     'INV26-000041',
     NULL,
     '100MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -729,8 +645,6 @@ VALUES
     'INV26-000042',
     NULL,
     '70MLHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -746,8 +660,6 @@ VALUES
     'INV26-000043',
     NULL,
     'ABTFRD',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -763,8 +675,6 @@ VALUES
     'INV26-000044',
     NULL,
     '108MLRNH',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -780,8 +690,6 @@ VALUES
     'INV26-000045',
     NULL,
     '140MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -797,8 +705,6 @@ VALUES
     'INV26-000046',
     NULL,
     '150MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -814,8 +720,6 @@ VALUES
     'INV26-000047',
     NULL,
     '40MLFLTZ',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -831,8 +735,6 @@ VALUES
     'INV26-000048',
     NULL,
     'ANHMLK',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -848,8 +750,6 @@ VALUES
     'INV26-000049',
     NULL,
     '16MIL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -865,8 +765,6 @@ VALUES
     'INV26-000050',
     NULL,
     'BLLACOOL',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
@@ -882,10 +780,37 @@ VALUES
     'INV26-000051',
     NULL,
     '100MHHS',
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
-    '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
     time '09:30:00',
     'OFFND'
   )
+ON CONFLICT DO NOTHING;
+
+-- Set primary investigator for seed investigations
+INSERT INTO shared.app_user_activity_xref (
+  activity_type,
+  activity_identifier_ref,
+  app_user_guid,
+  app_user_activity_xref_code,
+  active_ind,
+  create_user_id
+)
+SELECT 'INVSTGTN', i.investigation_guid::text, u.app_user_guid, 'ASSIGNEE', true, i.create_user_id
+FROM investigation.investigation i
+-- Databases created before R__test_user_guids inserted ENCETST1 keep its generated guid, so look the user up by user_id
+JOIN shared.app_user u ON u.user_id = 'ENCETST1'
+ON CONFLICT DO NOTHING;
+
+-- Set supervisor for seed investigations
+INSERT INTO shared.app_user_activity_xref (
+  activity_type,
+  activity_identifier_ref,
+  app_user_guid,
+  app_user_activity_xref_code,
+  active_ind,
+  create_user_id
+)
+SELECT 'INVSTGTN', i.investigation_guid::text, u.app_user_guid, 'SUPERVISOR', true, i.create_user_id
+FROM investigation.investigation i
+JOIN shared.app_user u ON u.user_id = 'ENCETST1'
 ON CONFLICT DO NOTHING;

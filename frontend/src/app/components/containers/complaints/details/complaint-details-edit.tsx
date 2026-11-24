@@ -34,7 +34,7 @@ import { AppUser, Delegate } from "@apptypes/app/app_user/app_user";
 import Option from "@apptypes/app/option";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-suspect-witness-details";
-import { selectOfficersByAgency, selectOfficers } from "@store/reducers/officer";
+import { selectOfficersByAgency, selectOfficers, toOfficerOption } from "@store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -239,10 +239,7 @@ export const ComplaintDetailsEdit: FC = () => {
             (officer: AppUser) =>
               complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
           ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR
-          .map((officer: AppUser) => ({
-            value: officer.app_user_guid,
-            label: `${officer.last_name}, ${officer.first_name}`,
-          }))
+          .map((officer: AppUser) => toOfficerOption(officer))
       : [];
 
   const { details: complaint_witness_details } = useAppSelector(

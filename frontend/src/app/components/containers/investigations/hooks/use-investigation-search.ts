@@ -16,6 +16,7 @@ export interface InvestigationSearchParams {
   community: string | null;
   primaryInvestigator: string | null;
   fileCoordinator: string | null;
+  adminSupport: string | null;
   supervisor: string | null;
   startDate: Date | null;
   endDate: Date | null;
@@ -38,6 +39,7 @@ const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   community: null,
   primaryInvestigator: null,
   fileCoordinator: null,
+  adminSupport: null,
   supervisor: null,
   startDate: null,
   endDate: null,
@@ -51,6 +53,24 @@ const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   pageSize: 50,
   viewType: "list",
 };
+
+// Keys that count as filters (as opposed to search, sort, paging or view type).
+const FILTER_KEYS: (keyof InvestigationSearchParams)[] = [
+  "investigationStatus",
+  "region",
+  "zone",
+  "community",
+  "primaryInvestigator",
+  "fileCoordinator",
+  "adminSupport",
+  "supervisor",
+  "startDate",
+  "endDate",
+  "investigationSource",
+  "act",
+  "regulation",
+  "decision",
+];
 
 const serializeDate = (date: Date | null): string | undefined =>
   date ? formatDateObjectAsString(date, { format: "date" }) : undefined;
@@ -97,6 +117,7 @@ export const useInvestigationSearch = () => {
       community: searchParams.get("community"),
       primaryInvestigator: searchParams.get("primaryInvestigator"),
       fileCoordinator: searchParams.get("fileCoordinator"),
+      adminSupport: searchParams.get("adminSupport"),
       supervisor: searchParams.get("supervisor"),
       startDate: deserializeDate(searchParams.get("startDate")),
       endDate: deserializeDate(searchParams.get("endDate")),
@@ -187,26 +208,26 @@ export const useInvestigationSearch = () => {
     return {};
   }, [appUserGuid, defaultRegion]);
 
+  // Every filter at its default value, with the role-based defaults applied on top.
+  const getDefaultFilterValues = useCallback((): Partial<InvestigationSearchParams> => {
+    const values: Partial<InvestigationSearchParams> = {};
+    FILTER_KEYS.forEach((key) => {
+      (values as any)[key] = DEFAULT_SEARCH_VALUES[key];
+    });
+    return { ...values, ...getDefaultFilters() };
+  }, [getDefaultFilters]);
+
   // Resets filters to the role-based defaults while preserving search, sort and view type.
   // Done in a single setValues call so the URL is updated once.
   const resetFilters = useCallback(() => {
-    setValues({
-      investigationStatus: DEFAULT_SEARCH_VALUES.investigationStatus,
-      region: DEFAULT_SEARCH_VALUES.region,
-      zone: DEFAULT_SEARCH_VALUES.zone,
-      community: DEFAULT_SEARCH_VALUES.community,
-      primaryInvestigator: DEFAULT_SEARCH_VALUES.primaryInvestigator,
-      fileCoordinator: DEFAULT_SEARCH_VALUES.fileCoordinator,
-      supervisor: DEFAULT_SEARCH_VALUES.supervisor,
-      startDate: DEFAULT_SEARCH_VALUES.startDate,
-      endDate: DEFAULT_SEARCH_VALUES.endDate,
-      investigationSource: DEFAULT_SEARCH_VALUES.investigationSource,
-      act: DEFAULT_SEARCH_VALUES.act,
-      regulation: DEFAULT_SEARCH_VALUES.regulation,
-      decision: DEFAULT_SEARCH_VALUES.decision,
-      ...getDefaultFilters(),
-    });
-  }, [setValues, getDefaultFilters]);
+    setValues(getDefaultFilterValues());
+  }, [setValues, getDefaultFilterValues]);
+
+  // True when every filter matches the role-based defaults. Used to hide the inline reset button.
+  const isDefaultFilters = useMemo(() => {
+    const defaults = getDefaultFilterValues();
+    return FILTER_KEYS.every((key) => (searchValues[key] ?? null) === (defaults[key] ?? null));
+  }, [searchValues, getDefaultFilterValues]);
 
   const getFilters = useCallback(() => {
     const { viewType, page, pageSize, ...filters } = searchValues;
@@ -221,6 +242,7 @@ export const useInvestigationSearch = () => {
     resetSearch,
     getDefaultFilters,
     resetFilters,
+    isDefaultFilters,
     getFilters,
     searchURL: useAppSelector(selectInvestigationListUrl),
   };

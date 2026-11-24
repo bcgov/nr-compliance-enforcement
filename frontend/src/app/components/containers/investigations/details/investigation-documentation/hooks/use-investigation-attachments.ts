@@ -33,6 +33,14 @@ export interface InvestigationAttachmentsResult {
   error: Error | null;
 }
 
+const compareSequenceNumbers = (a: Attachment, b: Attachment) => {
+  const sequenceA = Number.parseInt(a.sequenceNumber ?? "0", 10);
+  const sequenceB = Number.parseInt(b.sequenceNumber ?? "0", 10);
+  const numA = Number.isNaN(sequenceA) ? 0 : sequenceA;
+  const numB = Number.isNaN(sequenceB) ? 0 : sequenceB;
+  return numA - numB;
+};
+
 /**
  * TanStack Query hook for fetching and processing investigation attachments
  */
@@ -140,11 +148,7 @@ export const useInvestigationAttachments = (
           break;
         }
         case "sequenceNumber": {
-          const sequenceA = Number.parseInt(a.sequenceNumber ?? "0", 10);
-          const sequenceB = Number.parseInt(b.sequenceNumber ?? "0", 10);
-          const numA = Number.isNaN(sequenceA) ? 0 : sequenceA;
-          const numB = Number.isNaN(sequenceB) ? 0 : sequenceB;
-          comparison = numA - numB;
+          comparison = compareSequenceNumbers(a, b);
           break;
         }
         case "description": {
@@ -197,7 +201,12 @@ export const useInvestigationAttachments = (
         }
       }
 
-      return sortOrder === SORT_TYPES.DESC ? -comparison : comparison;
+      if (sortOrder === SORT_TYPES.DESC) {
+        comparison = -comparison;
+      }
+
+      // Rows that tie on the sorted column fall back to ID ascending
+      return comparison || compareSequenceNumbers(a, b);
     });
 
     const totalCount = items.length;
