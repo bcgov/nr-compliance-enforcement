@@ -79,9 +79,11 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
       .filter((id): id is string => !!id);
 
     try {
-      for (const enforcementActionId of enforcementActionIds) {
-        await deleteEnforcementActionAttachments(dispatch, activityGuid, enforcementActionId);
-      }
+      await Promise.all(
+        enforcementActionIds.map((enforcementActionId) =>
+          deleteEnforcementActionAttachments(dispatch, activityGuid, enforcementActionId),
+        ),
+      );
     } catch (attachmentError) {
       console.error("Contravention deleted, but its decision attachments could not be removed", attachmentError);
     }

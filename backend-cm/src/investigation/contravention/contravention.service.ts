@@ -177,9 +177,11 @@ export class ContraventionService {
       select: { enforcement_action_guid: true },
     });
 
-    for (const decision of decisions) {
-      await this.enforcementActionService.deactivateEnforcementAction(db, decision.enforcement_action_guid);
-    }
+    await Promise.all(
+      decisions.map((decision) =>
+        this.enforcementActionService.deactivateEnforcementAction(db, decision.enforcement_action_guid),
+      ),
+    );
   }
 
   private hasActiveDecision(xrefs: { enforcement_action: { active_ind: boolean }[] }[]): boolean {
