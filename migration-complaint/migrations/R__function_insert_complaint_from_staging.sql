@@ -386,6 +386,14 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
+      IF _violation_code IN ('ALGAE', 'FORESTOPS', 'FORESTPRAC', 'HERITAGE', 'CROWNLAND',
+      'RANGE', 'ROAD', 'SPILLS', 'WATERACT', 'WATERSUST', 'WEED', 'WILDFIRE')
+      THEN
+        UPDATE complaint.complaint
+        SET    owned_by_agency_code_ref = 'NROS', complaint_status_code = 'CLOSED'
+        WHERE  complaint_identifier = _complaint_identifier;
+      END IF;
+
       -- Insert data into 'allegation_complaint' table
       INSERT INTO complaint.allegation_complaint
                   (

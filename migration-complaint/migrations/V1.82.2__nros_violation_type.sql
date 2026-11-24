@@ -56,5 +56,6 @@ VALUES
     ('WATERACT', 'NROS', 'FLYWAY', NOW(), 'FLYWAY', NOW(), true),
     ('WATERSUST', 'NROS', 'FLYWAY', NOW(), 'FLYWAY', NOW(), true),
     ('WEED', 'NROS', 'FLYWAY', NOW(), 'FLYWAY', NOW(), true),
-    ('WILDFIRE', 'NROS', 'FLYWAY', NOW(), 'FLYWAY', NOW(), true)
+    ('WILDFIRE', 'NROS', 'FLYWAY', NOW(), 'FLYWAY', NOW(), true),
+    ('OTHER', 'NROS', 'FLYWAY', NOW(), 'FLYWAY', NOW(), true)
 ON CONFLICT DO NOTHING;
