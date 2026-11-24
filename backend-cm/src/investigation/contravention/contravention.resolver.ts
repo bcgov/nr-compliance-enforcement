@@ -3,6 +3,7 @@ import { Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import { ContraventionService } from "../../investigation/contravention/contravention.service";
 import { CreateUpdateContraventionInput } from "../../investigation/contravention/dto/contravention";
 
@@ -14,6 +15,7 @@ export class ContraventionResolver {
   @Mutation("createContravention")
   @Roles(coreRoles)
   async create(@Args("input") contraventionInput: CreateUpdateContraventionInput) {
+    validateActivityAccess(contraventionInput.investigationGuid);
     try {
       return await this.contraventionService.create(contraventionInput);
     } catch (error) {
@@ -34,6 +36,7 @@ export class ContraventionResolver {
     @Args("contraventionGuid") contraventionGuid: string,
     @Args("partyGuid") partyGuid: string,
   ) {
+    validateActivityAccess(await this.contraventionService.getInvestigationGuid(contraventionGuid));
     try {
       return await this.contraventionService.remove(investigationGuid, contraventionGuid, partyGuid);
     } catch (error) {
@@ -53,6 +56,7 @@ export class ContraventionResolver {
     @Args("contraventionGuid") contraventionGuid: string,
     @Args("input") contraventionInput: CreateUpdateContraventionInput,
   ) {
+    validateActivityAccess(await this.contraventionService.getInvestigationGuid(contraventionGuid));
     try {
       return await this.contraventionService.update(contraventionGuid, contraventionInput);
     } catch (error) {

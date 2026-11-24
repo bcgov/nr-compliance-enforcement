@@ -1,14 +1,19 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { DiaryDateService } from "./diary_date.service";
+import { TaskService } from "../task/task.service";
 import { Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import { DiaryDateInput } from "./dto/diary_date";
 
 @Resolver("DiaryDate")
 export class DiaryDateResolver {
-  constructor(private readonly diaryDateService: DiaryDateService) {}
+  constructor(
+    private readonly diaryDateService: DiaryDateService,
+    private readonly taskService: TaskService,
+  ) {}
   private readonly logger = new Logger(DiaryDateResolver.name);
 
   @Query("diaryDates")
@@ -44,6 +49,10 @@ export class DiaryDateResolver {
   @Mutation("saveDiaryDate")
   @Roles(coreRoles)
   async save(@Args("input") input: DiaryDateInput) {
+    validateActivityAccess(input.investigationGuid);
+    if (input.diaryDateGuid) {
+      validateActivityAccess(await this.diaryDateService.getInvestigationGuid(input.diaryDateGuid));
+    }
     try {
       return await this.diaryDateService.save(input);
     } catch (error) {
@@ -57,6 +66,7 @@ export class DiaryDateResolver {
   @Mutation("deleteDiaryDate")
   @Roles(coreRoles)
   async delete(@Args("diaryDateGuid") diaryDateGuid: string) {
+    validateActivityAccess(await this.diaryDateService.getInvestigationGuid(diaryDateGuid));
     try {
       return await this.diaryDateService.delete(diaryDateGuid);
     } catch (error) {
@@ -70,6 +80,8 @@ export class DiaryDateResolver {
   @Mutation("deleteDiaryDatesByTask")
   @Roles(coreRoles)
   async deleteByTask(@Args("taskGuid") taskGuid: string) {
+    const task = await this.taskService.findOne(taskGuid);
+    validateActivityAccess(task.investigationIdentifier);
     try {
       return await this.diaryDateService.deleteByTask(taskGuid);
     } catch (error) {

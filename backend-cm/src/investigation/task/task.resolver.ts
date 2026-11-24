@@ -5,6 +5,7 @@ import { Logger, UseGuards, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import { CreateUpdateTaskInput } from "../../investigation/task/dto/task";
 
 @UseGuards(JwtRoleGuard)
@@ -36,18 +37,23 @@ export class TaskResolver {
   @Mutation("createTask")
   @Roles(coreRoles)
   async create(@Args("input") taskInput: CreateUpdateTaskInput) {
+    validateActivityAccess(taskInput.investigationIdentifier);
     return await this.taskService.create(taskInput);
   }
 
   @Mutation("removeTask")
   @Roles(coreRoles)
   async remove(@Args("taskId") taskIdentifier: string) {
+    const task = await this.taskService.findOne(taskIdentifier);
+    validateActivityAccess(task.investigationIdentifier);
     return await this.taskService.remove(taskIdentifier);
   }
 
   @Mutation("updateTask")
   @Roles(coreRoles)
   async update(@Args("input") taskInput: CreateUpdateTaskInput) {
+    const task = await this.taskService.findOne(taskInput.taskIdentifier);
+    validateActivityAccess(task.investigationIdentifier);
     return await this.taskService.update(taskInput);
   }
 }

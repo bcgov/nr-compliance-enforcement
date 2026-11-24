@@ -4,7 +4,7 @@ export interface RlsClaimUser {
   idir_user_guid?: string;
   client_roles?: string | string[];
   exp?: number;
-  collaborator_activity_identifiers?: string[];
+  app_user_activity_identifiers?: string[];
 }
 
 // Runs inside a Prisma transaction with the users JWT claims set once. Sets inTransactionContext
@@ -26,10 +26,10 @@ export async function setRlsClaims(tx: any, user?: RlsClaimUser): Promise<void> 
     await tx.$executeRawUnsafe(`SET LOCAL jwt.claims.agency_code = '${agency.replaceAll("'", "''")}'`);
   }
 
-  if (user.collaborator_activity_identifiers) {
-    const identifiersString = user.collaborator_activity_identifiers.join(",");
+  if (user.app_user_activity_identifiers) {
+    const identifiersString = user.app_user_activity_identifiers.join(",");
     await tx.$executeRawUnsafe(
-      `SET LOCAL jwt.claims.collaborator_activity_identifiers = '${identifiersString.replaceAll("'", "''")}'`,
+      `SET LOCAL jwt.claims.app_user_activity_identifiers = '${identifiersString.replaceAll("'", "''")}'`,
     );
   }
 

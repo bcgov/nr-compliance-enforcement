@@ -6,6 +6,7 @@ import { PrismaModuleShared } from "../../prisma/shared/prisma.shared.module";
 import { AutomapperModule } from "@automapper/nestjs";
 import { UserModule } from "src/common/user.module";
 import { InvestigationService } from "../investigation/investigation.service";
+import { TaskService } from "../task/task.service";
 import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
@@ -28,6 +29,7 @@ import { LegislationModule } from "src/shared/legislation/legislation.module";
   providers: [
     DiaryDateResolver,
     DiaryDateService,
+    TaskService,
     InvestigationService,
     SharedPrismaService,
     PaginationUtility,

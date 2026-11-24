@@ -3,7 +3,9 @@ import { Logger, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import { EnforcementActionService } from "src/investigation/enforcement_action/enforcement_action.service";
+import { ContraventionService } from "src/investigation/contravention/contravention.service";
 import {
   CreateEnforcementActionInput,
   UpdateEnforcementActionInput,
@@ -11,7 +13,10 @@ import {
 
 @Resolver("EnforcementAction")
 export class EnforcementActionResolver {
-  constructor(private readonly enforcementActionService: EnforcementActionService) {}
+  constructor(
+    private readonly enforcementActionService: EnforcementActionService,
+    private readonly contraventionService: ContraventionService,
+  ) {}
   private readonly logger = new Logger(EnforcementActionResolver.name);
 
   @Query("enforcementActions")
@@ -49,6 +54,7 @@ export class EnforcementActionResolver {
   @Mutation("createEnforcementAction")
   @Roles(coreRoles)
   async create(@Args("input") input: CreateEnforcementActionInput) {
+    validateActivityAccess(await this.contraventionService.getInvestigationGuid(input.contraventionIdentifier));
     try {
       return await this.enforcementActionService.create(input);
     } catch (error) {
@@ -62,6 +68,10 @@ export class EnforcementActionResolver {
   @Mutation("updateEnforcementAction")
   @Roles(coreRoles)
   async update(@Args("input") input: UpdateEnforcementActionInput) {
+    const enforcementAction = await this.enforcementActionService.findOne(input.enforcementActionIdentifier);
+    validateActivityAccess(
+      await this.contraventionService.getInvestigationGuid(enforcementAction.contraventionIdentifier),
+    );
     try {
       return await this.enforcementActionService.update(input);
     } catch (error) {
@@ -75,6 +85,10 @@ export class EnforcementActionResolver {
   @Mutation("removeEnforcementAction")
   @Roles(coreRoles)
   async remove(@Args("enforcementActionId") enforcementActionId: string) {
+    const enforcementAction = await this.enforcementActionService.findOne(enforcementActionId);
+    validateActivityAccess(
+      await this.contraventionService.getInvestigationGuid(enforcementAction.contraventionIdentifier),
+    );
     try {
       return await this.enforcementActionService.remove(enforcementActionId);
     } catch (error) {

@@ -28,14 +28,13 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     this.logger.debug(`KEYCLOCK_CLIENT_ID: ${process.env.KEYCLOCK_CLIENT_ID}`);
     this.logger.debug(`JWT_ISSUER: ${process.env.JWT_ISSUER}`);
   }
-  // Collaborators are in the shared schema so they need to be passed in the JWT to the query as RLS can't access the shared shchema
+  // Activity roles are in the shared schema, which RLS can't access, so they're added to the user for the claims and access checks
   async validate(payload: any): Promise<any> {
     if (!payload?.idir_user_guid) {
       return payload;
     }
-    const collaborators = await this.prisma.app_user_activity_xref.findMany({
+    const activities = await this.prisma.app_user_activity_xref.findMany({
       where: {
-        app_user_activity_xref_code: "COLLABORAT",
         active_ind: true,
         app_user: { auth_user_guid: payload.idir_user_guid },
       },
@@ -43,7 +42,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     });
     return {
       ...payload,
-      collaborator_activity_identifiers: collaborators.map((collaborator) => collaborator.activity_identifier_ref),
+      app_user_activity_identifiers: activities.map((activity) => activity.activity_identifier_ref),
     };
   }
 }

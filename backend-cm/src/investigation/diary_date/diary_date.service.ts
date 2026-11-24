@@ -73,6 +73,15 @@ export class DiaryDateService {
     }
   }
 
+  async getInvestigationGuid(diaryDateGuid: string): Promise<string> {
+    const diaryDate = await this.prisma.diary_date.findUnique({
+      where: { diary_date_guid: diaryDateGuid },
+      select: { investigation_guid: true },
+    });
+
+    return diaryDate?.investigation_guid;
+  }
+
   async save(input: DiaryDateInput): Promise<DiaryDate> {
     let result;
     try {

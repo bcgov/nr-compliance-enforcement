@@ -4,6 +4,7 @@ import { AutomapperModule } from "@automapper/nestjs";
 import { UserModule } from "../../common/user.module";
 import { EnforcementActionResolver } from "../../investigation/enforcement_action/enforcement_action.resolver";
 import { EnforcementActionService } from "../../investigation/enforcement_action/enforcement_action.service";
+import { ContraventionService } from "../../investigation/contravention/contravention.service";
 import { InvestigationService } from "../investigation/investigation.service";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PaginationUtility } from "src/common/pagination.utility";
@@ -26,6 +27,7 @@ import { LegislationModule } from "src/shared/legislation/legislation.module";
   providers: [
     EnforcementActionResolver,
     EnforcementActionService,
+    ContraventionService,
     InvestigationService,
     SharedPrismaService,
     PaginationUtility,
