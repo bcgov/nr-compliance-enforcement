@@ -1,6 +1,7 @@
 import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
+import { CollaboratorsTooltip } from "@/app/components/common/collaborators-tooltip";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { Investigation } from "@/generated/graphql";
@@ -121,14 +122,33 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
       },
     },
     {
-      label: "File coordinator",
+      label: "Admin support",
       headerClassName: "",
       cellClassName: "",
       isSortable: false,
       getValue: () => "",
       renderCell: (investigation) => {
-        const officer = officerByGuid(investigation.fileCoordinatorGuid);
-        return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
+        const [first, ...others] = (investigation.adminSupportGuids ?? [])
+          .map((guid) => officerByGuid(guid))
+          .filter((officer) => !!officer)
+          .map((officer) => ({
+            appUserGuid: officer!.app_user_guid,
+            firstName: officer!.first_name,
+            lastName: officer!.last_name,
+          }));
+        if (!first) return "-";
+        return (
+          <>
+            {`${first.lastName}, ${first.firstName}`}
+            {others.length > 0 && (
+              <CollaboratorsTooltip
+                id={`${investigation.investigationGuid}-admin-support`}
+                countId={`investigation-list-admin-support-count-${investigation.investigationGuid}`}
+                collaborators={others}
+              />
+            )}
+          </>
+        );
       },
     },
     {

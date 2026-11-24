@@ -27,7 +27,7 @@ test.describe("Investigation List View", () => {
     await expect(tableHeaders.nth(4)).toContainText("Location/address");
     await expect(tableHeaders.nth(5)).toContainText("Status");
     await expect(tableHeaders.nth(6)).toContainText("Primary investigator");
-    await expect(tableHeaders.nth(7)).toContainText("File coordinator");
+    await expect(tableHeaders.nth(7)).toContainText("Admin support");
     await expect(tableHeaders.nth(8)).toContainText("Last updated");
   });
 
