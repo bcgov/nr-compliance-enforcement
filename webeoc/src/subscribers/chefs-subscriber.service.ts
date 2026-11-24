@@ -1,7 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import {
   AckPolicy,
-  connect,
   ConnectionOptions,
   JetStreamManager,
   JsMsg,
