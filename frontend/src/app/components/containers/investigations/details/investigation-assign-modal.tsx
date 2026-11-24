@@ -142,6 +142,7 @@ export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({
                   id="admin-support-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
+                  showInactive={false}
                   options={assignableOfficers}
                   values={assignableOfficers.filter((opt) =>
                     ((field.state.value as string[]) ?? []).includes(opt.value as string),

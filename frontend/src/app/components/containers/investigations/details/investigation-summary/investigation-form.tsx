@@ -203,6 +203,7 @@ export const InvestigationForm = ({
                 }
                 placeholder="Select admin support"
                 isClearable={true}
+                showInactive={false}
                 errMsg={field.state.meta.errors?.[0]?.message || ""}
                 isDisabled={isDisabled}
               />
