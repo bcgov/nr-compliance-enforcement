@@ -15,24 +15,32 @@ jest.mock("../../external_api/shared_data", () => {
   return createSharedDataMocks();
 });
 
-import { resetSharedDataMocks } from "../../../test/mocks/external_api/mock-shared-data";
+import {
+  mockGetCosCommunityWithApiKey,
+  mockGetParkNameWithApiKey,
+  resetSharedDataMocks,
+} from "../../../test/mocks/external_api/mock-shared-data";
 
 describe("EmailService", () => {
   let service: EmailService;
+  let chesService: { sendEmail: jest.Mock };
+  let emailReferenceService: { findActiveByAgency: jest.Mock };
 
   beforeEach(async () => {
     resetSharedDataMocks();
+    chesService = { sendEmail: jest.fn().mockResolvedValue({}) };
+    emailReferenceService = { findActiveByAgency: jest.fn().mockResolvedValue([]) };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EmailService,
         {
           provide: ChesService,
-          useValue: {},
+          useValue: chesService,
         },
         {
           provide: EmailReferenceService,
-          useValue: {},
+          useValue: emailReferenceService,
         },
         {
           provide: CodeTableService,

@@ -328,6 +328,35 @@ export const getWithApiKey = (params?: {}) => {
     });
 };
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Looks up a COS community (area) and its zone with the API key
+export const getCosCommunityWithApiKey = async (
+  areaCode: string,
+): Promise<{ areaCode: string; areaName: string; zoneCode: string } | undefined> => {
+  const { data, errors } = await getWithApiKey({
+    query: "{cosGeoOrgUnits{areaCode areaName zoneCode}}",
+  });
+  if (errors) {
+    throw new Error(`GraphQL errors occurred while fetching COS geo org units: ${JSON.stringify(errors)}`);
+  }
+  return data?.cosGeoOrgUnits?.find((unit: any) => unit.areaCode === areaCode);
+};
+
+// Looks up a park's name with the API key
+export const getParkNameWithApiKey = async (parkGuid: string): Promise<string | undefined> => {
+  if (!UUID_PATTERN.test(parkGuid)) {
+    return undefined;
+  }
+  const { data, errors } = await getWithApiKey({
+    query: `{park(parkGuid: "${parkGuid}"){name}}`,
+  });
+  if (errors) {
+    throw new Error(`GraphQL errors occurred while fetching park ${parkGuid}: ${JSON.stringify(errors)}`);
+  }
+  return data?.park?.name;
+};
+
 export const post = (token, payload?: {}) => {
   let config: AxiosRequestConfig = {
     headers: {

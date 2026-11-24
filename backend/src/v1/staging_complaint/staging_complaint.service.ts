@@ -13,6 +13,7 @@ import { isEqual, omit } from "lodash";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { format } from "date-fns-tz";
+import { EmailService } from "../email/email.service";
 
 @Injectable()
 export class StagingComplaintService {
@@ -29,6 +30,8 @@ export class StagingComplaintService {
 
     @InjectRepository(ComplaintUpdate)
     private complaintUpdateRepository: Repository<ComplaintUpdate>,
+
+    private readonly emailService: EmailService,
   ) {}
 
   // Creates a new Complaint record in the staging table based on data retrieved from WebEOC.  The new complaint is created based off of the data in the staging table
@@ -213,10 +216,66 @@ export class StagingComplaintService {
   }
 
   async processWebEOCComplaint(complaintIdentifier: string): Promise<any> {
+    // Look this up before processing, while the staged insert is still pending, so a complaint is only notified once.
+    const pendingChefsSubmission = await this._findPendingChefsSubmission(complaintIdentifier);
+
     await this.repository.manager.query('SELECT "complaint".insert_complaint_from_staging($1)', [complaintIdentifier]);
     await this.repository.manager.query('SELECT "complaint".edit_complaint_using_webeoc_complaint($1)', [
       complaintIdentifier,
     ]);
+
+    if (pendingChefsSubmission) {
+      // Don't make ingestion wait on, or fail because of, the email.
+      this._notifyNewChefsComplaint(complaintIdentifier, pendingChefsSubmission).catch((error) =>
+        this.logger.error(`Failed to send new complaint notification for ${complaintIdentifier}: ${error}`),
+      );
+    }
+  }
+
+  // Returns the staged submission if this is a CHEFS complaint that hasn't been moved to the complaint tables yet.
+  private async _findPendingChefsSubmission(complaintIdentifier: string): Promise<WebEOCComplaint | undefined> {
+    const pendingInsert = await this.repository
+      .createQueryBuilder("stagingComplaint")
+      .leftJoin("stagingComplaint.stagingActivityCode", "stagingActivityCode")
+      .leftJoin("stagingComplaint.stagingStatusCode", "stagingStatusCode")
+      .where("stagingComplaint.complaintIdentifer = :complaintIdentifier", { complaintIdentifier })
+      .andWhere("stagingActivityCode.stagingActivityCode = :activityCode", {
+        activityCode: StagingActivityCodeEnum.INSERT,
+      })
+      .andWhere("stagingStatusCode.stagingStatusCode = :statusCode", { statusCode: StagingStatusCodeEnum.PENDING })
+      .getOne();
+
+    const submission = pendingInsert?.complaintJsonb as WebEOCComplaint & { chefs_confirmation_id?: string };
+    // Only CHEFS submissions carry a CHEFS confirmation id.
+    return submission?.chefs_confirmation_id ? submission : undefined;
+  }
+
+  private async _notifyNewChefsComplaint(complaintIdentifier: string, submission: WebEOCComplaint): Promise<void> {
+    const complaint = await this.complaintRepository
+      .createQueryBuilder("complaint")
+      .select([
+        "complaint.complaint_identifier",
+        "complaint.owned_by_agency_code_ref",
+        "complaint.geo_organization_unit_code",
+        "complaint.park_guid",
+      ])
+      .where("complaint.complaint_identifier = :complaintIdentifier", { complaintIdentifier })
+      .getOne();
+
+    // The staging function records failures on the staging row instead of throwing, so check the complaint exists.
+    if (!complaint) {
+      this.logger.warn(`Complaint ${complaintIdentifier} was not created, so no new complaint notification was sent`);
+      return;
+    }
+
+    await this.emailService.sendNewComplaintNotification({
+      complaintId: complaint.complaint_identifier,
+      complaintType: submission.report_type,
+      agencyCode: complaint.owned_by_agency_code_ref,
+      communityCode: complaint.geo_organization_unit_code,
+      parkGuid: complaint.park_guid,
+      submission,
+    });
   }
 
   async processWebEOCComplaintUpdate(complaintIdentifier: string, updateNumber: number): Promise<any> {
