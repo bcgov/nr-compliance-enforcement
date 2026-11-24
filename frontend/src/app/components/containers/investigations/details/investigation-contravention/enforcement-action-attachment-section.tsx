@@ -14,7 +14,6 @@ import { DismissToast, ToggleInformation } from "@/app/common/toast";
 import {
   buildEnforcementActionMeta,
   computeSequenceNumbers,
-  deleteEnforcementActionAttachments,
   EnforcementActionAttachmentFieldValues,
 } from "@/app/common/enforcement-action-attachment-utils";
 import { useAppDispatch } from "@/app/hooks/hooks";
@@ -30,8 +29,6 @@ export interface EnforcementActionAttachmentSectionHandle {
   isDirty: () => boolean;
   // Persist staged adds/removes against the given enforcement action id.
   persist: (enforcementActionId: string, fieldValues: EnforcementActionAttachmentFieldValues) => Promise<void>;
-  // Delete every saved attachment for the given enforcement action (used when the EA itself is deleted).
-  deleteAll: (enforcementActionId: string) => Promise<void>;
 }
 
 interface EnforcementActionAttachmentSectionProps {
@@ -189,8 +186,6 @@ export const EnforcementActionAttachmentSection = forwardRef<
         attachmentUploadComplete$.next(enforcementActionId);
       }
     },
-    deleteAll: (enforcementActionId) =>
-      deleteEnforcementActionAttachments(dispatch, investigationGuid, enforcementActionId),
   }));
 
   return (
