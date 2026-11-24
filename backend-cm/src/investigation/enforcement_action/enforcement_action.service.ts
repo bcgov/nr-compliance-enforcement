@@ -397,6 +397,48 @@ export class EnforcementActionService {
     }
   }
 
+  // Soft-deletes an enforcement action with its ticket and decision-detail rows, inside the
+  // caller's transaction (also used when a contravention is removed).
+  async deactivateEnforcementAction(db: any, enforcementActionIdentifier: string): Promise<void> {
+    // Soft delete any associated ticket and decision-detail rows first
+    await db.ticket.updateMany({
+      where: {
+        enforcement_action_guid: enforcementActionIdentifier,
+        active_ind: true,
+      },
+      data: {
+        active_ind: false,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+      },
+    });
+
+    for (const table of DECISION_DETAIL_TABLES) {
+      await db[table].updateMany({
+        where: {
+          enforcement_action_guid: enforcementActionIdentifier,
+          active_ind: true,
+        },
+        data: {
+          active_ind: false,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    }
+
+    await db.enforcement_action.update({
+      where: {
+        enforcement_action_guid: enforcementActionIdentifier,
+      },
+      data: {
+        active_ind: false,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+      },
+    });
+  }
+
   async remove(enforcementActionIdentifier: string): Promise<EnforcementAction> {
     try {
       const enforcementAction = await this.prisma.enforcement_action.findUnique({
@@ -417,43 +459,7 @@ export class EnforcementActionService {
       }
 
       await withRlsTransaction(this.prisma, async (db) => {
-        // Soft delete any associated ticket and decision-detail rows first
-        await db.ticket.updateMany({
-          where: {
-            enforcement_action_guid: enforcementActionIdentifier,
-            active_ind: true,
-          },
-          data: {
-            active_ind: false,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        });
-
-        for (const table of DECISION_DETAIL_TABLES) {
-          await db[table].updateMany({
-            where: {
-              enforcement_action_guid: enforcementActionIdentifier,
-              active_ind: true,
-            },
-            data: {
-              active_ind: false,
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
-            },
-          });
-        }
-
-        await db.enforcement_action.update({
-          where: {
-            enforcement_action_guid: enforcementActionIdentifier,
-          },
-          data: {
-            active_ind: false,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        });
+        await this.deactivateEnforcementAction(db, enforcementActionIdentifier);
       });
 
       await this.investigationService.updateInvestigationTimestamp(
