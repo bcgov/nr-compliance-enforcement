@@ -15,7 +15,7 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
-import { useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency, toOfficerOption } from "@/app/store/reducers/officer";
 import {
@@ -54,6 +54,7 @@ import {
 } from "./enforcement-action-constants";
 import { Attachment } from "@/app/common/attachment-utils";
 import { ContraventionSummary } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-summary";
+import { deleteEnforcementActionAttachments } from "@/app/common/enforcement-action-attachment-utils";
 
 // Chapter numbers that enable NOC on violation tickets: Firearm Act (RSBC 1996 c. 145), Wildlife Act (RSBC 1996 c. 488) and Firearm Violence Prevention Act (SBC 2021 c. 7)
 export const NOTICE_OF_CANCELLATION_ACT_CITATIONS = new Set(["Chapter 145", "Chapter 488", "Chapter 7"]);
@@ -196,6 +197,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 }) => {
   const isEdit = !!enforcementAction;
   const attachmentsRef = useRef<EnforcementActionAttachmentSectionHandle>(null);
+  const dispatch = useAppDispatch();
 
   const agency = useAppSelector(selectOfficerAgency);
   const officersInAgency = useAppSelector((state) => selectOfficersByAgency(state, agency));
@@ -450,11 +452,21 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       await updateTimestampMutation.mutateAsync({ investigationGuid });
     } catch (sideEffectError) {
       console.error("Enforcement action saved, but a post-save update failed", sideEffectError);
+      ToggleError("Enforcement action saved, but a post-save update failed");
     }
   };
 
   const showSaveSuccessToast = () => {
     ToggleSuccess(isEdit ? "Decision updated successfully" : "Decision saved successfully");
+  };
+
+  const deleteDecisionAttachments = async (enforcementActionId: string) => {
+    try {
+      await deleteEnforcementActionAttachments(dispatch, investigationGuid, enforcementActionId);
+    } catch (attachmentError) {
+      console.error("Enforcement action deleted, but its attachments could not be removed", attachmentError);
+      ToggleError("Enforcement action deleted, but its attachments could not be removed");
+    }
   };
 
   // Expose save to modal
@@ -533,6 +545,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         await deleteMutation.mutateAsync({
           enforcementActionId: enforcementAction.enforcementActionIdentifier,
         });
+        await deleteDecisionAttachments(enforcementAction.enforcementActionIdentifier);
         await updateTimestampMutation.mutateAsync({ investigationGuid });
         ToggleSuccess("Decision deleted successfully");
         onDirtyChange?.(0, false);
