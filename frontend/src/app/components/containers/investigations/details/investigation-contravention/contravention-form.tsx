@@ -86,6 +86,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
       );
     } catch (attachmentError) {
       console.error("Contravention deleted, but its decision attachments could not be removed", attachmentError);
+      ToggleError("Contravention deleted, but its decision attachments could not be removed");
     }
   };
 

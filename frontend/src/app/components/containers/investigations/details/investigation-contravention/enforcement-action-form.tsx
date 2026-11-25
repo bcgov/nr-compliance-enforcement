@@ -452,6 +452,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       await updateTimestampMutation.mutateAsync({ investigationGuid });
     } catch (sideEffectError) {
       console.error("Enforcement action saved, but a post-save update failed", sideEffectError);
+      ToggleError("Enforcement action saved, but a post-save update failed");
     }
   };
 
@@ -464,6 +465,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       await deleteEnforcementActionAttachments(dispatch, investigationGuid, enforcementActionId);
     } catch (attachmentError) {
       console.error("Enforcement action deleted, but its attachments could not be removed", attachmentError);
+      ToggleError("Enforcement action deleted, but its attachments could not be removed");
     }
   };
 
