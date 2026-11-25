@@ -14,6 +14,7 @@ interface ValidationMultiSelectProps {
   values?: Option[];
   isDisabled?: boolean;
   isClearable?: boolean;
+  showInactive?: boolean;
 }
 
 const CustomOption = (props: any) => {
@@ -52,15 +53,23 @@ export const ValidationMultiSelect: FC<ValidationMultiSelectProps> = ({
   values,
   isDisabled = false,
   isClearable = false,
+  showInactive = true,
 }) => {
   const errClass = errMsg === "" ? "" : "error-message";
   const calulatedClass = errMsg === "" ? "" : "error-border";
+
+  const visibleOptions =
+    showInactive || options.length === 0 || !("isActive" in options[0])
+      ? options
+      : options.filter((o) => o.isActive || values?.some((v) => v.value === o.value));
+  const items = [...visibleOptions, ...(values ?? []).filter((v) => !visibleOptions.some((o) => o.value === v.value))];
+
   return (
     <div>
       <div className={calulatedClass}>
         <Select
           id={id}
-          options={options}
+          options={items}
           onChange={(values) => {
             onChange(values);
           }}

@@ -763,6 +763,7 @@ export type CreateInvestigationContactMethodInput = {
 };
 
 export type CreateInvestigationInput = {
+  adminSupportGuids?: InputMaybe<Array<Scalars['String']['input']>>;
   caseIdentifier?: InputMaybe<Scalars['String']['input']>;
   community?: InputMaybe<Scalars['String']['input']>;
   complaintIdentifier?: InputMaybe<Scalars['String']['input']>;
@@ -1481,6 +1482,7 @@ export type InspectionStatusCode = {
 
 export type Investigation = {
   __typename?: 'Investigation';
+  adminSupportGuids?: Maybe<Array<Scalars['String']['output']>>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
   collaborators?: Maybe<Array<Maybe<AppUserActivityXref>>>;
   community?: Maybe<Scalars['String']['output']>;
@@ -1528,6 +1530,7 @@ export type InvestigationAlias = {
 
 export type InvestigationAssignees = {
   __typename?: 'InvestigationAssignees';
+  adminSupports: Array<Scalars['String']['output']>;
   fileCoordinators: Array<Scalars['String']['output']>;
   primaryInvestigators: Array<Scalars['String']['output']>;
   supervisors: Array<Scalars['String']['output']>;
@@ -1604,6 +1607,7 @@ export type InvestigationContactMethod = {
 
 export type InvestigationFilters = {
   act?: InputMaybe<Scalars['String']['input']>;
+  adminSupport?: InputMaybe<Scalars['String']['input']>;
   community?: InputMaybe<Scalars['String']['input']>;
   decision?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3748,6 +3752,7 @@ export type UpdateInvestigationContactMethodInput = {
 };
 
 export type UpdateInvestigationInput = {
+  adminSupportGuids?: InputMaybe<Array<Scalars['String']['input']>>;
   community?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;

@@ -28,6 +28,7 @@ export class Investigation {
   supervisorGuid: string;
   primaryInvestigatorGuid: string;
   fileCoordinatorGuid?: string;
+  adminSupportGuids?: string[];
   discoveryDate: Date;
   discoveryTime?: Date;
   community?: string;
@@ -47,6 +48,7 @@ export class InvestigationCloseEligibility {
 export class InvestigationAssignees {
   primaryInvestigators: string[];
   fileCoordinators: string[];
+  adminSupports: string[];
   supervisors: string[];
 }
 
@@ -83,6 +85,10 @@ export class InvestigationFilters {
   @Field(() => String, { nullable: true })
   @IsOptional()
   fileCoordinator?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  adminSupport?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
@@ -170,6 +176,10 @@ export class CreateInvestigationInput {
   @IsOptional()
   fileCoordinatorGuid: string;
 
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  adminSupportGuids?: string[];
+
   @Field(() => Date)
   discoveryDate: Date;
 
@@ -222,6 +232,10 @@ export class UpdateInvestigationInput {
   @Field(() => String)
   @IsOptional()
   fileCoordinatorGuid?: string;
+
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  adminSupportGuids?: string[];
 
   @Field(() => Date)
   discoveryDate: Date;

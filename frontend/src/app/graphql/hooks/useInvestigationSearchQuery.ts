@@ -18,6 +18,7 @@ const SEARCH_INVESTIGATIONS = gql`
         locationAddress
         primaryInvestigatorGuid
         fileCoordinatorGuid
+        adminSupportGuids
         description
         investigationStatus {
           investigationStatusCode

@@ -44,6 +44,7 @@ const CREATE_INVESTIGATION_MUTATION = gql`
       primaryInvestigatorGuid
       supervisorGuid
       fileCoordinatorGuid
+      adminSupportGuids
       discoveryDate
       discoveryTime
       community
@@ -70,6 +71,7 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
       primaryInvestigatorGuid
       supervisorGuid
       fileCoordinatorGuid
+      adminSupportGuids
       discoveryDate
       discoveryTime
       community
@@ -164,6 +166,7 @@ const InvestigationCreate: FC = () => {
         supervisor: inv.supervisorGuid || "",
         primaryInvestigator: inv.primaryInvestigatorGuid || "",
         fileCoordinator: inv.fileCoordinatorGuid || "",
+        adminSupports: inv.adminSupportGuids ?? [],
         discoveryDate: inv.discoveryDate || null,
         discoveryTime: inv.discoveryTime || null,
         community: inv.community || "",
@@ -184,6 +187,7 @@ const InvestigationCreate: FC = () => {
         supervisor: "",
         primaryInvestigator: offcicerAssigned?.appUserGuid || "",
         fileCoordinator: "",
+        adminSupports: [] as string[],
         discoveryDate: complaintData?.reportedOn || null,
         discoveryTime: complaintData?.reportedOn || null,
         community: complaintData.organization.area || "",
@@ -200,6 +204,7 @@ const InvestigationCreate: FC = () => {
       supervisor: "",
       primaryInvestigator: "",
       fileCoordinator: "",
+      adminSupports: [] as string[],
       discoveryDate: "",
       discoveryTime: null,
       community: "",
@@ -228,6 +233,7 @@ const InvestigationCreate: FC = () => {
           supervisorGuid: value.supervisor,
           primaryInvestigatorGuid: value.primaryInvestigator,
           fileCoordinatorGuid: value.fileCoordinator,
+          adminSupportGuids: value.adminSupports,
           discoveryDate: value.discoveryDate,
           discoveryTime: value.discoveryTime,
           community: value.community,
@@ -251,6 +257,7 @@ const InvestigationCreate: FC = () => {
           supervisorGuid: value.supervisor ?? undefined,
           primaryInvestigatorGuid: value.primaryInvestigator ?? "",
           fileCoordinatorGuid: value.fileCoordinator ?? "",
+          adminSupportGuids: value.adminSupports ?? [],
           discoveryDate: value.discoveryDate,
           discoveryTime: value.discoveryTime,
           community: value.community || undefined,

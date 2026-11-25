@@ -58,6 +58,7 @@ const Investigations: FC = () => {
       searchValues.community,
       searchValues.primaryInvestigator,
       searchValues.fileCoordinator,
+      searchValues.adminSupport,
       searchValues.supervisor,
       searchValues.startDate,
       searchValues.endDate,
@@ -87,6 +88,7 @@ const Investigations: FC = () => {
       searchValues.community === null &&
       searchValues.primaryInvestigator === null &&
       searchValues.fileCoordinator === null &&
+      searchValues.adminSupport === null &&
       searchValues.supervisor === null &&
       searchValues.startDate === null &&
       searchValues.endDate === null &&
