@@ -36,6 +36,7 @@ export class ContraventionResolver {
     @Args("contraventionGuid") contraventionGuid: string,
     @Args("partyGuid") partyGuid: string,
   ) {
+    validateActivityAccess(investigationGuid);
     validateActivityAccess(await this.contraventionService.getInvestigationGuid(contraventionGuid));
     try {
       return await this.contraventionService.remove(investigationGuid, contraventionGuid, partyGuid);
@@ -56,6 +57,7 @@ export class ContraventionResolver {
     @Args("contraventionGuid") contraventionGuid: string,
     @Args("input") contraventionInput: CreateUpdateContraventionInput,
   ) {
+    validateActivityAccess(contraventionInput.investigationGuid);
     validateActivityAccess(await this.contraventionService.getInvestigationGuid(contraventionGuid));
     try {
       return await this.contraventionService.update(contraventionGuid, contraventionInput);
