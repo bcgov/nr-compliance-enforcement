@@ -25,6 +25,10 @@ export const useInvestigationReadOnly = (investigationGuid: string) => {
     enabled: !!investigationGuid,
   });
   const investigation = data?.getInvestigation;
+  // don't redirect while loading
+  if (!investigation || !userGuid) {
+    return false;
+  }
   return (
     investigation?.investigationStatus?.investigationStatusCode === "CLOSED" ||
     !hasInvestigationAccess(investigation, userGuid)

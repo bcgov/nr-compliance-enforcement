@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
@@ -15,6 +15,7 @@ import { useInvestigationSearch } from "@/app/components/containers/investigatio
 import { InvestigationCreateHeader } from "@/app/components/containers/investigations/create/investigation-create-header";
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
+import { useInvestigationReadOnly } from "@/app/components/containers/investigations/hooks/use-investigation-read-only";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import {
   getComplaintById,
@@ -104,6 +105,7 @@ const InvestigationCreate: FC = () => {
   );
 
   const isEditMode = Boolean(investigationGuid);
+  const isReadOnly = useInvestigationReadOnly(investigationGuid ?? "");
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const currentAppUserGuid = useAppSelector(appUserGuid);
@@ -327,6 +329,15 @@ const InvestigationCreate: FC = () => {
 
   const isSubmitting = createInvestigationMutation.isPending || updateInvestigationMutation.isPending;
   const isDisabled = isSubmitting || (isEditMode && isLoadingInvestigation);
+
+  if (isReadOnly) {
+    return (
+      <Navigate
+        to={`/investigation/${investigationGuid}`}
+        replace
+      />
+    );
+  }
 
   return (
     <div className="comp-investigation-edit-headerdetails">

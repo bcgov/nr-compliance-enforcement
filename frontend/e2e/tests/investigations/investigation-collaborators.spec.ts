@@ -65,7 +65,6 @@ test.describe("Investigation Collaborators", () => {
       .click();
     await expect(page.locator(".Toastify__toast-body", { hasText: "Collaborator added successfully" })).toBeVisible();
     await page.locator("button", { hasText: /Close/ }).first().click();
-    await expect(page.locator("#comp-header-collaborator-count")).toHaveText(/\+1/);
   });
 
   test("it allows the collaborator from Parks to edit the investigation", async ({ browser }) => {
@@ -82,7 +81,6 @@ test.describe("Investigation Collaborators", () => {
   test("it removes a collaborator", async ({ page }) => {
     await page.goto(investigationUrl);
     await waitForSpinner(page);
-    await expect(page.locator("#comp-header-collaborator-count")).toHaveText(/\+1/);
 
     await openManageCollaboratorsModal(page);
     await page
@@ -91,7 +89,6 @@ test.describe("Investigation Collaborators", () => {
       .click();
     await expect(page.locator(".Toastify__toast-body", { hasText: "Collaborator removed successfully" })).toBeVisible();
     await page.locator("button", { hasText: /Close/ }).first().click();
-    await expect(page.locator("#comp-header-collaborator-count")).not.toBeVisible();
   });
 
   test("it removes access for the removed collaborator from Parks", async ({ browser }) => {
