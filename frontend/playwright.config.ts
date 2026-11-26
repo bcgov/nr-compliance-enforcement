@@ -119,6 +119,8 @@ export default defineConfig({
       testMatch: /.{0,5}\.setup\.ts/,
       /* Proxy HTTPS traffic through the BC Gov proxy for auth */
       use: {
+        /* WebKit to match the device projects; it's the only browser in the e2e image */
+        browserName: "webkit",
         ...(process.env.E2E_HTTPS_PROXY && {
           proxy: {
             server: process.env.E2E_HTTPS_PROXY,

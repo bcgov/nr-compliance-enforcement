@@ -12,5 +12,7 @@ RUN apt-get update \
  && npm install --prefix /tmp/pw --ignore-scripts --no-save --no-audit --no-fund playwright@${PLAYWRIGHT_VERSION} \
  && node /tmp/pw/node_modules/playwright/cli.js install --with-deps webkit \
  && rm -rf /tmp/pw /var/lib/apt/lists/* /root/.npm \
- && chgrp -R 0 /ms-playwright \
+ && chown -R 1000:0 /ms-playwright \
  && chmod -R g+rwX /ms-playwright
+
+USER 1000
