@@ -6,7 +6,7 @@ FROM ghcr.io/bcgov/nr-compliance-enforcement/frontend-playwright-base:${BASE_TAG
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci \
+RUN npm ci --ignore-scripts \
  && npm cache clean --force \
  && chgrp -R 0 /app \
  && chmod -R g+rwX /app
@@ -18,4 +18,4 @@ RUN mkdir -p /app/test-results \
  && chgrp 0 /app/node_modules \
  && chmod g+rwX /app/node_modules
 
-ENTRYPOINT ["npx", "playwright", "test"]
+ENTRYPOINT ["/app/node_modules/.bin/playwright", "test"]
