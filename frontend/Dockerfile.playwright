@@ -1,43 +1,21 @@
-# node:22-bookworm-slim as of 2026-10-19
-FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
-
-# Install system dependencies required by Playwright WebKit
-# plus dnsutils for network debugging
-RUN apt-get update && apt-get install -y \
-    curl \
-    libnss3 \
-    libatk-bridge2.0-0 \
-    libdrm2 \
-    libxkbcommon0 \
-    libgtk-3-0 \
-    libgbm1 \
-    libasound2 \
-    libxrandr2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcairo-gobject2 \
-    libgdk-pixbuf2.0-0 \
-    dnsutils \
-    && rm -rf /var/lib/apt/lists/*
+# Playwright overlay image: node_modules + e2e tests on top of the base image frontend/playwright-base/Dockerfile 
+# BASE_TAG is set by CI to the PR number that tag always exists because the base job builds it or retags :test
+ARG BASE_TAG=test
+FROM ghcr.io/bcgov/nr-compliance-enforcement/frontend-playwright-base:${BASE_TAG}
 
 WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci \
+ && npm cache clean --force \
+ && chgrp -R 0 /app \
+ && chmod -R g+rwX /app
+
 COPY . .
 
-RUN npm ci
-
-# Create browser cache directory
-RUN mkdir -p /app/playwright-browsers
-ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
-# Install WebKit browser
-RUN PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers npx playwright install --with-deps
-
-# Create test-results directory with OpenShift-compatible permissions
-RUN mkdir -p /app/test-results && \
-    chgrp -R 0 /app && \
-    chmod -R g+rwX /app
-
-# Set environment variable for runtime
-ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
-
+RUN mkdir -p /app/test-results \
+ && find /app -path /app/node_modules -prune -o -exec chgrp 0 {} + -exec chmod g+rwX {} + \
+ && chgrp 0 /app/node_modules \
+ && chmod g+rwX /app/node_modules
 
 ENTRYPOINT ["npx", "playwright", "test"]

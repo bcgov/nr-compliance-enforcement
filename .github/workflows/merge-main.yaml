@@ -74,6 +74,8 @@ jobs:
             migration-inspection,
             migration-shared,
             event-worker,
+            frontend-playwright-base,
+            frontend-playwright,
           ]
     timeout-minutes: 1
     steps:

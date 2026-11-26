@@ -98,15 +98,31 @@ jobs:
           tags: |
             ${{ github.sha }}
 
-  # build prepackaged playwright images
+  # build playwright base image only if changes to base occured to save time
+  # https://github.com/bcgov/action-builder-ghcr
+  build-playwright-base:
+    name: Build Playwright Base
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
+        with:
+          package: frontend-playwright-base
+          build_context: frontend/playwright-base/
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          triggers: ('frontend/playwright-base/')
+
+  # build only when e2e tests change to save time, layers on top of base
   # https://github.com/bcgov/action-builder-ghcr
   build-playwright:
     name: Build Playwright
+    needs: [build-playwright-base]
     runs-on: ubuntu-22.04
     outputs:
       digest: ${{ steps.build-playwright.outputs.digest }}
       sha: ${{ github.sha }}
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
         with:
@@ -114,7 +130,11 @@ jobs:
           build_file: frontend/Dockerfile.playwright
           build_context: frontend/
           tag: ${{ github.event.number }}
-          tag_fallback: latest
+          tag_fallback: test
+          triggers: ('frontend/playwright-base/' 'frontend/Dockerfile.playwright' 'frontend/Dockerfile.playwright.dockerignore' 'frontend/e2e/' 'frontend/playwright.config.ts' 'frontend/package.json' 'frontend/package-lock.json' 'frontend/src/app/types/')
+          # override base playwright image tag to layer onto from PR # or test
+          build_args: |
+            BASE_TAG=${{ github.event.number }}
       - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
