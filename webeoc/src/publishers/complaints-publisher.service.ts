@@ -3,6 +3,7 @@ import { connect, headers, JetStreamClient, JSONCodec } from "nats";
 import { STREAM_TOPICS } from "../common/constants";
 import { Complaint } from "src/types/complaint-type";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
+import { getErrorMessage } from "src/common/error-message";
 
 @Injectable()
 export class ComplaintsPublisherService {
@@ -21,7 +22,8 @@ export class ComplaintsPublisherService {
       });
       this.jsClient = nc.jetstream();
     } catch (error) {
-      this.logger.error(`Error connecting to NATS: ${error.message}`, error);
+      const errorMessage = getErrorMessage(error);
+      this.logger.error(`Error connecting to NATS: ${errorMessage}`, error);
     }
   }
 
@@ -46,7 +48,7 @@ export class ComplaintsPublisherService {
         this.logger.debug(`Publishing new complaint for staging: ${complaintReference}`);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = getErrorMessage(error);
       const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error(`Error publishing complaint: ${errorMessage}`, errorStack);
       throw error;
@@ -71,7 +73,9 @@ export class ComplaintsPublisherService {
         this.logger.debug(`Publishing new complaint update for staging: ${incidentNumber} ${updateNumber}`);
       }
     } catch (error) {
-      this.logger.error(`Error publishing complaint update: ${error.message}`, error.stack);
+      const errorMessage = getErrorMessage(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error saving complaint to staging: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -94,7 +98,9 @@ export class ComplaintsPublisherService {
         this.logger.debug(`Complaint ready to be moved to operational tables: ${complaint.incident_number}`);
       }
     } catch (error) {
-      this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);
+      const errorMessage = getErrorMessage(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error saving complaint to staging: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -124,7 +130,9 @@ export class ComplaintsPublisherService {
         );
       }
     } catch (error) {
-      this.logger.error(`Error saving complaint update to staging: ${error.message}`, error.stack);
+      const errorMessage = getErrorMessage(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error saving complaint update to staging: ${errorMessage}`, errorStack);
       throw error;
     }
   }

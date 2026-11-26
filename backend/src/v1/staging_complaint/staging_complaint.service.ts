@@ -92,9 +92,9 @@ export class StagingComplaintService {
   }
 
   // Finds the complaint already staged for a CHEFS submission, so a redelivered submission isn't staged twice.
-  private async _findStagedChefsComplaint(chefsSubmissionId: string): Promise<StagingComplaint | null> {
+  private _findStagedChefsComplaint(chefsSubmissionId: string): Promise<StagingComplaint | null> {
     if (!chefsSubmissionId) {
-      return null;
+      return Promise.resolve(null);
     }
 
     return this.repository

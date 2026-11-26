@@ -15,6 +15,7 @@ import { ChefsEventMessage } from "src/types/chefs/chefs-event-type";
 import { ComplaintsPublisherService } from "src/publishers/complaints-publisher.service";
 import { ChefsApiService } from "src/chefs/chefs-api.service";
 import { transformChefsSubmission } from "src/chefs/transforms";
+import { getErrorMessage } from "src/common/error-message";
 
 @Injectable()
 export class ChefsSubscriberService implements OnModuleInit {
@@ -104,7 +105,7 @@ export class ChefsSubscriberService implements OnModuleInit {
       try {
         await this.handleFormEvent(message, eventMessage);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage = getErrorMessage(error);
         this.logger.error(`CHEFS_INTAKE_ERROR Submission ${eventMessage?.meta?.submissionId}: ${errorMessage}`, error);
         message.nak(60_000); // retry in 60 seconds, up to CHEFS_MAX_DELIVER attempts
       }
