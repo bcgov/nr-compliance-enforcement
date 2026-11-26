@@ -72,7 +72,6 @@ export const buildNewComplaintDetails = (
     ["Caller primary phone", submission.cos_primary_phone],
     ["Caller alternate phone", submission.cos_alt_phone],
     ["Caller address", submission.caller_address],
-    ["CHEFS confirmation ID", submission.chefs_confirmation_id],
   ];
 
   return details.map(([label, value]) => ({ label, value: toDisplayValue(value) })).filter((detail) => detail.value);
@@ -83,3 +82,54 @@ export const buildComplaintUrl = (complaintType: string, complaintId: string): s
   const baseUrl = process.env.NATSUITE_URL?.replace(/\/+$/, "");
   return baseUrl ? `${baseUrl}/complaint/${complaintType}/${complaintId}` : undefined;
 };
+
+// A file attached to the CHEFS submission
+export interface NewComplaintAttachment {
+  id: string;
+  name: string;
+  size: number;
+}
+
+const DEFAULT_ATTACHMENT_LIMIT_MB = 10;
+
+export const getAttachmentLimitBytes = (): number => {
+  const configured = Number(process.env.CHEFS_EMAIL_ATTACHMENT_LIMIT_MB);
+  const limitMb = Number.isFinite(configured) && configured >= 0 ? configured : DEFAULT_ATTACHMENT_LIMIT_MB;
+  return limitMb * 1024 * 1024;
+};
+
+export const planAttachments = (
+  attachments: NewComplaintAttachment[],
+  limitBytes: number,
+): { toAttach: NewComplaintAttachment[]; tooLarge: NewComplaintAttachment[] } => {
+  const toAttach: NewComplaintAttachment[] = [];
+  const tooLarge: NewComplaintAttachment[] = [];
+  let totalBytes = 0;
+
+  for (const attachment of attachments) {
+    const size = Number(attachment.size) || 0;
+    if (totalBytes + size <= limitBytes) {
+      toAttach.push(attachment);
+      totalBytes += size;
+    } else {
+      tooLarge.push(attachment);
+    }
+  }
+
+  return { toAttach, tooLarge };
+};
+
+export const formatFileSize = (bytes: number): string => {
+  if (!bytes) {
+    return "0 KB";
+  }
+  if (bytes < 1024 * 1024) {
+    return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+const AGENCIES_RECEIVING_ATTACHMENTS = ["NROS"];
+
+export const shouldEmailAttachments = (agencyCode: string): boolean =>
+  AGENCIES_RECEIVING_ATTACHMENTS.includes(agencyCode);

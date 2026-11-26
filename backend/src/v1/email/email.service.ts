@@ -14,13 +14,20 @@ import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_em
 import { AppUserService } from "../../v1/app_user/app_user.service";
 import { CodeTableService } from "../code-table/code-table.service";
 import { getCosCommunityWithApiKey, getCosGeoOrgUnits, getParkNameWithApiKey } from "../../external_api/shared_data";
-import { generateNewComplaintEmailBody } from "../../email_templates/new_chefs_complaint";
+import { generateNewComplaintEmailBody, NewComplaintEmailAttachment } from "../../email_templates/new_chefs_complaint";
+import { ChefsService } from "../../external_api/chefs/chefs.service";
+import { UUID } from "node:crypto";
 import {
   buildComplaintUrl,
   buildNewComplaintDetails,
   COMPLAINT_TYPE_DESCRIPTIONS,
+  formatFileSize,
+  getAttachmentLimitBytes,
+  NewComplaintAttachment,
+  planAttachments,
   NewComplaintNotification,
   selectNewComplaintRecipients,
+  shouldEmailAttachments,
 } from "./new-complaint-notification";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 import { SendInvestigationCollaboratorEmailDto } from "../../v1/email/dto/send_investigation_collaborator_email.dto";
@@ -44,6 +51,7 @@ export class EmailService {
     private readonly _appUserService: AppUserService,
     private readonly _codeTableService: CodeTableService,
     private readonly _featureFlagService: FeatureFlagService,
+    private readonly _chefsService: ChefsService,
   ) {}
 
   private async _buildRecipientList(referredToAgencyCode, complaint, additionalRecipients) {
@@ -359,11 +367,17 @@ export class EmailService {
       location ? ` (${location})` : ""
     }`;
 
+    // Only NROS get the attachments (if any) by email
+    const { emailAttachments, attachmentList } = shouldEmailAttachments(agencyCode)
+      ? await this._getNewComplaintAttachments(complaintId, notification.submission?.attachments ?? [])
+      : { emailAttachments: [], attachmentList: [] };
+
     const emailBody = generateNewComplaintEmailBody({
       complaintId,
       complaintTypeDescription,
       complaintUrl: buildComplaintUrl(complaintType, complaintId),
       details: buildNewComplaintDetails(notification, communityName, parkName),
+      attachments: attachmentList,
       supportEmail: process.env.CEDS_EMAIL,
     });
 
@@ -374,7 +388,7 @@ export class EmailService {
       emailBody,
       recipientList,
       [],
-      [],
+      emailAttachments,
       "new_complaint",
     );
 
@@ -450,4 +464,56 @@ export class EmailService {
       throw error;
     }
   };
+
+  // Downloads the submission's files from CHEFS to attach to the email. Files over the size limit, or that
+  // can't be downloaded, are listed in the email instead so the notification still goes out.
+  private async _getNewComplaintAttachments(
+    complaintId: string,
+    attachments: NewComplaintAttachment[],
+  ): Promise<{ emailAttachments: any[]; attachmentList: NewComplaintEmailAttachment[] }> {
+    const { toAttach, tooLarge } = planAttachments(attachments, getAttachmentLimitBytes());
+    if (tooLarge.length > 0) {
+      this.logger.warn(
+        `Not attaching ${tooLarge.length} file(s) to the notification for ${complaintId}: over the size limit`,
+      );
+    }
+
+    const downloads = await Promise.all(
+      toAttach.map(async (attachment) => {
+        try {
+          const { data, headers } = await this._chefsService.getFile(attachment.id as UUID);
+          return {
+            content: Buffer.from(data),
+            contentType: headers?.["content-type"] || "application/octet-stream",
+            filename: attachment.name,
+            id: attachment.id,
+          };
+        } catch (error) {
+          this.logger.error(
+            `Unable to get CHEFS file ${attachment.id} for the notification for ${complaintId}: ${error}`,
+          );
+          return undefined;
+        }
+      }),
+    );
+
+    const downloaded = downloads.filter((download) => download);
+    const attachedIds = new Set(downloaded.map((download) => download.id));
+
+    const emailAttachments = downloaded.map(({ content, contentType, filename }) => ({
+      content: content.toString("base64"),
+      contentType,
+      encoding: "base64",
+      filename,
+    }));
+
+    // List every file in the order it was submitted, noting the ones that aren't attached.
+    const attachmentList = attachments.map((attachment) => ({
+      name: attachment.name,
+      size: formatFileSize(Number(attachment.size)),
+      attached: attachedIds.has(attachment.id),
+    }));
+
+    return { emailAttachments, attachmentList };
+  }
 }
