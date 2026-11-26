@@ -36,8 +36,13 @@ export class StagingComplaintService {
 
   // Creates a new Complaint record in the staging table based on data retrieved from WebEOC.  The new complaint is created based off of the data in the staging table
   async stageNewComplaint(stagingComplaint: WebEOCComplaint): Promise<StagingComplaint> {
-    // CHEFS complaints arrive without an incident number, so generate one before looking for existing staged versions.
+    // CHEFS complaints arrive without an incident number. If this submission was already staged (a redelivered
+    // message), reuse that staged complaint instead of generating a second incident number.
     if (!stagingComplaint.incident_number) {
+      const existingChefsComplaint = await this._findStagedChefsComplaint(stagingComplaint.chefs_submission_id);
+      if (existingChefsComplaint) {
+        return existingChefsComplaint;
+      }
       stagingComplaint.incident_number = await this._generateChefsComplaintIdentifier();
     }
 
@@ -84,6 +89,18 @@ export class StagingComplaintService {
       // if it's not an edit, that means the complaints are the same, so don't recreate in staging
       return;
     }
+  }
+
+  // Finds the complaint already staged for a CHEFS submission, so a redelivered submission isn't staged twice.
+  private async _findStagedChefsComplaint(chefsSubmissionId: string): Promise<StagingComplaint | null> {
+    if (!chefsSubmissionId) {
+      return null;
+    }
+
+    return this.repository
+      .createQueryBuilder("stagingComplaint")
+      .where(`stagingComplaint.complaint_jsonb ->> 'chefs_submission_id' = :chefsSubmissionId`, { chefsSubmissionId })
+      .getOne();
   }
 
   // Generates a CHEFS complaint identifier (yy-8xxxxx) from the CHEFS complaint sequence.

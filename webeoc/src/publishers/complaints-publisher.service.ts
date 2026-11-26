@@ -33,18 +33,22 @@ export class ComplaintsPublisherService {
    * @param messageId optional de-duplication id, used when the complaint has no incident number yet (CHEFS)
    */
   async publishComplaintToNatsuite(complaint: Complaint, messageId?: string): Promise<void> {
+    // CHEFS complaints have no incident number until they're staged, so identify them by their message id.
+    const complaintReference = complaint.incident_number ?? messageId;
     try {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
       natsHeaders.set("Nats-Msg-Id", messageId ?? `staged-${complaint.incident_number}-${complaint.entrydate}`);
       const ack = await this.jsClient.publish(STREAM_TOPICS.COMPLAINTS, msg, { headers: natsHeaders });
       if (ack.duplicate) {
-        this.logger.debug(`Complaint already published: ${complaint.incident_number}`);
+        this.logger.debug(`Complaint already published: ${complaintReference}`);
       } else {
-        this.logger.debug(`Publishing new complaint for staging: ${complaint.incident_number}`);
+        this.logger.debug(`Publishing new complaint for staging: ${complaintReference}`);
       }
     } catch (error) {
-      this.logger.error(`Error publishing complaint: ${error.message}`, error.stack);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error publishing complaint: ${errorMessage}`, errorStack);
       throw error;
     }
   }
