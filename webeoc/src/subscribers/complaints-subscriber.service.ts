@@ -90,14 +90,18 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       ...complaintMessage,
       incident_number: stagedIdentifier ?? complaintMessage.incident_number,
     };
-    void this.complaintsPublisherService.publishStagingComplaintInsertedMessage(stagedComplaint);
+    this.complaintsPublisherService.publishStagingComplaintInsertedMessage(stagedComplaint).catch((error) => {
+      this.logger.error(`Unable to publish staged complaint ${stagedComplaint.incident_number}`, error);
+    });
   }
 
   private async handleUpdatedComplaint(message, complaintMessage: ComplaintUpdate) {
     this.logger.debug(`Staging complaint update: ${complaintMessage?.parent_incident_number}`);
     await this.service.createUpdateComplaintInStaging(complaintMessage);
     await message.ackAck(); //Message has been loaded into NatCom no need to retry.  If NATS is unavailable there will be 'PENDING' row to process manually.
-    this.complaintsPublisherService.publishStagingComplaintUpdateInsertedMessage(complaintMessage);
+    this.complaintsPublisherService.publishStagingComplaintUpdateInsertedMessage(complaintMessage).catch((error) => {
+      this.logger.error(`Unable to publish staged complaint update ${complaintMessage?.parent_incident_number}`, error);
+    });
   }
 
   private async handleStagedComplaint(message, stagingData: string) {
