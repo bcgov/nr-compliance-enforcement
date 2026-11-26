@@ -40,10 +40,15 @@ test.describe("Investigation Access", () => {
     );
 
     await page.locator("#details-screen-save-button-top").click();
+
+    const confirmModal = page.locator(".modal").first();
+    await expect(confirmModal.getByText(/will not be able to edit this investigation/)).toBeVisible();
+    await confirmModal.getByRole("button", { name: "Save changes" }).click();
     await createMutationPromise;
     await expect(page).toHaveURL(/\/investigation\/[a-f0-9-]+$/i, { timeout: 30000 });
     await waitForSpinner(page);
 
+    await expect(page.locator("#investigation-read-only-banner")).toBeVisible();
     await expect(page.locator("#details-screen-edit-button")).toBeDisabled();
     await expect(page.locator("#details-screen-assign-button")).toBeDisabled();
     await expect(page.locator("#details-screen-update-status-button")).toBeDisabled();
