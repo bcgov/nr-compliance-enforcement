@@ -1,6 +1,6 @@
 import { FC, useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button, Dropdown } from "react-bootstrap";
+import { Alert, Button, Dropdown } from "react-bootstrap";
 import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
 import { Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
@@ -278,6 +278,21 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({
         </div>
       </div>
       <InvestigationTabs />
+      {investigation && userGuid && !hasAccess && (
+        <div className="px-4 pt-3">
+          <Alert
+            variant="warning"
+            className="comp-complaint-details-alert"
+            id="investigation-read-only-banner"
+          >
+            <i className="bi bi-info-circle-fill pe-2"></i>
+            <span>
+              Only assigned users can edit. Contact somebody already assigned to this file to request access if you need
+              to make changes.
+            </span>
+          </Alert>
+        </div>
+      )}
       <ChangeStatusModal
         show={showStatusModal}
         onHide={handleCloseStatusModal}

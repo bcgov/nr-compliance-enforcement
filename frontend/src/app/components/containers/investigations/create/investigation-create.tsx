@@ -8,7 +8,7 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal, appUserGuid } from "@store/reducers/app";
-import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { CANCEL_CONFIRM, SAVE_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInvestigationInput, Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
@@ -324,8 +324,32 @@ const InvestigationCreate: FC = () => {
   }, [dispatch, isDirty, confirmCancelChanges]);
 
   const saveButtonClick = useCallback(() => {
+    const { primaryInvestigator, supervisor, fileCoordinator, adminSupports } = form.state.values;
+    const hasAccess = [primaryInvestigator, supervisor, fileCoordinator, ...(adminSupports ?? [])].includes(
+      currentAppUserGuid,
+    );
+    if (!isEditMode && !hasAccess) {
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: SAVE_CONFIRM,
+          data: {
+            title: "Create investigation",
+            warnings: [
+              "You are not the primary investigator, supervisor, file coordinator or admin support, and will not be able to edit this investigation after it is created.",
+            ],
+            cancelText: "Cancel",
+            saveText: "Save changes",
+          },
+          callback: () => {
+            form.handleSubmit();
+          },
+        }),
+      );
+      return;
+    }
     form.handleSubmit();
-  }, [form]);
+  }, [form, isEditMode, currentAppUserGuid, dispatch]);
 
   const isSubmitting = createInvestigationMutation.isPending || updateInvestigationMutation.isPending;
   const isDisabled = isSubmitting || (isEditMode && isLoadingInvestigation);
