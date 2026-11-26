@@ -323,12 +323,15 @@ const InvestigationCreate: FC = () => {
     );
   }, [dispatch, isDirty, confirmCancelChanges]);
 
-  const saveButtonClick = useCallback(() => {
+  const saveButtonClick = useCallback(async () => {
     const { primaryInvestigator, supervisor, fileCoordinator, adminSupports } = form.state.values;
     const hasAccess = [primaryInvestigator, supervisor, fileCoordinator, ...(adminSupports ?? [])].includes(
       currentAppUserGuid,
     );
-    if (!isEditMode && !hasAccess) {
+    const results = await form.validateAllFields("submit");
+    const hasErrors = Object.values(results).some((fieldErrors) => fieldErrors && Object.keys(fieldErrors).length > 0);
+    // show the form errors before warning about access
+    if (!isEditMode && !hasAccess && !hasErrors) {
       dispatch(
         openModal({
           modalSize: "md",
