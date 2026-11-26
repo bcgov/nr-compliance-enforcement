@@ -3,7 +3,7 @@ import { connect, headers, JetStreamClient, JSONCodec } from "nats";
 import { STREAM_TOPICS } from "../common/constants";
 import { Complaint } from "src/types/complaint-type";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
-import { getErrorMessage } from "src/common/error-message";
+import { getErrorMessage } from "../common/error-message";
 
 @Injectable()
 export class ComplaintsPublisherService {

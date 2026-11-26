@@ -15,7 +15,7 @@ import { ChefsEventMessage } from "src/types/chefs/chefs-event-type";
 import { ComplaintsPublisherService } from "src/publishers/complaints-publisher.service";
 import { ChefsApiService } from "src/chefs/chefs-api.service";
 import { transformChefsSubmission } from "src/chefs/transforms";
-import { getErrorMessage } from "src/common/error-message";
+import { getErrorMessage } from "../common/error-message";
 
 @Injectable()
 export class ChefsSubscriberService implements OnModuleInit {
