@@ -63,7 +63,6 @@ describe("buildNewComplaintDetails", () => {
       { label: "Park", value: "Some Park" },
       { label: "Coordinates (lat, long)", value: "51.6, -121.3" },
       { label: "Call details", value: "Saw something" },
-      { label: "CHEFS confirmation ID", value: "EA379825" },
     ]);
   });
 

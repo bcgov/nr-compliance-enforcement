@@ -497,7 +497,7 @@ export class EmailService {
       }),
     );
 
-    const downloaded = downloads.filter((download) => download);
+    const downloaded = downloads.filter(Boolean);
     const attachedIds = new Set(downloaded.map((download) => download.id));
 
     const emailAttachments = downloaded.map(({ content, contentType, filename }) => ({

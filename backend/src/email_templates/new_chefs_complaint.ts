@@ -51,7 +51,7 @@ export function generateNewComplaintEmailBody(params: GenerateNewComplaintEmailP
 
   const attachmentSection = generateAttachmentSection(attachments);
 
-  return `<p>Dear officer,</p>
+  return `<p>Hello,</p>
 <p>A new ${escapeHtml(
     complaintTypeDescription,
   )} complaint ${complaintReference} has been submitted through the online complaint form and added to NatSuite.</p>

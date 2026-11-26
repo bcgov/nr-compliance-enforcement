@@ -79,7 +79,10 @@ export const buildNewComplaintDetails = (
 
 // Link to the complaint in NatSuite, when the frontend URL is configured.
 export const buildComplaintUrl = (complaintType: string, complaintId: string): string | undefined => {
-  const baseUrl = process.env.NATSUITE_URL?.replace(/\/+$/, "");
+  let baseUrl = process.env.NATSUITE_URL ?? "";
+  while (baseUrl.endsWith("/")) {
+    baseUrl = baseUrl.slice(0, -1);
+  }
   return baseUrl ? `${baseUrl}/complaint/${complaintType}/${complaintId}` : undefined;
 };
 
@@ -129,7 +132,6 @@ export const formatFileSize = (bytes: number): string => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-const AGENCIES_RECEIVING_ATTACHMENTS = ["NROS"];
+const AGENCIES_RECEIVING_ATTACHMENTS = new Set(["NROS"]);
 
-export const shouldEmailAttachments = (agencyCode: string): boolean =>
-  AGENCIES_RECEIVING_ATTACHMENTS.includes(agencyCode);
+export const shouldEmailAttachments = (agencyCode: string): boolean => AGENCIES_RECEIVING_ATTACHMENTS.has(agencyCode);
