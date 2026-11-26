@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EmailService } from "./email.service";
-import { ChesService } from "../../external_api/ches/ches.service";
+import { ChesService, SendEmailParams } from "../../external_api/ches/ches.service";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
 import { ComplaintService } from "../../v1/complaint/complaint.service";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
@@ -103,8 +103,17 @@ describe("EmailService", () => {
     };
 
     const sentEmail = () => {
-      const [from, fromName, subject, body, to, cc, attachments, tag] = chesService.sendEmail.mock.calls[0];
-      return { from, fromName, subject, body, to, cc, attachments, tag };
+      const params: SendEmailParams = chesService.sendEmail.mock.calls[0][0];
+      return {
+        from: params.senderEmailAddress,
+        fromName: params.senderName,
+        subject: params.emailSubject,
+        body: params.emailBody,
+        to: params.recipientList,
+        cc: params.ccList,
+        attachments: params.attachments,
+        tag: params.tag,
+      };
     };
 
     beforeEach(() => {

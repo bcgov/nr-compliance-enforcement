@@ -3,6 +3,17 @@ import { ExternalApiService } from "../external-api-service";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { ConfigurationService } from "../../v1/configuration/configuration.service";
 
+export interface SendEmailParams {
+  senderEmailAddress: string;
+  senderName: string;
+  emailSubject: string;
+  emailBody: string;
+  recipientList: string[];
+  ccList?: string[];
+  attachments?: any[];
+  tag?: string;
+}
+
 @Injectable()
 export class ChesService implements ExternalApiService {
   private readonly logger = new Logger(ChesService.name);
@@ -46,16 +57,16 @@ export class ChesService implements ExternalApiService {
     }
   };
 
-  sendEmail = async (
+  sendEmail = async ({
     senderEmailAddress,
     senderName,
     emailSubject,
     emailBody,
-    recipientList: string[],
-    ccList?: string[],
-    attachments?: any[],
-    tag: string = "complaint_referral",
-  ) => {
+    recipientList,
+    ccList,
+    attachments,
+    tag = "complaint_referral",
+  }: SendEmailParams) => {
     try {
       const apiToken = await this.authenticate();
 

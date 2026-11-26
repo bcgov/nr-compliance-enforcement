@@ -214,15 +214,15 @@ export class EmailService {
         throw new Error(`No email recipients found for referral to ${referred_to_agency_code_ref}.`);
       }
 
-      await this._chesService.sendEmail(
+      await this._chesService.sendEmail({
         senderEmailAddress,
         senderName,
         emailSubject,
         emailBody,
         recipientList,
         ccList,
-        emailAttachments,
-      );
+        attachments: emailAttachments,
+      });
 
       // Return all of the recipients including the CC list so each individual email can be logged
       const allRecipients = Array.from(new Set([...recipientList, ...ccList]));
@@ -312,14 +312,14 @@ export class EmailService {
         complaintUrl,
       };
       const emailBody = generateCollaboratorEmailBody(generateCollaboratorEmailParams);
-      return await this._chesService.sendEmail(
+      return await this._chesService.sendEmail({
         senderEmailAddress,
         senderName,
         emailSubject,
         emailBody,
-        [email],
-        [senderEmailAddress],
-      );
+        recipientList: [email],
+        ccList: [senderEmailAddress],
+      });
     } catch (error) {
       this.logger.error(`Failed to send collaborator email: ${error.message}`);
       throw error;
@@ -381,16 +381,16 @@ export class EmailService {
       supportEmail: process.env.CEDS_EMAIL,
     });
 
-    await this._chesService.sendEmail(
-      process.env.CEDS_EMAIL,
-      "NatSuite",
+    await this._chesService.sendEmail({
+      senderEmailAddress: process.env.CEDS_EMAIL || "ceds@gov.bc.ca",
+      senderName: "NatSuite",
       emailSubject,
       emailBody,
       recipientList,
-      [],
-      emailAttachments,
-      "new_complaint",
-    );
+      ccList: [],
+      attachments: emailAttachments,
+      tag: "new_complaint",
+    });
 
     this.logger.debug(`Sent new complaint notification for ${complaintId} to ${recipientList.join(", ")}`);
     return recipientList;
@@ -451,14 +451,14 @@ export class EmailService {
         investigationUrl,
       };
       const emailBody = generateInvestigationCollaboratorEmailBody(generateInvestigationCollaboratorEmailParams);
-      await this._chesService.sendEmail(
+      await this._chesService.sendEmail({
         senderEmailAddress,
         senderName,
         emailSubject,
         emailBody,
-        [email],
-        [senderEmailAddress],
-      );
+        recipientList: [email],
+        ccList: [senderEmailAddress],
+      });
     } catch (error) {
       this.logger.error(`Failed to send investigation collaborator email: ${error.message}`);
       throw error;
