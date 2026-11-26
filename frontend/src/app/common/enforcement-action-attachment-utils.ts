@@ -1,7 +1,14 @@
 import { format } from "date-fns";
 import AttachmentEnum from "@constants/attachment-enum";
-import { Attachment, getDisplayFilename } from "@common/attachment-utils";
+import {
+  Attachment,
+  fetchAttachmentsWithMetadata,
+  getDisplayFilename,
+  handlePersistAttachments,
+} from "@common/attachment-utils";
 import { fetchHighestSequenceNumber } from "@/app/common/attachment-sequence-utils";
+import { AppDispatch } from "@/app/store/store";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 
 /** Values entered in the attachment metadata fields. */
 export interface EnforcementActionAttachmentFieldValues {
@@ -56,4 +63,29 @@ export const computeSequenceNumbers = async (
     )?.sequenceNumber;
     return existing ?? String(baseSequence + i + 1).padStart(4, "0");
   });
+};
+
+/** Deletes every saved COMS attachment for an enforcement action (used when the EA itself is deleted). */
+export const deleteEnforcementActionAttachments = async (
+  dispatch: AppDispatch,
+  investigationGuid: string,
+  enforcementActionId: string,
+): Promise<void> => {
+  const current = await fetchAttachmentsWithMetadata(investigationGuid, undefined, enforcementActionId);
+  if (current.length === 0) return;
+
+  await handlePersistAttachments({
+    dispatch,
+    attachmentsToAdd: null,
+    attachmentsToDelete: current,
+    identifier: investigationGuid,
+    subIdentifier: enforcementActionId,
+    setAttachmentsToAdd: () => {},
+    setAttachmentsToDelete: () => {},
+    attachmentType: AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT,
+    isSynchronous: false,
+    isSilent: true,
+  });
+
+  attachmentUploadComplete$.next(enforcementActionId);
 };

@@ -26,11 +26,16 @@ const makeService = () => {
     findOne: jest.fn().mockResolvedValue({ investigationGuid: INVESTIGATION_GUID }),
   };
 
+  const enforcementActionService: any = {
+    deactivateEnforcementAction: jest.fn().mockResolvedValue(undefined),
+  };
+
   const service = new ContraventionService(
     prisma,
     sharedPrisma,
     { getIdirUsername: () => "test" } as any,
     investigationService,
+    enforcementActionService,
   );
 
   return { service, db, sharedPrisma };
