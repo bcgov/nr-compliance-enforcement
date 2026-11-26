@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import {
   AckPolicy,
   ConnectionOptions,
+  DeliverPolicy,
   JetStreamManager,
   JsMsg,
   NatsConnection,
@@ -75,6 +76,7 @@ export class ChefsSubscriberService implements OnModuleInit {
           durable_name: CHEFS_DURABLE_FORMS,
           filter_subject: STREAM_TOPICS.CHEFS_SUBMISSIONS_CREATED,
           max_deliver: CHEFS_MAX_DELIVER,
+          deliver_policy: DeliverPolicy.New,
         });
         this.logger.debug("CHEFS consumer set up successfully");
       } catch (error) {
@@ -102,7 +104,8 @@ export class ChefsSubscriberService implements OnModuleInit {
       try {
         await this.handleFormEvent(message, eventMessage);
       } catch (error) {
-        this.logger.error(`CHEFS_INTAKE_ERROR Submission ${eventMessage?.meta?.submissionId}: ${error.message}`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        this.logger.error(`CHEFS_INTAKE_ERROR Submission ${eventMessage?.meta?.submissionId}: ${errorMessage}`, error);
         message.nak(60_000); // retry in 60 seconds, up to CHEFS_MAX_DELIVER attempts
       }
     }
