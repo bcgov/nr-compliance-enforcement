@@ -5,6 +5,7 @@ import { Attachment, AttachmentType } from "../../types/models/general/attachmen
 import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
 import { REPORT_TYPE } from "src/types/models/reports/report-type";
 import { getTask, getContinuationReportActivities } from "src/external_api/investigation_data";
+import { getInvestigationPartyReportData, getPartyReportData } from "src/external_api/party/party_report_data";
 
 @Injectable()
 export class DocumentService {
@@ -83,6 +84,28 @@ export class DocumentService {
       );
       throw new Error(
         `exception: unable to generate ${REPORT_TYPE.CONTINUATION} document: ${investigationGuid} - error: ${error}`,
+      );
+    }
+  };
+
+  exportParty = async (
+    partyIdentifier: string,
+    investigationGuid: string | undefined,
+    fileName: string,
+    tz: string,
+    token: string,
+  ) => {
+    try {
+      const data = investigationGuid
+        ? await getInvestigationPartyReportData(token, investigationGuid, partyIdentifier, tz)
+        : await getPartyReportData(token, partyIdentifier, tz);
+      return await this.cdogs.generate(fileName, data, REPORT_TYPE.PARTY);
+    } catch (error) {
+      this.logger.error(
+        `exception: unable to generate ${REPORT_TYPE.PARTY} document: ${partyIdentifier} - error: ${error}`,
+      );
+      throw new Error(
+        `exception: unable to generate ${REPORT_TYPE.PARTY} document: ${partyIdentifier} - error: ${error}`,
       );
     }
   };

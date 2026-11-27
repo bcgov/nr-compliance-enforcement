@@ -9,6 +9,7 @@ import { Token } from "../../auth/decorators/token.decorator";
 import { ExportComplaintParameters } from "../../types/models/reports/export-complaint-parameters";
 import { ExportTaskParameters } from "src/types/models/reports/export-task-parameters";
 import { ExportContinuationReportParameters } from "src/types/models/reports/export-continuation-report";
+import { ExportPartyParameters } from "src/types/reports/export-party-parameters";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("document")
@@ -21,7 +22,11 @@ export class DocumentController {
   // POST due to the fact that we are passing attachment information from the frontend rather than querying it from the backend
   @Post("/export-complaint")
   @Roles(coreRoles)
-  async exportComplaint(@Body() model: ExportComplaintParameters, @Token() token, @Res() res: Response): Promise<void> {
+  async exportComplaint(
+    @Body() model: ExportComplaintParameters,
+    @Token() token: string,
+    @Res() res: Response,
+  ): Promise<void> {
     const id: string = model?.id ?? "unknown";
     const { type, fileName, tz, attachments } = model;
     try {
@@ -49,7 +54,7 @@ export class DocumentController {
   // POST due to the fact that we are passing attachment information from the frontend rather than querying it from the backend
   @Post("/export-task")
   @Roles(coreRoles)
-  async exportTask(@Body() model: ExportTaskParameters, @Token() token, @Res() res: Response): Promise<void> {
+  async exportTask(@Body() model: ExportTaskParameters, @Token() token: string, @Res() res: Response): Promise<void> {
     const { investigationGuid, taskId, fileName, tz, attachments } = model;
     try {
       const response = await this.service.exportTask(investigationGuid, taskId, fileName, tz, token, attachments);
@@ -77,7 +82,7 @@ export class DocumentController {
   @Roles(coreRoles)
   async exportContinuationReport(
     @Body() model: ExportContinuationReportParameters,
-    @Token() token,
+    @Token() token: string,
     @Res() res: Response,
   ): Promise<void> {
     const { investigationGuid, fileName, tz } = model;
@@ -100,6 +105,32 @@ export class DocumentController {
     } catch (error) {
       this.logger.error(`exception: unable to generate task document: ${investigationGuid} - error: ${error}`);
       res.status(500).send(`exception: unable to generate task document: ${encodeURIComponent(investigationGuid)}`);
+    }
+  }
+
+  @Post("/export-party")
+  @Roles(coreRoles)
+  async exportParty(@Body() model: ExportPartyParameters, @Token() token: string, @Res() res: Response): Promise<void> {
+    const { partyIdentifier, investigationGuid, fileName, tz } = model;
+    try {
+      const response = await this.service.exportParty(partyIdentifier, investigationGuid, fileName, tz, token);
+
+      if (!response?.data) {
+        throw new Error(`exception: unable to generate party document: ${partyIdentifier}`);
+      }
+
+      const buffer = Buffer.from(response.data, "binary");
+
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename=${fileName}`,
+        "Content-Length": buffer.length,
+      });
+
+      res.end(buffer);
+    } catch (error) {
+      this.logger.error(`exception: unable to generate party document: ${partyIdentifier} - error: ${error}`);
+      res.status(500).send(`exception: unable to generate party document: ${encodeURIComponent(partyIdentifier)}`);
     }
   }
 }

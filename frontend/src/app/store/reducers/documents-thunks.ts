@@ -11,6 +11,7 @@ import { getAttachments } from "@/app/store/reducers/attachments";
 import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
 import { bulkDownload, BulkDownloadProgressCallback, FileWithPresignedUrl } from "@/app/store/reducers/bulk-download";
 import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
+import { ToggleError } from "@/app/common/toast";
 
 export const generateExportComplaintInputParams = (
   id: string,
@@ -68,6 +69,21 @@ export const generateExportContinuationReportParams = (investigationGuid: string
   const fileName = `Continuation_Report_${format(new Date(), "yyMMdd")}.pdf`;
   const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return { investigationGuid, fileName, tz };
+};
+
+// Keeps a party name safe for a file name and the Content-Disposition header: no accents, and anything other
+// than letters, digits and "-" becomes "_"
+const toFileNamePart = (value: string): string =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Za-z0-9-]+/g, "_")
+    .replace(/^_|_$/g, "");
+
+export const generateExportPartyParams = (partyIdentifier: string, partyName: string, investigationGuid?: string) => {
+  const fileName = `NatSuite_Party_${toFileNamePart(partyName)}_${format(new Date(), "yyMMdd")}.pdf`;
+  const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return { partyIdentifier, ...(investigationGuid ? { investigationGuid } : {}), fileName, tz };
 };
 
 //-- this is a janky solution, but as of 2024 it is still the widly
@@ -355,6 +371,36 @@ export const exportContinuationReport =
       return "success";
     } catch (error) {
       console.error("Error exporting continuation report:", error);
+      return "error";
+    }
+  };
+
+export const exportParty =
+  (
+    partyIdentifier: string,
+    partyName: string,
+    investigationGuid?: string,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async () => {
+    try {
+      const axiosConfig: AxiosRequestConfig = {
+        responseType: "arraybuffer",
+      };
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+
+      const params = generateExportPartyParams(partyIdentifier, partyName, investigationGuid);
+
+      const url = `${config.API_BASE_URL}/v1/document/export-party`;
+
+      const response = await axios.post(url, params, axiosConfig);
+
+      downloadPdf(response.data, params.fileName, "hidden-export-party");
+
+      return "success";
+    } catch (error) {
+      console.error("Error exporting party:", error);
+      ToggleError("Unable to export party");
       return "error";
     }
   };

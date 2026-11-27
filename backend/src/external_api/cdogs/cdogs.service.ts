@@ -169,6 +169,9 @@ export class CdogsService implements ExternalApiService {
       case "CRTMPLT":
         template = "templates/continuation-report/CDOGS-CR_TEMPLATE-v1.docx";
         break;
+      case "PRTYTMPLT":
+        template = "templates/party/CDOGS-PARTY-TEMPLATE-v1.docx";
+        break;
       default:
         this.logger.error(`exception: unable to find template: ${template}`);
         break;
@@ -258,6 +261,9 @@ export class CdogsService implements ExternalApiService {
       },
       CONTINUATION: {
         default: CONFIGURATION_CODES.CR_TEMPLATE,
+      },
+      PARTY: {
+        default: CONFIGURATION_CODES.PARTY_TEMPLATE,
       },
     };
 

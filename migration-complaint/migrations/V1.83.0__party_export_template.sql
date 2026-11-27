@@ -1,0 +1,1 @@
+INSERT INTO complaint.configuration VALUES ('PRTYTMPLT', '', 'CDOGS Hash for Party Template', true, 'postgres', NOW(), 'postgres', NOW());
