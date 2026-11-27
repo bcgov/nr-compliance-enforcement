@@ -7,7 +7,7 @@ import {
   partyRoleKey,
   ReportCodeMaps,
   ReportCodeTables,
-} from "src/external_api/party/party_code_tables";
+} from "src/external_api/party/party_data";
 import { get } from "src/external_api/shared_data";
 
 const LEGISLATION_TYPE_ACT = "ACT";
@@ -94,8 +94,8 @@ const formatLegislationCitation = (legislation: HistoryLegislation | undefined):
     ...(legislation.ancestors ?? []).filter((node): node is NonNullable<typeof node> => node != null),
     legislation,
   ];
-  const actName = chain.find((node) => node?.legislationTypeCode === LEGISLATION_TYPE_ACT)?.sectionTitle ?? "";
-  const isRegulation = chain.some((node) => node?.legislationTypeCode === LEGISLATION_TYPE_REGULATION);
+  const actName = chain.find((node) => node.legislationTypeCode === LEGISLATION_TYPE_ACT)?.sectionTitle ?? "";
+  const isRegulation = chain.some((node) => node.legislationTypeCode === LEGISLATION_TYPE_REGULATION);
   const citation = legislation.fullCitation ?? "";
   return isRegulation ? `${actName}, ${citation}` : citation;
 };
@@ -123,9 +123,9 @@ const buildContraventionLines = (
     return enforcementActions.map((enforcementAction) => {
       const decision = describeCode(
         codeMaps.enforcementActions,
-        enforcementAction?.enforcementActionCode?.enforcementActionCode,
+        enforcementAction.enforcementActionCode?.enforcementActionCode,
       );
-      const ticketOutcomeCode = enforcementAction?.ticket?.ticketOutcomeCode;
+      const ticketOutcomeCode = enforcementAction.ticket?.ticketOutcomeCode;
       return {
         contravention: citation,
         decision: ticketOutcomeCode
