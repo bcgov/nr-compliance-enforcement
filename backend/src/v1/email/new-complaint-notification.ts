@@ -23,7 +23,7 @@ export const selectNewComplaintRecipients = (emailReferences: EmailReference[], 
     (ref) => !ref.geo_organization_unit_code || ref.geo_organization_unit_code === zoneCode,
   );
 
-  const addresses = references.map((ref) => ref.email_address?.trim()).filter((address) => address);
+  const addresses = references.map((ref) => ref.email_address?.trim()).filter(Boolean);
   return Array.from(new Set(addresses));
 };
 
@@ -34,7 +34,17 @@ const toDisplayValue = (value: unknown): string => {
   if (typeof value === "boolean") {
     return value ? "Yes" : "No";
   }
-  return String(value).trim();
+  if (typeof value === "string") {
+    return value.trim();
+  }
+  if (typeof value === "number" || typeof value === "bigint") {
+    return value.toString();
+  }
+  // e.g. a multi-select field: list the selected values
+  if (Array.isArray(value)) {
+    return value.map(toDisplayValue).filter(Boolean).join(", ");
+  }
+  return JSON.stringify(value);
 };
 
 // Builds the labelled details listed in the email, skipping anything that wasn't filled in.
