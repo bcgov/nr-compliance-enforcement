@@ -252,8 +252,9 @@ const getHistoryLookups = async (token: string, investigations: HistoryInvestiga
     return { officers: new Map<string, string>(), legislations: new Map<string, HistoryLegislation>() };
   }
 
+  const officerGuidList = officerGuids.map((guid) => JSON.stringify(guid)).join(", ");
   const officerQuery = officerGuids.length
-    ? `appUsersByGuids(appUserGuids: [${officerGuids.map((guid) => `"${guid}"`).join(", ")}]) {
+    ? `appUsersByGuids(appUserGuids: [${officerGuidList}]) {
         appUserGuid
         firstName
         lastName
@@ -276,11 +277,12 @@ const getHistoryLookups = async (token: string, investigations: HistoryInvestiga
   // POST rather than GET: the query grows with each contravention's legislation, and in a GET it would go in the
   // URL, which the server limits (16 KB by default in Node)
   const { response, error } = await post(token, { query: `{ ${officerQuery} ${legislationQueries} }` });
-  const errors = error ?? response?.data?.errors;
 
-  if (errors) {
+  if (error) throw new Error(`Request failed while fetching party history lookups: ${error.message}`);
+
+  const errors = response?.data?.errors;
+  if (errors)
     throw new Error(`GraphQL errors occurred while fetching party history lookups: ${JSON.stringify(errors)}`);
-  }
 
   const data = response.data.data;
 

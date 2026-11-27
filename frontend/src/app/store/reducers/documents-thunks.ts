@@ -78,7 +78,7 @@ const toFileNamePart = (value: string): string =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^A-Za-z0-9-]+/g, "_")
-    .replace(/^_+|_+$/g, "");
+    .replace(/^_|_$/g, "");
 
 export const generateExportPartyParams = (partyIdentifier: string, partyName: string, investigationGuid?: string) => {
   const fileName = `NatSuite_Party_${toFileNamePart(partyName)}_${format(new Date(), "yyMMdd")}.pdf`;

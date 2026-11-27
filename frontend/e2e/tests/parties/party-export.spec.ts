@@ -92,6 +92,7 @@ test.describe("Export Investigation Party Functionality", () => {
     const context = await browser.newContext({ storageState: STORAGE_STATE_BY_ROLE.COS });
     const page = await context.newPage();
     await removeExportParty(page);
+    await context.close();
   });
 
   test("Can export an investigation party", async ({ page }) => {
