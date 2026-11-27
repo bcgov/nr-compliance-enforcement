@@ -5,7 +5,7 @@ import { Attachment, AttachmentType } from "../../types/models/general/attachmen
 import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
 import { REPORT_TYPE } from "src/types/models/reports/report-type";
 import { getTask, getContinuationReportActivities } from "src/external_api/investigation_data";
-import { getInvestigationPartyReportData, getPartyReportData } from "src/external_api/party_data";
+import { getInvestigationPartyReportData, getPartyReportData } from "src/external_api/party/party_data";
 
 @Injectable()
 export class DocumentService {

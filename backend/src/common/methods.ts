@@ -47,6 +47,17 @@ export const formatDateTime = (input: string | undefined): string => {
   return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
 };
 
+export const formatDateInTimeZone = (input: string | undefined, tz: string): string => {
+  if (!input) {
+    return "";
+  }
+
+  const parsedDate = new Date(input);
+  const utcDate = toDate(parsedDate, { timeZone: "UTC" });
+  const zonedDate = toZonedTime(utcDate, tz);
+  return format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+};
+
 //--
 //-- attempt to format a phone number using the 10 digit NA format
 //-- if the number can't be formatted return the value provided
