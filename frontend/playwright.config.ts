@@ -119,10 +119,28 @@ export default defineConfig({
       testMatch: /.{0,5}\.setup\.ts/,
       /* Proxy HTTPS traffic through the BC Gov proxy for auth */
       use: {
+        /* WebKit to match the device projects; it's the only browser in the e2e image */
+        browserName: "webkit",
         ...(process.env.E2E_HTTPS_PROXY && {
           proxy: {
             server: process.env.E2E_HTTPS_PROXY,
-            bypass: "localhost,127.0.0.1,*loginproxy*,*natsuite*",
+            /*
+             * WebKit on Linux (GLib ignore-hosts) only matches plain hostnames and ".domain"
+             * suffixes; it silently ignores mid-string wildcards like "*loginproxy*", which
+             * sends Keycloak through the proxy (TLS reset). The app calls its API via relative
+             * paths, so the frontend host is the only natsuite host the browser talks to.
+             * The wildcard entries are kept for Chromium/Firefox, which do support them.
+             */
+            bypass: [
+              "localhost",
+              "127.0.0.1",
+              // WebKit-compatible
+              ".loginproxy.gov.bc.ca",
+              new URL(baseURL).hostname,
+              // Chromium/Firefox
+              "*loginproxy*",
+              "*natsuite*",
+            ].join(","),
           },
         }),
       },

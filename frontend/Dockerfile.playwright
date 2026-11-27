@@ -1,43 +1,27 @@
-# node:22-bookworm-slim as of 2026-10-19
-FROM node@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+# Playwright overlay image: node_modules + e2e tests on top of the base image frontend/playwright-base/Dockerfile 
+# BASE_TAG is set by CI to the PR number that tag always exists because the base job builds it or retags :test
+ARG BASE_TAG=test
+FROM ghcr.io/bcgov/nr-compliance-enforcement/frontend-playwright-base:${BASE_TAG}
 
-# Install system dependencies required by Playwright WebKit
-# plus dnsutils for network debugging
-RUN apt-get update && apt-get install -y \
-    curl \
-    libnss3 \
-    libatk-bridge2.0-0 \
-    libdrm2 \
-    libxkbcommon0 \
-    libgtk-3-0 \
-    libgbm1 \
-    libasound2 \
-    libxrandr2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcairo-gobject2 \
-    libgdk-pixbuf2.0-0 \
-    dnsutils \
-    && rm -rf /var/lib/apt/lists/*
-
+USER root
 WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts \
+ && npm cache clean --force \
+ && chown -R 1000:0 /app \
+ && chmod -R g+rwX /app
+
 COPY . .
 
-RUN npm ci
+RUN mkdir -p /app/test-results \
+ && find /app -path /app/node_modules -prune -o -exec chown 1000:0 {} + -exec chmod g+rwX {} + \
+ && chown 1000:0 /app/node_modules \
+ && chmod g+rwX /app/node_modules
 
-# Create browser cache directory
-RUN mkdir -p /app/playwright-browsers
-ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
-# Install WebKit browser
-RUN PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers npx playwright install --with-deps
+# One-shot test runner, not a service: there is nothing to probe
+HEALTHCHECK NONE
 
-# Create test-results directory with OpenShift-compatible permissions
-RUN mkdir -p /app/test-results && \
-    chgrp -R 0 /app && \
-    chmod -R g+rwX /app
+USER 1000
 
-# Set environment variable for runtime
-ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
-
-
-ENTRYPOINT ["npx", "playwright", "test"]
+ENTRYPOINT ["/app/node_modules/.bin/playwright", "test"]
