@@ -12,6 +12,7 @@ import { CssService } from "../../external_api/css/css.service";
 import { AppUserService } from "../../v1/app_user/app_user.service";
 import { CodeTableService } from "../code-table/code-table.service";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
+import { ChefsService } from "../../external_api/chefs/chefs.service";
 
 jest.mock("../../external_api/shared_data", () => {
   const { createSharedDataMocks } = require("../../../test/mocks/external_api/mock-shared-data");
@@ -72,6 +73,10 @@ describe("EmailController", () => {
         },
         {
           provide: FeatureFlagService,
+          useValue: {},
+        },
+        {
+          provide: ChefsService,
           useValue: {},
         },
       ],

@@ -3,6 +3,7 @@ import { connect, headers, JetStreamClient, JSONCodec } from "nats";
 import { STREAM_TOPICS } from "../common/constants";
 import { Complaint } from "src/types/complaint-type";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
+import { getErrorMessage } from "../common/error-message";
 
 @Injectable()
 export class ComplaintsPublisherService {
@@ -21,29 +22,35 @@ export class ComplaintsPublisherService {
       });
       this.jsClient = nc.jetstream();
     } catch (error) {
-      this.logger.error(`Error connecting to NATS: ${error.message}`, error);
+      const errorMessage = getErrorMessage(error);
+      this.logger.error(`Error connecting to NATS: ${errorMessage}`, error);
     }
   }
 
   private readonly codec = JSONCodec<Complaint>();
 
   /**
-   * Publish message to JetStream to indicate that a new complaint is available from webeoc
+   * Publish message to JetStream to indicate that a new complaint is available
    * @param complaint
+   * @param messageId optional de-duplication id, used when the complaint has no incident number yet (CHEFS)
    */
-  async publishComplaintsFromWebEOC(complaint: Complaint): Promise<void> {
+  async publishComplaintToNatsuite(complaint: Complaint, messageId?: string): Promise<void> {
+    // CHEFS complaints have no incident number until they're staged, so identify them by their message id.
+    const complaintReference = complaint.incident_number ?? messageId;
     try {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}-${complaint.entrydate}`);
+      natsHeaders.set("Nats-Msg-Id", messageId ?? `staged-${complaint.incident_number}-${complaint.entrydate}`);
       const ack = await this.jsClient.publish(STREAM_TOPICS.COMPLAINTS, msg, { headers: natsHeaders });
       if (ack.duplicate) {
-        this.logger.debug(`Complaint already published: ${complaint.incident_number}`);
+        this.logger.debug(`Complaint already published: ${complaintReference}`);
       } else {
-        this.logger.debug(`Publishing new complaint for staging: ${complaint.incident_number}`);
+        this.logger.debug(`Publishing new complaint for staging: ${complaintReference}`);
       }
     } catch (error) {
-      this.logger.error(`Error publishing complaint: ${error.message}`, error.stack);
+      const errorMessage = getErrorMessage(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error publishing complaint: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -66,7 +73,9 @@ export class ComplaintsPublisherService {
         this.logger.debug(`Publishing new complaint update for staging: ${incidentNumber} ${updateNumber}`);
       }
     } catch (error) {
-      this.logger.error(`Error publishing complaint update: ${error.message}`, error.stack);
+      const errorMessage = getErrorMessage(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error saving complaint to staging: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -89,7 +98,9 @@ export class ComplaintsPublisherService {
         this.logger.debug(`Complaint ready to be moved to operational tables: ${complaint.incident_number}`);
       }
     } catch (error) {
-      this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);
+      const errorMessage = getErrorMessage(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error saving complaint to staging: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -119,7 +130,9 @@ export class ComplaintsPublisherService {
         );
       }
     } catch (error) {
-      this.logger.error(`Error saving complaint update to staging: ${error.message}`, error.stack);
+      const errorMessage = getErrorMessage(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error saving complaint update to staging: ${errorMessage}`, errorStack);
       throw error;
     }
   }

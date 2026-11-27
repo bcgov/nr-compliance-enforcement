@@ -7,6 +7,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     STAGING_STATUS_CODE_SUCCESS CONSTANT varchar(7) := 'SUCCESS' ;
     STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
     METHOD_OF_COMPLAINT_RAPP CONSTANT varchar(5) := 'RAPP';
+    METHOD_OF_COMPLAINT_WEB_FORM CONSTANT varchar(8) := 'WEB_FORM';
     
     -- jsonb attribute names
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
@@ -40,6 +41,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     _location_geometry_point GEOMETRY;
     _complaint_status_code VARCHAR(10);
     _webeoc_identifier VARCHAR(20);
+    _park_guid uuid;
 
     -- Variables for 'hwcr_complaint' table
     _webeoc_species                    VARCHAR(200);
@@ -82,6 +84,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     _report_type := complaint_data ->> 'report_type';
     -- to link actions-taken to a complaint the dataid needs to be used
     _webeoc_identifier := complaint_data ->> 'dataid'; 
+    _park_guid := NULLIF(complaint_data ->> 'park_guid', '')::uuid;
 
     -- Extract and prepare data for 'complaint' table
     _detail_text := complaint_data ->> 'cos_call_details';
@@ -130,7 +133,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
       ''
     END;
     _location_detailed_text := complaint_data ->> 'cos_location_description';
-    _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Vancouver';
+    -- incident_datetime is optional in CHEFS; treat an empty string as null so the timestamp cast doesn't fail
+    _incident_utc_datetime := NULLIF(complaint_data ->> 'incident_datetime', '')::timestamp AT TIME zone 'America/Vancouver';
     _incident_utc_date := _incident_utc_datetime::DATE;
     _incident_utc_time := _incident_utc_datetime::TIME;
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Vancouver';
@@ -197,7 +201,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                             location_geometry_point,
                             reported_by_code,
                             reported_by_other_text,
-                            webeoc_identifier
+                            webeoc_identifier,
+                            park_guid
                 )
                 VALUES
                 (
@@ -225,8 +230,31 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                             _location_geometry_point,
                             _cos_reffered_by_lst,
                             _cos_reffered_by_txt,
-                            _webeoc_identifier
+                            _webeoc_identifier,
+                            _park_guid
                 );
+
+    -- Insert data into 'complaint_attachment_reference' table
+    INSERT INTO complaint.complaint_attachment_reference
+                (
+                            complaint_identifier,
+                            chefs_file_guid_ref,
+                            filename_text,
+                            file_size,
+                            create_user_id,
+                            create_utc_timestamp,
+                            update_user_id,
+                            update_utc_timestamp
+                )
+    SELECT      _complaint_identifier,
+                (attachment ->> 'id')::uuid,
+                attachment ->> 'name',
+                (attachment ->> 'size')::integer,
+                _create_userid,
+                _create_utc_timestamp,
+                _update_userid,
+                _update_utc_timestamp
+    FROM        jsonb_array_elements(complaint_data -> 'attachments') AS attachment;
     
     IF _report_type = 'HWCR' then
     
@@ -359,6 +387,14 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
+      IF _violation_code IN ('ALGAE', 'FORESTOPS', 'FORESTPRAC', 'HERITAGE', 'CROWNLAND',
+      'RANGE', 'ROAD', 'SPILLS', 'WATERACT', 'WATERSUST', 'WEED', 'WILDFIRE')
+      THEN
+        UPDATE complaint.complaint
+        SET    owned_by_agency_code_ref = 'NROS', complaint_status_code = 'CLOSED'
+        WHERE  complaint_identifier = _complaint_identifier;
+      END IF;
+
       -- Insert data into 'allegation_complaint' table
       INSERT INTO complaint.allegation_complaint
                   (
@@ -393,7 +429,11 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
         SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
         FROM complaint.comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
-        WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
+        -- complaints from CHEFS have chefs_submission_id
+        WHERE complaint_method_received_code = CASE
+            WHEN complaint_data ->> 'chefs_submission_id' IS NOT NULL THEN METHOD_OF_COMPLAINT_WEB_FORM
+            ELSE METHOD_OF_COMPLAINT_RAPP
+        END
         AND cmrcacx.agency_code_ref = com.owned_by_agency_code_ref
     )
     WHERE complaint_identifier = _complaint_identifier;

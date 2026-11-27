@@ -299,6 +299,64 @@ export const get = (token, params?: {}) => {
     });
 };
 
+export const getWithApiKey = (params?: {}) => {
+  let config: AxiosRequestConfig = {
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": process.env.CASE_API_KEY,
+    },
+  };
+
+  if (params) {
+    config.params = params;
+  }
+  return axios
+    .get(caseManagementlURL, config)
+    .then((response: AxiosResponse) => {
+      const { data } = response;
+      return data;
+    })
+    .catch((error: AxiosError) => {
+      if (error.response) {
+        const data = error.response?.data as any;
+        throw new Error(`Shared Data Request Failed: ${JSON.stringify(data?.errors)}`);
+      } else if (error.request) {
+        throw new Error(`No response received from the Shared Data server: ${caseManagementlURL}`);
+      } else {
+        throw new Error(`Request setup error to Shared Data: ${error.message}`);
+      }
+    });
+};
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Looks up a COS community (area) and its zone with the API key
+export const getCosCommunityWithApiKey = async (
+  areaCode: string,
+): Promise<{ areaCode: string; areaName: string; zoneCode: string } | undefined> => {
+  const { data, errors } = await getWithApiKey({
+    query: "{cosGeoOrgUnits{areaCode areaName zoneCode}}",
+  });
+  if (errors) {
+    throw new Error(`GraphQL errors occurred while fetching COS geo org units: ${JSON.stringify(errors)}`);
+  }
+  return data?.cosGeoOrgUnits?.find((unit: any) => unit.areaCode === areaCode);
+};
+
+// Looks up a park's name with the API key
+export const getParkNameWithApiKey = async (parkGuid: string): Promise<string | undefined> => {
+  if (!UUID_PATTERN.test(parkGuid)) {
+    return undefined;
+  }
+  const { data, errors } = await getWithApiKey({
+    query: `{park(parkGuid: "${parkGuid}"){name}}`,
+  });
+  if (errors) {
+    throw new Error(`GraphQL errors occurred while fetching park ${parkGuid}: ${JSON.stringify(errors)}`);
+  }
+  return data?.park?.name;
+};
+
 export const post = (token, payload?: {}) => {
   let config: AxiosRequestConfig = {
     headers: {

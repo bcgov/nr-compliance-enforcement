@@ -3,6 +3,7 @@ import axios from "axios";
 import { STAGING_API_ENDPOINT_CREATES, STAGING_API_ENDPOINT_UPDATES } from "../common/constants";
 import { Complaint } from "../types/complaint-type";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
+import { ChefsSubmissionData } from "src/types/chefs/chefs-submission-type";
 
 @Injectable()
 export class StagingComplaintsApiService {
@@ -14,14 +15,20 @@ export class StagingComplaintsApiService {
   };
 
   // add complaint data to staging table
-  async createNewComplaintInStaging(complaintData: Complaint): Promise<void> {
+  async createNewComplaintInStaging(complaintData: Complaint | ChefsSubmissionData): Promise<string | undefined> {
     try {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_API_ENDPOINT_CREATES}`;
       this.logger.debug(`Posting new complaint ${complaintData.incident_number} to staging. API URL: ${apiUrl}`);
 
-      await axios.post(apiUrl, complaintData, this._apiConfig);
+      const response = await axios.post(apiUrl, complaintData, this._apiConfig);
+      return response.data?.complaintIdentifer;
     } catch (error) {
-      this.logger.error("Error calling Staging Complaint API:", error);
+      // Differentiate an error in a CHEFS form vs WebEOC
+      const isCHEFsError = "chefs_submission_id" in complaintData;
+      const CHEFsErrorPrefix = isCHEFsError
+        ? `CHEFS_INTAKE_ERROR Submission ${complaintData.chefs_submission_id}: `
+        : "";
+      this.logger.error(`${CHEFsErrorPrefix}Error calling Staging Complaint API:`, error);
       throw error;
     }
   }

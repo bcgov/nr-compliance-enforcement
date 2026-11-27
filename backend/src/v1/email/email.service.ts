@@ -13,7 +13,22 @@ import { CssService } from "../../external_api/css/css.service";
 import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
 import { AppUserService } from "../../v1/app_user/app_user.service";
 import { CodeTableService } from "../code-table/code-table.service";
-import { getCosGeoOrgUnits } from "../../external_api/shared_data";
+import { getCosCommunityWithApiKey, getCosGeoOrgUnits, getParkNameWithApiKey } from "../../external_api/shared_data";
+import { generateNewComplaintEmailBody, NewComplaintEmailAttachment } from "../../email_templates/new_chefs_complaint";
+import { ChefsService } from "../../external_api/chefs/chefs.service";
+import { UUID } from "node:crypto";
+import {
+  buildComplaintUrl,
+  buildNewComplaintDetails,
+  COMPLAINT_TYPE_DESCRIPTIONS,
+  formatFileSize,
+  getAttachmentLimitBytes,
+  NewComplaintAttachment,
+  planAttachments,
+  NewComplaintNotification,
+  selectNewComplaintRecipients,
+  shouldEmailAttachments,
+} from "./new-complaint-notification";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 import { SendInvestigationCollaboratorEmailDto } from "../../v1/email/dto/send_investigation_collaborator_email.dto";
 import { getInvestigationByGuid } from "../../external_api/investigation_data";
@@ -36,6 +51,7 @@ export class EmailService {
     private readonly _appUserService: AppUserService,
     private readonly _codeTableService: CodeTableService,
     private readonly _featureFlagService: FeatureFlagService,
+    private readonly _chefsService: ChefsService,
   ) {}
 
   private async _buildRecipientList(referredToAgencyCode, complaint, additionalRecipients) {
@@ -198,15 +214,15 @@ export class EmailService {
         throw new Error(`No email recipients found for referral to ${referred_to_agency_code_ref}.`);
       }
 
-      await this._chesService.sendEmail(
+      await this._chesService.sendEmail({
         senderEmailAddress,
         senderName,
         emailSubject,
         emailBody,
         recipientList,
         ccList,
-        emailAttachments,
-      );
+        attachments: emailAttachments,
+      });
 
       // Return all of the recipients including the CC list so each individual email can be logged
       const allRecipients = Array.from(new Set([...recipientList, ...ccList]));
@@ -296,18 +312,88 @@ export class EmailService {
         complaintUrl,
       };
       const emailBody = generateCollaboratorEmailBody(generateCollaboratorEmailParams);
-      return await this._chesService.sendEmail(
+      return await this._chesService.sendEmail({
         senderEmailAddress,
         senderName,
         emailSubject,
         emailBody,
-        [email],
-        [senderEmailAddress],
-      );
+        recipientList: [email],
+        ccList: [senderEmailAddress],
+      });
     } catch (error) {
       this.logger.error(`Failed to send collaborator email: ${error.message}`);
       throw error;
     }
+  };
+
+  // Notifies the business that a complaint submitted through CHEFS has been created in NatSuite.
+  // Recipients come from email_reference, matched on the complaint's agency and zone.
+  // Returns the addresses the email was sent to (empty if nobody is set up to receive it).
+  sendNewComplaintNotification = async (notification: NewComplaintNotification): Promise<string[]> => {
+    const { complaintId, complaintType, agencyCode, communityCode, parkGuid } = notification;
+
+    let zoneCode: string | undefined;
+    let communityName: string | undefined;
+    if (communityCode) {
+      try {
+        const community = await getCosCommunityWithApiKey(communityCode);
+        zoneCode = community?.zoneCode;
+        communityName = community?.areaName;
+      } catch (error) {
+        this.logger.error(`Unable to look up community ${communityCode} for complaint ${complaintId}: ${error}`);
+      }
+    }
+
+    let parkName: string | undefined;
+    if (parkGuid) {
+      try {
+        parkName = await getParkNameWithApiKey(parkGuid);
+      } catch (error) {
+        this.logger.error(`Unable to look up park ${parkGuid} for complaint ${complaintId}: ${error}`);
+      }
+    }
+
+    const emailReferences = await this._emailReferenceService.findActiveByAgency(agencyCode);
+    const recipientList = selectNewComplaintRecipients(emailReferences, zoneCode);
+    if (recipientList.length === 0) {
+      this.logger.warn(`No email recipients for new complaint ${complaintId} (agency ${agencyCode}, zone ${zoneCode})`);
+      return [];
+    }
+
+    const complaintTypeDescription = COMPLAINT_TYPE_DESCRIPTIONS[complaintType] ?? complaintType;
+    const location = parkName ?? communityName ?? notification.submission?.cos_area_community;
+    const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
+    const emailSubject = `${envFlag}New ${complaintTypeDescription} complaint #${complaintId}${
+      location ? ` (${location})` : ""
+    }`;
+
+    // Only NROS get the attachments (if any) by email
+    const { emailAttachments, attachmentList } = shouldEmailAttachments(agencyCode)
+      ? await this._getNewComplaintAttachments(complaintId, notification.submission?.attachments ?? [])
+      : { emailAttachments: [], attachmentList: [] };
+
+    const emailBody = generateNewComplaintEmailBody({
+      complaintId,
+      complaintTypeDescription,
+      complaintUrl: buildComplaintUrl(complaintType, complaintId),
+      details: buildNewComplaintDetails(notification, communityName, parkName),
+      attachments: attachmentList,
+      supportEmail: process.env.CEDS_EMAIL,
+    });
+
+    await this._chesService.sendEmail({
+      senderEmailAddress: process.env.CEDS_EMAIL || "ceds@gov.bc.ca",
+      senderName: "NatSuite",
+      emailSubject,
+      emailBody,
+      recipientList,
+      ccList: [],
+      attachments: emailAttachments,
+      tag: "new_complaint",
+    });
+
+    this.logger.debug(`Sent new complaint notification for ${complaintId} to ${recipientList.join(", ")}`);
+    return recipientList;
   };
 
   sendInvestigationCollaboratorEmail = async (
@@ -365,17 +451,69 @@ export class EmailService {
         investigationUrl,
       };
       const emailBody = generateInvestigationCollaboratorEmailBody(generateInvestigationCollaboratorEmailParams);
-      await this._chesService.sendEmail(
+      await this._chesService.sendEmail({
         senderEmailAddress,
         senderName,
         emailSubject,
         emailBody,
-        [email],
-        [senderEmailAddress],
-      );
+        recipientList: [email],
+        ccList: [senderEmailAddress],
+      });
     } catch (error) {
       this.logger.error(`Failed to send investigation collaborator email: ${error.message}`);
       throw error;
     }
   };
+
+  // Downloads the submission's files from CHEFS to attach to the email. Files over the size limit, or that
+  // can't be downloaded, are listed in the email instead so the notification still goes out.
+  private async _getNewComplaintAttachments(
+    complaintId: string,
+    attachments: NewComplaintAttachment[],
+  ): Promise<{ emailAttachments: any[]; attachmentList: NewComplaintEmailAttachment[] }> {
+    const { toAttach, tooLarge } = planAttachments(attachments, getAttachmentLimitBytes());
+    if (tooLarge.length > 0) {
+      this.logger.warn(
+        `Not attaching ${tooLarge.length} file(s) to the notification for ${complaintId}: over the size limit`,
+      );
+    }
+
+    const downloads = await Promise.all(
+      toAttach.map(async (attachment) => {
+        try {
+          const { data, headers } = await this._chefsService.getFile(attachment.id as UUID);
+          return {
+            content: Buffer.from(data),
+            contentType: headers?.["content-type"] || "application/octet-stream",
+            filename: attachment.name,
+            id: attachment.id,
+          };
+        } catch (error) {
+          this.logger.error(
+            `Unable to get CHEFS file ${attachment.id} for the notification for ${complaintId}: ${error}`,
+          );
+          return undefined;
+        }
+      }),
+    );
+
+    const downloaded = downloads.filter(Boolean);
+    const attachedIds = new Set(downloaded.map((download) => download.id));
+
+    const emailAttachments = downloaded.map(({ content, contentType, filename }) => ({
+      content: content.toString("base64"),
+      contentType,
+      encoding: "base64",
+      filename,
+    }));
+
+    // List every file in the order it was submitted, noting the ones that aren't attached.
+    const attachmentList = attachments.map((attachment) => ({
+      name: attachment.name,
+      size: formatFileSize(Number(attachment.size)),
+      attached: attachedIds.has(attachment.id),
+    }));
+
+    return { emailAttachments, attachmentList };
+  }
 }

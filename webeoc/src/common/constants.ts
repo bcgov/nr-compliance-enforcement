@@ -1,10 +1,12 @@
 export const STAGING_API_ENDPOINT_CREATES = "staging-complaint/webeoc-complaint";
 export const STAGING_API_ENDPOINT_UPDATES = "staging-complaint/webeoc-complaint-update";
 export const NATS_DURABLE_COMPLAINTS = `${process.env.WEBEOC_STREAM_NAME}`;
+export const CHEFS_DURABLE_FORMS = `${process.env.CHEFS_STREAM_NAME}-${process.env.CHEFS_DURABLE_FORM_ID}`;
 
 export const STREAMS = {
   COMPLAINTS: `${process.env.WEBEOC_STREAM_NAME}-complaints`,
   ACTIONS_TAKEN: `${process.env.WEBEOC_STREAM_NAME}-actions`,
+  CHEFS: `${process.env.CHEFS_STREAM_NAME}`,
 };
 
 export const OPERATIONS = {
@@ -23,6 +25,7 @@ export const STREAM_TOPICS = {
   STAGE_UPDATE_ACTION_TAKEN: `${process.env.WEBEOC_STREAM_NAME}.stage-update-action-taken`,
   ACTION_TAKEN: `${process.env.WEBEOC_STREAM_NAME}.action-taken`,
   UPDATE_ACTION_TAKEN: `${process.env.WEBEOC_STREAM_NAME}.update-action-taken`,
+  CHEFS_SUBMISSIONS_CREATED: `PUBLIC.forms.submission.created.${process.env.CHEFS_FORM_ID}`,
 };
 
 export const STAGING_APIS = {
@@ -34,3 +37,9 @@ export const PROCESSING_APIS = {
   ACTION_TAKEN: "complaint/process/action-taken",
   UPDATE_ACTION_TAKEN: "complaint/process/action-taken-update",
 };
+
+export const CHEFS_APIS = {
+  SUBMISSIONS: "submissions",
+};
+
+export const CHEFS_MAX_DELIVER = 5; // stop redelivering a CHEFS message after this many attempts
