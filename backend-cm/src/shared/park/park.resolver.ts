@@ -1,6 +1,7 @@
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { ParkService } from "./park.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { JwtOrApiKeyGuard } from "../../auth/jwt-or-apikey.guard";
 import { Logger, UseGuards } from "@nestjs/common";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -8,13 +9,13 @@ import { GraphQLError } from "graphql";
 import { Park } from "src/shared/park/dto/park";
 import { ParkArgs, ParkInput } from "src/shared/park/dto/park.input";
 
-@UseGuards(JwtRoleGuard)
 @Resolver("Park")
 export class ParkResolver {
   constructor(private readonly ParkService: ParkService) {}
   private readonly logger = new Logger(ParkResolver.name);
 
   @Query("parks")
+  @UseGuards(JwtOrApiKeyGuard)
   @Roles(coreRoles)
   async find(@Args() args: ParkArgs) {
     try {
@@ -30,6 +31,7 @@ export class ParkResolver {
   }
 
   @Query("park")
+  @UseGuards(JwtOrApiKeyGuard)
   @Roles(coreRoles)
   async findOne(@Args("parkGuid") id: string) {
     try {
@@ -45,6 +47,7 @@ export class ParkResolver {
   }
 
   @Query("getParksByArea")
+  @UseGuards(JwtRoleGuard)
   @Roles(coreRoles)
   async findByArea(@Args("parkAreaGuid") id: string) {
     try {
@@ -60,6 +63,7 @@ export class ParkResolver {
   }
 
   @Mutation(() => Park, { name: "createPark" })
+  @UseGuards(JwtRoleGuard)
   @Roles(coreRoles)
   async create(@Args("input") input: ParkInput) {
     try {
@@ -73,6 +77,7 @@ export class ParkResolver {
   }
 
   @Mutation(() => Park, { name: "updatePark" })
+  @UseGuards(JwtRoleGuard)
   @Roles(coreRoles)
   async update(@Args("parkGuid") parkGuid: string, @Args("input") input: ParkInput) {
     try {
@@ -86,6 +91,7 @@ export class ParkResolver {
   }
 
   @Mutation(() => Park, { name: "deletePark" })
+  @UseGuards(JwtRoleGuard)
   @Roles(coreRoles)
   async delete(@Args("parkGuid") parkGuid: string) {
     try {
