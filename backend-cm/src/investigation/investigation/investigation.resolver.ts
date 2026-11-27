@@ -4,6 +4,7 @@ import { BadRequestException, Logger, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import {
   CreateInvestigationInput,
   UpdateInvestigationInput,
@@ -52,6 +53,7 @@ export class InvestigationResolver {
   @Mutation("updateInvestigation")
   @Roles(coreRoles)
   async update(@Args("investigationGuid") investigationGuid: string, @Args("input") input: UpdateInvestigationInput) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationService.update(investigationGuid, input);
     } catch (error) {
@@ -65,6 +67,7 @@ export class InvestigationResolver {
   @Mutation("updateInvestigationTimestamp")
   @Roles(coreRoles)
   async updateTimestamp(@Args("investigationGuid") investigationGuid: string) {
+    validateActivityAccess(investigationGuid);
     try {
       await this.investigationService.updateInvestigationTimestamp(investigationGuid);
       return await this.investigationService.findOne(investigationGuid);
@@ -82,6 +85,7 @@ export class InvestigationResolver {
     @Args("investigationGuid") investigationGuid: string,
     @Args("appUserGuid") appUserGuid: string,
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationService.addCollaborator(investigationGuid, appUserGuid);
     } catch (error) {
@@ -98,6 +102,7 @@ export class InvestigationResolver {
     @Args("investigationGuid") investigationGuid: string,
     @Args("appUserActivityXrefGuid") appUserActivityXrefGuid: string,
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationService.removeCollaborator(investigationGuid, appUserActivityXrefGuid);
     } catch (error) {
