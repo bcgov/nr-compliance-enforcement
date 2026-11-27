@@ -19,6 +19,9 @@ RUN mkdir -p /app/test-results \
  && chown 1000:0 /app/node_modules \
  && chmod g+rwX /app/node_modules
 
+# One-shot test runner, not a service: there is nothing to probe
+HEALTHCHECK NONE
+
 USER 1000
 
 ENTRYPOINT ["/app/node_modules/.bin/playwright", "test"]

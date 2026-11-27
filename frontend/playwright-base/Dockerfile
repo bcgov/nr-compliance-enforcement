@@ -9,10 +9,13 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl dnsutils \
  && mkdir /tmp/pw \
- && npm install --prefix /tmp/pw --ignore-scripts --no-save --no-audit --no-fund playwright@${PLAYWRIGHT_VERSION} \
+ && npm install --prefix /tmp/pw --ignore-scripts --no-save --no-audit --no-fund "playwright@${PLAYWRIGHT_VERSION}" \
  && node /tmp/pw/node_modules/playwright/cli.js install --with-deps webkit \
  && rm -rf /tmp/pw /var/lib/apt/lists/* /root/.npm \
  && chown -R 1000:0 /ms-playwright \
  && chmod -R g+rwX /ms-playwright
+
+# One-shot test runner, not a service: there is nothing to probe
+HEALTHCHECK NONE
 
 USER 1000
