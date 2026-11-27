@@ -7,6 +7,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     STAGING_STATUS_CODE_SUCCESS CONSTANT varchar(7) := 'SUCCESS' ;
     STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
     METHOD_OF_COMPLAINT_RAPP CONSTANT varchar(5) := 'RAPP';
+    METHOD_OF_COMPLAINT_WEB_FORM CONSTANT varchar(8) := 'WEB_FORM';
     
     -- jsonb attribute names
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
@@ -428,7 +429,11 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
         SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
         FROM complaint.comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
-        WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
+        -- complaints from CHEFS have chefs_submission_id
+        WHERE complaint_method_received_code = CASE
+            WHEN complaint_data ->> 'chefs_submission_id' IS NOT NULL THEN METHOD_OF_COMPLAINT_WEB_FORM
+            ELSE METHOD_OF_COMPLAINT_RAPP
+        END
         AND cmrcacx.agency_code_ref = com.owned_by_agency_code_ref
     )
     WHERE complaint_identifier = _complaint_identifier;
