@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Alert, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { InvestigationParty } from "@/generated/graphql";
@@ -15,6 +15,7 @@ import {
 } from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 import { PartyHistoryTab, PartyTabs } from "@/app/components/containers/parties/view";
+import { exportParty } from "@/app/store/reducers/documents-thunks";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -39,6 +40,8 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   editDisabledReason,
   onUpdateParty,
 }) => {
+  const dispatch = useAppDispatch();
+
   // Code tables
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
 
@@ -91,6 +94,14 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
             >
               <i className="bi bi-arrow-left"></i>
               <span>{backLabel}</span>
+            </Button>
+            <Button
+              variant="outline-light"
+              id="party-detail-export-button"
+              onClick={() => dispatch(exportParty(party.partyIdentifier, investigationGuid))}
+            >
+              <i className="bi bi-file-earmark-pdf"></i>
+              <span>Export</span>
             </Button>
             {editDisabledReason ? (
               <OverlayTrigger

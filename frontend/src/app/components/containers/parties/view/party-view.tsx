@@ -18,6 +18,8 @@ import {
   DetailField,
   DetailSection,
 } from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
+import { exportParty } from "@/app/store/reducers/documents-thunks";
+import { useAppDispatch } from "@/app/hooks/hooks";
 
 export const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -149,6 +151,7 @@ export const PartyView: FC = () => {
   const { id = "", tabKey } = useParams<PartyParams>();
   const navigate = useNavigate();
   const currentTab = tabKey || "details";
+  const dispatch = useAppDispatch();
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -205,7 +208,9 @@ export const PartyView: FC = () => {
             title={getPartyName(partyData)}
             badges={
               <PartyBadges
-                isSafetyConcern={!!(partyData?.person?.safetyConcernIndicator || partyData?.business?.safetyConcernIndicator)}
+                isSafetyConcern={
+                  !!(partyData?.person?.safetyConcernIndicator || partyData?.business?.safetyConcernIndicator)
+                }
                 isYoungPerson={personIsYoung}
               />
             }
@@ -217,6 +222,14 @@ export const PartyView: FC = () => {
                 >
                   <i className="bi bi-arrow-left"></i>
                   <span>Parties</span>
+                </Button>
+                <Button
+                  variant="outline-light"
+                  id="party-detail-export-button"
+                  onClick={() => dispatch(exportParty(id))}
+                >
+                  <i className="bi bi-file-earmark-pdf"></i>
+                  <span>Export</span>
                 </Button>
                 {editDisabledReason ? (
                   <OverlayTrigger

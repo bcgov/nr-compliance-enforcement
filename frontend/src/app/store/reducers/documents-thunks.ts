@@ -70,6 +70,12 @@ export const generateExportContinuationReportParams = (investigationGuid: string
   return { investigationGuid, fileName, tz };
 };
 
+export const generateExportPartyParams = (partyIdentifier: string, investigationGuid?: string) => {
+  const fileName = `Party_Report_${format(new Date(), "yyMMdd")}.pdf`;
+  const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return { partyIdentifier, ...(investigationGuid ? { investigationGuid } : {}), fileName, tz };
+};
+
 //-- this is a janky solution, but as of 2024 it is still the widly
 //-- accepted solution to download a file from a service
 const downloadPdf = (data: ArrayBuffer, fileName: string, elementId: string) => {
@@ -355,6 +361,34 @@ export const exportContinuationReport =
       return "success";
     } catch (error) {
       console.error("Error exporting continuation report:", error);
+      return "error";
+    }
+  };
+
+export const exportParty =
+  (
+    partyIdentifier: string,
+    investigationGuid?: string,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async () => {
+    try {
+      const axiosConfig: AxiosRequestConfig = {
+        responseType: "arraybuffer",
+      };
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+
+      const params = generateExportPartyParams(partyIdentifier, investigationGuid);
+
+      const url = `${config.API_BASE_URL}/v1/document/export-party`;
+
+      const response = await axios.post(url, params, axiosConfig);
+
+      downloadPdf(response.data, params.fileName, "hidden-export-party");
+
+      return "success";
+    } catch (error) {
+      console.error("Error exporting party:", error);
       return "error";
     }
   };

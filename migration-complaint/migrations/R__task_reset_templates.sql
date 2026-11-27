@@ -19,5 +19,6 @@ WHERE
     'PRKERSTMPT',
     'PRKGIRTMPT',
     'TDRTMPLT',
-    'CRTMPLT'
+    'CRTMPLT',
+    'PRTYTMPLT'
   );
