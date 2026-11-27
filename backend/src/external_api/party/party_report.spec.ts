@@ -642,7 +642,7 @@ describe("party report data", () => {
       mockPost.mockResolvedValue({ response: null, error: { message: "Request failed with status code 431" } });
 
       await expect(getPartyReportData(TOKEN, "PARTY-1", TZ)).rejects.toThrow(
-        "GraphQL errors occurred while fetching party history lookups",
+        "Request failed while fetching party history lookups: Request failed with status code 431",
       );
     });
   });
