@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PartyHeader } from "./party-header";
 import { PartyTabs } from "./party-tabs";
@@ -153,6 +153,15 @@ export const PartyView: FC = () => {
   const currentTab = tabKey || "details";
   const dispatch = useAppDispatch();
 
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+
+  // Disabled while the PDF generates so a double-click doesn't download two copies
+  const handleExportClick = async () => {
+    setIsExporting(true);
+    await dispatch(exportParty(id, getPartyName(partyData)));
+    setIsExporting(false);
+  };
+
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
     variables: { partyIdentifier: id },
@@ -226,7 +235,8 @@ export const PartyView: FC = () => {
                 <Button
                   variant="outline-light"
                   id="party-detail-export-button"
-                  onClick={() => dispatch(exportParty(id, getPartyName(partyData)))}
+                  onClick={handleExportClick}
+                  disabled={isExporting}
                 >
                   <i className="bi bi-file-earmark-pdf"></i>
                   <span>Export</span>

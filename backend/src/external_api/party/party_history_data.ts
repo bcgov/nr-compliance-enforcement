@@ -8,7 +8,7 @@ import {
   ReportCodeMaps,
   ReportCodeTables,
 } from "src/external_api/party/party_data";
-import { get } from "src/external_api/shared_data";
+import { get, post } from "src/external_api/shared_data";
 
 const LEGISLATION_TYPE_ACT = "ACT";
 const LEGISLATION_TYPE_REGULATION = "REG";
@@ -273,11 +273,16 @@ const getHistoryLookups = async (token: string, investigations: HistoryInvestiga
     )
     .join("\n");
 
-  const { data, errors } = await get(token, { query: `{ ${officerQuery} ${legislationQueries} }` });
+  // POST rather than GET: the query grows with each contravention's legislation, and in a GET it would go in the
+  // URL, which the server limits (16 KB by default in Node)
+  const { response, error } = await post(token, { query: `{ ${officerQuery} ${legislationQueries} }` });
+  const errors = error ?? response?.data?.errors;
 
   if (errors) {
     throw new Error(`GraphQL errors occurred while fetching party history lookups: ${JSON.stringify(errors)}`);
   }
+
+  const data = response.data.data;
 
   const officers = new Map<string, string>(
     (data.appUsersByGuids ?? []).map((u: HistoryOfficer) => [u.appUserGuid, `${u.lastName}, ${u.firstName}`]),

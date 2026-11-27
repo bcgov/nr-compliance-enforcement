@@ -11,6 +11,7 @@ import { getAttachments } from "@/app/store/reducers/attachments";
 import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
 import { bulkDownload, BulkDownloadProgressCallback, FileWithPresignedUrl } from "@/app/store/reducers/bulk-download";
 import { fetchAttachmentsWithMetadata } from "@/app/common/attachment-utils";
+import { ToggleError } from "@/app/common/toast";
 
 export const generateExportComplaintInputParams = (
   id: string,
@@ -399,6 +400,7 @@ export const exportParty =
       return "success";
     } catch (error) {
       console.error("Error exporting party:", error);
+      ToggleError("Unable to export party");
       return "error";
     }
   };

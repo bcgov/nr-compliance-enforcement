@@ -1,4 +1,4 @@
-import { formatDate } from "src/common/methods";
+import { formatDate, formatDateInTimeZone, formatTime } from "src/common/methods";
 import { buildBusinessReport, businessReportFields, ReportBusiness } from "src/external_api/party/party_business_data";
 import {
   buildAddresses,
@@ -67,7 +67,7 @@ const buildPartyReport = (
 
   return {
     partyName: getPartyName(party),
-    generatedOn: formatDate(new Date().toISOString()),
+    generatedOn: `${formatDateInTimeZone(new Date().toISOString(), options.tz)} at ${formatTime(new Date().toISOString(), options.tz)}`,
     isPerson: !!party.person,
     isBusiness: !!party.business,
     ...buildPartyDetails(party, codeMaps, options.isInvestigationParty),

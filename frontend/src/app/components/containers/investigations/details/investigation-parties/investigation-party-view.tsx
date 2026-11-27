@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Alert, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
@@ -44,6 +44,15 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
 
   // Code tables
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
+
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+
+  // Disabled while the PDF generates so a double-click doesn't download two copies
+  const handleExportClick = async () => {
+    setIsExporting(true);
+    await dispatch(exportParty(party.partyIdentifier, getPartyName(party), investigationGuid));
+    setIsExporting(false);
+  };
 
   const person = party.person;
   const business = party.business;
@@ -98,7 +107,8 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
             <Button
               variant="outline-light"
               id="party-detail-export-button"
-              onClick={() => dispatch(exportParty(party.partyIdentifier, getPartyName(party), investigationGuid))}
+              onClick={handleExportClick}
+              disabled={isExporting}
             >
               <i className="bi bi-file-earmark-pdf"></i>
               <span>Export</span>
