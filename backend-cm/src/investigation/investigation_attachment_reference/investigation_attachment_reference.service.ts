@@ -16,6 +16,15 @@ export class InvestigationAttachmentReferenceService {
     @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
+  async getInvestigationGuid(investigationPartyGuid: string): Promise<string> {
+    const investigationParty = await this.prisma.investigation_party.findUnique({
+      where: { investigation_party_guid: investigationPartyGuid },
+      select: { investigation_guid: true },
+    });
+
+    return investigationParty?.investigation_guid;
+  }
+
   async deactivate(input: DeactivateInvestigationAttachmentReferenceInput): Promise<InvestigationAttachmentReference> {
     // Soft-delete makes (party, object) non-unique over time, so find the live row first…
     const existing = await this.prisma.investigation_attachment_reference.findFirst({

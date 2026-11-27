@@ -1,14 +1,36 @@
 import { Investigation } from "@/generated/graphql";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { appUserGuid } from "@/app/store/reducers/app";
 import { GET_INVESTIGATION } from "../details/investigation-details";
 
-// used cached get to check if investigation is closed
+// only users with a role on the investigation or added as a collaborator can edit it
+export const hasInvestigationAccess = (investigation: Investigation | undefined, userGuid: string) =>
+  !!investigation &&
+  ([
+    investigation.primaryInvestigatorGuid,
+    investigation.supervisorGuid,
+    investigation.fileCoordinatorGuid,
+    ...(investigation.adminSupportGuids ?? []),
+  ].includes(userGuid) ||
+    !!investigation.collaborators?.some((collaborator) => collaborator?.appUserGuid === userGuid));
+
+// used cached get to check if investigation is closed or the user has no access
 // used by downstream components for checking if read-only mode
 export const useInvestigationReadOnly = (investigationGuid: string) => {
+  const userGuid = useAppSelector(appUserGuid);
   const { data } = useGraphQLQuery<{ getInvestigation: Investigation }>(GET_INVESTIGATION, {
     queryKey: ["getInvestigation", investigationGuid],
     variables: { investigationGuid },
     enabled: !!investigationGuid,
   });
-  return data?.getInvestigation?.investigationStatus?.investigationStatusCode === "CLOSED";
+  const investigation = data?.getInvestigation;
+  // don't redirect while loading
+  if (!investigation || !userGuid) {
+    return false;
+  }
+  return (
+    investigation?.investigationStatus?.investigationStatusCode === "CLOSED" ||
+    !hasInvestigationAccess(investigation, userGuid)
+  );
 };

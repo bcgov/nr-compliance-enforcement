@@ -188,6 +188,15 @@ export class ContraventionService {
     return xrefs.some((xref) => xref.enforcement_action.some((action) => action.active_ind));
   }
 
+  async getInvestigationGuid(contraventionGuid: string): Promise<string> {
+    const contravention = await this.prisma.contravention.findUnique({
+      where: { contravention_guid: contraventionGuid },
+      select: { investigation_guid: true },
+    });
+
+    return contravention?.investigation_guid;
+  }
+
   async update(contraventionGuid: string, input: CreateUpdateContraventionInput): Promise<Investigation> {
     const stored = await this.prisma.contravention.findUnique({
       where: { contravention_guid: contraventionGuid },

@@ -3,6 +3,7 @@ import { BadRequestException, Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { Role, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import {
   CreateInvestigationPartyInput,
   UpdateInvestigationPartyInput,
@@ -21,6 +22,7 @@ export class InvestigationPartyResolver {
     @Args("investigationGuid") investigationGuid: string,
     @Args("input") input: CreateInvestigationPartyInput[],
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationPartyService.create(investigationGuid, input);
     } catch (error) {
@@ -42,6 +44,7 @@ export class InvestigationPartyResolver {
     @Args("partyAssociationRole") partyAssociationRole: string,
     @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationPartyService.addFromSharedParty(
         investigationGuid,
@@ -63,6 +66,7 @@ export class InvestigationPartyResolver {
   @Mutation("removePartyFromInvestigation")
   @Roles(coreRoles)
   async remove(@Args("investigationGuid") investigationGuid: string, @Args("partyIdentifier") partyIdentifier: string) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationPartyService.remove(investigationGuid, partyIdentifier);
     } catch (error) {
@@ -107,6 +111,7 @@ export class InvestigationPartyResolver {
     @Args("partyIdentifier") partyIdentifier: string,
     @Args("partyAssociationRole") partyAssociationRole: string,
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationPartyService.editPartyRole(
         investigationGuid,
@@ -129,6 +134,7 @@ export class InvestigationPartyResolver {
     @Args("investigationGuid") investigationGuid: string,
     @Args("input") input: UpdateInvestigationPartyInput,
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationPartyService.update(investigationGuid, input);
     } catch (error) {
@@ -149,6 +155,7 @@ export class InvestigationPartyResolver {
     @Args("partyIdentifier") partyIdentifier: string,
     @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationPartyService.updateFromSharedParty(
         investigationGuid,
@@ -173,6 +180,7 @@ export class InvestigationPartyResolver {
     @Args("partyIdentifier") partyIdentifier: string,
     @Args("input") input: CreateInvestigationPartyInput,
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationPartyService.replace(investigationGuid, partyIdentifier, input);
     } catch (error) {
@@ -195,6 +203,7 @@ export class InvestigationPartyResolver {
     @Args("partyAssociationRole") partyAssociationRole: string,
     @Args("attachmentReferences") attachmentReferences: CreateInvestigationAttachmentReferenceInput[],
   ) {
+    validateActivityAccess(investigationGuid);
     try {
       return await this.investigationPartyService.replaceFromSharedParty(
         investigationGuid,
