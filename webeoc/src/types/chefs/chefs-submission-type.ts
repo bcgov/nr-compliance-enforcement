@@ -48,9 +48,12 @@ export interface ChefsSubmissionData extends Complaint {
   cos_caller_name_last?: string;
   witness_details?: string;
   transportation_details?: string;
-  previously_reported_ind?: boolean;
+  previously_reported_ind?: string;
   agency_reported_txt?: string;
+  whenDidYouReportIt?: string;
+  doYouHaveAFileOrReferenceNumber?: string;
   chefs_confirmation_id?: string;
   chefs_submission_id?: string;
+  violation_type_label?: string;
   attachments?: ChefsAttachment[];
 }
