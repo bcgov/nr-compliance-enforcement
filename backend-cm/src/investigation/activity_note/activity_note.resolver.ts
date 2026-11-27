@@ -4,6 +4,7 @@ import { Logger, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import { ActivityNoteInput } from "./dto/activity_note";
 
 @Resolver("ActivityNote")
@@ -65,6 +66,11 @@ export class ActivityNoteResolver {
   @Mutation("saveActivityNote")
   @Roles(coreRoles)
   async save(@Args("input") input: ActivityNoteInput) {
+    validateActivityAccess(input.investigationGuid);
+    if (input.activityNoteGuid) {
+      const activityNote = await this.activityNoteService.findOne(input.activityNoteGuid);
+      validateActivityAccess(activityNote.investigationGuid);
+    }
     try {
       return await this.activityNoteService.save(input);
     } catch (error) {
@@ -78,6 +84,8 @@ export class ActivityNoteResolver {
   @Mutation("deleteActivityNote")
   @Roles(coreRoles)
   async delete(@Args("activityNoteGuid") activityNoteGuid: string) {
+    const activityNote = await this.activityNoteService.findOne(activityNoteGuid);
+    validateActivityAccess(activityNote.investigationGuid);
     try {
       return await this.activityNoteService.delete(activityNoteGuid);
     } catch (error) {

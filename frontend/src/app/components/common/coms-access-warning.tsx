@@ -11,7 +11,8 @@ export const ComsAccessWarning: FC = () => (
       alt="error"
       className="filter-image-spacing"
     />{" "}
-    Unable to connect to attachment storage, attachments may be unavailable. If this persists contact an administrator.
+    Unable to connect to attachments storage. Attachments may be unavailable. If this persists, please contact an
+    administrator.
   </div>
 );
 

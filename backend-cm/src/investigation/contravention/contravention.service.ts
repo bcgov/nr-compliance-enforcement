@@ -8,6 +8,7 @@ import { InvestigationService } from "src/investigation/investigation/investigat
 import { InvestigationPrismaService } from "src/prisma/investigation/prisma.investigation.service";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { EnforcementActionService } from "src/investigation/enforcement_action/enforcement_action.service";
 
 const getCurrentDatePacific = (): string =>
   new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver" }).format(new Date());
@@ -19,6 +20,7 @@ export class ContraventionService {
     private readonly sharedPrisma: SharedPrismaService,
     private readonly user: UserService,
     private readonly investigationService: InvestigationService,
+    private readonly enforcementActionService: EnforcementActionService,
   ) {}
 
   private readonly logger = new Logger(ContraventionService.name);
@@ -97,6 +99,8 @@ export class ContraventionService {
 
         if (!contravention) throw new Error("Contravention not found");
 
+        await this.deactivatePartyDecisions(db, contravention.contravention_party_xref, partyGuid);
+
         const otherParties = contravention.contravention_party_xref.filter(
           (xref) => xref.investigation_party_guid !== partyGuid,
         );
@@ -157,8 +161,40 @@ export class ContraventionService {
     return await this.investigationService.findOne(investigationGuid);
   }
 
+  // Deactivates the decisions on the party xref(s) being removed so they don't stay active
+  // under a removed contravention
+  private async deactivatePartyDecisions(
+    db: any,
+    xrefs: { contravention_party_xref_guid: string; investigation_party_guid: string | null }[],
+    partyGuid: string | null,
+  ): Promise<void> {
+    const removedXrefGuids = xrefs
+      .filter((xref) => xref.investigation_party_guid === partyGuid)
+      .map((xref) => xref.contravention_party_xref_guid);
+
+    const decisions = await db.enforcement_action.findMany({
+      where: { contravention_party_xref_guid: { in: removedXrefGuids }, active_ind: true },
+      select: { enforcement_action_guid: true },
+    });
+
+    await Promise.all(
+      decisions.map((decision) =>
+        this.enforcementActionService.deactivateEnforcementAction(db, decision.enforcement_action_guid),
+      ),
+    );
+  }
+
   private hasActiveDecision(xrefs: { enforcement_action: { active_ind: boolean }[] }[]): boolean {
     return xrefs.some((xref) => xref.enforcement_action.some((action) => action.active_ind));
+  }
+
+  async getInvestigationGuid(contraventionGuid: string): Promise<string> {
+    const contravention = await this.prisma.contravention.findUnique({
+      where: { contravention_guid: contraventionGuid },
+      select: { investigation_guid: true },
+    });
+
+    return contravention?.investigation_guid;
   }
 
   async update(contraventionGuid: string, input: CreateUpdateContraventionInput): Promise<Investigation> {
