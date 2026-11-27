@@ -98,7 +98,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
             <Button
               variant="outline-light"
               id="party-detail-export-button"
-              onClick={() => dispatch(exportParty(party.partyIdentifier, investigationGuid))}
+              onClick={() => dispatch(exportParty(party.partyIdentifier, getPartyName(party), investigationGuid))}
             >
               <i className="bi bi-file-earmark-pdf"></i>
               <span>Export</span>

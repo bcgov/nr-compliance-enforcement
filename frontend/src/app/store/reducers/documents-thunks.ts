@@ -70,8 +70,17 @@ export const generateExportContinuationReportParams = (investigationGuid: string
   return { investigationGuid, fileName, tz };
 };
 
-export const generateExportPartyParams = (partyIdentifier: string, investigationGuid?: string) => {
-  const fileName = `Party_Report_${format(new Date(), "yyMMdd")}.pdf`;
+// Keeps a party name safe for a file name and the Content-Disposition header: no accents, and anything other
+// than letters, digits and "-" becomes "_"
+const toFileNamePart = (value: string): string =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Za-z0-9-]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+export const generateExportPartyParams = (partyIdentifier: string, partyName: string, investigationGuid?: string) => {
+  const fileName = `NatSuite_Party_${toFileNamePart(partyName)}_${format(new Date(), "yyMMdd")}.pdf`;
   const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return { partyIdentifier, ...(investigationGuid ? { investigationGuid } : {}), fileName, tz };
 };
@@ -368,6 +377,7 @@ export const exportContinuationReport =
 export const exportParty =
   (
     partyIdentifier: string,
+    partyName: string,
     investigationGuid?: string,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async () => {
@@ -378,7 +388,7 @@ export const exportParty =
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      const params = generateExportPartyParams(partyIdentifier, investigationGuid);
+      const params = generateExportPartyParams(partyIdentifier, partyName, investigationGuid);
 
       const url = `${config.API_BASE_URL}/v1/document/export-party`;
 

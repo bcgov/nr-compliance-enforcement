@@ -226,7 +226,7 @@ export const PartyView: FC = () => {
                 <Button
                   variant="outline-light"
                   id="party-detail-export-button"
-                  onClick={() => dispatch(exportParty(id))}
+                  onClick={() => dispatch(exportParty(id, getPartyName(partyData)))}
                 >
                   <i className="bi bi-file-earmark-pdf"></i>
                   <span>Export</span>

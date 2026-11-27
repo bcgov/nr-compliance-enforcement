@@ -1,5 +1,5 @@
 import { format, toZonedTime } from "date-fns-tz";
-import { describeCode, ReportCodeMaps } from "src/external_api/party/party_data";
+import { describeCode, ReportCodeMaps, ReportRow } from "src/external_api/party/party_data";
 
 const OTHER_CODE = "OTH";
 
@@ -110,52 +110,81 @@ const formatWeight = (weightInKg?: number): string =>
 const describeWithOther = (descriptions: Map<string, string>, code?: string, other?: string): string =>
   code === OTHER_CODE && other ? `Other (${other})` : describeCode(descriptions, code);
 
-const buildPersonIdentifyingInformation = (person: ReportPerson, codeMaps: ReportCodeMaps, tz: string) => {
+// Person identifying information rows in screen order; empty values are left out
+const buildPersonIdentifyingInformation = (
+  person: ReportPerson,
+  aliases: string,
+  externalIds: ReportRow[],
+  codeMaps: ReportCodeMaps,
+  tz: string,
+): ReportRow[] => {
   // Date of birth is date-only; take the date part as-is so it never shifts with the server time zone
   const dateOfBirth = person.dateOfBirth ? person.dateOfBirth.split("T")[0] : "";
 
-  return {
-    firstName: person.firstName ?? "",
-    middleNames: person.middleNames ?? "",
-    lastName: person.lastName ?? "",
-    sex: person.sexCode ?? "",
-    dateOfBirth,
+  return [
+    { label: "First name", value: person.firstName ?? "" },
+    { label: "Middle name(s)", value: person.middleNames ?? "" },
+    { label: "Last name", value: person.lastName ?? "" },
+    { label: "Alias(es)", value: aliases },
+    { label: "Sex as per ID", value: person.sexCode ?? "" },
+    { label: "Date of birth", value: dateOfBirth },
     // Age only when we have a DOB
-    age: dateOfBirth ? `${calculateAgeYears(dateOfBirth, tz)} years old` : "",
+    { label: "Age", value: dateOfBirth ? `${calculateAgeYears(dateOfBirth, tz)} years old` : "" },
     // Approximate age only when we have no DOB
-    approximateAge: dateOfBirth ? "" : describeCode(codeMaps.approximateAges, person.approximateAgeCode),
-    driversLicenseNumber: person.driversLicenseNumber ?? "",
-    driversLicenseClass: person.driversLicenseClass ?? "",
-    driversLicenseCountry: describeCode(codeMaps.countries, person.driversLicenseCountryCode),
-    driversLicenseProvince: describeCode(codeMaps.countrySubdivisions, person.driversLicenseCountrySubdivisionCode),
-  };
+    {
+      label: "Approximate age",
+      value: dateOfBirth ? "" : describeCode(codeMaps.approximateAges, person.approximateAgeCode),
+    },
+    { label: "Driver's licence number", value: person.driversLicenseNumber ?? "" },
+    { label: "Driver's licence class", value: person.driversLicenseClass ?? "" },
+    { label: "Driver's licence country", value: describeCode(codeMaps.countries, person.driversLicenseCountryCode) },
+    {
+      label: "Driver's licence province",
+      value: describeCode(codeMaps.countrySubdivisions, person.driversLicenseCountrySubdivisionCode),
+    },
+    ...externalIds,
+  ].filter((row) => row.value);
 };
 
-const buildPersonDescriptors = (person: ReportPerson, codeMaps: ReportCodeMaps) => ({
-  height: formatHeight(person.heightInCm),
-  weight: formatWeight(person.weightInKg),
-  complexion: describeCode(codeMaps.complexions, person.complexionCode),
-  build: describeCode(codeMaps.builds, person.buildCode),
-  hairColour: describeWithOther(codeMaps.hairColours, person.hairColourCode, person.hairColourOther),
-  hairLength: describeCode(codeMaps.hairLengths, person.hairLengthCode),
-  additionalHairDescriptors: person.additionalHairDescriptors ?? "",
-  eyeColour: describeWithOther(codeMaps.eyeColours, person.eyeColourCode, person.eyeColourOther),
-  facialHair: yesNo(person.facialHairIndicator),
-  facialHairStyle: (person.facialHairStyleCodes ?? [])
-    .map((ref) => describeCode(codeMaps.facialHairStyles, ref?.facialHairStyleCode))
-    .filter(Boolean)
-    .join(", "),
-  hasTattoos: yesNo(person.tattooIndicator),
-  tattooDescriptors: person.tattooDescription ?? "",
-  additionalDescriptors: person.additionalDescriptors ?? "",
-});
+// Person descriptor rows in screen order; empty values are left out
+const buildPersonDescriptors = (person: ReportPerson, codeMaps: ReportCodeMaps): ReportRow[] =>
+  [
+    { label: "Height", value: formatHeight(person.heightInCm) },
+    { label: "Weight", value: formatWeight(person.weightInKg) },
+    { label: "Complexion", value: describeCode(codeMaps.complexions, person.complexionCode) },
+    { label: "Build", value: describeCode(codeMaps.builds, person.buildCode) },
+    {
+      label: "Hair colour",
+      value: describeWithOther(codeMaps.hairColours, person.hairColourCode, person.hairColourOther),
+    },
+    { label: "Hair length", value: describeCode(codeMaps.hairLengths, person.hairLengthCode) },
+    { label: "Additional hair descriptors", value: person.additionalHairDescriptors ?? "" },
+    { label: "Eye colour", value: describeWithOther(codeMaps.eyeColours, person.eyeColourCode, person.eyeColourOther) },
+    { label: "Facial hair", value: yesNo(person.facialHairIndicator) },
+    {
+      label: "Facial hair style",
+      value: (person.facialHairStyleCodes ?? [])
+        .map((ref) => describeCode(codeMaps.facialHairStyles, ref?.facialHairStyleCode))
+        .filter(Boolean)
+        .join(", "),
+    },
+    { label: "Has tattoos", value: yesNo(person.tattooIndicator) },
+    { label: "Tattoos descriptors", value: person.tattooDescription ?? "" },
+    { label: "Additional descriptors", value: person.additionalDescriptors ?? "" },
+  ].filter((row) => row.value);
 
-export const buildPersonReport = (person: ReportPerson, codeMaps: ReportCodeMaps, tz: string) => {
+export const buildPersonReport = (
+  person: ReportPerson,
+  aliases: string,
+  externalIds: ReportRow[],
+  codeMaps: ReportCodeMaps,
+  tz: string,
+) => {
   const descriptors = buildPersonDescriptors(person, codeMaps);
   return {
-    ...buildPersonIdentifyingInformation(person, codeMaps, tz),
-    ...descriptors,
-    hasDescriptors: Object.values(descriptors).some(Boolean),
+    identifyingInformation: buildPersonIdentifyingInformation(person, aliases, externalIds, codeMaps, tz),
+    hasDescriptors: descriptors.length > 0,
+    descriptors,
     comments: person.comments ?? "",
   };
 };
