@@ -4,6 +4,7 @@ import { Logger, UseGuards, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import { InvestigationAttachmentReferenceService } from "src/investigation/investigation_attachment_reference/investigation_attachment_reference.service";
 import { DeactivateInvestigationAttachmentReferenceInput } from "src/investigation/investigation_attachment_reference/dto/investigation_attachment_reference";
 
@@ -16,6 +17,9 @@ export class InvestigationAttachmentReferenceResolver {
   @Mutation("deactivateInvestigationAttachmentReference")
   @Roles(coreRoles)
   async deactivate(@Args("input") input: DeactivateInvestigationAttachmentReferenceInput) {
+    validateActivityAccess(
+      await this.investigationAttachmentReferenceService.getInvestigationGuid(input.investigationPartyGuid),
+    );
     try {
       return await this.investigationAttachmentReferenceService.deactivate(input);
     } catch (error) {

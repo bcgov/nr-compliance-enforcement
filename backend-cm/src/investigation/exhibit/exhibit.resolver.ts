@@ -5,6 +5,7 @@ import { Logger, UseGuards, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import { validateActivityAccess } from "../../shared/app_user_activity_xref/utils/validate-activity-access";
 import { CreateUpdateExhibitInput } from "../../investigation/exhibit/dto/exhibit";
 
 @UseGuards(JwtRoleGuard)
@@ -52,18 +53,23 @@ export class ExhibitResolver {
   @Mutation("createExhibit")
   @Roles(coreRoles)
   async create(@Args("input") input: CreateUpdateExhibitInput) {
+    validateActivityAccess(input.investigationGuid);
     return await this.exhibitService.create(input);
   }
 
   @Mutation("removeExhibit")
   @Roles(coreRoles)
   async remove(@Args("exhibitGuid") exhibitGuid: string) {
+    const exhibit = await this.exhibitService.findOne(exhibitGuid);
+    validateActivityAccess(exhibit.investigationGuid);
     return await this.exhibitService.remove(exhibitGuid);
   }
 
   @Mutation("updateExhibit")
   @Roles(coreRoles)
   async update(@Args("input") input: CreateUpdateExhibitInput) {
+    const exhibit = await this.exhibitService.findOne(input.exhibitGuid);
+    validateActivityAccess(exhibit.investigationGuid);
     return await this.exhibitService.update(input);
   }
 }

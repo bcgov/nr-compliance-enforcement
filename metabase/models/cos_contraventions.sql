@@ -181,7 +181,7 @@ FROM
       iss.last_name || ', ' || iss.first_name as "Issuing Officer",
       ttc.short_description as "Ticket Type",
       tkt.ticket_number as "Ticket Number",
-      tkt.ticket_amount as "Ticket Amount",
+      tkt.fine_amount as "Ticket Amount",
       tkt.notice_of_cancellation_number as "Notice of Cancellation Number",
       toc.short_description as "Ticket Status",
       wrn.warning_number as "Warning Number",

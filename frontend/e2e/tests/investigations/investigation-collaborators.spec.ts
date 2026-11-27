@@ -65,13 +65,22 @@ test.describe("Investigation Collaborators", () => {
       .click();
     await expect(page.locator(".Toastify__toast-body", { hasText: "Collaborator added successfully" })).toBeVisible();
     await page.locator("button", { hasText: /Close/ }).first().click();
-    await expect(page.locator("#comp-header-collaborator-count")).toHaveText(/\+1/);
+  });
+
+  test("it allows the collaborator from Parks to edit the investigation", async ({ browser }) => {
+    const parksContext = await browser.newContext({ storageState: STORAGE_STATE_BY_ROLE.PARKS });
+    const parksPage = await parksContext.newPage();
+    await parksPage.goto(investigationUrl);
+    await waitForSpinner(parksPage);
+
+    await expect(parksPage.locator(".comp-box-complaint-id")).toBeVisible();
+    await expect(parksPage.locator("#details-screen-edit-button")).toBeEnabled();
+    await parksContext.close();
   });
 
   test("it removes a collaborator", async ({ page }) => {
     await page.goto(investigationUrl);
     await waitForSpinner(page);
-    await expect(page.locator("#comp-header-collaborator-count")).toHaveText(/\+1/);
 
     await openManageCollaboratorsModal(page);
     await page
@@ -80,7 +89,14 @@ test.describe("Investigation Collaborators", () => {
       .click();
     await expect(page.locator(".Toastify__toast-body", { hasText: "Collaborator removed successfully" })).toBeVisible();
     await page.locator("button", { hasText: /Close/ }).first().click();
-    await expect(page.locator("#comp-header-collaborator-count")).not.toBeVisible();
+  });
+
+  test("it removes access for the removed collaborator from Parks", async ({ browser }) => {
+    const parksContext = await browser.newContext({ storageState: STORAGE_STATE_BY_ROLE.PARKS });
+    const parksPage = await parksContext.newPage();
+    await parksPage.goto(investigationUrl, { waitUntil: "commit" });
+    await expect(parksPage).toHaveURL(/\/not-found/);
+    await parksContext.close();
   });
 
   test("it disables managing collaborators on a closed investigation", async ({ page }) => {

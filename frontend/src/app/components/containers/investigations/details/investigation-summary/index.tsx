@@ -1,4 +1,4 @@
-import { Investigation, AppUserActivityXref } from "@/generated/graphql";
+import { Investigation } from "@/generated/graphql";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
@@ -74,16 +74,6 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const adminSupport = firstAdminSupport
     ? `${firstAdminSupport.lastName}, ${firstAdminSupport.firstName}`
     : "Not Assigned";
-  const collaborators = ((investigationData?.collaborators as AppUserActivityXref[]) ?? []).map((collaborator) => {
-    const officer = officers?.find((o) => o.app_user_guid === collaborator.appUserGuid);
-    return {
-      appUserGuid: collaborator.appUserGuid,
-      firstName: officer?.first_name,
-      lastName: officer?.last_name,
-      collaboratorAgency: officer?.agency_code_ref,
-    };
-  });
-
   const { handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   const editButtonClick = () => {
@@ -157,12 +147,6 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               >
                 <div>
                   <span id="comp-details-assigned-officer-name-text-id">{primaryInvestigator}</span>
-                  {collaborators.length > 0 && (
-                    <CollaboratorsTooltip
-                      id={investigationGuid}
-                      collaborators={collaborators}
-                    />
-                  )}
                 </div>
               </div>
             </dd>

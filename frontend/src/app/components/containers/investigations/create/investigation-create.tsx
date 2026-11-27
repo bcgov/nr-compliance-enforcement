@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
@@ -8,13 +8,14 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal, appUserGuid } from "@store/reducers/app";
-import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { CANCEL_CONFIRM, SAVE_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInvestigationInput, Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
 import { InvestigationCreateHeader } from "@/app/components/containers/investigations/create/investigation-create-header";
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
+import { useInvestigationReadOnly } from "@/app/components/containers/investigations/hooks/use-investigation-read-only";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import {
   getComplaintById,
@@ -104,6 +105,7 @@ const InvestigationCreate: FC = () => {
   );
 
   const isEditMode = Boolean(investigationGuid);
+  const isReadOnly = useInvestigationReadOnly(investigationGuid ?? "");
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const currentAppUserGuid = useAppSelector(appUserGuid);
@@ -321,12 +323,48 @@ const InvestigationCreate: FC = () => {
     );
   }, [dispatch, isDirty, confirmCancelChanges]);
 
-  const saveButtonClick = useCallback(() => {
+  const saveButtonClick = useCallback(async () => {
+    const { primaryInvestigator, supervisor, fileCoordinator, adminSupports } = form.state.values;
+    const hasAccess = [primaryInvestigator, supervisor, fileCoordinator, ...(adminSupports ?? [])].includes(
+      currentAppUserGuid,
+    );
+    const results = await form.validateAllFields("submit");
+    const hasErrors = Object.values(results).some((fieldErrors) => fieldErrors && Object.keys(fieldErrors).length > 0);
+    // show the form errors before warning about access
+    if (!isEditMode && !hasAccess && !hasErrors) {
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: SAVE_CONFIRM,
+          data: {
+            title: "Create investigation",
+            warnings: [
+              "You are not the primary investigator, supervisor, file coordinator or admin support, and will not be able to edit this investigation after it is created.",
+            ],
+            cancelText: "Cancel",
+            saveText: "Save changes",
+          },
+          callback: () => {
+            form.handleSubmit();
+          },
+        }),
+      );
+      return;
+    }
     form.handleSubmit();
-  }, [form]);
+  }, [form, isEditMode, currentAppUserGuid, dispatch]);
 
   const isSubmitting = createInvestigationMutation.isPending || updateInvestigationMutation.isPending;
   const isDisabled = isSubmitting || (isEditMode && isLoadingInvestigation);
+
+  if (isReadOnly) {
+    return (
+      <Navigate
+        to={`/investigation/${investigationGuid}`}
+        replace
+      />
+    );
+  }
 
   return (
     <div className="comp-investigation-edit-headerdetails">

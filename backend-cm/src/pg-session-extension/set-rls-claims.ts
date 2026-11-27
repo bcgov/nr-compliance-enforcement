@@ -4,6 +4,7 @@ export interface RlsClaimUser {
   idir_user_guid?: string;
   client_roles?: string | string[];
   exp?: number;
+  app_user_activity_identifiers?: string[];
 }
 
 // Runs inside a Prisma transaction with the users JWT claims set once. Sets inTransactionContext
@@ -23,6 +24,13 @@ export async function setRlsClaims(tx: any, user?: RlsClaimUser): Promise<void> 
     // policy stays self-contained, with no cross-schema query (the schemas can move databases).
     const agency = agencyFromRoles(user.client_roles);
     await tx.$executeRawUnsafe(`SET LOCAL jwt.claims.agency_code = '${agency.replaceAll("'", "''")}'`);
+  }
+
+  if (user.app_user_activity_identifiers) {
+    const identifiersString = user.app_user_activity_identifiers.join(",");
+    await tx.$executeRawUnsafe(
+      `SET LOCAL jwt.claims.app_user_activity_identifiers = '${identifiersString.replaceAll("'", "''")}'`,
+    );
   }
 
   // Default 0 so an unset exp reads as expired.
